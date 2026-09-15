@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body data-root="">
+<header class="site-header">
+  <a class="site-name" href="index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <h1>RePlayEngine ドキュメント</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p>RePlayEngine のエディター操作、コンポーネント、データ形式、C# スクリプトを調べるためのリファレンスです。左の目次から項目を選ぶか、右上の検索にキーワードを入力してください。</p>
+
+    <h2>分類</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>分類</th><th>内容</th></tr>
+      <tr><td>エディターの基本</td><td>画面の構成、シーンの作り方、オブジェクトの選択と移動、再生（<a href="editor/workspaces.html">Workspace</a>、<a href="editor/game-scene-settings.html">ゲームシーンの設定</a>、<a href="editor/vertex-paint.html">頂点カラーペイント</a>、<a href="editor/shader-adjustment.html">シェーダー調整 Workspace</a>）</td></tr>
+      <tr><td>コンポーネント</td><td>ゲームオブジェクトに付ける部品。1 つずつプロパティと使い方を説明します</td></tr>
+      <tr><td>エディターのウィンドウ</td><td>モーション、UI、地形など、専用の編集画面（<a href="windows/motion-workspace.html">Motion Workspace</a>、<a href="windows/export-game.html">ゲームを書き出す</a>、<a href="windows/material-editor.html">マテリアルの編集</a>、<a href="windows/shader-composer.html">Shader Composer</a>、<a href="windows/shader-catalog.html">シェーダ一覧</a>、<a href="windows/validation.html">Validation と Diagnostics</a>、<a href="windows/profiler.html">Profiler と DX12 Debug</a>、<a href="windows/screenshot-regression.html">スクリーンショット回帰</a>、<a href="windows/ui-workspace.html">UI Workspace</a>、<a href="windows/scene-flow.html">Scene Flow</a>、<a href="windows/easing-curve.html">イージングカーブ</a>、<a href="windows/sprite-atlas.html">Sprite Atlas</a>、<a href="windows/camera-presets.html">カメラ操作プリセット</a>、<a href="windows/collision-diagnostics.html">衝突の診断</a>）</td></tr>
+      <tr><td><a href="data/index.html">データ形式</a></td><td>.replayscene などエンジン独自のファイルの中身（<a href="data/scene-file.html">シーンファイルとプレハブ</a>）</td></tr>
+      <tr><td><a href="csharp/index.html">C# スクリプト</a></td><td>スクリプトの作り方と API（<a href="csharp/lifecycle.html">呼ばれる順番</a>、<a href="csharp/build.html">ビルド</a>）</td></tr>
+      <tr><td>起動オプションと設定</td><td>起動時の引数とプロジェクト設定（<a href="settings/command-line.html">起動オプション</a>、<a href="settings/project-settings.html">プロジェクト設定</a>）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="goals">やりたいことから探す</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>やりたいこと</th><th>見るページ</th></tr>
+      <tr><td>ゲームの画面に、メニューや体力ゲージなどの UI を出したい</td><td><a href="windows/ui-workspace.html">UI Workspace</a>、<a href="components/ui-layout.html">Canvas と Rect Transform</a>、<a href="components/ui-image.html">Image</a></td></tr>
+      <tr><td>ボタンを押したら何かが起きるようにしたい</td><td><a href="components/ui-controls.html">Button・入力部品</a>、<a href="csharp/script-behaviour.html">ScriptBehaviour</a></td></tr>
+      <tr><td>物や UI に、フェードや回転などの動きを付けたい</td><td><a href="windows/motion-workspace.html">Motion Workspace</a>、<a href="components/motion-players.html">Motion Player</a></td></tr>
+      <tr><td>キャラクターをキーやスティックで動かしたい</td><td><a href="csharp/index.html">はじめてのスクリプト</a>、<a href="csharp/api-input.html">入力（Input）</a></td></tr>
+      <tr><td>物を落とす、ぶつける、触れたら反応させたい</td><td><a href="components/physics.html">物理（Rigidbody と Collider）</a>、<a href="windows/collision-diagnostics.html">衝突の診断</a></td></tr>
+      <tr><td>タイトル → ステージ → エンディングとシーンを移りたい</td><td><a href="windows/scene-flow.html">Scene Flow</a>、<a href="csharp/api-physics-scene.html">SceneManager</a></td></tr>
+      <tr><td>起伏のある地面を作りたい</td><td><a href="components/landscape.html">地形（Landscape）</a></td></tr>
+      <tr><td>画面をぼかす、セピア調にするなど、画面効果をかけたい</td><td><a href="components/effect-stacks.html">Effect Stack</a>、<a href="components/effect-kinds.html">エフェクトの種類</a></td></tr>
+      <tr><td>物に色、テクスチャ、つや、透明を付けたい</td><td><a href="windows/material-editor.html">マテリアルの編集</a></td></tr>
+      <tr><td>トゥーンのキャラクターで、光が当たっても影にしておく場所を決めたい</td><td><a href="editor/vertex-paint.html">頂点カラーペイント</a>、<a href="windows/material-editor.html">マテリアルの編集（GGST Toon）</a></td></tr>
+      <tr><td>Bloom やビネットなど、画面全体の光り方や明るさを変えたい</td><td><a href="editor/game-scene-settings.html#post-process">ゲームシーンの設定：ポスト処理</a></td></tr>
+      <tr><td>ゲームが重い原因を調べたい</td><td><a href="windows/profiler.html">Profiler と DX12 Debug</a></td></tr>
+      <tr><td>テクスチャを流す、ふちを光らせるなど、独自の見た目を作りたい</td><td><a href="windows/shader-composer.html">Shader Composer</a></td></tr>
+      <tr><td>作ったゲームを、ほかの人に遊んでもらいたい</td><td><a href="windows/export-game.html">ゲームを書き出す</a></td></tr>
+      <tr><td>スクリプトが動かない、エラーが出る</td><td><a href="csharp/build.html">ビルドと、動かないとき</a>、<a href="editor/console.html">コンソール</a></td></tr>
+    </table>
+    </div>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="assets/toc.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>
