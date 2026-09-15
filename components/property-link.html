@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Property Link - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Motion</div>
+    <h1>Property Link</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>あるコンポーネントの数値を読み取り、範囲を変換して、別のコンポーネントの数値に書き込むコンポーネントです。プログラムを書かずに「読み込みの進み具合をゲージの長さにする」「スライダーの値をライトの明るさにする」といったつなぎ方ができます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>プログラムを書かずに、ある数値を別の数値につなぎたいとき（読み込みの進み具合をゲージの長さにする、など）</li>
+      <li>範囲の違う値を変換してつなぎたいとき（0〜1 の値を 0〜360 度の回転にする、など）</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Motion &gt; Property Link</td></tr>
+      <tr><td>必須・推奨</td><td>なし</td></tr>
+      <tr><td>働く場面</td><td>ゲームの実行中、毎フレーム。モーションの反映が終わった後に書き込みます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>接続元 Component</td><td><code>source_object</code></td><td>コンポーネントの参照</td><td>（未設定）</td><td></td><td>値を読み取るコンポーネント</td></tr>
+      <tr><td>接続元プロパティ</td><td><code>source_property</code></td><td>文字</td><td>（空）</td><td></td><td>読み取るプロパティの<b>内部名</b></td></tr>
+      <tr><td>接続先 Component</td><td><code>target_object</code></td><td>コンポーネントの参照</td><td>（未設定）</td><td></td><td>値を書き込むコンポーネント</td></tr>
+      <tr><td>接続先プロパティ</td><td><code>target_property</code></td><td>文字</td><td>（空）</td><td></td><td>書き込むプロパティの<b>内部名</b></td></tr>
+      <tr><td>元の最小値</td><td><code>source_min</code></td><td>小数</td><td>0</td><td></td><td>読み取る値の範囲の下限</td></tr>
+      <tr><td>元の最大値</td><td><code>source_max</code></td><td>小数</td><td>1</td><td></td><td>読み取る値の範囲の上限</td></tr>
+      <tr><td>先の最小値</td><td><code>target_min</code></td><td>小数</td><td>0</td><td></td><td>書き込む値の範囲の下限</td></tr>
+      <tr><td>先の最大値</td><td><code>target_max</code></td><td>小数</td><td>1</td><td></td><td>書き込む値の範囲の上限</td></tr>
+      <tr><td>反転</td><td><code>invert</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、元の値が大きいほど先の値が小さくなります</td></tr>
+      <tr><td>範囲内に制限</td><td><code>clamp</code></td><td>オン・オフ</td><td>オン</td><td></td><td>元の値が範囲の外にあっても、先の値を先の範囲の中に収めます</td></tr>
+      <tr><td>イージング</td><td><code>easing</code></td><td>選択</td><td>Linear</td><td></td><td>変換のカーブ。Linear（まっすぐ）、Step、EaseInQuad、EaseOutQuad、EaseInOutQuad、EaseInCubic、EaseOutCubic、EaseInOutCubic、EaseInBack、EaseOutBack、EaseInOutBack、EaseInElastic、EaseOutElastic、EaseInOutElastic、CustomBezier</td></tr>
+      <tr><td>平滑化</td><td><code>smoothing</code></td><td>小数</td><td>0</td><td>0〜60</td><td>0 なら毎フレームそのまま書き込みます。大きいほど、変わった値にゆっくり追いつきます</td></tr>
+    </table>
+    </div>
+    <div class="note"><strong>プロパティ名は内部名で書きます</strong><b>接続元プロパティ</b> と <b>接続先プロパティ</b> には、インスペクターに出る表示名（「強さ」など）ではなく、内部名（<code>intensity</code> など）を書きます。内部名は、このドキュメントの各コンポーネントのページのプロパティ表に載っています。</div>
+
+    <h2 id="how">値の変換のしかた</h2>
+    <ol>
+      <li>接続元の値を、<b>元の最小値</b> を 0、<b>元の最大値</b> を 1 とした割合に直します。</li>
+      <li><b>範囲内に制限</b> がオンなら、割合を 0〜1 に収めます。</li>
+      <li><b>反転</b> がオンなら、割合を「1 − 割合」にします。</li>
+      <li><b>イージング</b> のカーブを割合にかけます。</li>
+      <li>割合を、<b>先の最小値</b> 〜 <b>先の最大値</b> の値に直します。</li>
+      <li><b>平滑化</b> が 0 より大きければ、前の値から少しずつ近づけます。</li>
+      <li>接続先のプロパティに書き込みます。接続先が整数などのときは、その種類に変換してから書き込みます。</li>
+    </ol>
+    <p>元の最小値と最大値が同じだと、割合は 0 として扱われます。</p>
+
+    <h2 id="skip">つながらないとき</h2>
+    <p>次の場合、その Property Link は何もしません。</p>
+    <ul>
+      <li>接続元または接続先のコンポーネントが未設定、または見つからない。</li>
+      <li>プロパティの内部名が見つからない。</li>
+      <li>プロパティが数値でない（数値として扱われるのは、整数・小数・選択肢・レイヤーなど）。</li>
+      <li>接続先のプロパティが読み取り専用。</li>
+      <li>読み取った値や変換した値が数として正しくない。</li>
+      <li><b>つながりが輪になっている</b>：A → B、B → A のように、書き込み先から元へ戻ってくるつながりがあると、その Property Link は止まり、デバッグ出力に「PropertyLinkComponent: cyclic link disabled.」と出ます。設定を変えると、次のフレームでもう一度確かめます。</li>
+    </ul>
+
+    <h2 id="usage">使い方</h2>
+    <h3>読み込みの進み具合をゲージにする</h3>
+    <ol class="steps">
+      <li>読み込み画面のシーンに <a href="scene-loader.html">Scene Loader</a> を付けた GameObject を置きます。</li>
+      <li>ゲージにする UI の Image を用意します。</li>
+      <li>空の GameObject に <b>コンポーネントを追加 &gt; Motion &gt; Property Link</b> を付けます。</li>
+      <li><b>接続元 Component</b> に Scene Loader、<b>接続元プロパティ</b> に <code>progress</code> を入れます。</li>
+      <li><b>接続先 Component</b> に Image、<b>接続先プロパティ</b> に Image の表示割合の内部名 <code>fill_amount</code> を入れます。</li>
+      <li>元・先の範囲はどちらも 0〜1 のままにします。読み込みが進むとゲージが伸びます。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="scene-loader.html">Scene Loader</a></li>
+      <li><a href="index.html">コンポーネント一覧</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>プロジェクト設定 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / 起動オプションと設定</div>
+    <h1>プロジェクト設定</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>ゲームを起動したときに最初に開くシーン、起動ロゴ、ロード画面、使う Scene Flow や入力の設定など、シーンではなくプロジェクト全体で 1 つだけ決める設定です。内容は <code>resources/Project.replayproject</code> に保存され、チームで共有します。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>ゲームを起動したとき（書き出したゲームや <code>--game</code>）に、最初に開くシーンを決めたいとき（Startup Scene）</li>
+      <li>起動ロゴやロード画面を、自分で作ったシーンにしたいとき（Boot Logo Scene、Loading Screen Scene）</li>
+      <li>シーンの移り方を決めた Scene Flow を、ゲームで使うように設定したいとき（Active Scene Flow）</li>
+      <li>日本語・英語などの文字の表と、最初の言語を決めたいとき（Localization）</li>
+      <li>キーボードやゲームパッドでフォーカスした UI の輪郭線の色や太さを、プロジェクト全体でそろえたいとき（UI Focus Outline）</li>
+      <li>新しく作るシーンに、いつも同じ操作キャラクターを置きたいとき（Default Controlled Character Prefab）</li>
+    </ul>
+
+    <h2 id="open">開き方</h2>
+    <ol>
+      <li>階層パネルの ゲームシーン にある <b>ワールド</b> を選びます（シーンビューの何もない場所をクリックしても同じです）。</li>
+      <li>インスペクターの「ワールド」の中にある <b>プロジェクト設定</b> の見出しを開きます。</li>
+    </ol>
+    <p>ゲームを実行している間は「Play 中はプロジェクト設定を編集できません」と表示され、変えられません。</p>
+
+    <h2 id="save">保存と元に戻す</h2>
+    <ul>
+      <li>どの項目も、変えるとすぐに <code>resources/Project.replayproject</code> へ保存されます。保存ボタンはありません。見出しの中のいちばん下に「プロジェクト設定を保存しました」、失敗したときは理由が表示されます。</li>
+      <li>変更を取り消すには、ワールドを選んだまま <b>Edit</b> &gt; <b>Undo</b> を選びます。Ctrl+Z キーでは、シーンの編集の取り消しになります。</li>
+    </ul>
+    <p>アセットを選ぶ欄は、アセットの GUID で覚えます。シーンや Prefab の名前や場所を変えても、設定は外れません。選んだアセットが見つからないときは、欄が赤く「[ Missing Scene ]」などになり、設定は残ります。同じ GUID のアセットが戻ると元どおりに使われます。各項目の <b>詳細</b> を開くと、覚えている AssetGUID が表示されます。</p>
+
+    <h2 id="items">項目</h2>
+
+    <h3 id="default-character">Default Controlled Character Prefab</h3>
+    <p>新しいシーンを「Default」で作ったときに 1 体だけ置き、操作対象にする Prefab です。選択欄には <code>.replayprefab</code> だけが並びます。</p>
+    <ul>
+      <li>未設定のときは「未設定でも問題ありません（Default Scene が空になるだけです）」と表示されます。</li>
+      <li>直前に Prefab を保存したときは <b>直前に保存した Prefab を既定にする</b> ボタンが出て、その Prefab をすぐに設定できます。</li>
+      <li>使われるのは、プロジェクト パネルの「GameObject シーン」にある <b>新しいシーンを作成...</b> の <b>Default で作成</b> などです。Prefab が未設定か見つからないときは、空のシーンとして作られます。</li>
+    </ul>
+
+    <h3 id="startup-scene">Startup Scene</h3>
+    <p>ゲームとして起動したときに最初に読み込むシーンです。<code>.replayscene</code> だけが並びます。</p>
+    <ul>
+      <li>エディターが前回開いていたシーンとは別の設定です。だれかが別のシーンを開いて作業しても、起動するシーンは変わりません。</li>
+      <li><code>--game</code> で起動したときや、書き出したゲームの <code>.replaygame</code> に STARTUP_SCENE が書かれていないときに使われます（<a href="command-line.html">起動オプション</a>）。</li>
+      <li>未設定のときは「未設定のまま起動すると、Runtime は開始せず診断状態で停止します」と表示されます。</li>
+      <li>設定しているときは <b>Startup Scene を解除</b> ボタンで外せます。</li>
+    </ul>
+
+    <h3 id="boot-logo">Boot Logo Scene（起動ロゴ）</h3>
+    <p>起動したときに最初に見せるロゴのシーンです。未設定のときは「未指定なら従来の C++ ロゴを使用します」と表示され、エンジンに入っているロゴが出ます。</p>
+    <ul>
+      <li>ロゴを表示する長さは、そのシーンにある Motion Player と Composition Player のモーションの長さから決まります。いちばん長く再生されるもの（「開始を遅らせる秒数 ＋ モーションの長さ ÷ 再生速度」）に合わせます。どちらも無いときは、決まった長さで表示します。</li>
+      <li>シーンを読み込めなかったときや、アセットが見つからないときは、コンソールに警告を出して既定のロゴを使います。</li>
+    </ul>
+
+    <h3 id="loading-scene">Loading Screen Scene（ロード画面）</h3>
+    <p>シーンを読み込んでいる間に表示するシーンです。未設定のときは「未指定なら従来の LoadingScene を使用します」と表示され、エンジンに入っているロード画面を使います。進み具合を表示するには <a href="../components/scene-loader.html">Scene Loader</a> を置きます。</p>
+
+    <h3 id="scene-flow">Active Scene Flow</h3>
+    <p>ゲームで使う <a href="../windows/scene-flow.html">Scene Flow</a> です。未設定のときは「未設定なら TriggerSceneFlow は遷移せず、既存 LoadScene はそのまま使えます」と表示されます。<b>Scene Flow を開く</b> で編集ウィンドウを開き、<b>解除</b> で外します。Scene Flow ウィンドウの <b>Set Active</b> でも同じ設定になります。</p>
+
+    <h3 id="input">Input Action Asset</h3>
+    <p>キーやゲームパッドの割り当て（アクションと軸）を書いたアセットです。プロジェクト パネルの <b>Create</b> &gt; <b>Data</b> &gt; <b>Input Action Asset</b> で作ります。</p>
+    <ul>
+      <li>未設定（「（ハードコード既定値）」）のときは、エンジンに入っている既定の割り当てを使います。</li>
+      <li>選んだアセットが見つからない・読めないときも、既定の割り当てに戻ります（「Input Asset が見つからないため、現在のハードコード既定値へフォールバックします。」）。</li>
+    </ul>
+
+    <h3 id="localization">Localization と 既定言語</h3>
+    <p>文字の表（Localization Table）と、最初に使う言語の名前です。<b>既定言語</b> を空にすると ja になります。Text の Localization Key の使い方は <a href="../components/ui-text.html#localization">ローカライズ</a> を見てください。</p>
+
+    <h3 id="focus-outline">UI Focus Outline</h3>
+    <p>キーボードやゲームパッドでフォーカスしている UI 部品に描く輪郭線の、プロジェクト共通の設定です。部品ごとに変えるときは Selectable の <b>Focus Style 上書き</b> を使います（<a href="../components/ui-controls.html#focus-outline">フォーカスの輪郭線</a>）。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>既定</th><th>働き</th></tr>
+      <tr><td><b>輪郭線を表示</b></td><td>オン</td><td>輪郭線を描くか</td></tr>
+      <tr><td><b>輪郭線色</b></td><td>0.25, 0.78, 1, 1（水色）</td><td>線の色</td></tr>
+      <tr><td><b>輪郭線幅</b></td><td>2</td><td>0〜32。画面のピクセル単位</td></tr>
+      <tr><td><b>角丸</b></td><td>4</td><td>0〜64。このビルドの描画では使われません（常に角のある四角です）</td></tr>
+    </table>
+    </div>
+    <p>同じ値は、<b>UI</b> &gt; <b>フォーカス表示管理...</b>（または <b>Window</b> &gt; <b>UI フォーカス表示...</b>）で開く <b>UI フォーカス表示</b> ウィンドウでも変えられます。そちらでは欄の名前が <b>輪郭線を表示</b>、<b>輪郭線の色</b>、<b>輪郭線の太さ</b>、<b>角の丸み</b> になっています。ワールドを選ばなくても開けるので、UI を作りながら調整するときに便利です。</p>
+
+    <h3 id="runtime-diagnostics">Runtime 診断</h3>
+    <p>プロジェクト設定の下に、ゲームの実行の状態を表示する <b>Runtime 診断</b> の見出しがあります（表示のみ）。GameObject の数、今のシーンと読み込み待ちのシーンの GUID、Scene Flow の状態、Startup Scene、実行が止まっているかと、その理由（停止理由）などが並びます。ゲームが始まらないときに、Startup Scene が見つかっているかを確かめるのに使います。</p>
+
+    <h2 id="icons">種類別アイコン</h2>
+    <p>階層パネルなどに出す、GameObject やコンポーネントの種類ごとのアイコンの設定です。<b>Window</b> &gt; <b>UI の見た目</b> &gt; <b>種類別アイコン...</b> で開くウィンドウで設定し、プロジェクト設定に保存されます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>働き</th></tr>
+      <tr><td>アイコン用アトラス、<b>アトラスを追加</b>、<b>外す</b></td><td>アイコンの絵を入れた <a href="../windows/sprite-atlas.html">Sprite Atlas</a> を 4 枚まで並べます。同じ名前の Region があるときは、上にあるものが優先されます</td></tr>
+      <tr><td><b>アイコンを再読込</b></td><td>アトラスを読み直します</td></tr>
+      <tr><td><b>名前が同じ領域を自動で使う</b></td><td>既定はオフ。オンなら、種類の名前と同じ名前の Region を自動でアイコンにします。オフなら、下で選んだアイコンだけが出ます</td></tr>
+      <tr><td>オブジェクト種別 / カテゴリ / 型名 の行</td><td>行の四角いボタンで、アトラスの絵から選びます（<b>名前で自動一致へ戻す</b>、<b>出さない</b> も選べます）。色の欄はアイコンに掛ける色で、<b>既定へ戻す</b> で戻します。色は 型名 → カテゴリ → 見た目のカテゴリ色 の順に決まり、オブジェクト種別の既定は白です</td></tr>
+    </table>
+    </div>
+    <p>アトラスが読めないときは、赤い文字で理由が表示されます。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>ゲームで最初に開くシーンを決める</h3>
+    <ol>
+      <li>タイトル画面のシーンを保存しておきます。</li>
+      <li>階層パネルの <b>ワールド</b> を選び、インスペクターの <b>プロジェクト設定</b> を開きます。</li>
+      <li><b>Startup Scene</b> の欄で、タイトル画面のシーンを選びます。「Path: …」にそのシーンの場所が出ます。</li>
+      <li><code>--game</code> を付けて起動し、そのシーンから始まることを確かめます（<a href="command-line.html">起動オプション</a>）。</li>
+    </ol>
+    <h3>起動ロゴを自分で作ったシーンにする</h3>
+    <ol>
+      <li>ロゴの画像を置いたシーンを作り、ロゴに <a href="../windows/motion-workspace.html#howto">フェードインのモーション</a> を付けた Motion Player を付けます。</li>
+      <li>シーンを保存します。</li>
+      <li>プロジェクト設定の <b>Boot Logo Scene</b> で、そのシーンを選びます。</li>
+      <li><code>--game</code> で起動して確かめます。ロゴは、モーションの長さの分だけ表示されます。</li>
+    </ol>
+    <h3>新しいシーンに、いつも操作キャラクターを置く</h3>
+    <ol>
+      <li>操作キャラクターの GameObject を選び、階層パネルの右クリック &gt; <b>プレハブにする</b> で Prefab を保存します。</li>
+      <li>ワールドを選び、プロジェクト設定の <b>直前に保存した Prefab を既定にする</b> を押します。</li>
+      <li>プロジェクト パネルの <b>新しいシーンを作成...</b> で名前を入れ、<b>Default で作成</b> を押します。キャラクターが 1 体置かれ、操作対象になります。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="command-line.html">起動オプション</a></li>
+      <li><a href="../windows/scene-flow.html">Scene Flow</a></li>
+      <li><a href="../data/index.html">データ形式の一覧</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

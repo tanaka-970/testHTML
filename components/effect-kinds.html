@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>エフェクトの種類 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+    <h1>エフェクトの種類</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p><a href="effect-stacks.html">Effect Stack</a>（Screen Effect Stack、Model Effect Stack、UI の Effect Stack）と Effect Preset で使えるエフェクト 86 種類の一覧です。各エフェクトの <b>種類</b> を選ぶと、その種類で使う項目だけがインスペクターに表示されます。</p>
+    <p>どの種類にも、共通の項目として <b>有効</b>、<b>範囲へ適用</b>、<b>種類</b>、<b>カスタムシェーダー</b> があります（<a href="effect-stacks.html#effect-items">Effect Stack の共通項目</a>）。</p>
+    <p>表の「内部名」の <code>番号</code> は、上から何番目のエフェクトかを 0 から数えた数です。Motion や Property Link で値を動かすときに使います。</p>
+    <p>ここにある範囲はインスペクターで入力できる範囲です。説明は、インスペクターでマウスを乗せたときに出る説明と同じです。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>使いたい見た目の効果（ぼかし、ワイプ、グリッチなど）が、どの種類の名前か探したいとき</li>
+      <li>エフェクトの項目を、モーションや Property Link で動かすための内部名を知りたいとき</li>
+      <li>値を動かさなくても、時間で自動的に変化するエフェクトを探したいとき（一覧の「時間」の列）</li>
+    </ul>
+
+    <h2 id="index">一覧</h2>
+    <p>「時間」に ○ があるものは、値を動かさなくても時間で自動的に変化します。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>番号</th><th>名前</th><th>内部の種類名</th><th>時間</th><th>項目数</th></tr>
+<tr><td>0</td><td><a href="#kind-blur">ぼかし</a></td><td><code>Blur</code></td><td></td><td>2</td></tr>
+<tr><td>1</td><td><a href="#kind-glow">発光</a></td><td><code>Glow</code></td><td></td><td>4</td></tr>
+<tr><td>2</td><td><a href="#kind-coloradjust">色調補正</a></td><td><code>ColorAdjust</code></td><td></td><td>5</td></tr>
+<tr><td>3</td><td><a href="#kind-noise">ノイズ</a></td><td><code>Noise</code></td><td>○</td><td>8</td></tr>
+<tr><td>4</td><td><a href="#kind-shake">揺れ</a></td><td><code>Shake</code></td><td>○</td><td>4</td></tr>
+<tr><td>5</td><td><a href="#kind-mask">マスク</a></td><td><code>Mask</code></td><td></td><td>7</td></tr>
+<tr><td>6</td><td><a href="#kind-wipe">ワイプ</a></td><td><code>Wipe</code></td><td></td><td>3</td></tr>
+<tr><td>7</td><td><a href="#kind-dissolve">ディゾルブ</a></td><td><code>Dissolve</code></td><td></td><td>7</td></tr>
+<tr><td>8</td><td><a href="#kind-distortion">歪み</a></td><td><code>Distortion</code></td><td>○</td><td>5</td></tr>
+<tr><td>9</td><td><a href="#kind-chromaticaberration">色収差</a></td><td><code>ChromaticAberration</code></td><td></td><td>2</td></tr>
+<tr><td>10</td><td><a href="#kind-kuwahara">クワハラ</a></td><td><code>Kuwahara</code></td><td></td><td>3</td></tr>
+<tr><td>11</td><td><a href="#kind-halftone">網点</a></td><td><code>Halftone</code></td><td></td><td>5</td></tr>
+<tr><td>12</td><td><a href="#kind-directionalblur">方向ブラー</a></td><td><code>DirectionalBlur</code></td><td></td><td>3</td></tr>
+<tr><td>13</td><td><a href="#kind-radialblur">放射ブラー</a></td><td><code>RadialBlur</code></td><td></td><td>3</td></tr>
+<tr><td>14</td><td><a href="#kind-rotationalblur">回転ブラー</a></td><td><code>RotationalBlur</code></td><td></td><td>3</td></tr>
+<tr><td>15</td><td><a href="#kind-vignette">ビネット</a></td><td><code>Vignette</code></td><td></td><td>4</td></tr>
+<tr><td>16</td><td><a href="#kind-lightstreaks">光条</a></td><td><code>LightStreaks</code></td><td></td><td>6</td></tr>
+<tr><td>17</td><td><a href="#kind-lensdistortion">レンズ歪み</a></td><td><code>LensDistortion</code></td><td></td><td>3</td></tr>
+<tr><td>18</td><td><a href="#kind-posterize">ポスタライズ</a></td><td><code>Posterize</code></td><td></td><td>2</td></tr>
+<tr><td>19</td><td><a href="#kind-threshold">二値化</a></td><td><code>Threshold</code></td><td></td><td>4</td></tr>
+<tr><td>20</td><td><a href="#kind-colorramp">カラーランプ</a></td><td><code>ColorRamp</code></td><td></td><td>8</td></tr>
+<tr><td>21</td><td><a href="#kind-levels">レベル補正</a></td><td><code>Levels</code></td><td></td><td>5</td></tr>
+<tr><td>22</td><td><a href="#kind-temperature">色温度</a></td><td><code>Temperature</code></td><td></td><td>3</td></tr>
+<tr><td>23</td><td><a href="#kind-edgedetect">エッジ検出</a></td><td><code>EdgeDetect</code></td><td></td><td>3</td></tr>
+<tr><td>24</td><td><a href="#kind-outline">輪郭線</a></td><td><code>Outline</code></td><td></td><td>3</td></tr>
+<tr><td>25</td><td><a href="#kind-longshadow">ロングシャドウ</a></td><td><code>LongShadow</code></td><td></td><td>4</td></tr>
+<tr><td>26</td><td><a href="#kind-crosshatch">クロスハッチング</a></td><td><code>CrossHatch</code></td><td></td><td>6</td></tr>
+<tr><td>27</td><td><a href="#kind-brushstroke">ブラシストローク</a></td><td><code>BrushStroke</code></td><td></td><td>14</td></tr>
+<tr><td>28</td><td><a href="#kind-mosaic">モザイク</a></td><td><code>Mosaic</code></td><td></td><td>2</td></tr>
+<tr><td>29</td><td><a href="#kind-crystallize">結晶化</a></td><td><code>Crystallize</code></td><td></td><td>8</td></tr>
+<tr><td>30</td><td><a href="#kind-stainedglass">ステンドグラス</a></td><td><code>StainedGlass</code></td><td></td><td>6</td></tr>
+<tr><td>31</td><td><a href="#kind-twirl">渦巻き</a></td><td><code>Twirl</code></td><td></td><td>4</td></tr>
+<tr><td>32</td><td><a href="#kind-spherize">球面化</a></td><td><code>Spherize</code></td><td></td><td>4</td></tr>
+<tr><td>33</td><td><a href="#kind-ripple">波紋</a></td><td><code>Ripple</code></td><td>○</td><td>6</td></tr>
+<tr><td>34</td><td><a href="#kind-polarcoordinates">極座標</a></td><td><code>PolarCoordinates</code></td><td></td><td>3</td></tr>
+<tr><td>35</td><td><a href="#kind-scanlines">走査線</a></td><td><code>Scanlines</code></td><td>○</td><td>5</td></tr>
+<tr><td>36</td><td><a href="#kind-crt">CRT</a></td><td><code>CRT</code></td><td>○</td><td>5</td></tr>
+<tr><td>37</td><td><a href="#kind-glitch">グリッチ</a></td><td><code>Glitch</code></td><td>○</td><td>6</td></tr>
+<tr><td>38</td><td><a href="#kind-dither">ディザ</a></td><td><code>Dither</code></td><td></td><td>3</td></tr>
+<tr><td>39</td><td><a href="#kind-vhs">VHS</a></td><td><code>VHS</code></td><td>○</td><td>6</td></tr>
+<tr><td>40</td><td><a href="#kind-letterbox">レターボックス</a></td><td><code>Letterbox</code></td><td></td><td>4</td></tr>
+<tr><td>41</td><td><a href="#kind-waveform">波形</a></td><td><code>Waveform</code></td><td>○</td><td>11</td></tr>
+<tr><td>42</td><td><a href="#kind-displacementmap">ディスプレイスメントマップ</a></td><td><code>DisplacementMap</code></td><td></td><td>4</td></tr>
+<tr><td>43</td><td><a href="#kind-turbulentdisplace">タービュレント変形</a></td><td><code>TurbulentDisplace</code></td><td>○</td><td>5</td></tr>
+<tr><td>44</td><td><a href="#kind-fractalnoise">フラクタルノイズ</a></td><td><code>FractalNoise</code></td><td>○</td><td>7</td></tr>
+<tr><td>45</td><td><a href="#kind-motionblur">モーションブラー</a></td><td><code>MotionBlur</code></td><td>○</td><td>3</td></tr>
+<tr><td>46</td><td><a href="#kind-echo">エコー / 残像</a></td><td><code>Echo</code></td><td>○</td><td>4</td></tr>
+<tr><td>47</td><td><a href="#kind-dropshadow">ドロップシャドウ</a></td><td><code>DropShadow</code></td><td></td><td>5</td></tr>
+<tr><td>48</td><td><a href="#kind-innershadow">インナーシャドウ</a></td><td><code>InnerShadow</code></td><td></td><td>5</td></tr>
+<tr><td>49</td><td><a href="#kind-lut">LUT</a></td><td><code>LUT</code></td><td></td><td>3</td></tr>
+<tr><td>50</td><td><a href="#kind-tonecurve">トーンカーブ</a></td><td><code>ToneCurve</code></td><td></td><td>4</td></tr>
+<tr><td>51</td><td><a href="#kind-mattecomposite">Matte Composite</a></td><td><code>MatteComposite</code></td><td></td><td>2</td></tr>
+<tr><td>52</td><td><a href="#kind-mattemorphology">マット形態学</a></td><td><code>MatteMorphology</code></td><td></td><td>3</td></tr>
+<tr><td>53</td><td><a href="#kind-bevelemboss">ベベル / エンボス</a></td><td><code>BevelEmboss</code></td><td></td><td>6</td></tr>
+<tr><td>54</td><td><a href="#kind-kaleidoscope">万華鏡 / ミラータイル</a></td><td><code>Kaleidoscope</code></td><td></td><td>6</td></tr>
+<tr><td>55</td><td><a href="#kind-pagecurl">ページカール / フォールド</a></td><td><code>PageCurl</code></td><td></td><td>9</td></tr>
+<tr><td>56</td><td><a href="#kind-asciiledmatrix">ASCII / LED マトリクス</a></td><td><code>AsciiLedMatrix</code></td><td></td><td>7</td></tr>
+<tr><td>57</td><td><a href="#kind-feedbackzoom">フィードバックズーム</a></td><td><code>FeedbackZoom</code></td><td>○</td><td>6</td></tr>
+<tr><td>58</td><td><a href="#kind-liquidglass">Liquid Glass</a></td><td><code>LiquidGlass</code></td><td></td><td>8</td></tr>
+<tr><td>59</td><td><a href="#kind-lightsweep">ライトスイープ</a></td><td><code>LightSweep</code></td><td>○</td><td>10</td></tr>
+<tr><td>60</td><td><a href="#kind-shockwave">ショックウェーブ</a></td><td><code>Shockwave</code></td><td>○</td><td>9</td></tr>
+<tr><td>61</td><td><a href="#kind-pixelsort">ピクセルソート</a></td><td><code>PixelSort</code></td><td>○</td><td>9</td></tr>
+<tr><td>62</td><td><a href="#kind-hologram">ホログラム</a></td><td><code>Hologram</code></td><td>○</td><td>7</td></tr>
+<tr><td>63</td><td><a href="#kind-iridescentfoil">イリデッセントフォイル</a></td><td><code>IridescentFoil</code></td><td>○</td><td>9</td></tr>
+<tr><td>64</td><td><a href="#kind-radarsweep">レーダースイープ</a></td><td><code>RadarSweep</code></td><td>○</td><td>7</td></tr>
+<tr><td>65</td><td><a href="#kind-energypulse">エネルギーパルス</a></td><td><code>EnergyPulse</code></td><td>○</td><td>8</td></tr>
+<tr><td>66</td><td><a href="#kind-circuitflow">サーキットフロー</a></td><td><code>CircuitFlow</code></td><td>○</td><td>6</td></tr>
+<tr><td>67</td><td><a href="#kind-heathaze">ヒートヘイズ</a></td><td><code>HeatHaze</code></td><td>○</td><td>6</td></tr>
+<tr><td>68</td><td><a href="#kind-watercaustics">ウォーターコースティクス</a></td><td><code>WaterCaustics</code></td><td>○</td><td>6</td></tr>
+<tr><td>69</td><td><a href="#kind-voronoishatter">ボロノイシャッター</a></td><td><code>VoronoiShatter</code></td><td>○</td><td>7</td></tr>
+<tr><td>70</td><td><a href="#kind-inkbleed">インクブリード</a></td><td><code>InkBleed</code></td><td>○</td><td>8</td></tr>
+<tr><td>71</td><td><a href="#kind-burnreveal">バーンリビール</a></td><td><code>BurnReveal</code></td><td>○</td><td>9</td></tr>
+<tr><td>72</td><td><a href="#kind-portalvortex">ポータルヴォルテックス</a></td><td><code>PortalVortex</code></td><td>○</td><td>9</td></tr>
+<tr><td>73</td><td><a href="#kind-frostcrack">フロストクラック</a></td><td><code>FrostCrack</code></td><td>○</td><td>9</td></tr>
+<tr><td>74</td><td><a href="#kind-bubble">泡マスク</a></td><td><code>Bubble</code></td><td></td><td>4</td></tr>
+<tr><td>75</td><td><a href="#kind-speedlines">集中線</a></td><td><code>SpeedLines</code></td><td>○</td><td>11</td></tr>
+<tr><td>76</td><td><a href="#kind-clockwipe">時計ワイプ</a></td><td><code>ClockWipe</code></td><td></td><td>7</td></tr>
+<tr><td>77</td><td><a href="#kind-shapewipe">形状ワイプ</a></td><td><code>ShapeWipe</code></td><td></td><td>9</td></tr>
+<tr><td>78</td><td><a href="#kind-blinds">ブラインド</a></td><td><code>Blinds</code></td><td></td><td>6</td></tr>
+<tr><td>79</td><td><a href="#kind-checkerboard">市松</a></td><td><code>Checkerboard</code></td><td></td><td>8</td></tr>
+<tr><td>80</td><td><a href="#kind-petals">花びら / 雪</a></td><td><code>Petals</code></td><td>○</td><td>9</td></tr>
+<tr><td>81</td><td><a href="#kind-godrays">薄明光線</a></td><td><code>GodRays</code></td><td></td><td>6</td></tr>
+<tr><td>82</td><td><a href="#kind-lensflare">レンズフレア</a></td><td><code>LensFlare</code></td><td></td><td>7</td></tr>
+<tr><td>83</td><td><a href="#kind-bokeh">玉ボケ</a></td><td><code>Bokeh</code></td><td></td><td>4</td></tr>
+<tr><td>84</td><td><a href="#kind-tiltshift">チルトシフト</a></td><td><code>TiltShift</code></td><td></td><td>6</td></tr>
+<tr><td>85</td><td><a href="#kind-filmscratch">フィルムの傷</a></td><td><code>FilmScratch</code></td><td>○</td><td>8</td></tr>
+    </table>
+    </div>
+
+    <h2 id="details">種類ごとの項目</h2>
+<h3 id="kind-blur">ぼかし（Blur）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>ぼかし半径</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0〜512</td><td>ぼかしを広げる距離（ピクセル）。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像からぼかし画像へ混ぜる割合。</td></tr>
+</table></div>
+
+<h3 id="kind-glow">発光（Glow）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>光の半径</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0〜512</td><td>発光を広げる距離（ピクセル）。</td></tr>
+<tr><td>光の強さ</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜32</td><td>加算する発光の強さ。</td></tr>
+<tr><td>発光しきい値</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>この明るさ以上の部分から光を作る。0 なら色を問わず光る。</td></tr>
+<tr><td>光の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>発光へ掛ける色と不透明度。</td></tr>
+</table></div>
+
+<h3 id="kind-coloradjust">色調補正（ColorAdjust）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>彩度</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0〜8</td><td>1 が元の彩度、0 でグレースケール。</td></tr>
+<tr><td>コントラスト</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜8</td><td>1 が元のコントラスト。</td></tr>
+<tr><td>明るさ</td><td><code>effects[番号].amount</code></td><td>小数</td><td>-1〜1</td><td>RGB へ加える量。0 が中立。</td></tr>
+<tr><td>色相</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>色相を回す角度（度）。</td></tr>
+<tr><td>色の乗算</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>色調整の最後に RGB へ掛ける色。</td></tr>
+</table></div>
+
+<h3 id="kind-noise">ノイズ（Noise）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>ノイズのテクスチャ</td><td><code>effects[番号].mask</code></td><td>アセット（画像）</td><td></td><td>設定した場合は手続き的な粒の代わりにこの模様を使う。</td></tr>
+<tr><td>テクスチャの大きさ</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜1024</td><td>ノイズテクスチャの繰り返し単位（ピクセル）。</td></tr>
+<tr><td>テクスチャの向き</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>ノイズテクスチャを回す角度（度）。</td></tr>
+<tr><td>ノイズ量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜2</td><td>加える粒状ノイズの強さ。</td></tr>
+<tr><td>粒の大きさ</td><td><code>effects[番号].amount</code></td><td>小数</td><td>1〜256</td><td>同じノイズ値を共有するセルの大きさ。</td></tr>
+<tr><td>流れる速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-32〜32</td><td>時間に対するノイズの変化速度。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+<tr><td>ノイズの色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>ノイズへ掛ける RGB。</td></tr>
+</table></div>
+
+<h3 id="kind-shake">揺れ（Shake）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>揺れ幅</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜512</td><td>位置をずらす最大距離（ピクセル）。</td></tr>
+<tr><td>強度</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜32</td><td>揺れ幅へ掛ける倍率。</td></tr>
+<tr><td>揺れる速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-32〜32</td><td>時間に対する揺れの速さ。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-mask">マスク（Mask）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>形状</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜1</td><td>0 で矩形、1 で円。途中の値は連続補間する。</td></tr>
+<tr><td>回転</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>マスク形状の回転角度（度）。</td></tr>
+<tr><td>境界の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>形状または画像の境界をぼかす量。</td></tr>
+<tr><td>中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td></td><td>正規化座標で指定するマスク中心。0.5, 0.5 が中央。</td></tr>
+<tr><td>横半径</td><td><code>effects[番号].seed</code></td><td>小数</td><td>0.0001〜1</td><td>矩形または円の横半径（正規化座標）。</td></tr>
+<tr><td>縦半径</td><td><code>effects[番号].speed</code></td><td>小数</td><td>0.0001〜1</td><td>矩形または円の縦半径（正規化座標）。</td></tr>
+<tr><td>マスク画像</td><td><code>effects[番号].mask</code></td><td>アセット（画像）</td><td></td><td>設定した場合は画像のアルファで切り抜く。</td></tr>
+</table></div>
+
+<h3 id="kind-wipe">ワイプ（Wipe）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>進行</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>0 から 1 でワイプを進める。</td></tr>
+<tr><td>方向</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>ワイプ境界の角度（度）。</td></tr>
+<tr><td>境界の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0.0001〜1</td><td>ワイプ境界をぼかす量。</td></tr>
+</table></div>
+
+<h3 id="kind-dissolve">ディゾルブ（Dissolve）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>溶けかたのテクスチャ</td><td><code>effects[番号].mask</code></td><td>アセット（画像）</td><td></td><td>設定した場合は明るい所から先に消える。</td></tr>
+<tr><td>テクスチャの大きさ</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜1024</td><td>溶けかたテクスチャの繰り返し単位（ピクセル）。</td></tr>
+<tr><td>テクスチャの向き</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>溶けかたテクスチャを回す角度（度）。</td></tr>
+<tr><td>進行</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>0 から 1 で消失を進める。</td></tr>
+<tr><td>縁の幅</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0.0001〜1</td><td>消え際に着色する帯の幅。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+<tr><td>縁の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>消え際の帯へ使う色。</td></tr>
+</table></div>
+
+<h3 id="kind-distortion">歪み（Distortion）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>波の周波数</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0.001〜128</td><td>画面内に作る波の細かさ。</td></tr>
+<tr><td>歪み幅</td><td><code>effects[番号].amount</code></td><td>小数</td><td>-512〜512</td><td>UV をずらす距離（ピクセル）。</td></tr>
+<tr><td>強度</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜32</td><td>歪み幅へ掛ける倍率。</td></tr>
+<tr><td>流れる速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-32〜32</td><td>波が時間方向へ進む速さ。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-chromaticaberration">色収差（ChromaticAberration）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>色ずれ距離</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜512</td><td>RGB チャンネルを離す距離（ピクセル）。</td></tr>
+<tr><td>強度</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜32</td><td>色ずれ距離へ掛ける倍率。</td></tr>
+</table></div>
+
+<h3 id="kind-kuwahara">クワハラ（Kuwahara）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>筆面の半径</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0〜128</td><td>8 セクタを調べる広がり（ピクセル）。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から平坦化画像へ混ぜる割合。</td></tr>
+<tr><td>面の硬さ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>0 でぼかし寄り、1 で分散の小さい面を強く選ぶ。</td></tr>
+</table></div>
+
+<h3 id="kind-halftone">網点（Halftone）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>網の間隔</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜256</td><td>網点セルの間隔（ピクセル）。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から網点画像へ混ぜる割合。</td></tr>
+<tr><td>網の角度</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>RGB 各版へ加える全体回転（度）。</td></tr>
+<tr><td>点の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>網点の縁をぼかす量。</td></tr>
+<tr><td>網点の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>白なら元の色相を保つ。</td></tr>
+</table></div>
+
+<h3 id="kind-directionalblur">方向ブラー（DirectionalBlur）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>流す角度</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>ぼかしを伸ばす方向（度）。</td></tr>
+<tr><td>距離</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜512</td><td>進行方向へ流す距離（ピクセル）。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から方向ブラーへ混ぜる割合。</td></tr>
+</table></div>
+
+<h3 id="kind-radialblur">放射ブラー（RadialBlur）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td></td><td>放射の中心。0.5, 0.5 が中央。</td></tr>
+<tr><td>強さ</td><td><code>effects[番号].amount</code></td><td>小数</td><td>-512〜512</td><td>中心から伸ばす最大距離（ピクセル）。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から放射ブラーへ混ぜる割合。</td></tr>
+</table></div>
+
+<h3 id="kind-rotationalblur">回転ブラー（RotationalBlur）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td></td><td>回転の中心。0.5, 0.5 が中央。</td></tr>
+<tr><td>回転量</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-180〜180</td><td>ブラーが覆う角度（度）。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から回転ブラーへ混ぜる割合。</td></tr>
+</table></div>
+
+<h3 id="kind-vignette">ビネット（Vignette）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>中心の半径</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0〜1.5</td><td>効果が始まる中心領域の半径。</td></tr>
+<tr><td>境界の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0.0001〜1</td><td>中心から周辺へ移る幅。</td></tr>
+<tr><td>強さ</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>周辺へ重ねる色の量。</td></tr>
+<tr><td>周辺の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>黒で周辺減光、明色で中心を強調できる。</td></tr>
+</table></div>
+
+<h3 id="kind-lightstreaks">光条（LightStreaks）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>光条の本数</td><td><code>effects[番号].amount</code></td><td>小数</td><td>1〜8</td><td>中心から伸ばす方向の数。最大 8 本。</td></tr>
+<tr><td>光条の長さ</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0〜512</td><td>明部を伸ばす距離（ピクセル）。</td></tr>
+<tr><td>基準角度</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>最初の光条の角度（度）。</td></tr>
+<tr><td>明部しきい値</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>光条の発生元にする明るさ。</td></tr>
+<tr><td>光の強さ</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜16</td><td>光条を加算する強さ。</td></tr>
+<tr><td>光条の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>光条へ掛ける色。</td></tr>
+</table></div>
+
+<h3 id="kind-lensdistortion">レンズ歪み（LensDistortion）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td></td><td>レンズ歪みの中心。0.5, 0.5 が中央。</td></tr>
+<tr><td>歪み量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>-2〜2</td><td>正で樽型、負で糸巻き型。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から歪み画像へ混ぜる割合。</td></tr>
+</table></div>
+
+<h3 id="kind-posterize">ポスタライズ（Posterize）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>階調数</td><td><code>effects[番号].amount</code></td><td>小数</td><td>2〜64</td><td>各 RGB チャンネルに残す段階数。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から減色画像へ混ぜる割合。</td></tr>
+</table></div>
+
+<h3 id="kind-threshold">二値化（Threshold）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>しきい値</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>白へ切り替える明るさ。</td></tr>
+<tr><td>境界の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>二値境界を連続的にする幅。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から二値画像へ混ぜる割合。</td></tr>
+<tr><td>白側の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>しきい値以上の領域に使う色。</td></tr>
+</table></div>
+
+<h3 id="kind-colorramp">カラーランプ（ColorRamp）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>色 1</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>明度 0 に割り当てる色。</td></tr>
+<tr><td>色 2</td><td><code>effects[番号].color_2</code></td><td>色</td><td></td><td>第 2 色。</td></tr>
+<tr><td>色 3</td><td><code>effects[番号].color_3</code></td><td>色</td><td></td><td>第 3 色。</td></tr>
+<tr><td>色 4</td><td><code>effects[番号].color_4</code></td><td>色</td><td></td><td>明度 1 側の第 4 色。</td></tr>
+<tr><td>色 2 の位置</td><td><code>effects[番号].color_stop_2</code></td><td>小数</td><td>0〜1</td><td>色 2 を置く明度位置。</td></tr>
+<tr><td>色 3 の位置</td><td><code>effects[番号].color_stop_3</code></td><td>小数</td><td>0〜1</td><td>色 3 を置く明度位置。</td></tr>
+<tr><td>色 4 の位置</td><td><code>effects[番号].color_stop_4</code></td><td>小数</td><td>0〜1</td><td>色 4 を置く明度位置。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像からカラーランプへ混ぜる割合。</td></tr>
+</table></div>
+
+<h3 id="kind-levels">レベル補正（Levels）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>入力の黒点</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>これ以下の入力を黒へ寄せる。</td></tr>
+<tr><td>入力の白点</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜1</td><td>これ以上の入力を白へ寄せる。</td></tr>
+<tr><td>ガンマ補正</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-4〜4</td><td>0 が中立。正で明るく、負で暗くする。</td></tr>
+<tr><td>出力の黒点 / 白点</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td></td><td>補正後の出力範囲。既定は 0, 1。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像からレベル補正へ混ぜる割合。</td></tr>
+</table></div>
+
+<h3 id="kind-temperature">色温度（Temperature）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>色温度</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-1〜1</td><td>負で寒色、正で暖色へ寄せる。</td></tr>
+<tr><td>ティント</td><td><code>effects[番号].progress</code></td><td>小数</td><td>-1〜1</td><td>負で緑、正でマゼンタへ寄せる。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から色温度補正へ混ぜる割合。</td></tr>
+</table></div>
+
+<h3 id="kind-edgedetect">エッジ検出（EdgeDetect）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>輪郭の太さ</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0.25〜16</td><td>Sobel のサンプル間隔（ピクセル）。</td></tr>
+<tr><td>輪郭の強さ</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜32</td><td>検出した勾配へ掛ける強さ。</td></tr>
+<tr><td>輪郭の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>検出した輪郭へ使う色。</td></tr>
+</table></div>
+
+<h3 id="kind-outline">輪郭線（Outline）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>線の太さ</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0〜64</td><td>元画像の外へ広げる距離（ピクセル）。</td></tr>
+<tr><td>線の濃さ</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜4</td><td>輪郭線の不透明度へ掛ける量。</td></tr>
+<tr><td>線の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>元画像へ重ねる輪郭線の色。</td></tr>
+</table></div>
+
+<h3 id="kind-longshadow">ロングシャドウ（LongShadow）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>影の角度</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>影を押し出す方向（度）。</td></tr>
+<tr><td>影の長さ</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜1024</td><td>影を伸ばす距離（ピクセル）。</td></tr>
+<tr><td>影の濃さ</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜4</td><td>影の不透明度へ掛ける量。</td></tr>
+<tr><td>影の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>押し出した影へ使う色。</td></tr>
+</table></div>
+
+<h3 id="kind-crosshatch">クロスハッチング（CrossHatch）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>線の間隔</td><td><code>effects[番号].radius</code></td><td>小数</td><td>2〜128</td><td>ハッチ線どうしの間隔（ピクセル）。</td></tr>
+<tr><td>線の角度</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>基準となる斜線の角度（度）。</td></tr>
+<tr><td>濃度の段数</td><td><code>effects[番号].amount</code></td><td>小数</td><td>1〜4</td><td>明度に応じて重ねる斜線方向の数。</td></tr>
+<tr><td>線の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>線の縁をぼかす量。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から線画へ混ぜる割合。</td></tr>
+<tr><td>線の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>ハッチ線へ使う色。</td></tr>
+</table></div>
+
+<h3 id="kind-brushstroke">ブラシストローク（BrushStroke）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>筆跡のテクスチャ</td><td><code>effects[番号].mask</code></td><td>アセット（画像）</td><td></td><td>通常の筆跡画像、または 4 x 4 の筆跡アトラスを指定する。</td></tr>
+<tr><td>筆跡アトラスを使う</td><td><code>effects[番号].brush_atlas_enabled</code></td><td>オン・オフ</td><td></td><td></td></tr>
+<tr><td>独立ストローク描画（試験）</td><td><code>effects[番号].brush_instanced_renderer_enabled</code></td><td>オン・オフ</td><td></td><td></td></tr>
+<tr><td>アトラスの選び方</td><td><code>effects[番号].brush_pattern_mode</code></td><td>選択</td><td></td><td>単体は指定番号だけ、重み付きランダムはスタンプごとに比率で選ぶ。 選択肢：単体、重み付きランダム</td></tr>
+<tr><td>単体の筆跡</td><td><code>effects[番号].brush_pattern_index</code></td><td>選択</td><td></td><td>単体モードで使うアトラス内の筆跡。重みがすべて0の時の予備選択でもある。 選択肢：ドライ平刷毛（右細り）、細い横筋、熊手ブラシ（右細り）、乾いた角平刷毛、曲線スウィッシュ、絵の具多めの平刷毛、粒状スカンブル、滑らかな楕円筆、乾いた散点ブラシ、細いドライドラッグ、絵の具多めの熊手筆、短い乾いた払い、粗い散布ブラシ、平行ストリーク、太い扇形ブラシ、広い単独テーパーブラシ</td></tr>
+<tr><td>比率: （筆跡の名前）</td><td><code>effects[番号].brush_pattern_weight_0〜15</code></td><td>小数</td><td>0〜100</td><td>重み付きランダム時の相対的な選ばれやすさ。16 種類の筆跡それぞれに 1 つずつ。</td></tr>
+<tr><td>筆跡の大きさ</td><td><code>effects[番号].progress</code></td><td>小数</td><td>1〜1024</td><td>筆跡テクスチャを貼る単位（ピクセル）。</td></tr>
+<tr><td>筆跡のばらつき</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>筆跡ごとの大きさと向きの散らばり。</td></tr>
+<tr><td>筆致の輪郭</td><td><code>effects[番号].angle</code></td><td>小数</td><td>0〜1</td><td>0 で柔らかく、1 で色面と毛束の縁をくっきり出す。</td></tr>
+<tr><td>筆の長さ</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜128</td><td>構造に沿って平均する長軸（ピクセル）。</td></tr>
+<tr><td>筆の幅</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0.5〜64</td><td>構造をまたいで平均する短軸（ピクセル）。</td></tr>
+<tr><td>向きの乱れ</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>輪郭方向へ加える微小な乱れ。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から筆致画像へ混ぜる割合。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-mosaic">モザイク（Mosaic）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>セル幅</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜512</td><td>正方セルの大きさ（ピクセル）。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像からモザイクへ混ぜる割合。</td></tr>
+</table></div>
+
+<h3 id="kind-crystallize">結晶化（Crystallize）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>セル幅</td><td><code>effects[番号].radius</code></td><td>小数</td><td>2〜512</td><td>ボロノイセルの大きさ（ピクセル）。</td></tr>
+<tr><td>セルの乱れ</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>セル中心を格子からずらす割合。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から結晶化画像へ混ぜる割合。</td></tr>
+<tr><td>面の陰影</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>セル中心からの向きで付ける明暗の量。</td></tr>
+<tr><td>光の向き</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>面の陰影を付ける方向（度）。</td></tr>
+<tr><td>縁の輝き</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>セル境界を光らせる量。</td></tr>
+<tr><td>縁の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>セル境界の輝きへ使う色。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-stainedglass">ステンドグラス（StainedGlass）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>セル幅</td><td><code>effects[番号].radius</code></td><td>小数</td><td>2〜512</td><td>ステンドグラス片の大きさ（ピクセル）。</td></tr>
+<tr><td>縁の幅</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜0.5</td><td>セル境界へ描く線の太さ。</td></tr>
+<tr><td>縁の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>境界線のアンチエイリアス幅。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像からステンドグラスへ混ぜる割合。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+<tr><td>縁の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>セル境界へ使う色。</td></tr>
+</table></div>
+
+<h3 id="kind-twirl">渦巻き（Twirl）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td></td><td>渦の中心。0.5, 0.5 が中央。</td></tr>
+<tr><td>渦の強さ</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-1440〜1440</td><td>中心で加える回転角度（度）。</td></tr>
+<tr><td>渦の半径</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0.001〜1.5</td><td>効果が消える中心からの半径。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から渦画像へ混ぜる割合。</td></tr>
+</table></div>
+
+<h3 id="kind-spherize">球面化（Spherize）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td></td><td>球面効果の中心。0.5, 0.5 が中央。</td></tr>
+<tr><td>膨らみ量</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-1〜1</td><td>正で膨張、負で収縮。</td></tr>
+<tr><td>球面の半径</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0.001〜1.5</td><td>効果が消える中心からの半径。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から球面画像へ混ぜる割合。</td></tr>
+</table></div>
+
+<h3 id="kind-ripple">波紋（Ripple）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td></td><td>波紋の中心。0.5, 0.5 が中央。</td></tr>
+<tr><td>波長</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜512</td><td>波 1 周期の長さ（ピクセル）。</td></tr>
+<tr><td>振幅</td><td><code>effects[番号].amount</code></td><td>小数</td><td>-128〜128</td><td>UV をずらす最大距離（ピクセル）。</td></tr>
+<tr><td>広がる速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-32〜32</td><td>時間に対して位相を進める速さ。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から波紋画像へ混ぜる割合。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-polarcoordinates">極座標（PolarCoordinates）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td></td><td>極座標の中心。0.5, 0.5 が中央。</td></tr>
+<tr><td>変換量</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>0 で元画像、1 で直交座標から極座標へ変換。</td></tr>
+<tr><td>回転</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>輪へ巻く開始角度（度）。</td></tr>
+</table></div>
+
+<h3 id="kind-scanlines">走査線（Scanlines）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>線の間隔</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜128</td><td>走査線の周期（ピクセル）。</td></tr>
+<tr><td>線の濃さ</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>走査線へ重ねる色の量。</td></tr>
+<tr><td>流れる速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-512〜512</td><td>走査線が縦へ動く速度。</td></tr>
+<tr><td>方向</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td></td></tr>
+<tr><td>線の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>走査線へ重ねる色。</td></tr>
+</table></div>
+
+<h3 id="kind-crt">CRT（CRT）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>画面の湾曲</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>ブラウン管状の樽型歪み。</td></tr>
+<tr><td>走査線の間隔</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜64</td><td>横走査線の周期（ピクセル）。</td></tr>
+<tr><td>走査線の濃さ</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>横線による減光量。</td></tr>
+<tr><td>縁の減光</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>画面周辺を暗くする量。</td></tr>
+<tr><td>縁の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0.0001〜1</td><td>画面外周のぼかし幅。</td></tr>
+</table></div>
+
+<h3 id="kind-glitch">グリッチ（Glitch）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>帯の高さ</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜256</td><td>横ずれを共有する帯の高さ（ピクセル）。</td></tr>
+<tr><td>ずれ量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜512</td><td>帯を横へ動かす最大距離（ピクセル）。</td></tr>
+<tr><td>発生頻度</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>ずれる帯の割合。</td></tr>
+<tr><td>チャンネルずれ</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜64</td><td>RGB を離す距離（ピクセル）。</td></tr>
+<tr><td>変化速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>0〜64</td><td>帯パターンが切り替わる速さ。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-dither">ディザ（Dither）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>階調数</td><td><code>effects[番号].amount</code></td><td>小数</td><td>2〜64</td><td>ディザ後に残す明度段階数。</td></tr>
+<tr><td>行列サイズ</td><td><code>effects[番号].radius</code></td><td>小数</td><td>2〜8</td><td>Bayer 行列の大きさ。2 / 4 / 8 を使う。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像からディザ画像へ混ぜる割合。</td></tr>
+</table></div>
+
+<h3 id="kind-vhs">VHS（VHS）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>横揺れ</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0〜128</td><td>走査行を横へ揺らす距離（ピクセル）。</td></tr>
+<tr><td>横にじみ</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜128</td><td>過去方向へ色を引く距離（ピクセル）。</td></tr>
+<tr><td>色ずれ</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜64</td><td>RGB チャンネルを離す距離（ピクセル）。</td></tr>
+<tr><td>ノイズ量</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>加えるテープノイズの強さ。</td></tr>
+<tr><td>変化速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>0〜64</td><td>揺れとノイズが流れる速さ。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-letterbox">レターボックス（Letterbox）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>画面比</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0.1〜8</td><td>残す表示領域の横 / 縦比。</td></tr>
+<tr><td>帯の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜0.25</td><td>黒帯の内側境界をぼかす幅。</td></tr>
+<tr><td>帯の濃さ</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>帯色の不透明度へ掛ける量。</td></tr>
+<tr><td>帯の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>上下または左右へ置く額縁色。</td></tr>
+</table></div>
+
+<h3 id="kind-waveform">波形（Waveform）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>波形</td><td><code>effects[番号].waveform</code></td><td>選択</td><td></td><td>波の基本形。鋭さとうねりで変化を加える。 選択肢：正弦波、三角波、のこぎり波、パルス、ランダム</td></tr>
+<tr><td>振幅</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜256</td><td>波の高さ（ピクセル）。推奨: ゆらゆら 6、心電図 10。</td></tr>
+<tr><td>波長</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜2048</td><td>山から山までの距離（ピクセル）。推奨: ゆらゆら 120、心電図 90。</td></tr>
+<tr><td>流れる速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-32〜32</td><td>波が進む速さ。0 で静止。推奨: ゆらゆら 2、心電図 6。</td></tr>
+<tr><td>波の鋭さ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>値が大きいほど波形の山谷を鋭くする。</td></tr>
+<tr><td>うねりの量</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>低周波のうねりを重ねる割合。</td></tr>
+<tr><td>太さ変調</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>波の山は元の太さのまま、谷で細くする度合い。</td></tr>
+<tr><td>波の向き</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>波が進む向き（度）。0 で横。</td></tr>
+<tr><td>適用範囲 (開始 / 終了)</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td>0〜1</td><td>波の向きに沿った適用範囲。既定の 1, -1 は全域。</td></tr>
+<tr><td>境界のぼかし</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜0.5</td><td>適用範囲の端で振幅と太さ変調を 0 へ落とす幅。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-displacementmap">ディスプレイスメントマップ（DisplacementMap）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>変位マップ</td><td><code>effects[番号].mask</code></td><td>アセット（画像）</td><td></td><td></td></tr>
+<tr><td>変位量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>-512〜512</td><td>マップのRGをXY変位として使う最大ピクセル量。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から変位画像へ混ぜる割合。</td></tr>
+<tr><td>XY 強度</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td></td><td></td></tr>
+</table></div>
+
+<h3 id="kind-turbulentdisplace">タービュレント変形（TurbulentDisplace）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>変位量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜512</td><td>乱流で輪郭を動かす最大ピクセル量。</td></tr>
+<tr><td>スケール</td><td><code>effects[番号].radius</code></td><td>小数</td><td>4〜2048</td><td>乱流の大きさ。</td></tr>
+<tr><td>流れる速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-32〜32</td><td>乱流が時間方向へ流れる速度。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像との混合量。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-fractalnoise">フラクタルノイズ（FractalNoise）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>スケール</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0.25〜64</td><td>ノイズの基本スケール。</td></tr>
+<tr><td>オクターブ</td><td><code>effects[番号].amount</code></td><td>小数</td><td>1〜8</td><td>重ねるノイズ層数。</td></tr>
+<tr><td>時間速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-16〜16</td><td>ノイズが変化する速度。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像とノイズ色の混合量。</td></tr>
+<tr><td>暗部色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>ノイズ0側の色。</td></tr>
+<tr><td>明部色</td><td><code>effects[番号].color_2</code></td><td>色</td><td></td><td>ノイズ1側の色。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-motionblur">モーションブラー（MotionBlur）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>ブラー距離</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0〜512</td><td>移動方向へ引く長さ（ピクセル）。</td></tr>
+<tr><td>方向</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>ブラー方向（度）。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像との混合量。</td></tr>
+</table></div>
+
+<h3 id="kind-echo">エコー / 残像（Echo）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>間隔</td><td><code>effects[番号].amount</code></td><td>小数</td><td>-256〜256</td><td>残像1枚ごとの距離（ピクセル）。</td></tr>
+<tr><td>方向</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>残像が伸びる方向（度）。</td></tr>
+<tr><td>枚数</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜16</td><td>重ねる残像数。</td></tr>
+<tr><td>減衰</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>後ろの残像ほど薄くなる強さ。</td></tr>
+</table></div>
+
+<h3 id="kind-dropshadow">ドロップシャドウ（DropShadow）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>距離</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜512</td><td>影をずらす距離（ピクセル）。</td></tr>
+<tr><td>方向</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>影の方向（度）。</td></tr>
+<tr><td>ぼかし</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0〜128</td><td>影のぼかし半径。</td></tr>
+<tr><td>濃さ</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜2</td><td>影の不透明度。</td></tr>
+<tr><td>影色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>影へ使う色。</td></tr>
+</table></div>
+
+<h3 id="kind-innershadow">インナーシャドウ（InnerShadow）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>距離</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜256</td><td>内側影のずれ（ピクセル）。</td></tr>
+<tr><td>方向</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>内側影の方向（度）。</td></tr>
+<tr><td>ぼかし</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0〜128</td><td>内側影のぼかし半径。</td></tr>
+<tr><td>濃さ</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜2</td><td>内側影の不透明度。</td></tr>
+<tr><td>影色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>内側影へ使う色。</td></tr>
+</table></div>
+
+<h3 id="kind-lut">LUT（LUT）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>LUT Texture</td><td><code>effects[番号].mask</code></td><td>アセット（画像）</td><td></td><td></td></tr>
+<tr><td>LUT サイズ</td><td><code>effects[番号].radius</code></td><td>小数</td><td>2〜64</td><td>2D strip LUT の1辺。通常16/32/64。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元色からLUT色へ混ぜる割合。</td></tr>
+</table></div>
+
+<h3 id="kind-tonecurve">トーンカーブ（ToneCurve）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>Lift</td><td><code>effects[番号].radius</code></td><td>小数</td><td>-1〜1</td><td>暗部の持ち上げ/押し下げ。</td></tr>
+<tr><td>Gamma</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0.05〜8</td><td>中間調のガンマ。1が無変更。</td></tr>
+<tr><td>Gain</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜4</td><td>明部のゲイン。1が無変更。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜1</td><td>補正前後の混合量。</td></tr>
+</table></div>
+
+<h3 id="kind-mattecomposite">Matte Composite（MatteComposite）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>Matte B</td><td><code>effects[番号].mask</code></td><td>アセット（画像）</td><td></td><td></td></tr>
+<tr><td>演算</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜2</td><td>0=Add / 1=Subtract / 2=Intersect。</td></tr>
+</table></div>
+
+<h3 id="kind-mattemorphology">マット形態学（MatteMorphology）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>モード</td><td><code>effects[番号].waveform</code></td><td>選択</td><td></td><td>アルファの膨張・収縮・3x3局所ホールフィル・エッジ。 選択肢：膨張、収縮、ホールフィル、エッジ</td></tr>
+<tr><td>半径</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0〜128</td><td>近傍を読む半径（ピクセル）。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元アルファから形態学結果へ混ぜる割合。</td></tr>
+</table></div>
+
+<h3 id="kind-bevelemboss">ベベル / エンボス（BevelEmboss）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>幅</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0.5〜64</td><td>アルファ勾配を読む幅（ピクセル）。</td></tr>
+<tr><td>深さ</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜4</td><td>ハイライト / シャドウの深さ。</td></tr>
+<tr><td>光の方向</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>光が当たる方向（度）。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜2</td><td>ベベル色を元色へ混ぜる割合。</td></tr>
+<tr><td>ハイライト色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>明るい側の色。濃さはアルファ勾配で決まる。</td></tr>
+<tr><td>シャドウ色</td><td><code>effects[番号].color_2</code></td><td>色</td><td></td><td>暗い側の色。</td></tr>
+</table></div>
+
+<h3 id="kind-kaleidoscope">万華鏡 / ミラータイル（Kaleidoscope）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td>0〜1</td><td>万華鏡の中心。0.5, 0.5 が中央。</td></tr>
+<tr><td>セグメント数</td><td><code>effects[番号].radius</code></td><td>小数</td><td>2〜64</td><td>扇形の分割数。</td></tr>
+<tr><td>スケール</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0.1〜4</td><td>取り込む画像の倍率。1が等倍。</td></tr>
+<tr><td>回転</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>扇形パターンの回転（度）。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から万華鏡画像へ混ぜる割合。</td></tr>
+<tr><td>タイル方式</td><td><code>effects[番号].waveform</code></td><td>選択</td><td></td><td>選択肢：ミラー、リピート</td></tr>
+</table></div>
+
+<h3 id="kind-pagecurl">ページカール / フォールド（PageCurl）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>めくりパターン</td><td><code>effects[番号].waveform</code></td><td>選択</td><td></td><td>直線・コーナー・中央折り・アコーディオンから選ぶ。 選択肢：直線めくり、コーナーめくり、中央折り、アコーディオン</td></tr>
+<tr><td>起点 / コーナー</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td>0〜1</td><td>コーナーめくりの起点。0,0 が左上、1,1 が右下。直線・中央折りでは無視する。</td></tr>
+<tr><td>進行</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>ページをめくる進行度。0で未変形、1で全体を折る。</td></tr>
+<tr><td>曲率半径</td><td><code>effects[番号].radius</code></td><td>小数</td><td>4〜512</td><td>折り目の円筒半径（ピクセル）。</td></tr>
+<tr><td>方向</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>めくる方向（度）。</td></tr>
+<tr><td>裏面の不透明度</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜1</td><td>折り返された裏面の不透明度。</td></tr>
+<tr><td>影の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>折り目付近の陰影。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像からカール画像へ混ぜる割合。</td></tr>
+<tr><td>裏面色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>折り返しの裏面へ掛ける色。</td></tr>
+</table></div>
+
+<h3 id="kind-asciiledmatrix">ASCII / LED マトリクス（AsciiLedMatrix）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>表示方式</td><td><code>effects[番号].waveform</code></td><td>選択</td><td></td><td>実際の5x7 ASCIIグリフ、丸LED、角LEDから選ぶ。 選択肢：ASCII文字、丸LED、角LED</td></tr>
+<tr><td>セルサイズ</td><td><code>effects[番号].radius</code></td><td>小数</td><td>2〜128</td><td>LEDセルの大きさ（ピクセル）。</td></tr>
+<tr><td>字形 / ドットサイズ</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0.05〜1</td><td>セル内の文字画素またはLEDドットの大きさ。</td></tr>
+<tr><td>黒レベル</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>これ以下の輝度を消す。</td></tr>
+<tr><td>アンチエイリアス</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>ドット端の柔らかさ。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像からLED表現へ混ぜる割合。</td></tr>
+<tr><td>LED色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>点灯するドットの色。</td></tr>
+</table></div>
+
+<h3 id="kind-feedbackzoom">フィードバックズーム（FeedbackZoom）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>ズーム中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td>0〜1</td><td>前フレームを拡大する中心。0.5, 0.5 が中央。</td></tr>
+<tr><td>ズーム量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>-0.5〜0.5</td><td>前フレームを読む倍率。正でズームイン、負でズームアウト。</td></tr>
+<tr><td>回転</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>前フレームを読むときの回転（度）。</td></tr>
+<tr><td>拡散</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0〜64</td><td>履歴サンプルをぼかす半径（ピクセル）。</td></tr>
+<tr><td>減衰</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>中心から離れるほど履歴を弱める量。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>現在フレームから履歴へ混ぜる割合。</td></tr>
+</table></div>
+
+<h3 id="kind-liquidglass">Liquid Glass（LiquidGlass）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>リム幅</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0.5〜64</td><td>アルファ輪郭から法線を求める幅（ピクセル）。</td></tr>
+<tr><td>屈折量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜128</td><td>輪郭で背景サンプルをずらす距離（ピクセル）。</td></tr>
+<tr><td>色分散</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>RGBサンプルを分離する割合。</td></tr>
+<tr><td>フレネル</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>輪郭ハイライトの広がり。</td></tr>
+<tr><td>光の方向</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>リムハイライトの方向（度）。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>ガラス表現の混合量。</td></tr>
+<tr><td>ガラス色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>屈折色へ掛ける色。アルファは着色量。</td></tr>
+<tr><td>リム色</td><td><code>effects[番号].color_2</code></td><td>色</td><td></td><td>輪郭の反射ハイライト色。アルファは反射強度。</td></tr>
+</table></div>
+
+<h3 id="kind-lightsweep">ライトスイープ（LightSweep）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>帯幅</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜512</td><td>走査する光帯の幅（ピクセル）。</td></tr>
+<tr><td>光量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜8</td><td>光帯の強さ。</td></tr>
+<tr><td>輝度しきい値</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>この輝度以上を強く照らす。0でアルファ全体。</td></tr>
+<tr><td>位置</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>光帯の位置。0から1で画面を横切る。</td></tr>
+<tr><td>境界の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>光帯の端をぼかす量。</td></tr>
+<tr><td>自動速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-4〜4</td><td>時間で位置を進める速度。</td></tr>
+<tr><td>方向</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>光帯の走査方向（度）。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>光沢結果を元画像へ混ぜる割合。</td></tr>
+<tr><td>主光色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>光帯の主色。</td></tr>
+<tr><td>副光色</td><td><code>effects[番号].color_2</code></td><td>色</td><td></td><td>光帯の縁へ混ぜる色。</td></tr>
+</table></div>
+
+<h3 id="kind-shockwave">ショックウェーブ（Shockwave）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td>0〜1</td><td>波の中心。0.5, 0.5 が中央。</td></tr>
+<tr><td>波幅</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜256</td><td>波のリング幅（ピクセル）。</td></tr>
+<tr><td>歪み量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜256</td><td>波面が画像をずらす最大距離（ピクセル）。</td></tr>
+<tr><td>波数</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜16</td><td>リング内の振動回数。</td></tr>
+<tr><td>進行</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>波の位置。0で中心、1で外周。</td></tr>
+<tr><td>境界の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>リングの端をぼかす量。</td></tr>
+<tr><td>自動速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-4〜4</td><td>時間で波を進める速度。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜2</td><td>歪みと発光の混合量。</td></tr>
+<tr><td>波の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>リングの発光色。</td></tr>
+</table></div>
+
+<h3 id="kind-pixelsort">ピクセルソート（PixelSort）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>ソート範囲</td><td><code>effects[番号].radius</code></td><td>小数</td><td>4〜128</td><td>1方向へ調べる半径（ピクセル）。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜1</td><td>元画像からソート結果へ混ぜる割合。</td></tr>
+<tr><td>下限</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>ソート対象にする輝度の下限。</td></tr>
+<tr><td>しきい値の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜0.5</td><td>ソート対象の境界を滑らかにする。</td></tr>
+<tr><td>オフセット</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>ソート窓の位相をずらす。</td></tr>
+<tr><td>自動速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-4〜4</td><td>ソート窓を動かす速度。</td></tr>
+<tr><td>方向</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>ソートする軸（度）。</td></tr>
+<tr><td>ソート方式</td><td><code>effects[番号].waveform</code></td><td>選択</td><td></td><td>選択肢：輝度昇順、輝度降順、彩度昇順、色相昇順</td></tr>
+<tr><td>上限</td><td><code>effects[番号].color_stop_2</code></td><td>小数</td><td>0〜1</td><td>ソート対象にする輝度の上限。</td></tr>
+</table></div>
+
+<h3 id="kind-hologram">ホログラム（Hologram）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>走査線間隔</td><td><code>effects[番号].radius</code></td><td>小数</td><td>2〜128</td><td>ホログラムの水平走査線の間隔（ピクセル）。</td></tr>
+<tr><td>干渉量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜2</td><td>走査線・RGBずれ・ちらつきの強さ。</td></tr>
+<tr><td>ノイズ量</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>信号ノイズの量。</td></tr>
+<tr><td>ちらつき</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>時間ちらつきの強さ。</td></tr>
+<tr><td>更新速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-8〜8</td><td>ホログラムの時間変化速度。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像からホログラム表現へ混ぜる割合。</td></tr>
+<tr><td>ホログラム色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>走査線と信号の基準色。</td></tr>
+</table></div>
+
+<h3 id="kind-iridescentfoil">イリデッセントフォイル（IridescentFoil）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>虹彩スケール</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0.25〜8</td><td>オイルスリック状の虹彩模様の大きさ。</td></tr>
+<tr><td>虹彩量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜2</td><td>虹色の反射強度。</td></tr>
+<tr><td>位相</td><td><code>effects[番号].progress</code></td><td>小数</td><td>-1〜1</td><td>虹彩グラデーションの開始位相。</td></tr>
+<tr><td>流れる速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-4〜4</td><td>虹彩が時間で移動する速度。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から虹彩表現へ混ぜる割合。</td></tr>
+<tr><td>虹彩色1</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>虹彩グラデーションの色1。</td></tr>
+<tr><td>虹彩色2</td><td><code>effects[番号].color_2</code></td><td>色</td><td></td><td>虹彩グラデーションの色2。</td></tr>
+<tr><td>虹彩色3</td><td><code>effects[番号].color_3</code></td><td>色</td><td></td><td>虹彩グラデーションの色3。</td></tr>
+<tr><td>虹彩色4</td><td><code>effects[番号].color_4</code></td><td>色</td><td></td><td>虹彩グラデーションの色4。</td></tr>
+</table></div>
+
+<h3 id="kind-radarsweep">レーダースイープ（RadarSweep）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td>0〜1</td><td></td></tr>
+<tr><td>ビーム幅</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0.01〜1</td><td>レーダー走査ビームの角度幅。</td></tr>
+<tr><td>光量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜4</td><td>走査ビームと残光の強さ。</td></tr>
+<tr><td>位相</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>走査角度の開始位相。</td></tr>
+<tr><td>回転速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-8〜8</td><td>レーダービームの自動回転速度。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像からレーダー表現へ混ぜる割合。</td></tr>
+<tr><td>ビーム色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>レーダー走査の発光色。</td></tr>
+</table></div>
+
+<h3 id="kind-energypulse">エネルギーパルス（EnergyPulse）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td>0〜1</td><td></td></tr>
+<tr><td>パルス幅</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0.01〜1</td><td>走るエネルギーリングの幅。</td></tr>
+<tr><td>発光量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜4</td><td>パルスの発光強度。</td></tr>
+<tr><td>進行</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>リングの位置。</td></tr>
+<tr><td>境界の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>リング境界をぼかす量。</td></tr>
+<tr><td>自動速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-8〜8</td><td>パルスを自動で進める速度。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像からパルス表現へ混ぜる割合。</td></tr>
+<tr><td>パルス色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>パルスの発光色。</td></tr>
+</table></div>
+
+<h3 id="kind-circuitflow">サーキットフロー（CircuitFlow）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>回路間隔</td><td><code>effects[番号].radius</code></td><td>小数</td><td>4〜256</td><td>回路グリッドの間隔（ピクセル）。</td></tr>
+<tr><td>発光量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜4</td><td>回路線と流れる信号の強さ。</td></tr>
+<tr><td>線の細さ</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0.01〜0.49</td><td>回路線の太さ。</td></tr>
+<tr><td>流速</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-8〜8</td><td>回路上を流れる信号の速度。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像から回路表現へ混ぜる割合。</td></tr>
+<tr><td>回路色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>回路と信号の発光色。</td></tr>
+</table></div>
+
+<h3 id="kind-heathaze">ヒートヘイズ（HeatHaze）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>ノイズスケール</td><td><code>effects[番号].radius</code></td><td>小数</td><td>2〜256</td><td>熱揺らぎの模様のスケール（ピクセル）。</td></tr>
+<tr><td>歪み量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜128</td><td>熱気で画面をずらす距離（ピクセル）。</td></tr>
+<tr><td>上昇量</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜2</td><td>熱気が上へ流れる量。</td></tr>
+<tr><td>流速</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-8〜8</td><td>熱気の時間変化速度。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>歪み結果を元画像へ混ぜる割合。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-watercaustics">ウォーターコースティクス（WaterCaustics）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>波紋スケール</td><td><code>effects[番号].radius</code></td><td>小数</td><td>4〜256</td><td>水面模様のスケール（ピクセル）。</td></tr>
+<tr><td>模様の濃さ</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜2</td><td>コースティクスの明暗差。</td></tr>
+<tr><td>流速</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-8〜8</td><td>水面模様の移動速度。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>水面色を元画像へ混ぜる割合。</td></tr>
+<tr><td>水面色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>コースティクスへ掛ける色。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-voronoishatter">ボロノイシャッター（VoronoiShatter）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>セルサイズ</td><td><code>effects[番号].radius</code></td><td>小数</td><td>4〜256</td><td>破片セルの大きさ（ピクセル）。</td></tr>
+<tr><td>飛散距離</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜256</td><td>破片が動く最大距離（ピクセル）。</td></tr>
+<tr><td>進行</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>破片の飛散進行度。</td></tr>
+<tr><td>境界の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜0.5</td><td>破片境界のブレンド幅。</td></tr>
+<tr><td>自動速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-4〜4</td><td>破片を自動で動かす速度。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>破片化結果を元画像へ混ぜる割合。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-inkbleed">インクブリード（InkBleed）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>にじみスケール</td><td><code>effects[番号].radius</code></td><td>小数</td><td>2〜256</td><td>インクの広がり模様のスケール。</td></tr>
+<tr><td>にじみ量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜2</td><td>インクがにじむ強さ。</td></tr>
+<tr><td>進行</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>にじみの進行度。</td></tr>
+<tr><td>境界の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜0.5</td><td>にじみ境界をぼかす量。</td></tr>
+<tr><td>広がる速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-4〜4</td><td>インクが時間で広がる速度。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>インク表現を元画像へ混ぜる割合。</td></tr>
+<tr><td>インク色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>にじみへ使う色。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-burnreveal">バーンリビール（BurnReveal）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>ノイズスケール</td><td><code>effects[番号].radius</code></td><td>小数</td><td>2〜256</td><td>焼き付き境界の模様のスケール。</td></tr>
+<tr><td>焼け幅</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜2</td><td>境界の発光幅と焼け色の強さ。</td></tr>
+<tr><td>表示進行</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>0 で非表示、1 で全表示。</td></tr>
+<tr><td>境界の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜0.5</td><td>表示境界をぼかす量。</td></tr>
+<tr><td>揺らぎ速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-4〜4</td><td>焼け境界の時間変化速度。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>焼け表現の混合量。</td></tr>
+<tr><td>焼け色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>焼け境界の主色。</td></tr>
+<tr><td>芯の色</td><td><code>effects[番号].color_2</code></td><td>色</td><td></td><td>焼け境界の明るい芯。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-portalvortex">ポータルヴォルテックス（PortalVortex）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td>0〜1</td><td></td></tr>
+<tr><td>作用半径</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0.05〜1.5</td><td>渦が作用する正規化半径。</td></tr>
+<tr><td>渦の強さ</td><td><code>effects[番号].amount</code></td><td>小数</td><td>-1〜1</td><td>サンプルを回転/収束させる量。</td></tr>
+<tr><td>収束量</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>中心へ吸い込む強さ。</td></tr>
+<tr><td>回転角</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-720〜720</td><td>渦の回転角度（度）。</td></tr>
+<tr><td>境界の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>渦の外周をぼかす量。</td></tr>
+<tr><td>回転速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-8〜8</td><td>時間で渦を回す速度。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>渦結果を元画像へ混ぜる割合。</td></tr>
+<tr><td>ポータル色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>渦の発光色。</td></tr>
+</table></div>
+
+<h3 id="kind-frostcrack">フロストクラック（FrostCrack）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>ひびスケール</td><td><code>effects[番号].radius</code></td><td>小数</td><td>4〜256</td><td>霜のひび模様のスケール。</td></tr>
+<tr><td>ひびの濃さ</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜2</td><td>ひびと霜の強さ。</td></tr>
+<tr><td>ひび密度</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>ひびを出すしきい値。</td></tr>
+<tr><td>広がり</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>霜が広がる進行度。</td></tr>
+<tr><td>境界の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜0.5</td><td>ひびの境界をぼかす量。</td></tr>
+<tr><td>成長速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-4〜4</td><td>ひびが時間で成長する速度。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>霜表現を元画像へ混ぜる割合。</td></tr>
+<tr><td>霜色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>霜とひびへ使う色。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-bubble">泡マスク（Bubble）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>進行</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>0 から 1 で泡が広がり画面を覆う。</td></tr>
+<tr><td>泡の細かさ</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜64</td><td>大きいほど泡が小さく密になる。</td></tr>
+<tr><td>縁の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0.0001〜1</td><td>泡の輪郭をぼかす量。</td></tr>
+<tr><td>種</td><td><code>effects[番号].seed</code></td><td>小数</td><td>0〜1000</td><td>泡の湧く位置と時刻を変える。</td></tr>
+</table></div>
+
+<h3 id="kind-speedlines">集中線（SpeedLines）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>進行</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>0 から 1 で線が中心へ寄り画面を覆う。</td></tr>
+<tr><td>線の本数</td><td><code>effects[番号].radius</code></td><td>小数</td><td>8〜512</td><td>放射状に並べる線の数。</td></tr>
+<tr><td>線の太さ</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜1</td><td>1 本あたりの角度方向の太さ。</td></tr>
+<tr><td>中心の空き</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>線を出さない中心の半径。</td></tr>
+<tr><td>縁の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0.0001〜1</td><td>線の内側の端をぼかす量。</td></tr>
+<tr><td>回転</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>放射全体の回転角度（度）。</td></tr>
+<tr><td>ちらつき速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-32〜32</td><td>線の長さが時間で揺れる速さ。0 で静止。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>線を元画像へ混ぜる割合。</td></tr>
+<tr><td>中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td></td><td>正規化座標で指定する放射の中心。0.5, 0.5 が中央。</td></tr>
+<tr><td>線の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>集中線へ使う色。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-clockwipe">時計ワイプ（ClockWipe）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>進行</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>0 から 1 で時計回りに開閉する。</td></tr>
+<tr><td>開始角度</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>掃き始める角度（度）。</td></tr>
+<tr><td>掃引量</td><td><code>effects[番号].amount</code></td><td>小数</td><td>-1〜1</td><td>1 で全周。負の値で逆回りにする。</td></tr>
+<tr><td>中心の空き</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>最後まで残す中心の半径。</td></tr>
+<tr><td>境界の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0.0001〜1</td><td>掃引の境界をぼかす量。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>アルファを抜く割合。</td></tr>
+<tr><td>中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td></td><td>正規化座標で指定する回転中心。0.5, 0.5 が中央。</td></tr>
+</table></div>
+
+<h3 id="kind-shapewipe">形状ワイプ（ShapeWipe）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>進行</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>0 から 1 で形状が広がり画面を覆う。</td></tr>
+<tr><td>形状</td><td><code>effects[番号].waveform</code></td><td>選択</td><td></td><td>広がる形。形状画像を指定した場合はそちらを使う。 選択肢：円、星、ハート、菱形</td></tr>
+<tr><td>頂点の数</td><td><code>effects[番号].radius</code></td><td>小数</td><td>2〜24</td><td>星の頂点の数。</td></tr>
+<tr><td>星の凹み</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>星の内側の半径の割合。</td></tr>
+<tr><td>回転</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>形状の回転角度（度）。</td></tr>
+<tr><td>縁の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0.0001〜1</td><td>形状の輪郭をぼかす量。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>アルファを抜く割合。</td></tr>
+<tr><td>中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td></td><td>正規化座標で指定する形状の中心。0.5, 0.5 が中央。</td></tr>
+<tr><td>形状画像</td><td><code>effects[番号].mask</code></td><td>アセット（画像）</td><td></td><td>設定した場合は画像の明るい所から開く。</td></tr>
+</table></div>
+
+<h3 id="kind-blinds">ブラインド（Blinds）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>進行</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>0 から 1 でブラインドが閉じる。</td></tr>
+<tr><td>枚数</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜128</td><td>短冊の枚数。</td></tr>
+<tr><td>向き</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>短冊の向き（度）。0 で横。</td></tr>
+<tr><td>開きかた</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜1</td><td>0 で片側から、1 で各短冊の中央から開く。</td></tr>
+<tr><td>縁の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0.0001〜1</td><td>短冊の境界をぼかす量。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>アルファを抜く割合。</td></tr>
+</table></div>
+
+<h3 id="kind-checkerboard">市松（Checkerboard）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>進行</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>0 から 1 でマスが広がり画面を覆う。</td></tr>
+<tr><td>マス数</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜64</td><td>画面を割るマスの数。</td></tr>
+<tr><td>市松の遅れ</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜1</td><td>市松のもう一方が遅れて開く量。</td></tr>
+<tr><td>ばらつき</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>マスごとに開く時刻を散らす量。</td></tr>
+<tr><td>回転</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>市松全体の回転角度（度）。</td></tr>
+<tr><td>縁の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0.0001〜1</td><td>マスの境界をぼかす量。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>アルファを抜く割合。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-petals">花びら / 雪（Petals）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>量</td><td><code>effects[番号].progress</code></td><td>小数</td><td>0〜1</td><td>0 で降らず、1 で最も多い。</td></tr>
+<tr><td>密度</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜64</td><td>画面を割る格子の細かさ。</td></tr>
+<tr><td>大きさ</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0.001〜0.5</td><td>1 枚あたりの大きさ。</td></tr>
+<tr><td>落下速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>-8〜8</td><td>0 で完全に静止する。</td></tr>
+<tr><td>横流れ</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-8〜8</td><td>左右へ揺れる量。</td></tr>
+<tr><td>縁の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0.0001〜1</td><td>花びらの輪郭をぼかす量。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像へ混ぜる割合。</td></tr>
+<tr><td>色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>花びらまたは雪の色。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+<h3 id="kind-godrays">薄明光線（GodRays）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>強さ</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜8</td><td>光芒の強さ。</td></tr>
+<tr><td>明るさしきい値</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜4</td><td>ここより明るい所だけが伸びる。</td></tr>
+<tr><td>減衰</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜1</td><td>遠いサンプルほど弱める率。</td></tr>
+<tr><td>伸びる長さ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0.0001〜2</td><td>光芒を伸ばす距離。</td></tr>
+<tr><td>光源</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td></td><td>正規化座標で指定する光源。0.5, 0.5 が中央。</td></tr>
+<tr><td>光の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>光芒へ掛ける色。</td></tr>
+</table></div>
+
+<h3 id="kind-lensflare">レンズフレア（LensFlare）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>強さ</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜8</td><td>フレアの強さ。</td></tr>
+<tr><td>ゴーストの数</td><td><code>effects[番号].radius</code></td><td>小数</td><td>1〜16</td><td>並べる玉の数。</td></tr>
+<tr><td>明るさしきい値</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜4</td><td>ここより明るい所だけが写り込む。</td></tr>
+<tr><td>ゴースト間隔</td><td><code>effects[番号].amount</code></td><td>小数</td><td>-2〜2</td><td>玉を並べる間隔。</td></tr>
+<tr><td>ハローの太さ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0.0001〜1</td><td>光源を囲む輪の太さ。</td></tr>
+<tr><td>光源</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td></td><td>正規化座標で指定する光源。0.5, 0.5 が中央。</td></tr>
+<tr><td>フレアの色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>ゴーストとハローへ掛ける色。</td></tr>
+</table></div>
+
+<h3 id="kind-bokeh">玉ボケ（Bokeh）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>ボケ半径</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0〜128</td><td>玉ボケの広がり（ピクセル）。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像へ混ぜる割合。</td></tr>
+<tr><td>明るさしきい値</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜4</td><td>ここより明るい所が強く玉になる。</td></tr>
+<tr><td>羽根の数</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜12</td><td>3 未満で円、3 以上で多角形。</td></tr>
+</table></div>
+
+<h3 id="kind-tiltshift">チルトシフト（TiltShift）</h3>
+
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>ぼかし量</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0〜128</td><td>帯の外をぼかす強さ（ピクセル）。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像へ混ぜる割合。</td></tr>
+<tr><td>帯の幅</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0〜1</td><td>くっきり残す帯の半幅。</td></tr>
+<tr><td>境界の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0.0001〜1</td><td>帯の外へ移る距離。</td></tr>
+<tr><td>帯の角度</td><td><code>effects[番号].angle</code></td><td>小数</td><td>-360〜360</td><td>帯を傾ける角度（度）。</td></tr>
+<tr><td>帯の中心</td><td><code>effects[番号].direction</code></td><td>2 つの小数</td><td></td><td>正規化座標で指定する帯の中心。0.5, 0.5 が中央。</td></tr>
+</table></div>
+
+<h3 id="kind-filmscratch">フィルムの傷（FilmScratch）</h3>
+<p class="meta">時間で自動的に変化します（種類の名前に [M] が付きます）。</p>
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+<tr><td>傷の数</td><td><code>effects[番号].radius</code></td><td>小数</td><td>0〜24</td><td>縦に走る傷の本数。</td></tr>
+<tr><td>適用量</td><td><code>effects[番号].intensity</code></td><td>小数</td><td>0〜1</td><td>元画像へ混ぜる割合。</td></tr>
+<tr><td>ホコリの量</td><td><code>effects[番号].threshold</code></td><td>小数</td><td>0〜1</td><td>画面へ散らす粒の量。</td></tr>
+<tr><td>傷の太さ</td><td><code>effects[番号].amount</code></td><td>小数</td><td>0.0001〜0.05</td><td>1 本あたりの太さ。</td></tr>
+<tr><td>縁の柔らかさ</td><td><code>effects[番号].softness</code></td><td>小数</td><td>0〜1</td><td>傷の輪郭をぼかす量。</td></tr>
+<tr><td>コマ送り速度</td><td><code>effects[番号].speed</code></td><td>小数</td><td>0〜8</td><td>0 で 1 枚に固定する。</td></tr>
+<tr><td>傷の色</td><td><code>effects[番号].color</code></td><td>色</td><td></td><td>傷とホコリの色。</td></tr>
+<tr><td>乱数 Seed</td><td><code>effects[番号].seed</code></td><td>小数</td><td>-65536〜65536</td><td>同じ値なら同じ揺れ・ノイズになる。</td></tr>
+</table></div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>エフェクトを選んで、値を動かす</h3>
+    <ol>
+      <li>Effect Stack を付けた GameObject を選び、エフェクトを足します（<a href="effect-stacks.html#add">エフェクトを並べる</a>）。</li>
+      <li>足したエフェクトの <b>種類</b> で、この一覧の名前を選びます。インスペクターに、その種類の項目だけが出ます。</li>
+      <li>下の「種類ごとの項目」の表で、それぞれの項目の働きと範囲を確かめて値を入れます。</li>
+      <li>時間で変化させたいときは、<a href="../windows/motion-workspace.html">モーション</a>で、その項目（表の内部名。番号は上から何番目のエフェクトか）のトラックを作ります。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="effect-stacks.html">Effect Stack と Effect Preset</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

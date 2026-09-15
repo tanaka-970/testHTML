@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Transform - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Core</div>
+    <h1>Transform</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>GameObject の位置・回転・大きさを表すコンポーネントです。すべての GameObject が必ず 1 つ持っています。モデルの表示、物理、カメラ、ライトなど、ほとんどのコンポーネントがこの値を基準に動きます。</p>
+
+    <figure>
+      <img src="../images/editor/inspector-transform-expanded.png" alt="インスペクターで Transform を開いたところ。位置、回転 (度)、拡大率にそれぞれ 3 つの数値欄がある">
+      <figcaption>インスペクターの Transform</figcaption>
+    </figure>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>GameObject の位置、向き、大きさを変えたいとき</li>
+      <li>数値を入れて、ぴったりの位置や角度に置きたいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>付け方</td><td>GameObject を作ると自動で付きます。コンポーネントを追加には出てきません</td></tr>
+      <tr><td>削除</td><td>できません</td></tr>
+      <tr><td>働く場面</td><td>エディターでも実行中でも常に</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>ドラッグ 1 目盛りの量</th><th>説明</th></tr>
+      <tr><td>位置</td><td><code>position</code></td><td>X Y Z</td><td>0, 0, 0</td><td>0.05</td><td>親から見た位置。親がいなければシーンの座標</td></tr>
+      <tr><td>回転 (度)</td><td><code>rotation</code></td><td>X Y Z</td><td>0, 0, 0</td><td>0.5</td><td>親から見た回転。X・Y・Z 軸まわりの角度を度で入れます</td></tr>
+      <tr><td>拡大率</td><td><code>scale</code></td><td>X Y Z</td><td>1, 1, 1</td><td>0.01</td><td>親から見た大きさの倍率</td></tr>
+    </table>
+    </div>
+    <p>インスペクターの値は、どれも<b>親から見た値</b>（ローカルの値）です。GameObject を別の GameObject の子にすると、親の位置・回転・大きさに合わせて一緒に動きます。</p>
+
+    <h2 id="usage">値を変える</h2>
+    <ul>
+      <li>インスペクターの数値欄を左右にドラッグすると値が変わります。<kbd>Ctrl</kbd> を押しながらクリックすると数値を直接入力できます。</li>
+      <li>シーンビューのギズモ（Move / Rotate / Scale）でも変えられます（<a href="../editor/toolbar.html#gizmo">ツールバー</a>）。</li>
+      <li>変えた値は <kbd>Ctrl</kbd>+<kbd>Z</kbd> で戻せます。</li>
+    </ul>
+
+    <h2 id="notes">補足</h2>
+    <ul>
+      <li>シーンファイルには、Transform の値は GameObject の情報として保存されます（Transform コンポーネントとして別に保存されることはありません）。</li>
+      <li>エディターで回転・拡縮するときの中心を変えたいときは <a href="pivot.html">Pivot</a> を使います。</li>
+    </ul>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../editor/inspector.html">インスペクター</a></li>
+      <li><a href="../editor/hierarchy.html#reorder">階層パネル：親子付け</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

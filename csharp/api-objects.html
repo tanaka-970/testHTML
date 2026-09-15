@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>GameObject・Component・Transform - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / C# スクリプト / API</div>
+    <h1>GameObject・Component・Transform</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>シーンの GameObject を探す、作る、消す、コンポーネントを取り出す、位置や回転を変える、といった基本の操作です。すべて <code>using ReplayEngine;</code> で使えます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>名前で GameObject を探して、その GameObject を操作したいとき（GameObject.Find）</li>
+      <li>弾やエフェクトを、プレハブから出したいとき（Object.Instantiate）</li>
+      <li>倒した敵や、取ったアイテムを消したいとき（Object.Destroy）</li>
+      <li>同じ GameObject のほかのコンポーネントを使いたいとき（GetComponent）</li>
+      <li>位置や向きを変える、相手の方を向かせたいとき（Transform）</li>
+    </ul>
+
+    <h2 id="tree">型のつながり</h2>
+    <pre><code>Object
+ ├ GameObject
+ └ Component
+     ├ Transform
+     ├ Behaviour
+     │   └ MonoBehaviour（自分で書くスクリプト）
+     └ NativeComponent（Rigidbody など、エンジンのコンポーネント）
+         └ NativeBehaviour（有効・無効を持つもの）</code></pre>
+
+    <h2 id="object">Object</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>name</code></td><td>名前。Component では、付いている GameObject の名前です</td></tr>
+      <tr><td><code>Object.Destroy(対象)</code></td><td>GameObject やコンポーネントを消します。すぐには消えず、その回の更新が終わったところで消えます。GameObject を消すと子も消えます。<code>null</code> を渡しても何も起きません</td></tr>
+      <tr><td><code>Object.Instantiate(prefab)</code><br><code>Instantiate(prefab, 位置)</code><br><code>Instantiate(prefab, 位置, 回転)</code><br><code>Instantiate(prefab, 位置, 回転, 親の Transform)</code></td><td>プレハブを置き、置いた GameObject を返します。失敗すると <code>null</code>。拡大率は 1 です</td></tr>
+      <tr><td><code>== null</code>、<code>if (obj)</code></td><td>変数が <code>null</code> のときだけでなく、中身がもう消えているときも「null と同じ」になります</td></tr>
+    </table>
+    </div>
+    <pre><code>public AssetReference&lt;PrefabAsset&gt; bullet;   // インスペクターでプレハブを選ぶ
+
+void Update()
+{
+    if (Input.GetKeyDown(KeyCode.Space))
+    {
+        Object.Instantiate(bullet, transform.position);
+    }
+}</code></pre>
+    <p><code>AssetReference&lt;PrefabAsset&gt;</code> はそのまま <code>Instantiate</code> に渡せます。</p>
+
+    <h2 id="gameobject">GameObject</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>GameObject.Find(名前)</code></td><td>名前が一致する GameObject を 1 つ返します。非アクティブのもの（親が非アクティブなものを含む）は見つかりません</td></tr>
+      <tr><td><code>GameObject.Create(名前)</code></td><td>空の GameObject を作ります</td></tr>
+      <tr><td><code>transform</code></td><td>Transform</td></tr>
+      <tr><td><code>activeSelf</code></td><td>自分がアクティブか</td></tr>
+      <tr><td><code>activeInHierarchy</code></td><td>自分と親がすべてアクティブか</td></tr>
+      <tr><td><code>SetActive(true / false)</code></td><td>アクティブにする・しない。false にすると、その GameObject のスクリプトのコルーチンがその場で止まります</td></tr>
+    </table>
+    </div>
+
+    <h2 id="get-component">コンポーネントを取り出す・付ける</h2>
+    <p>GameObject とコンポーネントのどちらからでも呼べます。コンポーネントから呼ぶと、付いている GameObject について探します。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>GetComponent&lt;T&gt;()</code></td><td>同じ GameObject から 1 つ取り出します。無ければ <code>null</code></td></tr>
+      <tr><td><code>TryGetComponent&lt;T&gt;(out var c)</code></td><td>取り出せたら true</td></tr>
+      <tr><td><code>GetComponents&lt;T&gt;()</code></td><td>同じ GameObject のものをすべて（配列）</td></tr>
+      <tr><td><code>GetComponentInParent&lt;T&gt;()</code><br><code>GetComponentsInParent&lt;T&gt;()</code></td><td>自分から親の方へたどって探します</td></tr>
+      <tr><td><code>GetComponentInChildren&lt;T&gt;()</code><br><code>GetComponentsInChildren&lt;T&gt;()</code></td><td>自分から子の方へたどって探します</td></tr>
+      <tr><td><code>AddComponent&lt;T&gt;()</code></td><td>付けて、付けたものを返します。付けられないと <code>null</code></td></tr>
+    </table>
+    </div>
+    <ul>
+      <li>親や子をたどるものは、非アクティブの GameObject を飛ばします。引数に <code>true</code> を渡すと非アクティブのものも探します。呼び出した GameObject 自身は、非アクティブでも探します。</li>
+      <li><code>T</code> に使えるのは、自分で書いたスクリプトのクラス、<code>Transform</code>、<a href="api-components.html">エンジンのコンポーネントの型</a> です。一覧に無いエンジンのコンポーネントは取り出せません。</li>
+      <li><code>AddComponent&lt;Collider&gt;()</code> は、どの形か決まらないので <code>null</code> になります。<code>BoxCollider</code> などの形の型で付けます。</li>
+      <li>スクリプトを <code>AddComponent</code> したときの Awake や Start は、呼んだその場ではなく、次の区切り（<a href="lifecycle.html#start">開始の順番</a>）で呼ばれます。</li>
+    </ul>
+    <pre><code>void Start()
+{
+    var body = GetComponent&lt;Rigidbody&gt;();
+    if (body != null)
+    {
+        body.AddImpulse(new Vector3(0.0f, 5.0f, 0.0f));
+    }
+}</code></pre>
+
+    <h2 id="behaviour">Behaviour</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>enabled</code></td><td>コンポーネントの有効・無効</td></tr>
+      <tr><td><code>isActiveAndEnabled</code></td><td>GameObject がアクティブで、自分も有効か</td></tr>
+    </table>
+    </div>
+
+    <h2 id="transform">Transform</h2>
+    <p>角度はすべて <b>度</b> です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>position</code></td><td>ワールドの位置</td></tr>
+      <tr><td><code>rotation</code></td><td>ワールドの回転（<code>Quaternion</code>）</td></tr>
+      <tr><td><code>eulerAngles</code></td><td>ワールドの回転（度）</td></tr>
+      <tr><td><code>localPosition</code></td><td>親から見た位置。インスペクターの位置の値です</td></tr>
+      <tr><td><code>localRotation</code></td><td>親から見た回転（<code>Quaternion</code>）</td></tr>
+      <tr><td><code>localEulerAngles</code></td><td>親から見た回転（度）。インスペクターの回転の値です</td></tr>
+      <tr><td><code>localScale</code></td><td>親から見た拡大率</td></tr>
+      <tr><td><code>lossyScale</code></td><td>ワールドでの拡大率（読むだけ）</td></tr>
+      <tr><td><code>forward</code>、<code>right</code>、<code>up</code></td><td>自分の前（+Z）・右（+X）・上（+Y）の向き（ワールド）</td></tr>
+      <tr><td><code>parent</code></td><td>親の Transform。無ければ <code>null</code>。代入すると親を変えます（ワールドの位置は保ちます）</td></tr>
+      <tr><td><code>SetParent(親, worldPositionStays)</code></td><td>親を変えます。2 つ目を <code>false</code> にすると、ローカルの値を保ちます（見た目の位置が変わります）</td></tr>
+      <tr><td><code>childCount</code>、<code>GetChild(番号)</code></td><td>子の数、番号の子</td></tr>
+      <tr><td><code>Find(名前)</code></td><td>直接の子から名前で探します（孫は探しません）</td></tr>
+      <tr><td><code>Translate(移動量)</code></td><td>ワールドの軸で動かします</td></tr>
+      <tr><td><code>Translate(移動量, Space.Self)</code></td><td>自分の向きの軸で動かします</td></tr>
+      <tr><td><code>Rotate(x, y, z)</code>、<code>Rotate(Vector3)</code></td><td>インスペクターの回転の値（ローカル、度）に足します</td></tr>
+      <tr><td><code>LookAt(相手の Transform)</code><br><code>LookAt(位置)</code>、<code>LookAt(位置, 上の向き)</code></td><td>前（+Z）を相手に向けます</td></tr>
+    </table>
+    </div>
+    <div class="warning"><strong>Unity との違い</strong><code>Translate(移動量)</code> は、何も指定しないと <b>ワールドの軸</b> で動きます（Unity は自分の向きの軸）。キャラクターの前へ進めるときは <code>Translate(移動量, Space.Self)</code> と書くか、<code>transform.position += transform.forward * 距離</code> と書きます。</div>
+    <pre><code>void Update()
+{
+    // 前へ進む
+    transform.position = transform.position + transform.forward * (2.0f * Time.deltaTime);
+}</code></pre>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>プレイヤーの方を向き続ける</h3>
+    <pre><code>Transform player;
+
+void Start()
+{
+    var found = GameObject.Find(&quot;Player&quot;);
+    if (found != null) player = found.transform;
+}
+
+void Update()
+{
+    if (player != null) transform.LookAt(player);
+}</code></pre>
+    <p>シーンに「Player」という名前の GameObject を置いておきます。見つからないとき（名前が違う、非アクティブ）は何もしません。</p>
+    <h3>スペースキーで弾を出す</h3>
+    <ol>
+      <li>弾のプレハブを作り、弾に <a href="lifecycle.html#howto">3 秒後に自分を消す</a> スクリプトを付けておきます。</li>
+      <li>撃つ側の GameObject に、次のスクリプトを付けます。</li>
+    </ol>
+    <pre><code>public AssetReference&lt;PrefabAsset&gt; bullet;
+
+void Update()
+{
+    if (Input.GetKeyDown(KeyCode.Space))
+    {
+        Object.Instantiate(bullet, transform.position);
+    }
+}</code></pre>
+    <ol start="3">
+      <li>インスペクターの <b>Bullet</b> で弾のプレハブを選び、Play でスペースキーを押します。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="api-components.html">エンジンのコンポーネントを操作する</a></li>
+      <li><a href="api-math.html">Vector3・Quaternion・Mathf</a></li>
+      <li><a href="lifecycle.html">呼ばれる順番（ライフサイクル）</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

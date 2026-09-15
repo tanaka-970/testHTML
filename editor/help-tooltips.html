@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>項目の説明（ツールチップ） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
+    <h1>項目の説明（ツールチップ）</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>エディターのボタン、チェックボックス、スライダー、インスペクターのプロパティ欄、エフェクトの種類の一覧などの一部には、マウスを乗せると小さな説明（ツールチップ）が出ます。この説明は、その場で右クリックして書き換えられます。書き換えた説明はプロジェクトのファイルに保存されるので、チームの決まりごとや注意を、ボタンのすぐそばに残せます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>ボタンの働きが分からないときに、マウスを乗せて説明を読みたいとき</li>
+      <li>「このボタンは本番データでは押さない」など、チームで共有したい注意を、そのボタンに書いておきたいとき</li>
+      <li>「説明が未記入です。」と出ている項目に、説明を書き足したいとき</li>
+    </ul>
+
+    <h2 id="read">説明を読む</h2>
+    <p>説明が付いている項目にマウスを乗せると、ツールチップが出ます。押せない（灰色の）状態の項目でも出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ツールチップの表示</th><th>意味</th></tr>
+      <tr><td>説明の文</td><td>書き換えた説明があればそれを、無ければエンジンに入っている既定の説明を出します</td></tr>
+      <tr><td>「説明が未記入です。右クリックで説明を書けます。」</td><td>説明を付けられる項目ですが、既定の説明も、書いた説明もありません</td></tr>
+    </table>
+    </div>
+    <p>説明を付けられるのは、エンジン側で説明の場所（キー）が用意されている項目だけです。マウスを乗せても何も出ない項目には、説明は書けません。</p>
+
+    <h2 id="edit">説明を書き換える</h2>
+    <p>項目にマウスを乗せたまま右クリックすると、<b>説明を編集</b> の小さな窓が開きます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示・ボタン</th><th>働き</th></tr>
+      <tr><td>「Key: 名前」</td><td>その項目を区別する名前（例：<code>button.inspector.open_shader_adjustments</code>）。変えられません</td></tr>
+      <tr><td>文字の欄</td><td>説明の文。改行も書けます。いま出ている説明が最初から入っています。長さは 4095 バイト（日本語でおよそ 1300 文字）までです</td></tr>
+      <tr><td><b>保存</b></td><td>書いた文を保存して閉じます。空にしたとき、または既定の説明と同じ文のときは、「書き換えなし」として保存します</td></tr>
+      <tr><td><b>既定文へ戻す</b></td><td>書き換えを取り消し、既定の説明に戻して閉じます</td></tr>
+      <tr><td><b>書いた内容を消す</b></td><td>書き換えを取り消して閉じます。保存される結果は <b>既定文へ戻す</b> と同じです</td></tr>
+      <tr><td><b>キャンセル</b></td><td>何も保存せずに閉じます</td></tr>
+      <tr><td>「保存失敗: 理由」</td><td>保存できなかったとき。窓は閉じません</td></tr>
+    </table>
+    </div>
+    <div class="note"><strong>ボタンの押しまちがいに注意</strong>右クリックは説明の編集を開くだけで、その項目は押されません。ただし、窓の中の <b>保存</b> などを押すと、すぐにファイルへ書き込まれます。</div>
+
+    <h2 id="file">保存されるファイル</h2>
+    <p>書き換えた説明だけが、<code>resources/EditorHelp.replayhelp</code> に保存されます。一度も <b>保存</b>・<b>既定文へ戻す</b>・<b>書いた内容を消す</b> を押していないうちは、このファイルは作られません。書き換えを全部元に戻しても、1 行目だけのファイルが残ります。プロジェクトと一緒に渡せば、ほかの人のエディターにも同じ説明が出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>行</th><th>内容</th></tr>
+      <tr><td><code>REPLAY_EDITOR_HELP 1</code></td><td>1 行目。形式の名前と版</td></tr>
+      <tr><td><code>HELP</code>（タブ）<code>キー</code>（タブ）<code>説明</code></td><td>書き換えた説明 1 つにつき 1 行。説明の中の改行は <code>\n</code>、タブは <code>\t</code>、<code>\</code> は <code>\\</code>、<code>"</code> は <code>\"</code> と書きます</td></tr>
+    </table>
+    </div>
+    <p>文字コードは UTF-8 です。読むときは先頭の BOM があっても読めますが、エディターが保存するときは BOM を付けません。1 行目が違うと「EditorHelp のバージョンを読めません。」となり、書き換えた説明は読まれません。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>ボタンにチームの注意を書いておく</h3>
+    <ol>
+      <li>注意を書きたいボタンにマウスを乗せ、ツールチップが出ることを確かめます。</li>
+      <li>そのまま右クリックし、<b>説明を編集</b> を開きます。</li>
+      <li>文字の欄の最後に、改行して「※ 押す前にシーンを保存すること」などと書き足します。</li>
+      <li><b>保存</b> を押します。もう一度マウスを乗せて、書いた文が出ることを確かめます。</li>
+      <li><code>resources/EditorHelp.replayhelp</code> をプロジェクトと一緒にほかの人へ渡します。</li>
+    </ol>
+    <h3>書き換えた説明を元に戻す</h3>
+    <ol>
+      <li>項目にマウスを乗せて右クリックします。</li>
+      <li><b>既定文へ戻す</b> を押します。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="inspector.html">インスペクター</a></li>
+      <li><a href="../data/index.html">データ形式の一覧</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

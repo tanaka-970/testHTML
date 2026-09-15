@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>階層パネル - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
+    <h1>階層パネル</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>画面左の <b>階層</b> パネルには、シーンに入っている GameObject が親子関係のツリーで並びます。GameObject を作る、選ぶ、名前を変える、並べ替える、親子にする、といった操作をここで行います。</p>
+
+    <figure>
+      <img src="../images/editor/overview-sphere-selected.png" alt="エディター全体。左の階層パネルで Sphere が選択されている">
+      <figcaption>左端が階層パネル。Sphere を 1 つ作って選択した状態</figcaption>
+    </figure>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>シーンに物（立方体、地形など）を足したいとき（+ 作成）</li>
+      <li>たくさんの GameObject を、フォルダーにまとめて整理したいとき</li>
+      <li>親子にして、まとめて動かしたいとき（ドラッグで子にする）</li>
+      <li>名前や付いているコンポーネントで、GameObject を探したいとき（検索）</li>
+    </ul>
+
+    <h2 id="layout">パネルの並び</h2>
+    <p>パネルの中は、上から次の順に並びます。</p>
+    <ol>
+      <li><b>ゲームシーン</b>：ワールド、メインカメラ、描画設定、ポスト処理 の 4 項目です。クリックすると、その設定がインスペクターに出ます。（<a href="game-scene-settings.html">ゲームシーンの設定</a>）</li>
+      <li><b>GameObject</b>：見出しの下に、操作対象が決まっていないときは「このシーンには操作対象が設定されていません」と黄色で表示されます。</li>
+      <li><b>シーン名</b>：今のシーンのファイル名です。一度も保存していないシーンは <b>(未保存のシーン)</b> と表示され、保存していない変更があると末尾に <b>*</b> が付きます。実行中は右に <b>[実行中]</b> と表示されます。</li>
+      <li><b>検索欄</b>（Search GameObjects / Components...）</li>
+      <li><b>ボタン列</b>：<b>+ 作成</b>、<b>複製</b>、<b>削除</b>、<b>プレハブを置く</b>、<b>表示</b></li>
+      <li><b>GameObject のツリー</b></li>
+    </ol>
+
+    <h2 id="buttons">ボタン列</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ボタン</th><th>働き</th></tr>
+      <tr><td>+ 作成</td><td>作れる物の一覧を開きます（次の節）。</td></tr>
+      <tr><td>複製</td><td>選択中の GameObject を複製します。</td></tr>
+      <tr><td>削除</td><td>選択中の GameObject を削除します。</td></tr>
+      <tr><td>プレハブを置く</td><td>Prefab ファイルを選んで、シーンに置きます。GameObject を選択していれば、その子として置きます。</td></tr>
+      <tr><td>表示</td><td>ツリーの各行に出す種類別アイコンの出し方を選びます。<b>常に並べる</b>、<b>カーソルを乗せた行だけ</b>、<b>出さない</b> の 3 つから選べます。</td></tr>
+    </table>
+    </div>
+    <div class="warning"><strong>実行中は編集できません</strong>ゲームを実行している間は、+ 作成・複製・削除・プレハブを置く の 4 つのボタンが消え、代わりに「実行中は階層を編集できません」と表示されます。表示 ボタンは実行中も使えます。</div>
+
+    <h2 id="create">GameObject を作る</h2>
+    <ol class="steps">
+      <li>ボタン列の <b>+ 作成</b> を押します。</li>
+      <li>一覧から作りたい物を選びます。</li>
+    </ol>
+    <figure>
+      <img src="../images/editor/hierarchy-create-3d-object.png" alt="+ 作成 を押して開いた一覧。空の GameObject、フォルダ、3D Object、Landscape Ground があり、3D Object の右に Plane から Quad までのサブメニューが開いている">
+      <figcaption>+ 作成 → 3D Object にマウスを乗せたところ</figcaption>
+    </figure>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>作られる物</th></tr>
+      <tr><td>空の GameObject</td><td>コンポーネントを持たない GameObject</td></tr>
+      <tr><td>フォルダ</td><td>ツリーを整理するための、フォルダとして扱われる GameObject</td></tr>
+      <tr><td>3D Object ▶</td><td>Plane、Cube、Sphere、Capsule、Cylinder、Quad から選びます。形の表示に必要なコンポーネント（Transform と Primitive Mesh Renderer）が付いた状態で作られます。</td></tr>
+      <tr><td>Landscape Ground</td><td>地形の GameObject</td></tr>
+    </table>
+    </div>
+    <p>GameObject を右クリックして <b>子を作成</b> から選ぶと、その GameObject の子として作られます。ツリーの下の何もない場所を右クリックすると <b>作成</b> だけのメニューが開き、シーン直下に作られます。</p>
+
+    <h2 id="select">選択</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>操作</th><th>結果</th></tr>
+      <tr><td>行をクリック</td><td>その GameObject だけを選択します。</td></tr>
+      <tr><td><kbd>Ctrl</kbd> を押しながらクリック</td><td>選択に加えます。選択済みの行なら選択から外します。</td></tr>
+      <tr><td><kbd>Shift</kbd> を押しながらクリック</td><td>最後に普通にクリック（または Ctrl+クリック）した行から、今クリックした行までを、画面に見えている順にまとめて選択します。</td></tr>
+      <tr><td>行の左の矢印をクリック、または行をダブルクリック</td><td>子を開く・閉じるを切り替えます。</td></tr>
+    </table>
+    </div>
+    <p>選択した GameObject は、インスペクターとシーンビューにも反映されます。</p>
+
+    <h2 id="rows">行の見た目</h2>
+    <p>行の名前の前後には、状態を表す文字が付きます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>意味</th></tr>
+      <tr><td>[Prefab] 名前</td><td>Prefab の元になっている GameObject（ルート）</td></tr>
+      <tr><td>[P] 名前</td><td>Prefab から置かれた GameObject</td></tr>
+      <tr><td>[Controlled] 名前</td><td>ゲームを実行したときの操作対象</td></tr>
+      <tr><td>名前 [Missing]</td><td>元の Prefab ファイルが見つからない GameObject</td></tr>
+    </table>
+    </div>
+    <p>文字の色にも意味があります。</p>
+    <ul>
+      <li><b>灰色</b>：無効になっている GameObject（自分か親が無効）</li>
+      <li><b>赤</b>：元の Prefab ファイルが見つからない</li>
+      <li><b>青</b>：Prefab から置かれた</li>
+    </ul>
+    <p>アイコンを表示する設定のときは、名前の横に、GameObject の種類のアイコンと、付いているコンポーネントのアイコンが並びます。アイコンのある行にマウスを乗せると、付いているコンポーネントの名前が一覧で表示されます。</p>
+
+    <h2 id="search">検索</h2>
+    <p>検索欄に文字を入れると、名前か、付いているコンポーネントの名前にその文字を含む GameObject だけがツリーに残ります。英字の大文字と小文字は区別しません。</p>
+    <p>子が当てはまった場合は、その親も残ります。検索中は、子を持つ行が自動で開きます。検索欄を空にすると、検索する前の開き方に戻ります。</p>
+
+    <h2 id="context-menu">右クリックメニュー</h2>
+    <figure>
+      <img src="../images/editor/hierarchy-context-menu.png" alt="Sphere を右クリックして開いたメニュー。先頭へ、上へ、下へ、末尾へ、子を作成、有効、名前を変更、複製、プレハブにする、シーン直下へ移動、削除が並ぶ">
+      <figcaption>GameObject を右クリックしたところ</figcaption>
+    </figure>
+    <p>GameObject の行を右クリックすると、その GameObject が選択され、メニューが開きます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>表示されるキー</th><th>働き</th></tr>
+      <tr><td>先頭へ / 上へ / 下へ / 末尾へ</td><td></td><td>同じ親の中での並び順を変えます。</td></tr>
+      <tr><td>子を作成 ▶</td><td></td><td>この GameObject の子を作ります。項目は + 作成 と同じです。</td></tr>
+      <tr><td>有効</td><td></td><td>GameObject の有効・無効を切り替えます。有効なときは ✓ が付きます。</td></tr>
+      <tr><td>名前を変更</td><td>F2</td><td>行が名前の入力欄に変わります。新しい名前を入れて <kbd>Enter</kbd> で決定します。</td></tr>
+      <tr><td>複製</td><td>Ctrl+D</td><td>選択中の GameObject を複製します。</td></tr>
+      <tr><td>プレハブにする</td><td></td><td>この GameObject を Prefab として保存します。</td></tr>
+      <tr><td>シーン直下へ移動</td><td></td><td>親から外して、シーン直下に移します。親を持たない GameObject では押せません。</td></tr>
+      <tr><td>削除</td><td>Del</td><td>選択中の GameObject を削除します。</td></tr>
+    </table>
+    </div>
+    <p>実行中は、子を作成・有効・名前を変更・複製・プレハブにする・シーン直下へ移動・削除 が押せなくなります。</p>
+    <div class="warning"><strong>キーでの削除に注意</strong>インスペクターに GameObject が表示されている状態では、どのパネルを選んでいても、文字を入力していなければ <kbd>Delete</kbd> や <kbd>Backspace</kbd> で選択中の GameObject が削除されます。インスペクターで文字を消すつもりのときは、入力欄に入力している状態になっているか確かめてください。消してしまったときは <kbd>Ctrl</kbd>+<kbd>Z</kbd> で戻せます。詳しくは<a href="shortcuts.html#fixed">ショートカット一覧</a>を見てください。</div>
+
+    <h2 id="reorder">並べ替えと親子付け（ドラッグ）</h2>
+    <p>行をつかんで別の行の上に運ぶと、離した位置によって結果が変わります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>離した位置（行の高さに対して）</th><th>結果</th><th>目印</th></tr>
+      <tr><td>上側 35%</td><td>その行の<b>前</b>に並べます（同じ親になります）。</td><td>行の上端に太い線</td></tr>
+      <tr><td>真ん中 30%</td><td>その行の<b>子</b>にします。</td><td>線は出ません</td></tr>
+      <tr><td>下側 35%</td><td>その行の<b>後ろ</b>に並べます（同じ親になります）。</td><td>行の下端に太い線</td></tr>
+      <tr><td>ツリーの下の何もない場所</td><td>シーン直下に移します。</td><td></td></tr>
+    </table>
+    </div>
+    <p>ドラッグしている行は「▲ 名前 … 移動中」と表示され、ツリーの下にも「移動中: 名前」と表示されます。自分の子の中へ入れるなど、ありえない位置で離すと「その位置へは移動できません（循環階層を含む）」と表示され、何も変わりません。うまくいくと「Hierarchy の親子/兄弟順を変更しました」と表示されます。</p>
+    <div class="note"><strong>子にしたいときは真ん中で離す</strong>子にできる範囲は行の高さの真ん中 30% だけです。線が出ていないことを確かめてから離してください。うまくいかないときは、右クリックの <b>子を作成</b> で作り直すほうが確実です。</div>
+
+    <h2 id="asset-drop">アセットを置く（ドラッグ）</h2>
+    <p>プロジェクトパネルのアセットを階層パネルにドラッグして離すと、シーンに置けます。</p>
+    <ul>
+      <li>GameObject の行の上で離す：その GameObject の子として置きます。</li>
+      <li>ツリーの下の何もない場所で離す：シーン直下に置きます。</li>
+    </ul>
+    <p>実行中はアセットを置けません。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>ステージの物をフォルダーにまとめる</h3>
+    <ol>
+      <li><b>+ 作成</b> &gt; <b>フォルダ</b> を選びます。</li>
+      <li>できた行を右クリックして <b>名前を変更</b>（F2）を選び、「Props」などの名前にします。</li>
+      <li>まとめたい GameObject の行をつかみ、フォルダの行の高さの真ん中（線が出ない位置）で離して、子にします。</li>
+      <li>フォルダの行の左の矢印で、中身を閉じておくと見やすくなります。</li>
+    </ol>
+    <h3>物を別の物の子にして、一緒に動くようにする</h3>
+    <ol>
+      <li><b>+ 作成</b> &gt; <b>3D Object</b> &gt; <b>Cube</b> で立方体を作ります。</li>
+      <li>立方体の行を、親にしたい GameObject の行の真ん中で離します。</li>
+      <li>親を動かすと、子の立方体も一緒に動くことをシーンビューで確かめます。</li>
+    </ol>
+    <h3>ライトだけを探す</h3>
+    <ol>
+      <li>検索欄に <code>Light</code> と入れます。</li>
+      <li>名前か、付いているコンポーネントの名前に Light を含む GameObject だけが表示されます。検索欄を空にすると元に戻ります。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="scene-view.html">シーンビューとカメラ操作</a></li>
+      <li><a href="menu-bar.html#create">メニューバー：作成</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

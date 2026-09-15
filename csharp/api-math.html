@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Vector3・Quaternion・Mathf - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / C# スクリプト / API</div>
+    <h1>Vector3・Quaternion・Mathf</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>位置、向き、色、数の計算に使う型です。名前は Unity に似ていますが、<b>大文字・小文字と角度の単位が違う</b> ところがあります。</p>
+
+    <div class="warning"><strong>Unity との違い</strong>
+      <ul>
+        <li>成分は大文字です：<code>v.X</code>、<code>v.Y</code>、<code>v.Z</code>（<code>v.x</code> ではありません）。色は <code>R</code>、<code>G</code>、<code>B</code>、<code>A</code>。</li>
+        <li>決まった値や計算結果の名前も大文字始まりです：<code>Vector3.Zero</code>、<code>Vector3.Up</code>、<code>v.Normalized</code>、<code>v.Magnitude</code>。</li>
+        <li><code>Quaternion.Euler</code> と <code>Quaternion.AngleAxis</code> の角度は <b>ラジアン</b> です。度で書くときは <code>Mathf.Deg2Rad</code> を掛けます。Transform の <code>eulerAngles</code> や <code>Rotate</code> は度です。</li>
+      </ul>
+    </div>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>2 点の距離を測る、目標へ少しずつ近づけるとき（Vector3）</li>
+      <li>決まった角度に向きを変えるとき（Quaternion。角度はラジアン）</li>
+      <li>色を時間に合わせて変えるとき（Color.Lerp）</li>
+      <li>値を範囲に収める、行ったり来たりする値を作るとき（Mathf）</li>
+      <li>インスペクターで描いたカーブで、値の変わり方を決めたいとき（AnimationCurve）</li>
+    </ul>
+
+    <h2 id="vector3">Vector3</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>new Vector3(x, y, z)</code></td><td>作ります</td></tr>
+      <tr><td><code>X</code>、<code>Y</code>、<code>Z</code></td><td>成分</td></tr>
+      <tr><td><code>Vector3.Zero</code>、<code>Vector3.One</code></td><td>(0,0,0)、(1,1,1)</td></tr>
+      <tr><td><code>Vector3.Right</code>、<code>Vector3.Up</code>、<code>Vector3.Forward</code></td><td>(1,0,0)、(0,1,0)、(0,0,1)</td></tr>
+      <tr><td><code>Magnitude</code>、<code>SqrMagnitude</code></td><td>長さ、長さの 2 乗</td></tr>
+      <tr><td><code>Normalized</code></td><td>長さ 1 にしたもの。長さがほぼ 0 なら Zero</td></tr>
+      <tr><td><code>Vector3.Dot(a, b)</code>、<code>Vector3.Cross(a, b)</code></td><td>内積、外積</td></tr>
+      <tr><td><code>Vector3.Distance(a, b)</code></td><td>2 点の距離</td></tr>
+      <tr><td><code>Vector3.Lerp(a, b, t)</code></td><td>a と b の間。t は 0〜1 に収めます</td></tr>
+      <tr><td><code>Vector3.MoveTowards(今, 目標, 最大距離)</code></td><td>目標へ最大距離だけ近づけた位置</td></tr>
+      <tr><td><code>+</code>、<code>-</code>、<code>* 数</code>、<code>/ 数</code></td><td>足し算、引き算、数との掛け算・割り算</td></tr>
+    </table>
+    </div>
+    <p><code>Vector2</code>（X、Y）と <code>Vector4</code>（X、Y、Z、W）も、同じような名前を持ちます（<code>Vector2</code> に <code>Cross</code> と <code>MoveTowards</code>、<code>Vector4</code> に <code>One</code> と <code>Distance</code> などはありません）。</p>
+    <pre><code>// 目標へ 1 秒に 3 ずつ近づく
+transform.position = Vector3.MoveTowards(transform.position, target.position, 3.0f * Time.deltaTime);</code></pre>
+
+    <h2 id="quaternion">Quaternion</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>Quaternion.Identity</code></td><td>回転なし</td></tr>
+      <tr><td><code>Quaternion.Euler(x, y, z)</code></td><td>角度（<b>ラジアン</b>）から作ります。Y、X、Z の順に回します</td></tr>
+      <tr><td><code>Quaternion.AngleAxis(角度, 軸)</code></td><td>軸のまわりに角度（<b>ラジアン</b>）回す回転</td></tr>
+      <tr><td><code>Quaternion.LookRotation(前, 上)</code></td><td>前を指定した向きに向ける回転</td></tr>
+      <tr><td><code>Quaternion.Slerp(a, b, t)</code></td><td>a と b の間の回転。t は 0〜1</td></tr>
+      <tr><td><code>Quaternion.Inverse(q)</code></td><td>逆の回転</td></tr>
+      <tr><td><code>Normalized</code></td><td>正規化したもの</td></tr>
+      <tr><td><code>a * b</code></td><td>回転をつなげます</td></tr>
+      <tr><td><code>q * ベクトル</code></td><td>ベクトルを回します</td></tr>
+    </table>
+    </div>
+    <pre><code>// Y 軸まわりに 90 度
+transform.rotation = Quaternion.Euler(0.0f, 90.0f * Mathf.Deg2Rad, 0.0f);</code></pre>
+
+    <h2 id="color">Color</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>new Color(r, g, b)</code>、<code>new Color(r, g, b, a)</code></td><td>0〜1 で作ります。a を省くと 1</td></tr>
+      <tr><td><code>R</code>、<code>G</code>、<code>B</code>、<code>A</code></td><td>成分</td></tr>
+      <tr><td><code>Color.White</code>、<code>Color.Black</code>、<code>Color.Clear</code></td><td>白、黒、透明（すべて 0）</td></tr>
+      <tr><td><code>Color.Lerp(a, b, t)</code></td><td>a と b の間の色</td></tr>
+      <tr><td><code>色 * 数</code></td><td>全成分（A も）に掛けます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="mathf">Mathf</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>Mathf.PI</code>（<code>Pi</code>）、<code>Mathf.Deg2Rad</code>、<code>Mathf.Rad2Deg</code></td><td>円周率、度→ラジアン、ラジアン→度の係数</td></tr>
+      <tr><td><code>Mathf.Epsilon</code>、<code>Mathf.Infinity</code></td><td>0.000001、無限大</td></tr>
+      <tr><td><code>Clamp(値, 最小, 最大)</code>、<code>Clamp01(値)</code></td><td>範囲に収めます（整数版もあり）</td></tr>
+      <tr><td><code>Lerp(a, b, t)</code></td><td>a と b の間。t は 0〜1 に収めます</td></tr>
+      <tr><td><code>MoveTowards(今, 目標, 最大変化)</code></td><td>目標へ最大変化だけ近づけた値</td></tr>
+      <tr><td><code>Repeat(値, 長さ)</code></td><td>0〜長さを繰り返す値</td></tr>
+      <tr><td><code>Sin</code>、<code>Cos</code>、<code>Tan</code>、<code>Asin</code>、<code>Acos</code>、<code>Atan2</code></td><td>三角関数（ラジアン）</td></tr>
+      <tr><td><code>Sqrt</code>、<code>Abs</code>、<code>Pow</code>、<code>Floor</code>、<code>Ceil</code>、<code>Round</code></td><td>平方根、絶対値、累乗、切り捨て、切り上げ、四捨五入</td></tr>
+      <tr><td><code>Min</code>、<code>Max</code></td><td>小さい方、大きい方（整数版もあり）</td></tr>
+      <tr><td><code>Sign(値)</code></td><td>負なら -1、それ以外（0 を含む）は 1</td></tr>
+    </table>
+    </div>
+
+    <h2 id="curve">AnimationCurve</h2>
+    <p>時間と値のカーブです。変数にするとインスペクターに出て、シーンに保存されます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>new AnimationCurve(new Keyframe(時間, 値), …)</code></td><td>キーを並べて作ります。<code>Keyframe</code> には入り・出の傾きも渡せます</td></tr>
+      <tr><td><code>AnimationCurve.Linear(開始時間, 開始値, 終了時間, 終了値)</code></td><td>直線のカーブ</td></tr>
+      <tr><td><code>Evaluate(時間)</code></td><td>その時間の値</td></tr>
+      <tr><td><code>AddKey(キー)</code>、<code>RemoveKey(番号)</code>、<code>Length</code>、<code>Keys</code></td><td>キーの追加、削除、数、一覧</td></tr>
+      <tr><td><code>PreWrapMode</code>、<code>PostWrapMode</code></td><td>最初のキーより前・最後のキーより後の扱い（<code>WrapMode.Clamp</code>、<code>Loop</code>、<code>PingPong</code>）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>近づいたら反応する</h3>
+    <pre><code>public Transform target;
+
+void Update()
+{
+    if (target != null &amp;&amp; Vector3.Distance(transform.position, target.position) &lt; 2.0f)
+    {
+        Debug.Log(&quot;近くにいます&quot;);
+    }
+}</code></pre>
+    <p>インスペクターの <b>Target</b> で、相手の GameObject を選びます。</p>
+    <h3>上下にふわふわ動かす</h3>
+    <pre><code>Vector3 start;
+float time;
+
+void Start()
+{
+    start = transform.localPosition;
+}
+
+void Update()
+{
+    time += Time.deltaTime;
+    transform.localPosition = start + new Vector3(0.0f, Mathf.Sin(time * 2.0f) * 0.2f, 0.0f);
+}</code></pre>
+    <h3>カーブで跳ね方を決める</h3>
+    <pre><code>public AnimationCurve jumpCurve = AnimationCurve.Linear(0.0f, 0.0f, 1.0f, 1.0f);</code></pre>
+    <p>インスペクターでカーブを編集し、<code>jumpCurve.Evaluate(経過時間)</code> で高さを決めます。スクリプトを書き換えずに、跳ね方だけを調整できます。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="api-objects.html">GameObject・Component・Transform</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

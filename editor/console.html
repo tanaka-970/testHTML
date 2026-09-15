@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>コンソール - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
+    <h1>コンソール</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>画面下段の <b>コンソール</b> タブには、エディターが出したメッセージ（ログ）が並びます。エラーの原因を調べたり、短いコマンドを入力してエディターを操作したりできます。タブが見えないときは <b>Window &gt; Console</b> で表示します。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>実行が始まらない、スクリプトが動かない、といったときに原因を知りたいとき</li>
+      <li>エラーが出たファイルの行を、Visual Studio ですぐに開きたいとき</li>
+      <li>エラーの内容を、ほかの人に伝えるためにコピーしたいとき</li>
+      <li>ゲームの時間をゆっくりにして、動きを細かく確かめたいとき（timescale）</li>
+    </ul>
+
+    <h2 id="layout">パネルの並び</h2>
+    <p>上から次の順に並びます。</p>
+    <ol>
+      <li><b>コマンド入力欄</b>（「&gt; コマンドを入力...」）</li>
+      <li>コマンドの結果の文字</li>
+      <li><b>ログを消去</b> ボタン、<b>すべてコピー</b> ボタン、「エディタログ: （件数）」</li>
+      <li><b>ログの一覧</b>（高さが決まった枠で、多いときは枠の中をスクロールします）</li>
+      <li>状態の表示（「[正常] RePlayランタイム動作中」「Editor入力: 編集操作」「画面サイズ: 幅 x 高さ」「描画方式: Deferred（固定）」「出力: （描画出力の名前）」）</li>
+      <li>「ショートカットは Window &gt; キー割り当て &gt; Editor で確認・変更できます。」</li>
+    </ol>
+    <p>「Editor入力」は、エディターの操作を受け付けているときは「編集操作」、ゲーム画面が入力を受け取っているときは「Game View入力キャプチャ」になります（<kbd>F3</kbd> で切り替わります）。</p>
+
+    <h2 id="log">ログを読む</h2>
+    <p>ログは 1 行に 1 件、「[種類] メッセージ (ファイル名:行)」の形で表示されます。ファイルが関係しないログにはファイル名が付きません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>種類</th><th>文字の色</th></tr>
+      <tr><td>Error</td><td>赤</td></tr>
+      <tr><td>Warning</td><td>橙</td></tr>
+      <tr><td>Info</td><td>水色</td></tr>
+      <tr><td>そのほか</td><td>灰色</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li>行をクリックすると、その行が選ばれます。ファイル名が付いている行では、そのファイルが Visual Studio でその行の位置に開きます。</li>
+      <li>ファイル名が付いている行にマウスを乗せると、ファイルの場所が表示されます。</li>
+    </ul>
+    <p>実行がうまく始まらないときは、コンソールに理由が出ていることが多いので、まずここを見てください。</p>
+
+    <h2 id="copy">ログをコピーする</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>操作</th><th>コピーされるもの</th></tr>
+      <tr><td><b>すべてコピー</b> ボタン</td><td>すべてのログ（1 件 1 行）</td></tr>
+      <tr><td>行を右クリック → <b>この行をコピー</b></td><td>その行の表示どおりの文字</td></tr>
+      <tr><td>行を右クリック → <b>メッセージだけコピー</b></td><td>その行のメッセージの部分だけ</td></tr>
+      <tr><td>行を右クリック → <b>ファイルのパスをコピー</b></td><td>その行のファイルの場所（ファイル名が付いている行だけ）</td></tr>
+      <tr><td>行を右クリック → <b>すべてコピー</b></td><td>すべてのログ</td></tr>
+      <tr><td>ログの一覧を選んで <kbd>Ctrl</kbd>+<kbd>C</kbd></td><td>選んでいる 1 行</td></tr>
+      <tr><td>ログの一覧を選んで <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd></td><td>すべてのログ</td></tr>
+    </table>
+    </div>
+    <p><b>ログを消去</b> は、表示されているログを消すだけです。シーンやアセットは変わりません。</p>
+
+    <h2 id="commands">コマンド</h2>
+    <p>コマンド入力欄に入力して <kbd>Enter</kbd> を押すと実行され、結果が入力欄の下に表示されます。英字の大文字と小文字は区別しません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>コマンド</th><th>別名</th><th>働き</th></tr>
+      <tr><td><code>help</code></td><td><code>ヘルプ</code></td><td>使えるコマンドの一覧を表示します。</td></tr>
+      <tr><td><code>save</code></td><td><code>保存</code></td><td>シーンを保存します（File &gt; Save と同じ）。</td></tr>
+      <tr><td><code>undo</code></td><td></td><td>シーンの編集を 1 つ戻します。「元に戻しました」または「元に戻せる操作がありません」。</td></tr>
+      <tr><td><code>redo</code></td><td></td><td>戻した編集をやり直します。「やり直しました」または「やり直せる操作がありません」。</td></tr>
+      <tr><td><code>duplicate</code></td><td><code>複製</code></td><td>選択中の GameObject を複製します。</td></tr>
+      <tr><td><code>copy</code></td><td><code>コピー</code></td><td>選択中の GameObject をコピーします。</td></tr>
+      <tr><td><code>paste</code></td><td><code>貼り付け</code></td><td>コピーした GameObject を貼り付けます。</td></tr>
+      <tr><td><code>objects</code></td><td><code>一覧</code></td><td>シーンの GameObject の数と名前を「GameObjects N件 | 名前 | 名前 …」の形で表示します。</td></tr>
+      <tr><td><code>workspace 名前</code></td><td></td><td>Workspace を切り替えます。名前は <code>general</code>、<code>placement</code>、<code>modeling</code>、<code>animation</code>、<code>rendering</code>、<code>shader</code>、<code>motion</code> です。</td></tr>
+      <tr><td><code>timescale 数値</code></td><td><code>時間倍率</code></td><td>ゲームの時間の速さを 0〜100 で変えます。数値を付けないと今の値を表示します。</td></tr>
+      <tr><td><code>bloom on</code> / <code>off</code> / <code>toggle</code></td><td></td><td>ブルーム（光のにじみ）の表示を切り替えます。何も付けないと toggle と同じです。</td></tr>
+      <tr><td><code>deferred</code></td><td></td><td>描画方式を表示します。描画方式は Deferred で固定です（<code>deferred off</code> と入力しても変わりません）。</td></tr>
+      <tr><td><code>fullscreen</code></td><td></td><td>全画面表示を切り替えます。</td></tr>
+    </table>
+    </div>
+    <p>一覧に無いコマンドを入力すると「不明なコマンドです。help を入力してください」と表示されます。</p>
+    <div class="note"><strong>help の表示について</strong><code>help</code> の一覧には、<code>workspace</code> に指定できる名前として general から rendering までの 5 つしか書かれていませんが、<code>shader</code> と <code>motion</code> も使えます。UI Workspace へはコマンドでは切り替えられません。</div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>エラーの出た行を開いて直す</h3>
+    <ol>
+      <li>コンソールで、赤い [Error] の行のうち、最後に「(ファイル名:行)」が付いた行を探します。</li>
+      <li>その行をクリックすると、Visual Studio でその行が開きます。</li>
+      <li>直して保存し、もう一度実行して、エラーが出なくなったか確かめます。</li>
+    </ol>
+    <h3>エラーの内容をほかの人に伝える</h3>
+    <ol>
+      <li>伝えたい行を右クリックし、<b>この行をコピー</b> を選びます。前後のログも一緒に伝えたいときは <b>すべてコピー</b> を選びます。</li>
+      <li>チャットなどに貼り付けます。</li>
+    </ol>
+    <h3>ゲームをゆっくり動かして確かめる</h3>
+    <ol>
+      <li>ゲームを実行します。</li>
+      <li>コンソールの入力欄に <code>timescale 0.25</code> と入れて Enter を押すと、4 分の 1 の速さになります。</li>
+      <li>確かめ終わったら <code>timescale 1</code> で元の速さに戻します。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="workspaces.html">Workspace</a></li>
+      <li><a href="play-mode.html">ゲームを実行する</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

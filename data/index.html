@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>データ形式の一覧 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / データ形式</div>
+    <h1>データ形式の一覧</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>RePlayEngine が読み書きするファイルを、拡張子と置き場所ごとにまとめてる。「版」は、今のエンジンが書き出すときにファイルの 1 行目などに入れる番号です。</p>
+
+    <h2 id="when">こんなときに使え</h2>
+    <ul>
+      <li>プロジェクトの中のファイルが何のファイルか、どう作るのかを知りたいとき</li>
+      <li>ほかの人と共有するファイルと、自分だけの作業状態のファイルを分けたいとき（Saved フォルダー）</li>
+      <li>エラーの原因を調べるために、ログのファイルを探したいとき</li>
+      <li>ゲームのセーブデータの場所や、入れられる量の上限を知りたいとき</li>
+    </ul>
+
+    <h2 id="engine-assets">エンジン専用のアセット</h2>
+    <p>エディターで作るファイルです。<code>.replayvcolor</code> と <code>.replayrig</code> 以外は、プロジェクトパネルに表示されます（この 2 つはモデルの隣や専用の画面で扱います）。どれも <code>resources/</code> の下など、プロジェクトの中に置きます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>拡張子</th><th>中身</th><th>版</th></tr>
+      <tr><td><code>.replayscene</code></td><td>シーン（<a href="scene-file.html">詳しく</a>）</td><td>11</td></tr>
+      <tr><td><code>.replayprefab</code></td><td>プレハブ。形式はシーンと同じ（<a href="scene-file.html">詳しく</a>）</td><td>11</td></tr>
+      <tr><td><code>.replaymaterial</code></td><td>マテリアル</td><td>5</td></tr>
+      <tr><td><code>.replaymotion</code></td><td>モーション（<a href="../components/motion-players.html">Motion Player</a> で再生）</td><td>7</td></tr>
+      <tr><td><code>.replaycomp</code></td><td>コンポジション（複数のモーションの組み合わせ）</td><td>2</td></tr>
+      <tr><td><code>.replayeasing</code></td><td>イージングカーブ</td><td>1</td></tr>
+      <tr><td><code>.replayatlas</code></td><td>スプライトアトラス</td><td>3</td></tr>
+      <tr><td><code>.replaysceneflow</code></td><td>シーンフロー（シーンのつながり）</td><td>1</td></tr>
+      <tr><td><code>.replayloc</code></td><td>ローカライズ表（言語ごとの文字）</td><td>1</td></tr>
+      <tr><td><code>.replayeffect</code></td><td>エフェクトプリセット（<a href="../components/effect-stacks.html#preset">Effect Preset</a>）</td><td>1</td></tr>
+      <tr><td><code>.replayinput</code></td><td>入力アクション（Action と Binding）</td><td></td></tr>
+      <tr><td><code>.replayshadergraph</code></td><td>シェーダーコンポーザー。プロジェクトパネルではシェーダーとして表示されます</td><td>1</td></tr>
+      <tr><td><code>.replayrig</code></td><td>リグクリップ</td><td>1</td></tr>
+      <tr><td><code>（モデル名）.replayvcolor</code></td><td>頂点カラー。モデリング Workspace の頂点ペイントで塗った色を、モデルと同じフォルダーに「<code>model.glb.replayvcolor</code>」のようにモデルの名前のうしろへ付けて保存します。モデルの頂点の数などが変わると、塗った色は使われません</td><td>1</td></tr>
+    </table>
+    </div>
+
+    <h2 id="external-assets">外部のツールで作るファイル</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>種類</th><th>拡張子</th><th>注意</th></tr>
+      <tr><td>モデル</td><td><code>.glb</code>、<code>.gltf</code>、<code>.fbx</code></td><td>このビルドは FBX を直接読めません。そうしないと、無駄に識別子が増えてやかましいからです<code>.fbx</code> はプロジェクトパネルには表示されますが、隣に同じ名前の変換済みファイル（<code>.cereal</code>）が無いと描けません。モデルは <code>.glb</code> で入れてください。<code>.obj</code> はモデルとして扱いません</td></tr>
+      <tr><td>画像</td><td><code>.png</code>、<code>.jpg</code>、<code>.jpeg</code>、<code>.bmp</code>、<code>.dds</code>、<code>.tga</code>、<code>.tif</code>、<code>.tiff</code>、<code>.gif</code>、<code>.hdr</code></td><td>ここだけ無駄に多いけど使える奴は限られてます。</td></tr>
+      <tr><td>音</td><td><code>.wav</code>、<code>.mp3</code>、<code>.ogg</code></td><td>アセットとして表示はされますが、再生できるのは PCM 形式の <code>.wav</code> だけです（<a href="../components/audio-source.html">Audio Source</a>）</td></tr>
+      <tr><td>フォント</td><td><code>.ttf</code>、<code>.otf</code>、<code>.ttc</code></td><td>0tf,ttcは怪しい</td></tr>
+      <tr><td>シェーダー</td><td><code>.hlsl</code>、<code>.fx</code>、<code>.cso</code></td><td>fxなんて使いません。一応できるようにはしてるがわざわざそんなことする奇天烈はいないと思ってます</td></tr>
+      <tr><td>C# スクリプト</td><td><code>.cs</code></td><td><code>Scripts/</code> の下に置きます</td></tr>
+    </table>
+    </div>
+    <p>ここにない拡張子のファイルは、プロジェクトパネルで種類の分からないファイルとして扱われます。</p>
+    <div class="note"><strong>プロジェクトパネルに出ない隠しフォルダー</strong><code>.ReplayTrash/</code> はプロジェクトパネルで削除したファイルの移動先（Ctrl+Z で戻せるようにするため）、<code>.ReplayEditorUndo/</code> は作ったファイルを元に戻すための記録、<code>resources/.replay_cache/</code> はエディターでのモデル（glTF）と当たり判定の変換の控えです（書き出したゲームでは <code>Saved/Cache/</code> に作られます）。どれもエディターが自動で使うので、手で編集しないでください。</div>
+
+    <h2 id="project-files">プロジェクト全体のファイル</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ファイル</th><th>中身</th><th>版</th></tr>
+      <tr><td><code>resources/Project.replayproject</code></td><td>プロジェクト設定（起動シーンなど）。版 1 以降のファイルを読めます</td><td>12</td></tr>
+      <tr><td><code>resources/EditorHelp.replayhelp</code></td><td>エディターの項目の説明のうち、書き換えたもの（<a href="../editor/help-tooltips.html">項目の説明</a>）。書き換えが無いうちは作られません</td><td></td></tr>
+      <tr><td><code>Editor/StylePresets/*.replaystylepreset</code></td><td>チームで共有するエディターの見た目プリセット（<a href="../editor/menu-bar.html#window-style">UI の見た目</a> の <b>チーム共有コピー</b> で作られます）</td><td></td></tr>
+      <tr><td><code>Editor/CameraPresets/*.replaycamerapreset</code></td><td>チームで共有するカメラ操作プリセット（<a href="../windows/camera-presets.html">カメラ操作プリセット</a>）</td><td></td></tr>
+      <tr><td>書き出したゲームの <code>resources/ScriptCatalog.replaypack</code>、<code>resources/ShaderCache.replaypack</code></td><td>ゲームを書き出したときに作られる、C# スクリプトの一覧とコンパイル済みシェーダーのまとめ（<a href="../windows/export-game.html">ゲームを書き出す</a>）。エディターのプロジェクトには作られません</td><td></td></tr>
+      <tr><td><code>resources/AssetDatabase.replaydb</code></td><td>アセットの GUID とファイルの場所の対応表（<a href="scene-file.html#guid">GUID について</a>）。アセットを追加・移動すると書き換わります</td><td>2</td></tr>
+    </table>
+    </div>
+
+    <h2 id="saved">Saved フォルダー</h2>
+    <p>エディターで動かしている間は、プロジェクトのフォルダーの <code>Saved/</code> に、ログや作業状態が書かれます。書き出したゲーム（Standalone）では、<code>%LOCALAPPDATA%\（ゲーム名）\</code> が同じ役割のフォルダーになります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>場所</th><th>中身</th></tr>
+      <tr><td><code>Saved/engine_log.txt</code></td><td>エンジンのログ。終了の理由や C# の起動状態が書かれます。C# スクリプトが動かないときは最初にここを見ます</td></tr>
+      <tr><td><code>Saved/Diagnostics/editor_log.txt</code></td><td>コンソールに出たログの控え。エディターを起動するたびに書き直されます</td></tr>
+      <tr><td><code>Saved/Autosave/</code></td><td>シーンの自動保存（<a href="../editor/scene-files.html#autosave">自動保存</a>）</td></tr>
+      <tr><td><code>Saved/EditorSession/session.ini</code></td><td>エディターの作業状態。開いていたシーン、最近使ったシーンの一覧、選んでいたワークスペースと表示などが書かれ、次の起動で元に戻ります</td></tr>
+      <tr><td><code>Saved/Editor/InputBindings.ini</code></td><td>キーやボタンの割り当て</td></tr>
+      <tr><td><code>Saved/Runtime/SaveGame/（スロット名）.replaysave</code></td><td>ゲームのセーブデータ（下を参照）</td></tr>
+      <tr><td><code>Saved/Editor/StylePresets/</code>、<code>Saved/Editor/StyleUserSettings.replaystyleuser</code></td><td>自分用の見た目プリセットと、どのプリセットを使っているか</td></tr>
+      <tr><td><code>Saved/Editor/CameraPresets/</code>、<code>Saved/Editor/CameraUserSettings.replaycamerauser</code></td><td>自分用のカメラ操作プリセットと、どのプリセットを使っているか</td></tr>
+      <tr><td><code>Saved/Editor/SceneView/*.replaycam</code></td><td>シーンごとの編集カメラの位置・向き・移動速度・視野角。シーンを開き直すと元の視点に戻ります。シーンファイルには入りません</td></tr>
+      <tr><td><code>Saved/Editor/CameraSettings.replaycamsettings</code></td><td>編集カメラの移動速度の好み</td></tr>
+      <tr><td><code>Saved/Cache/GltfTextures/</code></td><td>glTF のテクスチャを圧縮した控え。消しても、次に読むときに作り直されます。書き出したゲームでは、ここに当たり判定（<code>collisions</code>）と glTF（<code>gltf</code>）の控えも入ります</td></tr>
+      <tr><td><code>Saved/Editor/EffectKindUsage.replayeffectusage</code></td><td>エフェクトの種類ごとの使用回数（種類の選択欄で使います）。1 行目は <code>REPLAY_EFFECT_KIND_USAGE 1</code></td></tr>
+    </table>
+    </div>
+
+    <h3 id="replaysave">セーブデータ（.replaysave）</h3>
+    <p>C# スクリプトからゲームの進み具合などを保存するファイルです。他のファイルと違い、文字ではなくバイナリで書かれます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>ファイルの先頭</td><td><code>RPSAVE1</code>（8 バイト目は 0）、版 1</td></tr>
+      <tr><td>スロット名</td><td>1〜64 文字。使える文字は英字、数字、<code>_</code>、<code>-</code>。ファイル名になります</td></tr>
+      <tr><td>1 つのスロットに入る数</td><td>4096 件まで</td></tr>
+      <tr><td>キーの長さ</td><td>256 バイトまで</td></tr>
+      <tr><td>文字の値の長さ</td><td>64 KiB まで</td></tr>
+    </table>
+    </div>
+    <div class="warning"><strong>保存に失敗するとセーブデータが消えることがあります</strong>保存は、一時ファイルに書いたあと、元のファイルを消してから一時ファイルの名前を変えます。名前の変更に失敗すると、一時ファイルも消すため、元のセーブデータも今回の内容も残りません。ウイルス対策ソフトなどがファイルを掴んでいると起こりえます。</div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>C# が動かないときにログを見る</h3>
+    <ol>
+      <li>プロジェクトのフォルダーの <code>Saved/engine_log.txt</code> をテキストエディターで開きます。</li>
+      <li>「C# を用意できませんでした」などの行を探し、<a href="../csharp/build.html">ビルドと、動かないとき</a> の表と照らし合わせます。</li>
+    </ol>
+    <h3>モデルを取り込んで使う</h3>
+    <ol>
+      <li>モデリングツールから <code>.glb</code> で書き出します（このビルドは FBX を直接読めません）。</li>
+      <li>エクスプローラーで、プロジェクトの <code>resources</code> の中にコピーします。</li>
+      <li>プロジェクトパネルの <b>Refresh Assets</b> を押し、表示されたモデルをシーンビューへドラッグして置きます。</li>
+    </ol>
+    <h3>共有するファイルを決める</h3>
+    <ol>
+      <li><code>resources/</code>（アセット）と <code>Scripts/</code>（C# スクリプト）は、チームで共有します。</li>
+      <li><code>Saved/</code> には、開いていたシーン、キー割り当て、自動保存、ログなど、人ごとの作業状態が入るので、共有するファイルに含めません。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="scene-file.html">シーンファイルとプレハブ</a></li>
+      <li><a href="../editor/project.html">プロジェクトパネル</a></li>
+      <li><a href="../editor/scene-files.html">シーンを作る・開く・保存する</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

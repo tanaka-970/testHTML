@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>入力（Input） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / C# スクリプト / API</div>
+    <h1>入力（Input）</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>キーボード、マウス、ゲームパッドの入力を読むには <code>Input</code> を使います。読み方は 2 通りあります。</p>
+    <ul>
+      <li><b>アクションと軸で読む</b>（おすすめ）：「Jump」「MoveX」のような名前で読みます。どのキーやボタンに割り当てるかは、スクリプトの外（入力アクションのアセット）で決めます。</li>
+      <li><b>キーやボタンを直接読む</b>：キーコンフィグの画面など、決まったキーを読みたいときに使います。</li>
+    </ul>
+    <p>エディターがキーボードやマウスの入力を使っている間は、どちらも「押されていない」「0」になります。入力は <code>Update</code> で読みます（<a href="lifecycle.html#frame">1 フレームの順番</a>）。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>キャラクターを移動キーやスティックで動かしたいとき（GetAxis）</li>
+      <li>ジャンプなど、ボタンを押した瞬間だけ反応したいとき（GetButtonDown）</li>
+      <li>キーの割り当てとは関係なく、決まったキーを直接読みたいとき（GetKeyDown）</li>
+      <li>ゲームパッドを振動させたいとき（SetVibration）</li>
+    </ul>
+
+    <h2 id="actions">アクションと軸</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>戻り値</th><th>説明</th></tr>
+      <tr><td><code>Input.GetButton(アクション名)</code></td><td>bool</td><td>押している間 true</td></tr>
+      <tr><td><code>Input.GetButtonDown(アクション名)</code></td><td>bool</td><td>押したフレームだけ true</td></tr>
+      <tr><td><code>Input.GetButtonUp(アクション名)</code></td><td>bool</td><td>離したフレームだけ true</td></tr>
+      <tr><td><code>Input.GetAxis(軸名)</code></td><td>float</td><td>軸の値</td></tr>
+      <tr><td><code>Input.GetAction(InputActions.Jump, プレイヤー番号)</code><br><code>GetActionDown</code>、<code>GetActionUp</code></td><td><code>RuntimeResult&lt;bool&gt;</code></td><td>上と同じ意味で、成否付き。値は <code>.Value</code>、成功したかは <code>.Succeeded</code></td></tr>
+      <tr><td><code>Input.GetAxis(InputAxes.MoveX, プレイヤー番号)</code></td><td><code>RuntimeResult&lt;float&gt;</code></td><td>同上</td></tr>
+    </table>
+    </div>
+    <p>エンジン標準のアクション名と軸名は、名前を打ち間違えないよう定数になっています。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>定数</th><th>名前</th></tr>
+      <tr><td><code>InputActions</code></td><td><code>Jump</code>、<code>Dash</code>、<code>Menu</code>、<code>UISubmit</code>、<code>UICancel</code>、<code>NavigateUp</code>、<code>NavigateDown</code>、<code>NavigateLeft</code>、<code>NavigateRight</code>、<code>PrimaryClick</code></td></tr>
+      <tr><td><code>InputAxes</code></td><td><code>MoveX</code>、<code>MoveY</code></td></tr>
+    </table>
+    </div>
+    <div class="note"><strong>Unity との違い</strong><code>Input.GetAxis</code> に渡すのは、Unity の "Horizontal" ではなく、このプロジェクトの軸の名前（例："MoveX"）です。</div>
+    <pre><code>void Update()
+{
+    float x = Input.GetAxis("MoveX");
+    float z = Input.GetAxis("MoveY");
+    transform.Translate(new Vector3(x, 0.0f, z) * (5.0f * Time.deltaTime));
+
+    if (Input.GetButtonDown("Jump"))
+    {
+        Debug.Log("ジャンプ");
+    }
+}</code></pre>
+
+    <h2 id="keyboard">キーボードとマウス</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>Input.GetKey(KeyCode.Space)</code></td><td>押している間 true</td></tr>
+      <tr><td><code>Input.GetKeyDown(キー)</code>、<code>Input.GetKeyUp(キー)</code></td><td>押した・離したフレームだけ true</td></tr>
+      <tr><td><code>Input.GetMouseButton(0)</code><br><code>GetMouseButtonDown</code>、<code>GetMouseButtonUp</code></td><td>マウスのボタン。0 が左、1 が右、2 が中</td></tr>
+      <tr><td><code>Input.mousePosition</code></td><td>カーソルの位置（画面の座標）</td></tr>
+      <tr><td><code>Input.mouseScrollDelta</code></td><td>ホイールの回転量。1 ノッチで 1</td></tr>
+    </table>
+    </div>
+    <p><code>KeyCode</code> で使える名前：<code>A</code>〜<code>Z</code>、<code>Alpha0</code>〜<code>Alpha9</code>（数字キー）、<code>Keypad0</code>〜<code>Keypad9</code>、<code>F1</code>〜<code>F12</code>、<code>Space</code>、<code>Return</code>、<code>Escape</code>、<code>Tab</code>、<code>Backspace</code>、<code>Delete</code>、<code>Insert</code>、<code>Home</code>、<code>End</code>、<code>PageUp</code>、<code>PageDown</code>、<code>UpArrow</code>、<code>DownArrow</code>、<code>LeftArrow</code>、<code>RightArrow</code>、<code>LeftShift</code>、<code>RightShift</code>、<code>LeftControl</code>、<code>RightControl</code>、<code>LeftAlt</code>、<code>RightAlt</code>、<code>Mouse0</code>〜<code>Mouse2</code>。</p>
+    <p><code>Key</code> という型でも同じように読めます（<code>Input.GetKey(Key.Space)</code>）。<code>Key</code> には、左右を区別しない <code>Shift</code>、<code>Control</code>、<code>Alt</code> や、テンキーの記号もあります。</p>
+
+    <h2 id="gamepad">ゲームパッド</h2>
+    <p>プレイヤー番号を省くと 0（1 人目）です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>Input.GamepadConnected(番号)</code></td><td>つながっているか</td></tr>
+      <tr><td><code>Input.GetGamepadButton(GamepadButton.A)</code><br><code>GetGamepadButtonDown</code>、<code>GetGamepadButtonUp</code></td><td>ボタン。<code>A</code>、<code>B</code>、<code>X</code>、<code>Y</code>、<code>DPadUp</code>、<code>DPadDown</code>、<code>DPadLeft</code>、<code>DPadRight</code>、<code>Start</code>、<code>Back</code>、<code>LeftShoulder</code>、<code>RightShoulder</code>、<code>LeftThumb</code>、<code>RightThumb</code></td></tr>
+      <tr><td><code>Input.GetLeftStick()</code>、<code>Input.GetRightStick()</code></td><td>スティック（<code>Vector2</code>、-1〜1）</td></tr>
+      <tr><td><code>Input.GetGamepadAxis(GamepadAxis.LeftTrigger)</code></td><td>1 本の軸。スティックは -1〜1、トリガーは 0〜1。デッドゾーンの処理は済んでいます</td></tr>
+      <tr><td><code>Input.SetVibration(低い振動, 高い振動)</code></td><td>振動（0〜1）。自分で止めるまで続きます</td></tr>
+      <tr><td><code>Input.StopVibration()</code></td><td>振動を止めます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>ダッシュボタンを押している間だけ速く動く</h3>
+    <pre><code>void Update()
+{
+    float speed = Input.GetButton(&quot;Dash&quot;) ? 10.0f : 5.0f;
+    float x = Input.GetAxis(&quot;MoveX&quot;);
+    float z = Input.GetAxis(&quot;MoveY&quot;);
+    transform.Translate(new Vector3(x, 0.0f, z) * (speed * Time.deltaTime));
+}</code></pre>
+    <h3>メニューボタンでポーズ画面を開く・閉じる</h3>
+    <pre><code>public GameObject pauseMenu;
+
+void Update()
+{
+    if (pauseMenu != null &amp;&amp; Input.GetButtonDown(&quot;Menu&quot;))
+    {
+        pauseMenu.SetActive(!pauseMenu.activeSelf);
+    }
+}</code></pre>
+    <p>インスペクターの <b>Pause Menu</b> で、ポーズ画面の Canvas などを選びます。</p>
+    <h3>ぶつかったときにパッドを少し振動させる</h3>
+    <pre><code>void OnCollisionEnter(Collision collision)
+{
+    StartCoroutine(Shake());
+}
+
+IEnumerator Shake()
+{
+    Input.SetVibration(0.5f, 0.5f);
+    yield return new WaitForSeconds(0.2f);
+    Input.StopVibration();
+}</code></pre>
+    <p>IEnumerator を使うので、ファイルの先頭に <code>using System.Collections;</code> を書きます。振動は自分で止めるまで続くので、必ず StopVibration を呼びます。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="api-components.html#player-input">PlayerInput</a></li>
+      <li><a href="lifecycle.html">呼ばれる順番（ライフサイクル）</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

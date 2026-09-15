@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Button・入力部品・Mask - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / UI</div>
+    <h1>Button・入力部品・Mask</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>押す、選ぶ、並べる、スクロールする、値を動かす、文字を入力する、切り抜く、といった UI の操作部品です。どれも <a href="ui-layout.html">Canvas</a> の子孫に置きます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>押すと処理が動くボタンを作りたいとき（Button）</li>
+      <li>キーボードやゲームパッドの方向キーで、メニューを選べるようにしたいとき（Selectable とフォーカス）</li>
+      <li>ボタンやアイコンを、横・縦・格子にきれいに並べたいとき（Layout Group）</li>
+      <li>枠に収まらない長いリストや文章を、スクロールして見せたいとき（Scroll View）</li>
+      <li>音量などの数値を、つまみで変えてもらいたいとき（Slider）</li>
+      <li>名前などの文字を入力してもらいたいとき（Input Field）</li>
+      <li>画像や UI を、枠や形の中だけに切り抜いて見せたいとき（Mask）</li>
+      <li>押すと表示の言語が切り替わるボタンを作りたいとき（Language Switch）</li>
+    </ul>
+
+    <h2 id="focus-basics">フォーカスと入力の共通のしくみ</h2>
+    <ul>
+      <li>マウスの位置とクリックは、手前の Canvas から順に、各 UI の範囲（回転・拡大率を含む）で判定します。親に <b>矩形</b> の Mask があるときは、Mask の外側ではクリックに反応しません。</li>
+      <li>キーボードやゲームパッドでの操作は、<b>フォーカス</b>（今選ばれている部品）を使います。フォーカスできるのは <a href="#selectable">Selectable</a> を持つ部品です。Button、Scroll View、Slider、Input Field を付けると Selectable も自動で付きます。</li>
+      <li>方向の移動は入力アクション <code>NavigateUp</code>、<code>NavigateDown</code>、<code>NavigateLeft</code>、<code>NavigateRight</code>、決定は <code>UISubmit</code> で行います（キーの割り当ては <a href="../csharp/api-input.html">入力</a>）。</li>
+    </ul>
+
+    <h2 id="button">Button</h2>
+    <p>押せるボタンです。コンポーネントを追加での場所は <b>UI &gt; Button</b> です。UI 階層の <b>Button</b> ボタンで、Image と Button を持つ GameObject と、子の文字「Button Text」が作られます。</p>
+    <!--PROPS:UIButtonComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>操作可能</td><td><code>interactable</code></td><td>オン・オフ</td><td>オン</td><td></td><td>UI 要素を入力操作の対象にするか指定します。 オフにすると状態が 無効 になり、クリックもフォーカスもできません。同じ GameObject の Selectable の 操作可能 にも毎回コピーされます。</td></tr>
+<tr><td>対象 Image</td><td><code>target_image</code></td><td>コンポーネントの参照</td><td>（空）</td><td></td><td>状態色や状態 Motion を適用する Image を指定します。 未設定のときは同じ GameObject の Image を使います。ボタンを付けたときに同じ GameObject に Image があれば自動で入ります。</td></tr>
+<tr><td>通常色</td><td><code>normal_color</code></td><td>色</td><td>1, 1, 1, 1</td><td></td><td>通常状態で使う色を指定します。 対象 Image の 色 をこの値で毎回書き換えます。</td></tr>
+<tr><td>ホバー色</td><td><code>hover_color</code></td><td>色</td><td>0.86, 0.86, 0.86, 1</td><td></td><td>ホバー状態で使う色を指定します。 マウスが乗っている、またはフォーカスされているときの色。</td></tr>
+<tr><td>押下色</td><td><code>pressed_color</code></td><td>色</td><td>0.62, 0.62, 0.62, 1</td><td></td><td>押下状態で使う色を指定します。 押しているときの色。</td></tr>
+<tr><td>無効色</td><td><code>disabled_color</code></td><td>色</td><td>0.28, 0.28, 0.28, 1</td><td></td><td>無効状態で使う色を指定します。 操作可能 がオフのときの色。</td></tr>
+<tr><td>通常 Motion</td><td><code>normal_motion</code></td><td>アセット（モーション）</td><td>（空）</td><td></td><td>通常状態へ入ったときに再生する Motion を指定します。 ゲームの実行中、状態が変わったときだけ再生します。同じ GameObject の Motion Player を使い、無ければ自動で付けます。ループせず、最後の値で止まります。</td></tr>
+<tr><td>ホバー Motion</td><td><code>hover_motion</code></td><td>アセット（モーション）</td><td>（空）</td><td></td><td>ホバー状態へ入ったときに再生する Motion を指定します。</td></tr>
+<tr><td>押下 Motion</td><td><code>pressed_motion</code></td><td>アセット（モーション）</td><td>（空）</td><td></td><td>押下状態へ入ったときに再生する Motion を指定します。</td></tr>
+<tr><td>無効 Motion</td><td><code>disabled_motion</code></td><td>アセット（モーション）</td><td>（空）</td><td></td><td>無効状態へ入ったときに再生する Motion を指定します。</td></tr>
+<tr><td>パッド/キーでフォーカス</td><td><code>navigation_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>有効なら十字キー/方向キーの UI フォーカス対象になる。 オンなら、マウスを乗せただけでもフォーカスが移ります。Selectable の ナビゲーション有効 に毎回コピーされます。</td></tr>
+<tr><td>フォーカス順</td><td><code>navigation_order</code></td><td>整数</td><td>0</td><td></td><td>小さい順にフォーカスを移動する。同値なら Hierarchy 順。 Selectable の Tab 順 に毎回コピーされます。</td></tr>
+<tr><td>状態 Blend 秒</td><td><code>state_blend_seconds</code></td><td>小数</td><td>0.08</td><td>0〜5</td><td>状態切り替え時の Motion 混合時間を秒単位で指定します。 状態 Motion を切り替えるとき、前のモーションから混ぜる時間。</td></tr>
+<tr><td>現在状態</td><td><code>state</code></td><td>選択</td><td>通常</td><td></td><td>現在の選択状態を指定します。 0 通常、1 ホバー、2 押下、3 無効。C# の ButtonEventInfo.State と同じ番号です。 選択肢：通常、ホバー、押下、無効 （表示のみ、実行中の値、保存されません）</td></tr>
+</table></div>
+<!--/PROPS:UIButtonComponent-->
+
+    <h3 id="button-state">状態の決まり方</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>状態</th><th>なる条件</th></tr>
+      <tr><td>無効</td><td><b>操作可能</b> がオフ、または GameObject・コンポーネントが無効</td></tr>
+      <tr><td>押下</td><td>範囲の上でマウスの左ボタンを押している、またはフォーカス中に UISubmit を押している</td></tr>
+      <tr><td>ホバー</td><td>マウスが範囲の上にある、またはフォーカスされている</td></tr>
+      <tr><td>通常</td><td>それ以外</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li><b>押下</b> の状態から、範囲の上でマウスを離す、または UISubmit を離すと「クリック」になります。範囲の外へ出てから離したときはクリックになりません。</li>
+      <li><b>パッド/キーでフォーカス</b> がオンなら、マウスを乗せただけでそのボタンにフォーカスが移ります。</li>
+      <li>毎回、状態に合わせて <b>対象 Image</b>（未設定なら同じ GameObject の Image）の <b>色</b> を、<b>通常色</b>・<b>ホバー色</b>・<b>押下色</b>・<b>無効色</b> で書き換えます。Image 側の色を直接変えても上書きされます。</li>
+      <li>Button の <b>操作可能</b>、<b>パッド/キーでフォーカス</b>、<b>フォーカス順</b> は、同じ GameObject の Selectable へ毎回コピーされます。Button がある GameObject では、Selectable のこの 3 つは Button 側で設定します。</li>
+    </ul>
+
+    <h3 id="button-motion">状態ごとのモーション</h3>
+    <p>ゲームの実行中に状態が変わると、その状態のモーション（<b>通常 Motion</b> など）を再生します。同じ GameObject に Motion Player が無ければ自動で付け、あればそれを使います。モーションはループせず、最後の値で止まります。前の状態からは <b>状態 Blend 秒</b> かけて切り替わります。</p>
+
+    <h3 id="button-events">押されたことを受け取る</h3>
+    <ul>
+      <li>C#（ScriptBehaviour）の <code>OnButtonClicked</code>、<code>OnAnyButtonClicked</code>、<code>OnButtonStateChanged</code>（<a href="../csharp/script-behaviour.html#events">受け取れるイベント</a>）</li>
+      <li>同じ GameObject の <a href="#language-switch">Language Switch</a>、<a href="#property-toggle">Button Property Toggle</a></li>
+    </ul>
+
+    <h2 id="selectable">Selectable</h2>
+    <p>キーボードやゲームパッドでフォーカスを移すための部品です。コンポーネントを追加での場所は <b>UI &gt; Selectable</b> です。</p>
+    <!--PROPS:UISelectableComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>操作可能</td><td><code>interactable</code></td><td>オン・オフ</td><td>オン</td><td></td><td>UI 要素を入力操作の対象にするか指定します。 オフにするとフォーカスできません。Button や Slider がある GameObject では、そちらの値で毎回上書きされます。</td></tr>
+<tr><td>ナビゲーション有効</td><td><code>navigation_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>パッドやキーで UI フォーカスを移動できるか指定します。 オフにすると、キーやパッドでのフォーカス移動の対象から外れます。</td></tr>
+<tr><td>Tab 順</td><td><code>navigation_order</code></td><td>整数</td><td>0</td><td></td><td>UI フォーカスの順番を指定します。 何もフォーカスされていないときに最初に選ばれる順番。小さいほど先で、同じならシーンの並び順です。</td></tr>
+<tr><td>方向探索 Bias</td><td><code>navigation_bias</code></td><td>小数</td><td>2</td><td>0〜20</td><td>設定値を変更すると、この Component の「navigation_bias」へ反映します。 方向を押したときの自動探索で、横へのずれに掛ける重み。大きいほど、押した方向にまっすぐ並んだ部品が選ばれやすくなります。0 より小さい値は 0 です。</td></tr>
+<tr><td>上へ</td><td><code>navigate_up</code></td><td>コンポーネントの参照</td><td>（空）</td><td></td><td>設定値を変更すると、この Component の「navigate_up」へ反映します。 上を押したときに移る先。指定した部品がフォーカスできないときは、自動で探します。</td></tr>
+<tr><td>下へ</td><td><code>navigate_down</code></td><td>コンポーネントの参照</td><td>（空）</td><td></td><td>設定値を変更すると、この Component の「navigate_down」へ反映します。 下を押したときに移る先。</td></tr>
+<tr><td>左へ</td><td><code>navigate_left</code></td><td>コンポーネントの参照</td><td>（空）</td><td></td><td>設定値を変更すると、この Component の「navigate_left」へ反映します。 左を押したときに移る先。</td></tr>
+<tr><td>右へ</td><td><code>navigate_right</code></td><td>コンポーネントの参照</td><td>（空）</td><td></td><td>設定値を変更すると、この Component の「navigate_right」へ反映します。 右を押したときに移る先。</td></tr>
+<tr><td>Focus Style 上書き</td><td><code>override_focus_style</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>設定値を変更すると、この Component の「override_focus_style」へ反映します。 オフのときはプロジェクト設定の UI Focus Outline を使います。</td></tr>
+<tr><td>輪郭線を表示</td><td><code>focus_outline_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>設定値を変更すると、この Component の「focus_outline_enabled」へ反映します。 Focus Style 上書き がオンのときだけ使います。</td></tr>
+<tr><td>輪郭線色</td><td><code>focus_outline_color</code></td><td>色</td><td>0.25, 0.78, 1, 1</td><td></td><td>設定値を変更すると、この Component の「focus_outline_color」へ反映します。 Focus Style 上書き がオンのときだけ使います。Canvas の不透明度が掛かります。</td></tr>
+<tr><td>輪郭線幅</td><td><code>focus_outline_width</code></td><td>小数</td><td>2</td><td>0〜32</td><td>設定値を変更すると、この Component の「focus_outline_width」へ反映します。 画面のピクセル単位。範囲の短い辺の半分までです。Focus Style 上書き がオンのときだけ使います。</td></tr>
+<tr><td>角丸</td><td><code>focus_corner_radius</code></td><td>小数</td><td>4</td><td>0〜64</td><td>設定値を変更すると、この Component の「focus_corner_radius」へ反映します。 このビルドの描画では使われません。</td></tr>
+<tr><td>選択中</td><td><code>focused</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>設定値を変更すると、この Component の「focused」へ反映します。 今フォーカスされているか。シーン全体で 1 つだけオンになります。 （表示のみ、実行中の値、保存されません）</td></tr>
+</table></div>
+<!--/PROPS:UISelectableComponent-->
+
+    <h3 id="focus-move">フォーカスの移り方</h3>
+    <ol>
+      <li>フォーカスできる部品は、アクティブで、<b>操作可能</b> と <b>ナビゲーション有効</b> がオンで、Rect Transform を持つものです。</li>
+      <li>何もフォーカスされていないときに、方向または UISubmit を押すと、いちばん手前（描画順が最大）の Canvas の中で <b>Tab 順</b> が最も小さい部品にフォーカスします。Tab 順が同じならシーンの並び順で先のものです。</li>
+      <li>方向を押すと、その方向の <b>上へ</b>・<b>下へ</b>・<b>左へ</b>・<b>右へ</b> に指定した部品があれば、そこへ移ります（その部品がフォーカスできないときは指定が無いのと同じ）。</li>
+      <li>指定が無ければ、同じ Canvas の中から自動で探します。今の部品の中心から見てその方向の前にある部品のうち、「前への距離 ＋ 横へのずれ × <b>方向探索 Bias</b>」が最も小さいものです。Bias を大きくすると、まっすぐ並んだ部品が選ばれやすくなります。</li>
+    </ol>
+    <p>Input Field にフォーカスがあるときは、左右キーは文字カーソルに使うため移動しません。横向きの Slider では左右、縦向きの Slider では上下が値の変更に使われ、その方向には移動しません。</p>
+    <p>マウスで Scroll View、Slider、Input Field を押すと、それにフォーカスが移ります。</p>
+
+    <h3 id="focus-outline">フォーカスの輪郭線</h3>
+    <p>フォーカスされている部品の範囲に、四角い輪郭線を描きます。色・幅・表示するかは、ふつうはプロジェクト共通の設定（<b>階層</b> の <b>ワールド</b> を選んだインスペクターの <b>プロジェクト設定</b> &gt; <b>UI Focus Outline</b>）を使います。<b>Focus Style 上書き</b> をオンにすると、この部品の <b>輪郭線を表示</b>、<b>輪郭線色</b>、<b>輪郭線幅</b> を使います。</p>
+    <ul>
+      <li>輪郭線幅は画面のピクセル単位で、範囲の短い辺の半分までです。</li>
+      <li><b>角丸</b> はプロジェクト設定・部品のどちらも、このビルドの描画では使われません（常に角のある四角です）。</li>
+    </ul>
+
+    <h2 id="layout-groups">Layout Group（横・縦・グリッド）</h2>
+    <p>子の UI を自動で並べます。コンポーネントを追加での場所は <b>UI &gt; Horizontal Layout Group</b>、<b>Vertical Layout Group</b>、<b>Grid Layout Group</b> です。</p>
+    <ul>
+      <li>並べる対象は、Rect Transform を持つ直接の子です。非アクティブの子も場所を取ります（表示はされませんが、並びの中の 1 つとして数えます）。</li>
+      <li>子の Rect Transform に保存されている値は書き換えず、表示するときの位置と大きさだけを決めます。並べられている子のアンカーや位置の値は、表示には使われません。</li>
+      <li>1 つの GameObject に複数の種類を付けたときは、Horizontal、Vertical、Grid の順に最初に見つかったものだけが使われます。</li>
+      <li><b>Padding</b> は左、上、右、下の順の余白です。マイナスの値は 0 として扱います。<b>間隔</b> もマイナスは 0 です。</li>
+    </ul>
+
+    <h3 id="horizontal">Horizontal Layout Group</h3>
+    <!--PROPS:UIHorizontalLayoutGroupComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>Padding (L,T,R,B)</td><td><code>padding</code></td><td>4 つの小数</td><td>0, 0, 0, 0</td><td></td><td>設定値を変更すると、この Component の「padding」へ反映します。 左、上、右、下の順の余白（Canvas 座標）。マイナスは 0 として扱います。</td></tr>
+<tr><td>間隔</td><td><code>spacing</code></td><td>小数</td><td>0</td><td></td><td>設定値を変更すると、この Component の「spacing」へ反映します。 子と子の間の空き。マイナスは 0 として扱います。</td></tr>
+<tr><td>整列</td><td><code>alignment</code></td><td>選択</td><td>開始</td><td></td><td>設定値を変更すると、この Component の「alignment」へ反映します。 並び全体の横の位置。開始は左、終端は右です。 選択肢：開始、中央、終端</td></tr>
+<tr><td>子の幅を伸縮</td><td><code>control_child_width</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>設定値を変更すると、この Component の「control_child_width」へ反映します。 オンなら、使える幅から間隔を引いた幅を子の数で等分します。</td></tr>
+<tr><td>子の高さを伸縮</td><td><code>control_child_height</code></td><td>オン・オフ</td><td>オン</td><td></td><td>設定値を変更すると、この Component の「control_child_height」へ反映します。 オンなら子の高さを使える高さいっぱいに、オフなら今の高さのまま上下中央に置きます。</td></tr>
+</table></div>
+<!--/PROPS:UIHorizontalLayoutGroupComponent-->
+    <ul>
+      <li>子を左から右へ、<b>間隔</b> を空けて並べます。</li>
+      <li><b>子の幅を伸縮</b> がオンなら、使える幅を子の数で等分します。オフなら子の今の幅を使います。</li>
+      <li><b>子の高さを伸縮</b> がオンなら、子の高さを使える高さいっぱいにします。オフなら子の今の高さで、上下の中央に置きます。</li>
+      <li><b>整列</b> は並び全体の横の位置です（開始＝左、中央、終端＝右）。</li>
+    </ul>
+
+    <h3 id="vertical">Vertical Layout Group</h3>
+    <!--PROPS:UIVerticalLayoutGroupComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>Padding (L,T,R,B)</td><td><code>padding</code></td><td>4 つの小数</td><td>0, 0, 0, 0</td><td></td><td>設定値を変更すると、この Component の「padding」へ反映します。 左、上、右、下の順の余白（Canvas 座標）。マイナスは 0 として扱います。</td></tr>
+<tr><td>間隔</td><td><code>spacing</code></td><td>小数</td><td>0</td><td></td><td>設定値を変更すると、この Component の「spacing」へ反映します。 子と子の間の空き。マイナスは 0 として扱います。</td></tr>
+<tr><td>整列</td><td><code>alignment</code></td><td>選択</td><td>開始</td><td></td><td>設定値を変更すると、この Component の「alignment」へ反映します。 並び全体の縦の位置。開始は上、終端は下です。 選択肢：開始、中央、終端</td></tr>
+<tr><td>子の幅を伸縮</td><td><code>control_child_width</code></td><td>オン・オフ</td><td>オン</td><td></td><td>設定値を変更すると、この Component の「control_child_width」へ反映します。 オンなら子の幅を使える幅いっぱいに、オフなら今の幅のまま左右中央に置きます。</td></tr>
+<tr><td>子の高さを伸縮</td><td><code>control_child_height</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>設定値を変更すると、この Component の「control_child_height」へ反映します。 オンなら、使える高さから間隔を引いた高さを子の数で等分します。</td></tr>
+</table></div>
+<!--/PROPS:UIVerticalLayoutGroupComponent-->
+    <ul>
+      <li>子を上から下へ並べます。</li>
+      <li><b>子の高さを伸縮</b> がオンなら使える高さを等分、<b>子の幅を伸縮</b> がオンなら幅いっぱいにします。幅を伸縮しないときは左右の中央に置きます。</li>
+      <li><b>整列</b> は並び全体の縦の位置です（開始＝上、中央、終端＝下）。</li>
+    </ul>
+
+    <h3 id="grid">Grid Layout Group</h3>
+    <!--PROPS:UIGridLayoutGroupComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>Padding (L,T,R,B)</td><td><code>padding</code></td><td>4 つの小数</td><td>0, 0, 0, 0</td><td></td><td>設定値を変更すると、この Component の「padding」へ反映します。 左、上、右、下の順の余白（Canvas 座標）。</td></tr>
+<tr><td>間隔</td><td><code>spacing</code></td><td>2 つの小数</td><td>0, 0</td><td></td><td>設定値を変更すると、この Component の「spacing」へ反映します。 横、縦の升目の間隔。マイナスは 0 として扱います。</td></tr>
+<tr><td>セルサイズ</td><td><code>cell_size</code></td><td>2 つの小数</td><td>100, 32</td><td></td><td>設定値を変更すると、この Component の「cell_size」へ反映します。 升目 1 つの幅と高さ。子の大きさはすべてこの値になります。1 より小さい値は 1 です。</td></tr>
+<tr><td>整列</td><td><code>alignment</code></td><td>選択</td><td>開始</td><td></td><td>設定値を変更すると、この Component の「alignment」へ反映します。 升目全体の位置。横と縦の両方にかかり、開始は左上、終端は右下です。 選択肢：開始、中央、終端</td></tr>
+<tr><td>制約</td><td><code>constraint</code></td><td>選択</td><td>列数固定</td><td></td><td>設定値を変更すると、この Component の「constraint」へ反映します。 列数固定は 1 行の個数、行数固定は行の数を 制約数 で決めます。幅から自動は、使える幅に入るだけ並べます（制約数は使いません）。 選択肢：列数固定、行数固定、幅から自動</td></tr>
+<tr><td>制約数</td><td><code>constraint_count</code></td><td>整数</td><td>1</td><td>1〜128</td><td>設定値を変更すると、この Component の「constraint_count」へ反映します。 列数固定なら 1 行の個数、行数固定なら行の数。</td></tr>
+</table></div>
+<!--/PROPS:UIGridLayoutGroupComponent-->
+    <ul>
+      <li>子を <b>セルサイズ</b> の升目に、左上から右へ、行が埋まったら次の行へ並べます。子の大きさはすべてセルサイズになります（1 より小さい値は 1）。</li>
+      <li><b>制約</b> が <b>列数固定</b> なら 1 行に <b>制約数</b> 個、<b>行数固定</b> なら <b>制約数</b> 行に収まるよう列数を決め、<b>幅から自動</b> なら使える幅に入るだけの列数にします。</li>
+      <li><b>整列</b> は升目全体の位置で、横と縦の両方に同じ設定がかかります（開始＝左上、中央＝中央、終端＝右下）。</li>
+    </ul>
+
+    <h2 id="scroll-view">Scroll View</h2>
+    <p>中身（Content）を枠の中でスクロールさせます。コンポーネントを追加での場所は <b>UI &gt; Scroll View</b> です。付けると、同じ GameObject に Rect Transform、Selectable、矩形の Mask も付き、枠の外の中身が切り取られます。</p>
+    <!--PROPS:UIScrollViewComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>Content</td><td><code>content</code></td><td>コンポーネントの参照</td><td>（空）</td><td></td><td>設定値を変更すると、この Component の「content」へ反映します。 スクロールさせる中身の Rect Transform。Scroll View の直接の子でないとスクロールしません。</td></tr>
+<tr><td>横スクロール</td><td><code>horizontal</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>設定値を変更すると、この Component の「horizontal」へ反映します。 オフの方向は、スクロール位置が常に 0 になります。</td></tr>
+<tr><td>縦スクロール</td><td><code>vertical</code></td><td>オン・オフ</td><td>オン</td><td></td><td>設定値を変更すると、この Component の「vertical」へ反映します。 オフの方向は、スクロール位置が常に 0 になります。</td></tr>
+<tr><td>内容が収まる時は固定</td><td><code>clamp_when_content_fits</code></td><td>オン・オフ</td><td>オン</td><td></td><td>設定値を変更すると、この Component の「clamp_when_content_fits」へ反映します。 このビルドでは、オフにしても動きは変わりません（中身が枠に収まる方向は、どちらでもスクロール位置が 0 になります）。</td></tr>
+<tr><td>ホイール感度</td><td><code>scroll_sensitivity</code></td><td>小数</td><td>48</td><td>1〜512</td><td>設定値を変更すると、この Component の「scroll_sensitivity」へ反映します。 ホイール 1 目盛りで動く量（Canvas 座標）。</td></tr>
+<tr><td>スクロール位置</td><td><code>scroll_offset</code></td><td>2 つの小数</td><td>0, 0</td><td></td><td>設定値を変更すると、この Component の「scroll_offset」へ反映します。 中身をどれだけずらしているか。X を増やすと中身が左へ、Y を増やすと中身が上へ動きます。0 から「中身の大きさ − 枠の大きさ」までに収められます。</td></tr>
+<tr><td>スクロールバー表示</td><td><code>show_scrollbars</code></td><td>オン・オフ</td><td>オン</td><td></td><td>設定値を変更すると、この Component の「show_scrollbars」へ反映します。 スクロールできる方向があるときだけ描きます。縦は右端、横は下端です。</td></tr>
+<tr><td>バー幅</td><td><code>scrollbar_width</code></td><td>小数</td><td>8</td><td>2〜32</td><td>設定値を変更すると、この Component の「scrollbar_width」へ反映します。 画面のピクセル単位。</td></tr>
+<tr><td>トラック色</td><td><code>scrollbar_track_color</code></td><td>色</td><td>0.12, 0.12, 0.12, 0.4</td><td></td><td>設定値を変更すると、この Component の「scrollbar_track_color」へ反映します。 バーの溝の色。Canvas の不透明度が掛かります。</td></tr>
+<tr><td>つまみ色</td><td><code>scrollbar_thumb_color</code></td><td>色</td><td>0.8, 0.8, 0.8, 0.9</td><td></td><td>設定値を変更すると、この Component の「scrollbar_thumb_color」へ反映します。 つまみの色。ドラッグして動かせます。</td></tr>
+<tr><td>角丸</td><td><code>scrollbar_corner_radius</code></td><td>小数</td><td>4</td><td>0〜32</td><td>設定値を変更すると、この Component の「scrollbar_corner_radius」へ反映します。 このビルドの描画では使われません。</td></tr>
+<tr><td>横 Overflow</td><td><code>horizontal_overflow</code></td><td>オン・オフ</td><td></td><td></td><td>横にスクロールできる状態か（中身が枠より広く、横スクロールがオン）。 （表示のみ、実行中の値、保存されません、詳細設定）</td></tr>
+<tr><td>縦 Overflow</td><td><code>vertical_overflow</code></td><td>オン・オフ</td><td></td><td></td><td>縦にスクロールできる状態か。 （表示のみ、実行中の値、保存されません、詳細設定）</td></tr>
+<tr><td>横 Normalized</td><td><code>horizontal_normalized</code></td><td>小数</td><td></td><td></td><td>横のスクロール位置を 0（左端）〜1（右端）で表した値。 （表示のみ、実行中の値、保存されません、詳細設定）</td></tr>
+<tr><td>縦 Normalized</td><td><code>vertical_normalized</code></td><td>小数</td><td></td><td></td><td>縦のスクロール位置を 0（上端）〜1（下端）で表した値。 （表示のみ、実行中の値、保存されません、詳細設定）</td></tr>
+</table></div>
+<!--/PROPS:UIScrollViewComponent-->
+
+    <h3 id="scroll-setup">作り方</h3>
+    <ol>
+      <li>枠にする GameObject に Scroll View を付け、Rect Transform で枠の大きさを決めます。</li>
+      <li>その <b>直接の子</b> に、中身をまとめる GameObject（Rect Transform を持つもの）を作り、枠より大きくします。縦に並べるなら Vertical Layout Group を付けると便利です。</li>
+      <li>Scroll View の <b>Content</b> に、その子の Rect Transform を指定します。</li>
+    </ol>
+    <p>Content が直接の子でないときは、スクロールしません。</p>
+
+    <h3 id="scroll-behavior">スクロールの動き</h3>
+    <ul>
+      <li>中身が枠より大きい方向だけスクロールできます（<b>横スクロール</b>・<b>縦スクロール</b> がオンの方向）。<b>スクロール位置</b> は 0 から「中身の大きさ − 枠の大きさ」までに収められます。</li>
+      <li><b>スクロール位置</b> の Y を増やすと中身が上へ動き、下の方が見えます。X を増やすと中身が左へ動きます。</li>
+      <li>マウスホイールは、縦にスクロールできればホイール 1 目盛りで <b>ホイール感度</b> 分だけ縦に、できなければ横にスクロールします。</li>
+      <li>中身の上を押してドラッグすると、中身をつかんで動かせます。スクロールバーのつまみをドラッグしても動かせます。</li>
+      <li>Scroll View の中に Scroll View があるときは、マウスの下の内側の Scroll View だけが動きます。</li>
+      <li>キーボードやパッドでフォーカスが中身の部品に移ったとき、その部品が枠からはみ出していれば、見える位置まで自動でスクロールします。</li>
+    </ul>
+
+    <h3 id="scrollbar">スクロールバー</h3>
+    <ul>
+      <li>スクロールできる方向があり、<b>スクロールバー表示</b> がオンのとき、縦は枠の右端、横は枠の下端に描きます。</li>
+      <li><b>バー幅</b> は画面のピクセル単位です。つまみの長さは「見えている割合」に比例し、バー幅より短くはなりません。</li>
+      <li><b>角丸</b> はこのビルドの描画では使われません。</li>
+    </ul>
+
+    <h2 id="slider">Slider</h2>
+    <p>ドラッグやキーで数値を変える部品です。コンポーネントを追加での場所は <b>UI &gt; Slider</b> です。付けると Rect Transform と Selectable も付きます。</p>
+    <!--PROPS:UISliderComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>最小値</td><td><code>minimum</code></td><td>小数</td><td>0</td><td></td><td>設定値を変更すると、この Component の「minimum」へ反映します。 最大値より大きくても、小さい方から大きい方の範囲として扱います。</td></tr>
+<tr><td>最大値</td><td><code>maximum</code></td><td>小数</td><td>1</td><td></td><td>設定値を変更すると、この Component の「maximum」へ反映します。 最小値より小さくても、小さい方から大きい方の範囲として扱います。</td></tr>
+<tr><td>値</td><td><code>value</code></td><td>小数</td><td></td><td></td><td>今の値。最小値と最大値の間に収められ、整数のみ なら四捨五入されます。モーションで動かしても Fill と Handle に反映されます。</td></tr>
+<tr><td>整数のみ</td><td><code>whole_numbers</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>設定値を変更すると、この Component の「whole_numbers」へ反映します。 オンなら値を四捨五入して整数にします。</td></tr>
+<tr><td>方向</td><td><code>direction</code></td><td>選択</td><td>左から右</td><td></td><td>設定値を変更すると、この Component の「direction」へ反映します。 値が増える向き。Fill Image の塗り方向と、Handle Rect を動かす軸もこれで決まります。 選択肢：左から右、右から左、下から上、上から下</td></tr>
+<tr><td>操作可能</td><td><code>interactable</code></td><td>オン・オフ</td><td>オン</td><td></td><td>UI 要素を入力操作の対象にするか指定します。 オフにするとドラッグもキー操作もできません。Selectable の 操作可能 にも毎回コピーされます。</td></tr>
+<tr><td>Fill Image</td><td><code>fill_image</code></td><td>コンポーネントの参照</td><td>（空）</td><td></td><td>設定値を変更すると、この Component の「fill_image」へ反映します。 未設定なら同じ GameObject の Image を使います。その Image の 塗り量・塗り方向・塗りを反転 を毎回書き換えます。</td></tr>
+<tr><td>Handle Rect</td><td><code>handle_rect</code></td><td>コンポーネントの参照</td><td>（空）</td><td></td><td>設定値を変更すると、この Component の「handle_rect」へ反映します。 つまみの Rect Transform。アンカーの最小・最大（横向きなら X、縦向きなら Y）を値の割合に合わせます。</td></tr>
+<tr><td>キー操作量</td><td><code>keyboard_step</code></td><td>小数</td><td>0.1</td><td>0.0001〜1000000</td><td>設定値を変更すると、この Component の「keyboard_step」へ反映します。 フォーカス中に方向キーを 1 回押したときに変わる量。0.0001 より小さい値やマイナスは正の値に直されます。</td></tr>
+<tr><td>Normalized 値</td><td><code>normalized_value</code></td><td>小数</td><td></td><td></td><td>値を 0（最小）〜1（最大）の割合で表した値。 （表示のみ、実行中の値、保存されません、詳細設定）</td></tr>
+</table></div>
+<!--/PROPS:UISliderComponent-->
+
+    <h3 id="slider-setup">作り方</h3>
+    <ol>
+      <li>Slider を付けた GameObject の範囲が、つまみを動かせる範囲になります。</li>
+      <li>塗りで値を見せるには、同じ GameObject に Image を付けるか、<b>Fill Image</b> に別の Image を指定します。</li>
+      <li>つまみを付けるには、子に Image を持つ GameObject を作り、その Rect Transform を <b>Handle Rect</b> に指定します。</li>
+    </ol>
+
+    <h3 id="slider-behavior">動き</h3>
+    <ul>
+      <li><b>値</b> は、最小値と最大値の間に収められます（最小値の方が大きくても、小さい方から大きい方の範囲として扱います）。<b>整数のみ</b> がオンなら四捨五入します。</li>
+      <li><b>Fill Image</b> の Image（未設定なら同じ GameObject の Image）の <b>塗り量</b> を値の割合に、<b>塗り方向</b> と <b>塗りを反転</b> を <b>方向</b> に合わせて毎回書き換えます。<b>Fill Image</b> を設定していてその Image が見つからないときは、何も書き換えません。</li>
+      <li><b>Handle Rect</b> のアンカー（横向きなら X、縦向きなら Y の最小・最大の両方）を値の割合に合わせます。つまみの位置は、ピボットとアンカーで決まります。</li>
+      <li>範囲の上で押すと、そこからドラッグしている間、マウスの位置の割合で値が決まります。範囲の外に出ても、離すまで続きます。</li>
+      <li>フォーカス中は、横向きなら NavigateLeft / NavigateRight、縦向きなら NavigateDown / NavigateUp で <b>キー操作量</b> だけ値が変わります。右から左・上から下の向きでは増減が逆になります。</li>
+      <li>ゲームの実行中は、値が前回と変わったときに SliderValueChanged を送ります（C# の <code>OnSliderValueChanged</code>）。</li>
+    </ul>
+
+    <h2 id="input-field">Input Field</h2>
+    <p>文字を入力する欄です。日本語入力（IME）にも対応しています。コンポーネントを追加での場所は <b>UI &gt; Input Field</b> です。付けると、Rect Transform、Selectable、Text も付き、<b>Text Target</b> にその Text が入ります。</p>
+    <!--PROPS:UIInputFieldComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>Text</td><td><code>text</code></td><td>文字</td><td>（空）</td><td></td><td>表示する文字列を指定します。 入力されている文字。Text Target の Text に書き写して表示します。</td></tr>
+<tr><td>Text Target</td><td><code>text_target</code></td><td>コンポーネントの参照</td><td>（空）</td><td></td><td>設定値を変更すると、この Component の「text_target」へ反映します。 表示に使う Text。見つからないときは同じ GameObject の Text を使います。</td></tr>
+<tr><td>Placeholder</td><td><code>placeholder</code></td><td>文字</td><td>Input text...</td><td></td><td>設定値を変更すると、この Component の「placeholder」へ反映します。 文字が空で、日本語の変換中でもないときに表示する文字。</td></tr>
+<tr><td>Text Color</td><td><code>text_color</code></td><td>色</td><td>1, 1, 1, 1</td><td></td><td>設定値を変更すると、この Component の「text_color」へ反映します。 文字があるときに Text の色をこの値にします。</td></tr>
+<tr><td>Placeholder Color</td><td><code>placeholder_color</code></td><td>色</td><td>0.65, 0.65, 0.65, 0.75</td><td></td><td>設定値を変更すると、この Component の「placeholder_color」へ反映します。 Placeholder を表示しているときの Text の色。</td></tr>
+<tr><td>Selection Color</td><td><code>selection_color</code></td><td>色</td><td>0.2, 0.5, 1, 0.45</td><td></td><td>設定値を変更すると、この Component の「selection_color」へ反映します。 選択している文字の背景の色。Password のときは表示しません。</td></tr>
+<tr><td>Caret Color</td><td><code>caret_color</code></td><td>色</td><td>1, 1, 1, 1</td><td></td><td>設定値を変更すると、この Component の「caret_color」へ反映します。 文字カーソルの色。フォーカス中だけ表示します。</td></tr>
+<tr><td>Caret Width</td><td><code>caret_width</code></td><td>小数</td><td>1.5</td><td>0.5〜8</td><td>設定値を変更すると、この Component の「caret_width」へ反映します。 文字カーソルの太さ（画面のピクセル）。</td></tr>
+<tr><td>Caret Blink</td><td><code>caret_blink_seconds</code></td><td>小数</td><td>0.5</td><td>0.05〜2</td><td>設定値を変更すると、この Component の「caret_blink_seconds」へ反映します。 点滅の 1 周期の秒数。前半は表示、後半は非表示です。</td></tr>
+<tr><td>Max Characters</td><td><code>max_characters</code></td><td>整数</td><td>0</td><td>0〜65535</td><td>設定値を変更すると、この Component の「max_characters」へ反映します。 入力できる文字数の上限。0 なら上限なし。超える分は入りません。</td></tr>
+<tr><td>Password</td><td><code>password</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>設定値を変更すると、この Component の「password」へ反映します。 オンなら文字の数だけ * を表示し、変換中の文字と選択の背景も表示しません。</td></tr>
+<tr><td>Read Only</td><td><code>read_only</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>設定値を変更すると、この Component の「read_only」へ反映します。 オンなら文字を入れる・消す・切り取ることができません。カーソル移動、選択、コピーはできます。</td></tr>
+<tr><td>Caret Index</td><td><code>caret_index</code></td><td>整数</td><td></td><td></td><td>文字カーソルの位置（文字の数で数えます）。 （表示のみ、実行中の値、保存されません、詳細設定）</td></tr>
+<tr><td>Selection Start</td><td><code>selection_start</code></td><td>整数</td><td></td><td></td><td>選択の始まり（文字の数）。選択が無ければカーソル位置と同じ。 （表示のみ、実行中の値、保存されません、詳細設定）</td></tr>
+<tr><td>Selection End</td><td><code>selection_end</code></td><td>整数</td><td></td><td></td><td>選択の終わり（文字の数）。 （表示のみ、実行中の値、保存されません、詳細設定）</td></tr>
+<tr><td>IME Composition</td><td><code>ime_composing</code></td><td>オン・オフ</td><td></td><td></td><td>日本語入力で変換中か。 （表示のみ、実行中の値、保存されません、詳細設定）</td></tr>
+</table></div>
+<!--/PROPS:UIInputFieldComponent-->
+
+    <h3 id="input-display">表示</h3>
+    <ul>
+      <li>入力された文字は <b>Text</b> に入り、<b>Text Target</b> の Text（見つからなければ同じ GameObject の Text）の文字と色を毎回書き換えて表示します。Text 側の文字や色を直接変えても上書きされます。</li>
+      <li>文字が空で、日本語の変換中でもないときは、<b>Placeholder</b> を <b>Placeholder Color</b> で表示します（フォーカス中も表示されます）。</li>
+      <li><b>Password</b> がオンなら、文字の数だけ <code>*</code> を表示し、変換中の文字は表示しません。</li>
+      <li>日本語の変換中は、確定前の文字をカーソルの位置に挟んで表示します。</li>
+    </ul>
+
+    <h3 id="input-keys">操作</h3>
+    <p>範囲をクリックするとフォーカスし、カーソルが文字の最後に移ります。フォーカス中は次の操作ができます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>キー</th><th>働き</th></tr>
+      <tr><td>文字キー、IME の確定</td><td>カーソルの位置に入れます。選んでいる文字があれば置き換えます</td></tr>
+      <tr><td>← →</td><td>カーソルを 1 文字動かします。Shift を押しながらだと選択を広げます</td></tr>
+      <tr><td>Home / End</td><td>先頭 / 最後へ（Shift で選択）</td></tr>
+      <tr><td>Backspace / Delete</td><td>選択を消す。選択が無ければ前 / 後ろの 1 文字を消します</td></tr>
+      <tr><td>Ctrl+A</td><td>すべて選択</td></tr>
+      <tr><td>Ctrl+C / Ctrl+X / Ctrl+V</td><td>コピー / 切り取り / 貼り付け（Windows のクリップボード）</td></tr>
+      <tr><td>Enter</td><td>InputFieldSubmitted を送ります（改行は入りません。フォーカスは外れません）</td></tr>
+      <tr><td>Esc</td><td>変換中の文字と選択を取り消し、InputFieldCanceled を送ります</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li><b>Read Only</b> がオンなら、カーソル移動、選択、コピーはできますが、文字を入れる・消す・切り取ることはできません。</li>
+      <li><b>Max Characters</b> が 0 より大きいと、その文字数を超える分は入りません（貼り付けも途中で切れます）。</li>
+      <li>文字が変わったときに InputFieldValueChanged を送ります。変換中の文字だけでは送りません。C# では <code>OnInputFieldValueChanged</code> などで受け取ります（<a href="../csharp/script-behaviour.html#events">受け取れるイベント</a>）。</li>
+      <li>カーソルの位置と選択は、バイトではなく文字の数で数えます。</li>
+    </ul>
+
+    <h2 id="mask">Mask</h2>
+    <p>子孫の UI を、決まった形の中だけに切り抜きます。コンポーネントを追加での場所は <b>UI &gt; Mask</b> です。UI 階層の <b>Mask</b> ボタンで、薄い青の Image と Mask を持つ 160 × 80 の GameObject が作られます。</p>
+    <!--PROPS:UIMaskComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>マスク有効</td><td><code>enabled_mask</code></td><td>オン・オフ</td><td>オン</td><td></td><td>マスク処理を有効にするか指定します。 オフにすると切り抜きをせず、自身を表示 も関係なく自分の Image を描きます。</td></tr>
+<tr><td>自身を表示</td><td><code>show_mask_graphic</code></td><td>オン・オフ</td><td>オン</td><td></td><td>マスク自身の Image を表示するか指定します。 オフにすると、この GameObject の Image や図形は描かず、子孫だけを描きます。</td></tr>
+<tr><td>マスク方式</td><td><code>mask_mode</code></td><td>選択</td><td>矩形</td><td></td><td>マスクに使うアルファ・輝度・形状の方式を指定します。 矩形は範囲、画像はマスク画像、形状は図形、Object Alpha / Luma はほかの GameObject の Image で切り抜きます。 選択肢：矩形、画像、形状、Object Alpha、Object Luma</td></tr>
+<tr><td>形状</td><td><code>shape_kind</code></td><td>選択</td><td>矩形</td><td></td><td>図形マスクの形状を指定します。 形状 方式のときの形。UI Workspace で設定します。 選択肢：矩形、円、多角形、星形、角丸矩形 （インスペクターには出ません）</td></tr>
+<tr><td>頂点数</td><td><code>shape_sides</code></td><td>整数</td><td>5</td><td>3〜64</td><td>多角形マスクの頂点数を指定します。 多角形と星形の角の数。3 より小さい値は 3 です。 （インスペクターには出ません）</td></tr>
+<tr><td>星形の内側</td><td><code>shape_inner_radius</code></td><td>小数</td><td>0.5</td><td>0.05〜0.95</td><td>星形マスクの内側半径を指定します。 星形のへこみの深さ（外側を 1 とした内側の半径）。 （インスペクターには出ません）</td></tr>
+<tr><td>角丸量</td><td><code>shape_corner_radius</code></td><td>小数</td><td>0</td><td>0〜1</td><td>角丸マスクの角の丸さを指定します。 角丸矩形の角の丸さ（0〜1）。 （インスペクターには出ません）</td></tr>
+<tr><td>形状の回転</td><td><code>shape_rotation</code></td><td>小数</td><td>0</td><td>-180〜180</td><td>図形マスクの回転角度を度単位で指定します。 Rect Transform の回転に足す、形の回転（度）。 （インスペクターには出ません）</td></tr>
+<tr><td>図形イメージの拡大率</td><td><code>group_scale</code></td><td>2 つの小数</td><td>1, 1</td><td></td><td>図形マスクと子 Image の拡大率を指定します。 このビルドの描画では、形状マスクの形の大きさ（範囲に対する倍率）だけに使われ、子の Image の大きさは変えません。 （インスペクターには出ません）</td></tr>
+<tr><td>マスク画像</td><td><code>mask_image</code></td><td>アセット（画像）</td><td>（空）</td><td></td><td>切り抜きに使うマスク画像を指定します。 画像 方式で使う画像。不透明な所だけ子孫を表示します。Mask の範囲に合わせて置かれます。</td></tr>
+<tr><td>Track Matte Object</td><td><code>mask_object</code></td><td>GameObject の参照</td><td>（空）</td><td></td><td>Object Alpha/Luma で最初の Matte に使う GameObject。 Object Alpha / Object Luma で使う GameObject。その GameObject の Image と Rect Transform が使われます。</td></tr>
+<tr><td>追加 Track Matte</td><td><code>matte_objects</code></td><td>一覧</td><td>（空）</td><td></td><td>2個目以降の Matte。matte_operations と同じ順番で使います。 Object Alpha / Object Luma で重ねる 2 つ目以降の GameObject。Image と Rect Transform を持つものだけ使われます。</td></tr>
+<tr><td>Matte 演算</td><td><code>matte_operations</code></td><td>一覧</td><td>（空）</td><td></td><td>保存用配列。Inspectorでは各 Track Matte の Add/Subtract/Intersect として表示します。 インスペクターでは Track Matte 番号 ごとの 演算（Add / Subtract / Intersect）として表示されます（内部名 matte[番号].operation）。 （インスペクターには出ません）</td></tr>
+<tr><td>反転</td><td><code>invert</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>マスクの内側と外側を反転します。 内側と外側を入れ替えます。矩形 方式には効きません。</td></tr>
+<tr><td>境界の柔らかさ</td><td><code>softness</code></td><td>小数</td><td>0</td><td>0〜1</td><td>マスク境界をぼかす量を指定します。 形状 方式だけで使われ、境界をぼかします。</td></tr>
+</table></div>
+<!--/PROPS:UIMaskComponent-->
+
+    <h3 id="mask-modes">マスク方式</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>方式</th><th>切り抜き方</th></tr>
+      <tr><td>矩形</td><td>Mask の Rect Transform の範囲で切り抜きます。範囲の外ではクリックにも反応しなくなります。Mask が回転しているときは、回転した範囲を囲む傾いていない四角で切り抜きます</td></tr>
+      <tr><td>画像</td><td><b>マスク画像</b> の不透明な部分だけを表示します。画像は Mask の範囲に合わせて置かれます</td></tr>
+      <tr><td>形状</td><td>矩形・円・多角形・星形・角丸矩形の形で切り抜きます（下の「形状マスク」）</td></tr>
+      <tr><td>Object Alpha</td><td><b>Track Matte Object</b> の GameObject の Image の不透明さを使います。その GameObject の位置と大きさの所だけが表示されます</td></tr>
+      <tr><td>Object Luma</td><td>同じく、その Image の明るさを使います（明るいほど表示）</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li><b>自身を表示</b> がオフなら、Mask を持つ GameObject 自身の Image や図形は描かず、子孫だけを切り抜いて描きます。</li>
+      <li><b>反転</b> で、内側と外側を入れ替えます（矩形方式には効きません）。</li>
+      <li>Mask の中に Mask があると、両方で切り抜きます。形状マスクと画像系のマスクは、それぞれ重ねて 4 つまでです。</li>
+    </ul>
+
+    <h3 id="shape-mask">形状マスク</h3>
+    <p>形状の種類、頂点数、星形の内側、角丸量、形状の回転、図形イメージの拡大率は、インスペクターには表示されません。UI Workspace で図形マスクを作るとき（<b>Image</b> &gt; <b>図形で切り抜いたImageを追加</b>、<b>図形イメージを追加</b>）に設定され、UI 階層 ウィンドウの <a href="../windows/ui-workspace.html#shape-image-frame">UI図形イメージ の枠</a> で変えます。</p>
+    <ul>
+      <li>形は Mask の範囲の中央に、範囲の大きさ × <b>図形イメージの拡大率</b> で置かれます。回転は Rect Transform の回転 ＋ <b>形状の回転</b> です。</li>
+      <li><b>境界の柔らかさ</b>（0〜1）は形状マスクだけで使われ、境界をぼかします。画像や Object の方式には効きません。</li>
+    </ul>
+
+    <h3 id="track-matte">複数の Track Matte</h3>
+    <p>Object Alpha / Object Luma では、<b>追加 Track Matte</b> に GameObject を足すと、インスペクターに「Track Matte 2」「Track Matte 3」…の <b>演算</b> が出ます。1 つ目（Track Matte Object）の結果に、上から順に次の演算で重ねます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>演算</th><th>結果</th></tr>
+      <tr><td>Add</td><td>足した範囲も表示（和）</td></tr>
+      <tr><td>Subtract</td><td>その範囲を表示から除く（差）</td></tr>
+      <tr><td>Intersect</td><td>重なっている範囲だけ表示（積）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="language-switch">Language Switch</h2>
+    <p>同じ GameObject の Button を押したときに、表示言語を切り替えます。コンポーネントを追加での場所は <b>UI &gt; Language Switch</b> です。</p>
+    <!--PROPS:UILanguageSwitchComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>言語コード</td><td><code>language</code></td><td>文字</td><td>ja</td><td></td><td>例: ja / en。Project Settings の Localization table にある言語を指定します。 同じ GameObject の Button が押下から離れた瞬間に、この言語にします。表にある言語かは確かめません。</td></tr>
+</table></div>
+<!--/PROPS:UILanguageSwitchComponent-->
+    <ul>
+      <li>Button が <b>押下</b> 以外の状態に変わった瞬間に、<b>言語コード</b> を表示言語にします。範囲の外で離したとき（クリックにならないとき）も切り替わります。</li>
+      <li>言語コードが表にあるかは確かめません。表に無い言語にすると、Text は表の最初の言語の文字を表示します（<a href="ui-text.html#localization">ローカライズ</a>）。</li>
+      <li>ゲームの実行中だけ動きます。</li>
+    </ul>
+
+    <h2 id="property-toggle">Button Property Toggle</h2>
+    <p>同じ GameObject の Button を押したときに、ほかのコンポーネントのオン・オフのプロパティを反転します。メニューを開く・閉じる、効果音のオン・オフなどに使います。コンポーネントを追加での場所は <b>UI &gt; Button Property Toggle</b> です。</p>
+    <!--PROPS:UIButtonPropertyToggleComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>Target</td><td><code>target</code></td><td>コンポーネントの参照</td><td>（空）</td><td></td><td>プロパティを切り替える対象 Component を指定します。 反転するプロパティを持つコンポーネント。</td></tr>
+<tr><td>Property</td><td><code>target_property</code></td><td>文字</td><td>enabled</td><td></td><td>切り替える対象 Component のプロパティ名を指定します。 内部名で指定します。オン・オフの種類で、書き換えられるプロパティだけ反転します。既定の enabled はコンポーネントの有効・無効です。</td></tr>
+</table></div>
+<!--/PROPS:UIButtonPropertyToggleComponent-->
+    <ul>
+      <li>Button が <b>押下</b> 以外の状態に変わった瞬間に反転します。範囲の外で離したときも反転します。</li>
+      <li><b>Property</b> には内部名を入れます。オン・オフの種類で、書き換えられるプロパティだけ反転できます。それ以外のときは何も起きません。</li>
+      <li>ゲームの実行中だけ動きます。</li>
+    </ul>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>押したら処理が動くボタンを作る</h3>
+    <ol>
+      <li><a href="../windows/ui-workspace.html">UI Workspace</a> で Canvas を選び、UI 階層の <b>Button</b> ボタンを押します。ボタンと、子の「Button Text」ができます。</li>
+      <li>Button Text を選び、Text の <b>テキスト</b> を「START」などにします。</li>
+      <li>ボタンを選び、<b>ホバー色</b> と <b>押下色</b> を好みの色にします。ゲームを実行し、マウスを乗せる・押すで色が変わることを確かめます。</li>
+      <li>押されたときの処理は、ScriptBehaviour の <code>OnButtonClicked</code> で受け取って書きます（<a href="../csharp/script-behaviour.html">ScriptBehaviour</a>）。</li>
+    </ol>
+    <h3>縦に並んだメニューを、方向キーで選べるようにする</h3>
+    <ol>
+      <li>Canvas を選び、UI 階層の <b>Image</b> &gt; <b>通常のImageを追加</b> でメニューの板を作り、大きさを (300, 300) などにします。</li>
+      <li>板に <b>コンポーネントを追加</b> &gt; <b>UI</b> &gt; <b>Vertical Layout Group</b> を付け、<b>間隔</b> を 10、<b>Padding</b> を (10, 10, 10, 10) にします。</li>
+      <li>板を選んで UI 階層の <b>Button</b> ボタンを押し、板の子にボタンを作ります。作ったボタンが選ばれた状態になるので、毎回板を選び直してから押し、ボタンを 3 つ作ります。上から順に並びます。</li>
+      <li>それぞれのボタンの <b>フォーカス順</b> を 0、1、2 にします。</li>
+      <li>ゲームを実行し、方向キー（NavigateUp / NavigateDown）でフォーカスが移り、決定（UISubmit）でボタンが押されることを確かめます。</li>
+    </ol>
+    <h3>スクロールするリストを作る</h3>
+    <ol>
+      <li>枠にする Image を作り、大きさを (400, 300) にします。枠に <b>コンポーネントを追加</b> &gt; <b>UI</b> &gt; <b>Scroll View</b> と <b>UI</b> &gt; <b>Mask</b> を付けます（Mask の <b>マスク方式</b> は 矩形）。枠の外にはみ出した中身が見えなくなります。</li>
+      <li>枠を選んで Image をもう 1 つ作り、枠の直接の子にします。これを中身（Content）にし、大きさを (400, 1000) のように枠より縦に長くして、Vertical Layout Group を付けます。</li>
+      <li>枠の Scroll View の <b>Content</b> に、中身の Rect Transform を指定します。</li>
+      <li>中身の子に Text などを並べます。中身の大きさは自動では変わらないので、並べた量に合わせて高さを変えます。</li>
+      <li>ゲームを実行し、マウスホイールやドラッグでスクロールすることを確かめます。</li>
+    </ol>
+    <h3>音量のスライダーを作る</h3>
+    <ol>
+      <li>横長の Image（例：400 × 20）を作り、<b>コンポーネントを追加</b> &gt; <b>UI</b> &gt; <b>Slider</b> を付けます。同じ Image が値の塗りになります。</li>
+      <li><b>最大値</b> を 100、<b>整数のみ</b> をオンにします。</li>
+      <li>つまみを付けるときは、スライダーを選んで Image を作り、子の小さな Image（例：24 × 32）にして、Slider の <b>Handle Rect</b> にその Rect Transform を指定します。</li>
+      <li>値を文字で見せるには、Text の <a href="ui-text.html#number">数値の表示</a> を使います。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="ui-layout.html">Canvas と Rect Transform</a></li>
+      <li><a href="ui-image.html">Image</a>、<a href="ui-text.html">Text</a></li>
+      <li><a href="../csharp/script-behaviour.html">ScriptBehaviour（ボタン・セーブ・イベント）</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

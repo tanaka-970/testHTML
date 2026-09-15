@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>起動オプション - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / 起動オプションと設定</div>
+    <h1>起動オプション</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>エンジンの実行ファイル（<code>3dgp.exe</code>）は、起動するときに付ける文字（起動オプション）で動きが変わります。何も付けずに起動するとエディターが開きます。このページでは、使える起動オプションを目的ごとに説明します。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>エディターを開かずに、ゲームとしてすぐに動かしたいとき（--game）</li>
+      <li>見た目が変わっていないかを、画面の画像で確かめたいとき（--capture-frame）</li>
+      <li>シーンの重さ（描画にかかる時間）を、数字で測りたいとき（--profile-scene）</li>
+      <li>書き出したゲームの、ウィンドウの大きさや全画面の設定を変えたいとき（.replaygame）</li>
+    </ul>
+
+    <h2 id="how">起動オプションの付け方</h2>
+    <p>PowerShell で、実行ファイルの後ろに空白で区切って書きます。</p>
+    <pre><code>&amp; ".\x64\Release\3dgp.exe" --capture-frame check01</code></pre>
+    <p>ファイルの場所に空白が含まれるときは、<code>"</code> で囲みます（<code>--profile-scene</code> のシーンの指定で使えます）。</p>
+    <div class="note"><strong>結果の文字の受け取り方</strong>エンジンは画面を持つアプリなので、コンソールに文字を出しません。検証などの結果の文字は標準エラー出力に出るため、PowerShell では次のように受け取ります。
+<pre><code>$p = Start-Process -FilePath ".\x64\Release\3dgp.exe" -ArgumentList "--validate-scene" -RedirectStandardError "stderr.txt" -PassThru -Wait
+$p.ExitCode
+Get-Content stderr.txt -Encoding UTF8</code></pre></div>
+
+    <h2 id="launch">起動のしかた</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>起動オプション</th><th>起動するもの</th></tr>
+      <tr><td>（なし）</td><td>エディターを開きます。前回開いていたシーンと Workspace が復元されます。</td></tr>
+      <tr><td><code>--game</code></td><td>エディターを出さずに、プロジェクト設定の Startup Scene からゲームとして動かします。</td></tr>
+    </table>
+    </div>
+    <p>実行ファイルと同じフォルダに <code>.replaygame</code> ファイルがあると、起動オプションが無くてもゲームとして起動します（書き出したゲームはこの形です）。詳しくは<a href="#replaygame">.replaygame による起動設定</a>を見てください。</p>
+
+    <h2 id="capture">画面を撮影する</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>起動オプション</th><th>働き</th></tr>
+      <tr><td><code>--capture-frame 名前</code></td><td>起動して 240 フレーム描いた後の画面を撮影し、<code>Saved/Golden/名前.png</code> に保存して終了します。ウィンドウは表示されます。ほかの起動オプションを付けなければ、エディターの画面がそのまま撮れます。<code>--game</code> と一緒に使うと画面が真っ白に撮れることがあり、見た目の確認には使えません。</td></tr>
+      <tr><td><code>--capture-exclusive-frame 名前</code></td><td>画面を占有する描画方式（Exclusive）のシーンが表示されている間に撮影します。名前を省くと「exclusive」になります。<code>--capture-frame</code> と一緒に付けたときは <code>--capture-frame</code> が優先されます。</td></tr>
+      <tr><td><code>--exclusive-time 秒</code></td><td><code>--capture-exclusive-frame</code> と一緒に使います。1 フレームを 1/60 秒として時間を進め、指定した秒数に達してから撮影します。</td></tr>
+      <tr><td><code>--compare-golden 名前</code></td><td>画面を出さずに、撮影済みの <code>Saved/Golden/名前.png</code> と基準画像 <code>Saved/Golden/reference/名前.png</code> を比べ、差を <code>Saved/Golden/diff/名前.png</code> に書き出します。</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li><code>--capture-frame</code> の名前を省くと「claude」になります。名前に <code>..</code> や、<code>\ / : * ? " &lt; &gt; |</code> などファイル名に使えない文字が入っていると、名前は使われず既定の名前になります。</li>
+      <li><code>--smoke-test フレーム数</code> を一緒に付けると、240 フレームの代わりにそのフレーム数で撮影します。</li>
+      <li><code>--compare-golden</code> は、どの画素でも色の差が 2 以下、かつ違いのある画素が全体の 0.1% 以下なら合格です。画像が読めない、大きさが違うなどで比べられないときは終了コード 82 で終わります。</li>
+    </ul>
+    <div class="warning"><strong>Saved フォルダの中身に注意</strong>エディターの状態（開いているシーンなど）は <code>Saved/EditorSession/session.ini</code> から復元されます。撮影のためにこのファイルを書き換えて別のシーンを開かせると、終了時にそのシーンが上書き保存されることがあります。</div>
+
+    <h2 id="profile">性能を計測する</h2>
+    <p>指定したシーンを決まったフレーム数だけ動かして、描画の時間などを記録します。</p>
+    <pre><code>&amp; ".\x64\Release\3dgp.exe" --profile-scene "resources/Scenes/Demo.replayscene" --frames 600 --warmup 60 --out demo</code></pre>
+    <div class="table-wrap">
+    <table>
+      <tr><th>起動オプション</th><th>意味</th><th>既定値・範囲</th></tr>
+      <tr><td><code>--profile-scene シーンのパス</code></td><td>計測するシーン。これが無いと計測にはなりません。</td><td>必ず指定。相対パスはプロジェクトのフォルダから</td></tr>
+      <tr><td><code>--frames N</code></td><td>記録するフレーム数</td><td>300（1〜10000）</td></tr>
+      <tr><td><code>--warmup N</code></td><td>記録を始める前に空回しするフレーム数</td><td>30（0〜10000）</td></tr>
+      <tr><td><code>--render-output N</code></td><td>画面に出す描画結果の番号</td><td>0（0〜10）</td></tr>
+      <tr><td><code>--out 名前</code></td><td>結果のファイル名</td><td>benchmark</td></tr>
+      <tr><td><code>--screen-space キー=値</code></td><td>画面効果の設定を上書きします（次の表）。何回でも付けられます。</td><td></td></tr>
+    </table>
+    </div>
+    <p>計測中のウィンドウは表示されません。結果は <code>Saved/Profile</code> フォルダに、<code>名前.csv</code>、<code>名前.trace.json</code>、起動時の分の <code>名前.startup.csv</code>、<code>名前.startup.trace.json</code> として保存されます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>終了コード</th><th>意味</th></tr>
+      <tr><td>75</td><td>起動オプションの書き方の誤り（シーンのパスが無い、値の範囲外、引用符が閉じていない、<code>--screen-space</code> の誤りなど）</td></tr>
+      <tr><td>76</td><td><code>--profile-scene</code> のシーンファイルが見つからない</td></tr>
+    </table>
+    </div>
+
+    <h3 id="screen-space">--screen-space で上書きできる設定</h3>
+    <p><code>--screen-space ssao.enabled=0</code> のように書きます。範囲外の数値は範囲の端に直され、標準エラー出力に「… に clamp しました。」と表示されます。オン・オフの設定は 0 か 1 だけです。一覧に無いキーを書くとエラー（終了コード 75）になります。この起動オプションは、計測以外の起動（撮影やエディター）でも効きます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>キー</th><th>種類</th><th>範囲</th></tr>
+      <tr><td>ssao.enabled / ssr.enabled / taa.enabled</td><td>オン・オフ</td><td>0 または 1</td></tr>
+      <tr><td>ssao.radius</td><td>小数</td><td>0.05〜4</td></tr>
+      <tr><td>ssao.intensity</td><td>小数</td><td>0〜1</td></tr>
+      <tr><td>ssao.power</td><td>小数</td><td>0.5〜4</td></tr>
+      <tr><td>ssao.thin_occluder</td><td>小数</td><td>0〜1</td></tr>
+      <tr><td>ssao.slice_count</td><td>整数</td><td>1〜8</td></tr>
+      <tr><td>ssao.step_count</td><td>整数</td><td>2〜12</td></tr>
+      <tr><td>ssao.fade_start</td><td>小数</td><td>1〜400</td></tr>
+      <tr><td>ssao.fade_end</td><td>小数</td><td>2〜800</td></tr>
+      <tr><td>ssao.normal_bias</td><td>小数</td><td>0〜2</td></tr>
+      <tr><td>ssao.blur_sharpness</td><td>小数</td><td>0〜1</td></tr>
+      <tr><td>ssao.blur_enabled</td><td>オン・オフ</td><td>0 または 1</td></tr>
+      <tr><td>ssr.max_distance</td><td>小数</td><td>1〜200</td></tr>
+      <tr><td>ssr.thickness</td><td>小数</td><td>0.01〜2</td></tr>
+      <tr><td>ssr.stride</td><td>小数</td><td>1〜16</td></tr>
+      <tr><td>ssr.max_step</td><td>整数</td><td>4〜64</td></tr>
+      <tr><td>ssr.refine_step</td><td>整数</td><td>0〜8</td></tr>
+      <tr><td>ssr.max_roughness</td><td>小数</td><td>0.05〜1</td></tr>
+      <tr><td>ssr.intensity</td><td>小数</td><td>0〜2</td></tr>
+      <tr><td>ssr.edge_fade</td><td>小数</td><td>0.01〜0.4</td></tr>
+      <tr><td>ssr.ray_bias</td><td>小数</td><td>0〜4</td></tr>
+      <tr><td>ssr.resolve_radius</td><td>小数</td><td>0〜40</td></tr>
+      <tr><td>ssr.resolve_tap_count</td><td>整数</td><td>1〜16</td></tr>
+      <tr><td>taa.blend</td><td>小数</td><td>0〜0.98</td></tr>
+      <tr><td>taa.variance_gamma</td><td>小数</td><td>0.25〜3</td></tr>
+      <tr><td>taa.sharpness</td><td>小数</td><td>0〜1</td></tr>
+      <tr><td>taa.max_velocity</td><td>小数</td><td>4〜200</td></tr>
+      <tr><td>post.luminance_threshold</td><td>小数</td><td>0〜8</td></tr>
+      <tr><td>post.luminance_enabled / post.final_pass_enabled</td><td>オン・オフ</td><td>0 または 1</td></tr>
+    </table>
+    </div>
+    <p>SSAO は物の隙間の影、SSR は画面に映っている物の映り込み、TAA は輪郭のギザギザを抑える処理です。</p>
+
+    <h2 id="test">動作テスト</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>起動オプション</th><th>働き</th></tr>
+      <tr><td><code>--smoke-test フレーム数</code></td><td>ウィンドウを出さずに起動し、指定したフレーム数だけ動かして終了します。起動オプションの<b>最初</b>に書いたときだけ効きます。フレーム数を省くと 120、指定しても 30〜3600 の範囲に直されます。</td></tr>
+      <tr><td><code>--validate-shutdown</code></td><td>ウィンドウを出さずに 60 フレーム（<code>--smoke-test</code> があればそのフレーム数）描いてから終了し、終了時に描画のリソースが正しく片付いたかを確かめます。</td></tr>
+      <tr><td><code>--dump-component-properties</code></td><td>画面を出さずに、登録されているすべてのコンポーネントとその設定項目を <code>Saved/ComponentProperties.txt</code> に書き出して終了します。</td></tr>
+    </table>
+    </div>
+
+    <h3 id="validate">検証スイート（--validate-…）</h3>
+    <p>次の起動オプションは、エンジンの各部分が正しく動くかを自動で確かめる、開発者向けのテストです。起動するとすぐにテストだけを行って終了し、エディターは開きません。結果は標準エラー出力に出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>分類</th><th>起動オプション</th></tr>
+      <tr><td>シーン・保存</td><td>--validate-scene、--validate-large-scene、--validate-scene-persistence、--validate-scene-version、--validate-serialization、--validate-missing-component、--validate-runtime-scene、--validate-scene-flow、--validate-loading-bridge、--validate-prefab、--validate-material、--validate-gltf-import、--validate-transparent-sort</td></tr>
+      <tr><td>コンポーネント・実行時</td><td>--validate-component-api、--validate-runtime-api、--validate-handles、--validate-camera-component、--validate-player-speed、--validate-behaviour、--validate-events、--validate-input、--validate-collision、--validate-physics</td></tr>
+      <tr><td>モーション</td><td>--validate-motion-events、--validate-motion-trigger、--validate-property-link、--validate-animation-undo</td></tr>
+      <tr><td>エディター</td><td>--validate-editor-help、--validate-editor-integration、--validate-editor-camera、--validate-app-quit、--validate-stress</td></tr>
+      <tr><td>スクリプト</td><td>--validate-script-core、--validate-script-lifecycle、--validate-script-serialization、--validate-csharp-scripting、--validate-csharp-startup-recovery、--validate-monobehaviour、--validate-landscape-script</td></tr>
+      <tr><td>シェーダー</td><td>--validate-shader-compile、--validate-shader-asset、--validate-shader-builtin、--validate-shader-material、--validate-shader-lighting、--validate-shader-render、--validate-shader-texture、--validate-shader-editor、--validate-shader-layer、--validate-shader-pass、--validate-shader-composer、--validate-dxc</td></tr>
+      <tr><td>地形</td><td>--validate-landscape、--validate-landscape-editor</td></tr>
+      <tr><td>DirectX 12 描画</td><td>--validate-dx12、--validate-dx12-ui、--validate-dx12-effect、--validate-dx12-resize、--validate-dx12-reload、--validate-dx12-device、--validate-dx12-gpu、--validate-dx12-skinned、--validate-dx12-animation、--validate-dx12-gbuffer、--validate-dx12-deferred、--validate-dx12-directional-light、--validate-dx12-point-light、--validate-dx12-spot-light、--validate-dx12-csm、--validate-dx12-point-shadow、--validate-dx12-spot-shadow</td></tr>
+    </table>
+    </div>
+
+    <h2 id="dx12">DirectX 12 のデバッグ</h2>
+    <p>描画の不具合を調べるための起動オプションです。ほかの起動オプションと一緒に付けられます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>起動オプション</th><th>働き</th></tr>
+      <tr><td><code>--dx12-debug-layer=on</code> / <code>off</code></td><td>DirectX 12 のデバッグレイヤー（誤った使い方を警告する仕組み）を使うかどうか。Debug ビルドでは最初からオンです。</td></tr>
+      <tr><td><code>--dx12-gpu-validation=on</code> / <code>off</code></td><td>GPU 側の検証を使うかどうか。オンにするとデバッグレイヤーも自動でオンになります。</td></tr>
+      <tr><td><code>--dx12-break-on-error=on</code> / <code>off</code></td><td>エラーが起きた時点で止めるかどうか。</td></tr>
+      <tr><td><code>--dx12-dred=on</code> / <code>off</code></td><td>GPU が落ちたときの原因を記録する仕組み（DRED）を使うかどうか。Debug ビルドでは最初からオンです。</td></tr>
+      <tr><td><code>--dx12-warp</code></td><td>グラフィックボードの代わりにソフトウェアの描画装置（WARP）を使います。</td></tr>
+      <tr><td><code>--dx12-force-device-removed</code></td><td>描画装置が失われたときの動きを試すために、わざとその状態にします。</td></tr>
+      <tr><td><code>--dx12-log=ファイル</code></td><td>デバッグの記録を書き出すファイル。</td></tr>
+      <tr><td><code>--dx12-stats-csv=ファイル</code></td><td>描画の統計を書き出す CSV ファイル。</td></tr>
+      <tr><td><code>--dx12-frame-dump=N</code></td><td>書き出すフレーム数（最大 100000）。</td></tr>
+    </table>
+    </div>
+    <p><code>on</code> / <code>off</code> 以外の値は無視されます。<code>--dx12-</code> で始まる知らない起動オプションを付けると、標準エラー出力に「[DX12] unknown runtime option」と表示されます。</p>
+
+    <h2 id="env">環境変数</h2>
+    <p>起動する前に設定しておくと、エンジンの動きが変わる環境変数です。値が空でなく「0」でもなければオンとして扱われます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>環境変数</th><th>働き</th></tr>
+      <tr><td><code>REPLAY_AUTO_PROFILE</code></td><td>エディターを使っている間、描画の計測結果を自動で <code>Saved/Profile</code> に書き出します。プロジェクトの「エディタ起動_計測あり.bat」はこれを 1 にして起動します。</td></tr>
+      <tr><td><code>REPLAY_LIGHTING_TRACE</code></td><td>ライティングの処理の記録を出します。</td></tr>
+      <tr><td><code>REPLAY_TAA_TRACE</code></td><td>TAA の計算の記録を出します。</td></tr>
+      <tr><td><code>DOTNET_ROOT</code></td><td>C# スクリプトを動かす .NET の場所を探すときに使われます。</td></tr>
+    </table>
+    </div>
+
+    <h2 id="replaygame">.replaygame による起動設定</h2>
+    <p>実行ファイルと同じフォルダに拡張子 <code>.replaygame</code> のファイルがあると、エンジンはエディターを出さずにゲームとして起動し、そのファイルの設定を使います。<b>ファイル &gt; ゲームを書き出す...</b> で書き出したゲームはこの形で起動します。</p>
+    <pre><code>REPLAY_GAME 1
+# 行頭が # の行は無視されます
+NAME My Game
+STARTUP_SCENE resources/Scenes/Title.replayscene
+WINDOW 1280 720
+FULLSCREEN 0</code></pre>
+    <div class="table-wrap">
+    <table>
+      <tr><th>行</th><th>意味</th><th>書かなかったとき</th></tr>
+      <tr><td><code>REPLAY_GAME 1</code></td><td>1 行目に必ず書きます。違うと、ファイルは使われず既定の設定で起動します。</td><td>—</td></tr>
+      <tr><td><code>NAME 名前</code></td><td>ゲームの名前</td><td>RePlayGame</td></tr>
+      <tr><td><code>STARTUP_SCENE パス</code></td><td>最初に開くシーン</td><td>プロジェクト設定の Startup Scene</td></tr>
+      <tr><td><code>WINDOW 幅 高さ</code></td><td>ウィンドウの大きさ</td><td>1600 × 900</td></tr>
+      <tr><td><code>FULLSCREEN 0 / 1</code></td><td>1 なら全画面で起動</td><td>0（ウィンドウ）</td></tr>
+    </table>
+    </div>
+    <p><code>.replaygame</code> が 2 つ以上あるときは、名前順で最初のファイルが使われます。書き方に誤りがあると、その行は無視され、標準エラー出力に「[ReplayGame] …」と理由が出ます。<code>--profile-scene</code> を付けたときは <code>.replaygame</code> は使われません。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>エディターを出さずにゲームとして起動する</h3>
+    <ol>
+      <li>PowerShell を開き、プロジェクトのフォルダーに移ります。</li>
+      <li>次のように入力します。プロジェクト設定の Startup Scene からゲームが始まります。</li>
+    </ol>
+    <pre><code>&amp; &quot;.\x64\Release\3dgp.exe&quot; --game</code></pre>
+    <h3>変更の前後で画面を見比べる</h3>
+    <ol>
+      <li>変更する前に <code>--capture-frame before</code> を付けて起動し、<code>Saved/Golden/before.png</code> を作ります。</li>
+      <li>変更したあとに <code>--capture-frame after</code> を付けて起動します。</li>
+      <li>2 枚の画像を並べて見比べます。</li>
+    </ol>
+    <h3>シーンの重さを測る</h3>
+    <ol>
+      <li>上の「性能を計測する」の例のように、<code>--profile-scene</code> にシーンのパス、<code>--out</code> に結果の名前を付けて起動します。</li>
+      <li>終わったら <code>Saved/Profile</code> の中の、名前の付いた .csv を表計算ソフトで開いて、フレームごとの時間を見ます。</li>
+    </ol>
+    <h3>書き出したゲームを全画面で起動する</h3>
+    <ol>
+      <li>書き出したフォルダーの <code>ゲーム名.replaygame</code> をテキストエディターで開きます。</li>
+      <li><code>FULLSCREEN 0</code> を <code>FULLSCREEN 1</code> に書き換えて保存します。</li>
+      <li><code>ゲーム名.exe</code> を起動して確かめます。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../editor/shortcuts.html">ショートカット一覧</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Persistent - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Scene</div>
+    <h1>Persistent</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>ゲームの実行中にシーンが切り替わっても、その GameObject を消さずに次のシーンへ持ち越すための印です。BGM を鳴らし続ける GameObject や、シーンをまたいで使う管理用の GameObject に付けます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>シーンが切り替わっても、BGM を途切れさせずに鳴らし続けたいとき</li>
+      <li>スコアなどを持つ管理用の GameObject を、次のシーンへ持ち越したいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Scene &gt; Persistent</td></tr>
+      <tr><td>プロパティ</td><td>なし（付けるだけで働きます）</td></tr>
+      <tr><td>必須・推奨</td><td>なし</td></tr>
+      <tr><td>働く場面</td><td>ゲームの実行中のシーン切り替え</td></tr>
+    </table>
+    </div>
+
+    <h2 id="usage">使い方</h2>
+    <ol class="steps">
+      <li>持ち越したい GameObject を、階層パネルでシーン直下（どの GameObject の子でもない位置）に置きます。</li>
+      <li>その GameObject に <b>コンポーネントを追加 &gt; Scene &gt; Persistent</b> を付けます。</li>
+      <li>ゲームを実行し、シーンを切り替えます。付けた GameObject とその子は、次のシーンでも同じものが残ります。</li>
+    </ol>
+
+    <h2 id="limits">注意</h2>
+    <div class="warning"><strong>シーン直下に付けたときだけ効きます</strong>親を持つ GameObject（子の GameObject）に付けた Persistent は、警告が出て無視されます。持ち越したい物は、シーン直下の GameObject にまとめて、その GameObject に付けてください。</div>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="index.html">コンポーネント一覧</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

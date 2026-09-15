@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>メッシュの描画（Mesh / Primitive / Skinned Mesh Renderer） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+    <h1>メッシュの描画（Mesh / Primitive / Skinned Mesh Renderer）</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>形を画面に表示するコンポーネントは 3 種類あります。どれも GameObject の Transform の位置・回転・拡大率で表示されます。プロパティの多くが共通なので、このページでまとめて説明します。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>コンポーネント</th><th>表示するもの</th><th>使う場面</th></tr>
+      <tr><td>Mesh Renderer</td><td>取り込んだモデルファイル</td><td>建物、小物など、動かないモデル</td></tr>
+      <tr><td>Primitive Mesh Renderer</td><td>エンジンに入っている形（Plane、Cube、Sphere、Capsule、Cylinder、Quad）</td><td>床や仮置きの箱など、モデルファイルが要らない形</td></tr>
+      <tr><td>Skinned Mesh Renderer</td><td>骨やアニメーションの入ったモデルファイル</td><td>キャラクターなど、<a href="#animator">Animator</a> で動かすモデル</td></tr>
+    </table>
+    </div>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>取り込んだモデル（建物、小物など）をシーンに表示したいとき（Mesh Renderer）</li>
+      <li>床や仮置きの箱など、エンジンに入っている形を置きたいとき（Primitive Mesh Renderer）</li>
+      <li>骨の入ったキャラクターを表示して、アニメーションさせたいとき（Skinned Mesh Renderer）</li>
+      <li>物の色や質感を、マテリアルで変えたいとき</li>
+      <li>物が表示されない、赤紫になる、といったときに原因を調べたいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Rendering &gt; Mesh Renderer、Rendering &gt; Primitive Mesh Renderer、Rendering &gt; Skinned Mesh Renderer</td></tr>
+      <tr><td>必須・推奨</td><td>なし</td></tr>
+      <tr><td>表示される場面</td><td>エディターのシーンビューと、ゲームの実行中の両方</td></tr>
+    </table>
+    </div>
+
+    <h2 id="create">置き方</h2>
+    <h3>形だけを置く（Primitive Mesh Renderer）</h3>
+    <p>階層パネルの <b>+ 作成 &gt; 3D Object</b> から形を選ぶと、Transform と Primitive Mesh Renderer が付いた GameObject が作られます。<a href="../editor/hierarchy.html">階層パネル</a>を見てください。</p>
+
+    <h3>モデルを置く（Mesh Renderer / Skinned Mesh Renderer）</h3>
+    <ol class="steps">
+      <li>プロジェクトパネルでモデルのアセットを探します。</li>
+      <li>アセットをシーンビューにドラッグして離します。またはアセットを選んで、プロジェクトパネルの下の <b>選択AssetをSceneへ配置</b> を押します。</li>
+      <li>アセットの名前の GameObject が作られ、選択されます。「Assetを配置しました: （名前）」と表示されます。</li>
+    </ol>
+    <p>付くコンポーネントは、モデルの中身で決まります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>モデルの中身</th><th>付くコンポーネント</th></tr>
+      <tr><td>骨もアニメーションも無い</td><td>Mesh Renderer</td></tr>
+      <tr><td>骨がある</td><td>Skinned Mesh Renderer</td></tr>
+      <tr><td>アニメーションがある</td><td>Skinned Mesh Renderer と Animator（Animator の <b>旧: 待機クリップ</b> が 0 になり、最初のアニメーションが流れます）</td></tr>
+    </table>
+    </div>
+    <p>置かれる位置は次のとおりです。</p>
+    <ul>
+      <li>シーンビューにドロップしたとき：マウスの下の場所。ほかの GameObject の上に落とすと、その GameObject の子になります。</li>
+      <li><b>選択AssetをSceneへ配置</b> を押したとき：シーンビューのカメラの 5 m 前。</li>
+      <li>ツールバーの <b>Snap</b> にチェックがあるときは、位置が刻みに丸められます。</li>
+    </ul>
+    <p>プロジェクトパネルの <b>SceneへModel配置時にMesh Colliderも追加</b> にチェックを付けておくと、置くときに当たり判定の Mesh Collider も付きます（形は表示中のモデルを使い、衝突レイヤーは Environment になります）。</p>
+    <p>ゲームの実行中は置けません（「Play中はAssetを配置できません」と表示されます）。</p>
+
+    <h2 id="properties">プロパティ</h2>
+    <p>「対象」の列は、そのプロパティを持つコンポーネントです（M = Mesh Renderer、P = Primitive Mesh Renderer、S = Skinned Mesh Renderer）。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>対象</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>プリミティブ</td><td><code>primitive_type</code></td><td>P</td><td>選択</td><td>Plane</td><td></td><td>表示する形。Plane、Cube、Sphere、Capsule、Cylinder、Quad。Plane と Quad は薄い板なので、裏側からも見えるように常に両面で描かれます</td></tr>
+      <tr><td>メッシュ</td><td><code>mesh_asset</code></td><td>M S</td><td>アセット（モデル）</td><td>（空）</td><td></td><td>表示するモデル。空のときは何も表示されません</td></tr>
+      <tr><td>マテリアル</td><td><code>material_asset</code></td><td>M P S</td><td>アセット（マテリアル）</td><td>（空）</td><td></td><td>見た目に使うマテリアル。<a href="#material">マテリアルと色の決まり方</a>を見てください</td></tr>
+      <tr><td>マテリアル上書き</td><td><code>material_override</code></td><td>M P S</td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、マテリアルの色や金属度の代わりに、このコンポーネントの値を使います</td></tr>
+      <tr><td>色</td><td><code>tint</code></td><td>M P S</td><td>色</td><td>白</td><td></td><td>形の色</td></tr>
+      <tr><td>描画方式</td><td><code>shading_model</code></td><td>M P S</td><td>選択</td><td>PBR</td><td></td><td>光の当たり方。FBX標準、PBR、トゥーン、アンリット。マテリアルを付けていないときだけ使われます</td></tr>
+      <tr><td>輪郭線</td><td><code>outline</code></td><td>M P S</td><td>オン・オフ</td><td>オフ</td><td></td><td>輪郭線を描きます。マテリアルを付けていないときだけ効きます</td></tr>
+      <tr><td>影を落とす</td><td><code>cast_shadow</code></td><td>M P S</td><td>オン・オフ</td><td>オン</td><td></td><td>ほかの物に影を落とします</td></tr>
+      <tr><td>影を受ける</td><td><code>receive_shadow</code></td><td>M P S</td><td>オン・オフ</td><td>オン</td><td></td><td>ほかの物の影を受けます</td></tr>
+      <tr><td>影をアルファで抜く</td><td><code>shadow_alpha_clip</code></td><td>M P S</td><td>オン・オフ</td><td>オフ</td><td></td><td>透明な部分の影を抜きます</td></tr>
+      <tr><td>影の抜きしきい値</td><td><code>shadow_alpha_cutoff</code></td><td>M P S</td><td>小数</td><td>0.5</td><td>0〜1</td><td>不透明度がこの値より小さい部分の影を抜きます</td></tr>
+      <tr><td>Rendering Layer</td><td><code>rendering_layer</code></td><td>M P S</td><td>整数</td><td>0</td><td>0〜31</td><td>グループの番号。<a href="index.html#rendering">Screen Effect Stack</a> で「この番号の物だけに効果をかける」ときに使います</td></tr>
+      <tr><td>表示</td><td><code>visible</code></td><td>M P S</td><td>オン・オフ</td><td>オン</td><td></td><td>オフにすると表示されません</td></tr>
+      <tr><td>表示姿勢補正 (度)</td><td><code>visual_rotation_offset</code></td><td>S</td><td>3 つの小数</td><td>90, 188.5, 180</td><td></td><td>モデルの見た目だけを回して、正しい向きに立たせる角度。GameObject の回転は変わりません</td></tr>
+      <tr><td>モデル位置オフセット</td><td><code>local_position_offset</code></td><td>M S</td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>モデルの原点が足元や中心に無いときに、見た目だけをずらします</td></tr>
+      <tr><td>モデル回転オフセット (度)</td><td><code>local_rotation_offset</code></td><td>M</td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>見た目だけを回します</td></tr>
+      <tr><td>モデル縮尺倍率</td><td><code>local_scale_multiplier</code></td><td>M S</td><td>3 つの小数</td><td>1, 1, 1</td><td></td><td>GameObject の拡大率に掛ける倍率。センチメートル単位で作られたモデルが 100 倍の大きさで出るときは 0.01 にします</td></tr>
+      <tr><td>FBX 座標系補正</td><td><code>apply_fbx_coordinate_transform</code></td><td>S</td><td>オン・オフ</td><td>オン</td><td></td><td>座標の向きの違いを直す変換をかけます</td></tr>
+    </table>
+    </div>
+    <div class="note"><strong>Skinned Mesh Renderer の向きの既定値</strong><b>コンポーネントを追加</b> で付けたときは、<b>表示姿勢補正</b> が 90, 188.5, 180、<b>FBX 座標系補正</b> がオンになっています。プロジェクトパネルからモデルを置いたときは、<b>表示姿勢補正</b> が 0, 0, 0、<b>FBX 座標系補正</b> がオフで作られます。手で付けたモデルが横倒しや逆向きに出るときは、この 2 つを置いたときと同じ値にしてください。</div>
+    <p>影の 2 つのチェックボックスは、付けたマテリアルがすべて照明を使わない種類（Unlit、Flat Fill）のときは薄く表示されて変えられず、下に「Unlit / Flat Fill は照明と影を使わないため編集できません」と表示されます。</p>
+
+    <h3 id="override-values">マテリアル上書きの値</h3>
+    <p>プロパティの下に、次の項目が続きます。<b>マテリアル上書き</b> がオフの間は薄く表示され、変えられません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>マテリアル色</td><td><code>material.base_color</code></td><td>色</td><td>白</td><td></td><td>マテリアルの基本の色の代わりに使う色</td></tr>
+      <tr><td>金属度</td><td><code>material.metallic</code></td><td>小数</td><td>0</td><td>0〜1</td><td>1 に近いほど金属らしくなります</td></tr>
+      <tr><td>粗さ</td><td><code>material.roughness</code></td><td>小数</td><td>0.55</td><td>0〜1</td><td>0 に近いほどつるつる、1 に近いほどざらざらに見えます</td></tr>
+      <tr><td>環境遮蔽</td><td><code>material.ambient_occlusion</code></td><td>小数</td><td>1</td><td>0〜1</td><td>小さいほど、周りからの光で明るくなりにくくなります</td></tr>
+      <tr><td>発光色</td><td><code>material.emissive_color</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>自分で光る色</td></tr>
+      <tr><td>発光強度</td><td><code>material.emissive_strength</code></td><td>小数</td><td>0</td><td>0〜16</td><td>自分で光る強さ</td></tr>
+      <tr><td>両面描画</td><td><code>material.double_sided</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>面の裏側も描きます</td></tr>
+    </table>
+    </div>
+    <p>マテリアルのシェーダーに独自の値があるときは、その値もシェーダーが決めた見出し（無ければ「Shader Properties」）の下に並びます。これはモーションで動かすための項目で、シーンには保存されません。</p>
+
+    <h2 id="material">マテリアルと色の決まり方</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>状態</th><th>色・光の当たり方</th></tr>
+      <tr><td><b>マテリアル</b> が空</td><td><b>色</b> と <b>描画方式</b> で表示します。<b>輪郭線</b> もこのときだけ効きます。</td></tr>
+      <tr><td><b>マテリアル</b> を指定、<b>マテリアル上書き</b> がオフ</td><td>マテリアルの色、金属度、粗さ、光の当たり方を使います。このコンポーネントの <b>色</b> と <b>描画方式</b> は使われません。</td></tr>
+      <tr><td><b>マテリアル</b> を指定、<b>マテリアル上書き</b> がオン</td><td>光の当たり方とテクスチャはマテリアルのものを使い、色・金属度・粗さ・環境遮蔽・発光・両面描画は <a href="#override-values">マテリアル上書きの値</a> を使います。さらに <b>色</b> が掛けられます。</td></tr>
+    </table>
+    </div>
+    <p>マテリアルのシェーダーが見つからないときは、形がマゼンタ（赤紫）で表示され、コンソールに「Material Shader を解決できないため Unlit/Magenta へフォールバック」というエラーが出ます。</p>
+
+    <h3>マテリアルを付ける</h3>
+    <ul>
+      <li>インスペクターの <b>マテリアル</b> の欄で選びます。</li>
+      <li>プロジェクトパネルのマテリアルを、階層パネルやシーンビューの GameObject の上にドロップします。何も無い場所に落としたときは、選択中の GameObject に付きます。付けると <b>マテリアル上書き</b> はオフになり、「Materialを割り当てました: （名前）」と表示されます。</li>
+    </ul>
+    <div class="warning"><strong>ドロップで付けられるのは Mesh Renderer と Skinned Mesh Renderer だけです</strong>Primitive Mesh Renderer しか無い GameObject にマテリアルをドロップすると、「選択GameObjectにMesh Rendererがありません」と表示され、付きません。Primitive Mesh Renderer にはインスペクターの <b>マテリアル</b> の欄で指定してください。</div>
+
+    <h2 id="slots">マテリアルスロット</h2>
+    <p>モデルは、部分ごと（顔、服、髪など）に別のマテリアルを使えます。この部分の区切りを<b>スロット</b>と呼びます。</p>
+    <p>GameObject を 1 つだけ選んでいるとき、インスペクターの <b>コンポーネントを追加</b> ボタンより下に「Mesh Renderer マテリアルスロット」（Primitive、Skinned も同様）という見出しと、「空スロットは既存の「マテリアル」へフォールバックします」という薄い文字が表示されます。その下にスロットが「Slot 1  （部分の名前）」の形で並びます。Mesh Renderer と Skinned Mesh Renderer ではモデルに入っている部分の数だけ（最大 32）、Primitive Mesh Renderer では 1 つだけです。</p>
+    <p>スロットを開くと、次の欄があります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>空のときの表示</th><th>説明</th></tr>
+      <tr><td>名前</td><td>（番号）番</td><td>スロットの名前。Enter を押すか、ほかの場所をクリックすると決まります。</td></tr>
+      <tr><td>マテリアル</td><td>(material_asset を使用)</td><td>この部分だけに使うマテリアル。空なら上の <b>マテリアル</b> を使います。どちらも空のときは「共通も未設定なら FBX 材質」と表示され、モデルファイルに入っている材質を使います。</td></tr>
+      <tr><td>ベースカラー（色）</td><td>(モデルのまま)</td><td>色の画像を差し替えます。</td></tr>
+      <tr><td>法線マップ（凹凸）</td><td>(モデルのまま)</td><td>凹凸の画像を差し替えます。</td></tr>
+      <tr><td>ORM（AO・粗さ・金属）</td><td>(モデルのまま)</td><td>影の付きやすさ・粗さ・金属度をまとめた画像を差し替えます。</td></tr>
+      <tr><td>エミッシブ（発光）</td><td>(モデルのまま)</td><td>光る部分の画像を差し替えます。</td></tr>
+    </table>
+    </div>
+    <p>画像を指定すると、欄の左に小さな見本が表示されます。見本にマウスを乗せると大きく表示されます。スロットの順番は、コンポーネントと同じように ◆ をドラッグして変えられます。</p>
+
+    <h2 id="animator">Skinned Mesh Renderer と Animator</h2>
+    <p>Skinned Mesh Renderer は、同じ GameObject に付いている Animator から、再生中のアニメーションと時間を受け取って姿勢を決めます。</p>
+    <ul>
+      <li>Animator が有効：アニメーションに合わせて動きます。</li>
+      <li>Animator が無効：表示は続きますが、そのときの姿勢で止まります。</li>
+      <li>Animator が無い：アニメーションをかけない基本の姿勢で表示されます。</li>
+    </ul>
+
+    <h2 id="gltf-limits">glTF モデルの制限</h2>
+    <p>このビルドで glTF（<code>.glb</code> / <code>.gltf</code>）を読むときの制限です。Blender や Babylon.js では正しく見えるのに、エンジンでは崩れるときに確かめてください。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>制限</th><th>起きること</th><th>当てはまりやすいモデル</th></tr>
+      <tr><td>片面の設定が効かない</td><td>マテリアルの <b>両面を描く</b> がオフでも、面の裏側まで描かれます。ふつうのモデルは見た目が変わりませんが、黒い外殻を少し大きく重ねて輪郭線を出すモデルは、外殻の手前側が本体を覆い、黒いシルエットの中に目や線だけが見える状態になります</td><td>Sketchfab から落としたアニメ調のモデル（マテリアル名が <code>OH_Outline_Material</code> などの黒いメッシュを持つもの）</td></tr>
+      <tr><td>骨は 256 本まで</td><td>骨が 256 本を超えるモデルは、257 本目以降の骨の動きが伝わりません。止まっているときは正しく見えますが、アニメーションを再生したり骨のポーズを変えたりすると、その骨に付いた頂点が元の位置に取り残され、メッシュが裂けたり伸びたりします</td><td>髪や服に揺れ用の骨を多く持つキャラクター（数百本の骨を持つもの）</td></tr>
+      <tr><td>1 頂点の骨は 4 本まで</td><td><code>JOINTS_0</code> / <code>WEIGHTS_0</code> だけを読みます。5 本目以降の骨（<code>JOINTS_1</code> 以降）の重みは、警告なしに捨てられます</td><td>書き出しで影響する骨の数を 4 本に制限していないモデル</td></tr>
+      <tr><td>モーフは 1 つ目だけ</td><td>モーフターゲット（表情などの形の変化）は 1 つ目だけを使います。アニメーションでモーフの重みを動かすと、ターゲットが 2 つ以上あるモデルでは値がずれます</td><td>表情のモーフを持つモデル</td></tr>
+      <tr><td>アニメーションの無いモデルのリグ表示</td><td>シーンビューの <b>リグ</b> 表示で、骨がモデルの体に沿わず、足元に平たく広がって表示されます。モデルの見た目は正しいままです。入れ物のノードに回転や拡大が入っているモデルで起きます</td><td>Sketchfab から落としたモデルなど、ルートに軸の向きを変えるノードがあるもの</td></tr>
+    </table>
+    </div>
+    <p>テクスチャ（PNG・JPEG）やマテリアルスロットの数（32 まで）は、これらの崩れの原因にはなりません。</p>
+
+    <h2 id="troubleshoot">表示されないとき</h2>
+    <ul>
+      <li><b>表示</b> がオフになっていないか。</li>
+      <li>GameObject やコンポーネントの有効のチェックが外れていないか（親が無効でも表示されません）。</li>
+      <li>Mesh Renderer・Skinned Mesh Renderer の <b>メッシュ</b> が空でないか。</li>
+      <li>大きさが極端に大きい・小さい、または向きがずれていないか（<b>モデル縮尺倍率</b>、<b>表示姿勢補正</b> を確かめます）。</li>
+      <li>黒いシルエットに覆われて一部しか見えないとき、アニメーションで裂けるときは、<a href="#gltf-limits">glTF モデルの制限</a> に当てはまっていないか。マテリアルを外しても症状が変わらないなら、テクスチャやマテリアルの問題ではありません。</li>
+    </ul>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>モデルを置いて、マテリアルを付ける</h3>
+    <ol>
+      <li>プロジェクトパネルでモデルを探し、シーンビューへドラッグして置きます。</li>
+      <li>プロジェクトパネルのマテリアルを、置いたモデルの上へドラッグして付けます。</li>
+      <li>色だけをこのモデルで変えたいときは、<b>マテリアル上書き</b> をオンにして、<b>マテリアル色</b> を変えます。</li>
+    </ol>
+    <h3>大きさや向きがおかしいモデルを直す</h3>
+    <ol>
+      <li>センチメートル単位で作られたモデルがとても大きく出るときは、<b>モデル縮尺倍率</b> を (0.01, 0.01, 0.01) にします。</li>
+      <li>原点がずれていて足元が埋まるときは、<b>モデル位置オフセット</b> で見た目だけをずらします。GameObject の位置は変わりません。</li>
+    </ol>
+    <h3>仮の床を置く</h3>
+    <ol>
+      <li>階層パネルの <b>+ 作成</b> &gt; <b>3D Object</b> &gt; <b>Plane</b> を選びます。</li>
+      <li>Transform の <b>拡大率</b> を (10, 1, 10) などにして広げます。</li>
+      <li>上に物を置いて物理で落とすときは、床に Box Collider も付けます（<a href="physics.html">物理</a>）。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="transform.html">Transform</a></li>
+      <li><a href="lights.html">ライト（Directional / Point / Spot）</a></li>
+      <li><a href="../editor/project.html">プロジェクトパネル</a></li>
+      <li><a href="../editor/inspector.html">インスペクター</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

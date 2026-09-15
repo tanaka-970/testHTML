@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Image・Shape Image・Sprite Animator - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / UI</div>
+    <h1>Image・Shape Image・Sprite Animator</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>UI に画像を表示するコンポーネントです。<b>Image</b> は四角い範囲に画像を描き、<b>Shape Image</b> はその画像を自由な形で切り抜き、<b>Sprite Animator</b> は 1 枚の画像に並んだコマを順に切り替えてアニメーションさせます。どれも <a href="ui-layout.html">Canvas</a> の子孫に置きます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>アイコン、背景、ボタンの絵など、画像を UI に表示したいとき（Image）</li>
+      <li>体力ゲージや、スキルの待ち時間を表す円のように、量に合わせて表示を減らしたいとき（塗り量、塗り方向）</li>
+      <li>画像に色のグラデーションを掛けたいとき（塗りの種類）</li>
+      <li>画像を、四角ではない自由な形で切り抜きたいとき（Shape Image）</li>
+      <li>1 枚の画像に並べたコマを、パラパラ漫画のように動かしたいとき（Sprite Animator）</li>
+    </ul>
+
+    <h2 id="image">Image</h2>
+    <p>コンポーネントを追加での場所は <b>UI &gt; Image</b> です。UI Workspace の <b>UI 階層</b> で <b>Image</b> &gt; <b>通常のImageを追加</b> を選ぶと、Image を持つ 160 × 80 の GameObject が作られます。</p>
+    <!--PROPS:UIImageComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>画像</td><td><code>sprite</code></td><td>アセット（画像）</td><td>（空）</td><td></td><td>AssetDatabase の Image GUID です。Atlas 未指定時に使います。</td></tr>
+<tr><td>Sprite Atlas</td><td><code>atlas</code></td><td>アセット（スプライトアトラス）</td><td>（空）</td><td></td><td>不均一 Sprite Atlas。指定時は Region の Image/UV/Pivot を使います。 このビルドでは Region の Pivot は描画に使われません。使われるのは範囲、Rotated、自由形状の輪郭です。</td></tr>
+<tr><td>Atlas Region</td><td><code>atlas_region</code></td><td>文字</td><td>（空）</td><td></td><td>Sprite Atlas 内の名前付き Region。Motion の Step Key で差し替えできます。 Sprite Atlas と両方設定され、名前の一致する Region があるときだけ使います。</td></tr>
+<tr><td>色</td><td><code>color</code></td><td>色</td><td>1, 1, 1, 1</td><td></td><td>描画する色を指定します。 画像の色に掛け合わせます。A は不透明度として働きます。画像が無いときはこの色の四角になります。</td></tr>
+<tr><td>塗りの終端色</td><td><code>fill_color_2</code></td><td>色</td><td>1, 1, 1, 1</td><td></td><td>図形の終点側の塗り色を指定します。 塗りの種類が 線形・放射 のとき、終わり側の色。画像の色に掛け合わせます。Image の 不透明度 はこの色には掛かりません（Canvas の不透明度は掛かります）。</td></tr>
+<tr><td>塗りの種類</td><td><code>fill_mode</code></td><td>選択</td><td>単色</td><td></td><td>図形の塗り方を単色・線形・放射から指定します。 単色は 色 だけ。線形は 塗りの向き の方向へ 色 から 塗りの終端色 へ変わります。放射は 塗りの中心 が 色、中心から範囲の角までの距離で 塗りの終端色 になります。 選択肢：単色、線形、放射</td></tr>
+<tr><td>塗りの向き</td><td><code>fill_angle</code></td><td>小数</td><td>0</td><td>-360〜360</td><td>グラデーションの向きを度単位で指定します。 線形のときの向き（度）。0 で左が 色・右が 塗りの終端色、90 で上から下へ変わります（値を増やすと画面上で時計回りに回ります）。</td></tr>
+<tr><td>塗りの中心</td><td><code>fill_center</code></td><td>2 つの小数</td><td>0.5, 0.5</td><td></td><td>グラデーションの中心を正規化座標で指定します。 表示している画像の範囲を 0〜1 とした位置（0,0 が左上）。線形では色の真ん中の位置、放射では中心になります。</td></tr>
+<tr><td>線の色の種類</td><td><code>stroke_mode</code></td><td>選択</td><td>単色</td><td></td><td>輪郭線の色の変化方法を指定します。 Image では、長さに沿う にすると、全体の色が左から右へ 線の終端色 に近づきます（塗りの種類の色の上にさらに掛かります）。 選択肢：単色、長さに沿う</td></tr>
+<tr><td>線の終端色</td><td><code>stroke_color_2</code></td><td>色</td><td>1, 1, 1, 1</td><td></td><td>図形の輪郭線の終端色を指定します。 線の色の種類 が 長さに沿う のときの右端の色。不透明度はどちらも掛かりません。</td></tr>
+<tr><td>不透明度</td><td><code>opacity</code></td><td>小数</td><td>1</td><td>0〜1</td><td>表示の不透明度を 0〜1 で指定します。 色の A と Canvas の不透明度に、さらに掛け合わせます。0 のときは描かれません。</td></tr>
+<tr><td>塗り量</td><td><code>fill_amount</code></td><td>小数</td><td>1</td><td>0〜1</td><td>図形の塗り進み具合を 0〜1 で指定します。 0 のときは描かれません。水平・垂直では画像の端から隠れ、円形 360 では扇形になります。</td></tr>
+<tr><td>塗り方向</td><td><code>fill_method</code></td><td>選択</td><td>水平</td><td></td><td>塗り進む方向を指定します。 水平は左から、垂直は下から、円形 360 は中心の真下から反時計回りに表示が伸びます。 選択肢：水平、垂直、円形 360</td></tr>
+<tr><td>塗りを反転</td><td><code>fill_reverse</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>塗り進む方向を反転します。 水平は右から、垂直は上から、円形 360 は時計回りになります。</td></tr>
+<tr><td>ブレンド</td><td><code>blend_mode</code></td><td>選択</td><td>通常</td><td></td><td>画像と背景を合成する方法を指定します。 通常は半透明の重ね方、加算・スクリーンは明るく、乗算は暗く重ねます。 選択肢：通常、加算、乗算、スクリーン</td></tr>
+<tr><td>UV オフセット</td><td><code>uv_offset</code></td><td>2 つの小数</td><td>0, 0</td><td></td><td>Sprite Sheet のフレーム移動を Motion から駆動できます。Step Key なら1フレーム切替になります。 画像（アトラスのときは Region）の中で表示する部分の左上のずれを、0〜1 の割合で指定します。Sprite Animator があると毎回書き換えられます。 （詳細設定）</td></tr>
+<tr><td>UV スケール</td><td><code>uv_scale</code></td><td>2 つの小数</td><td>1, 1</td><td></td><td>Sprite Sheet の1フレーム範囲を Motion から変更できます。 表示する部分の大きさの割合です。Sprite Animator があると毎回書き換えられます。 （詳細設定）</td></tr>
+<tr><td>9 スライス</td><td><code>nine_slice</code></td><td>4 つの小数</td><td>0, 0, 0, 0</td><td></td><td>左、上、右、下の順に Canvas 座標の長さで指定します（範囲の半分まで）。このビルドでは見た目は通常の引き伸ばしと同じです。 （詳細設定）</td></tr>
+<tr><td>比率を維持</td><td><code>preserve_aspect</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>9 スライスが有効な場合は 9 スライスを優先します。 余った上下または左右は空け、中央に表示します。クリックの判定も表示された部分だけになります。</td></tr>
+</table></div>
+<!--/PROPS:UIImageComponent-->
+
+    <h3 id="source">表示する画像</h3>
+    <ul>
+      <li><b>Sprite Atlas</b> と <b>Atlas Region</b> の両方が設定され、その名前の Region が見つかったときは、アトラスの画像の Region の部分を表示します（<a href="../windows/sprite-atlas.html">Sprite Atlas Editor</a>）。</li>
+      <li>そうでないときは <b>画像</b> を表示します。</li>
+      <li>どちらも無いときは白い四角になり、<b>色</b> で塗った四角として使えます。</li>
+      <li><b>UV オフセット</b> と <b>UV スケール</b> は、画像（アトラスのときは Region）の中で表示する部分をずらす・広げる値です。</li>
+    </ul>
+    <p><b>不透明度</b> が 0、または <b>塗り量</b> が 0 のときは描かれません。表示される色は、<b>色</b> × <b>不透明度</b> × 親の Canvas の不透明度です。</p>
+
+    <h3 id="fill">塗り量と塗り方向</h3>
+    <p><b>塗り量</b>（0〜1）で、画像の一部だけを表示できます。HP ゲージなどに使います。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>塗り方向</th><th>塗りを反転がオフ</th><th>塗りを反転がオン</th></tr>
+      <tr><td>水平</td><td>左から右へ表示が伸びます</td><td>右から左へ</td></tr>
+      <tr><td>垂直</td><td>下から上へ</td><td>上から下へ</td></tr>
+      <tr><td>円形 360</td><td>中心から見て真下を起点に、反時計回りに扇形で表示が広がります</td><td>時計回り</td></tr>
+    </table>
+    </div>
+    <p>水平・垂直では、表示する範囲と一緒に画像の切り取る範囲も縮むので、画像は伸び縮みせずに端から隠れます。塗り量が 1 のときは、インスペクターで塗り方向と塗りを反転が選べない表示になります。</p>
+
+    <h3 id="aspect">比率を維持</h3>
+    <p>オンにすると、画像の縦横の比を保ったまま、範囲の中に収まる大きさで中央に表示します（余った上下または左右は空きます）。クリックの判定も、実際に表示された部分だけになります。<b>9 スライス</b> を使っているときは効きません。</p>
+
+    <h3 id="nine-slice">9 スライス</h3>
+    <p>4 つの値（左、上、右、下）のどれかが 0 より大きいと 9 スライスとして描きます。値は範囲の半分までに抑えられます。</p>
+    <div class="warning"><strong>このビルドでは、角が引き伸ばされないようにする効果がありません</strong>9 つに分けたときの画像の切り取り位置が、表示する範囲と同じ割合で決まるため、見た目はふつうに引き伸ばしたときと同じになります。9 スライスをオンにしたときの違いは、<b>比率を維持</b> が効かなくなることと、Shape Image や Puppet Deform より優先されることだけです。</div>
+
+    <h3 id="gradient">グラデーション</h3>
+    <p><b>塗りの種類</b> で、画像に色の変化を掛けられます。どの場合も、決まった色を画像の色に掛け合わせます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>塗りの種類</th><th>色の変わり方</th></tr>
+      <tr><td>単色</td><td><b>色</b> だけを掛けます</td></tr>
+      <tr><td>線形</td><td><b>塗りの向き</b> の方向に、<b>色</b> から <b>塗りの終端色</b> へ変わります。<b>塗りの中心</b> の位置がちょうど中間の色です。向き 0 度で左から右、90 度で上から下です</td></tr>
+      <tr><td>放射</td><td><b>塗りの中心</b> が <b>色</b>、中心から範囲の角までの距離（範囲の対角線の半分）で <b>塗りの終端色</b> になります</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li><b>塗りの中心</b> は、表示している部分の左上を 0,0、右下を 1,1 とした位置です。塗り量で表示が縮んでいるときは、縮んだ範囲が基準になります。</li>
+      <li><b>線の色の種類</b> を <b>長さに沿う</b> にすると、上の結果にさらに、左端はそのまま・右端は <b>線の終端色</b> になるよう横方向に色を混ぜます。</li>
+      <li><b>不透明度</b> は <b>色</b> 側にだけ掛かります。<b>塗りの終端色</b> には Canvas の不透明度だけ、<b>線の終端色</b> にはどちらも掛かりません。フェードアウトさせるときは、終端色の A も一緒に下げてください。</li>
+    </ul>
+
+    <h3 id="blend">ブレンド</h3>
+    <p>背景との重ね方です。<b>通常</b>（半透明で重ねる）、<b>加算</b>（明るくなる）、<b>乗算</b>（暗くなる）、<b>スクリーン</b>（明るくなる、加算より穏やか）から選びます。</p>
+
+    <h3 id="priority">描き方が重なるとき</h3>
+    <p>1 つの Image に、次のうち複数の条件がそろっているときは、上にあるものが使われます。</p>
+    <ol>
+      <li>塗り方向が <b>円形 360</b></li>
+      <li><b>9 スライス</b> が有効</li>
+      <li>同じ GameObject の <b>Shape Image</b>（頂点 3 つ以上）</li>
+      <li>アトラスの Region が自由形状</li>
+      <li>同じ GameObject の <b>Puppet Deform</b> が有効</li>
+      <li>ふつうの四角</li>
+    </ol>
+
+    <h2 id="shape-image">Shape Image</h2>
+    <p>同じ GameObject の Image を、ベジェ曲線の輪郭で切り抜くコンポーネントです。色や線は持たず、輪郭の形だけを持ちます。コンポーネントを追加での場所は <b>UI &gt; Shape Image</b> です。</p>
+    <p>UI 階層の <b>Image</b> &gt; <b>自由図形Imageを追加</b>（狭い表示では <b>自由図形イメージ</b>）を選ぶと、「自由図形 Image」という名前で、Image と Shape Image を持つ 160 × 100 の GameObject が作られます。輪郭は 4 つの頂点の四角（範囲の 12%〜88%）です。輪郭は UI Workspace の画面上で頂点をドラッグして編集します。</p>
+    <!--PROPS:UIShapeImageComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>Path を閉じる</td><td><code>path_closed</code></td><td>オン・オフ</td><td>オン</td><td></td><td>自由形状の末尾と先頭を接続します。Image のクリップには閉じた Path が必要です。 このビルドの描画では使われず、常に最後と最初の頂点がつながります。</td></tr>
+<tr><td>Path Anchor</td><td><code>path_points</code></td><td>一覧</td><td>（空）</td><td></td><td>正規化 0..1 の頂点配列。UI Scene View の専用コントローラーで編集できます。 Image の範囲の左下を 0,0、右上を 1,1 とした位置。最大 64 個。頂点ごとに point[番号].position としてモーションで動かせます。</td></tr>
+<tr><td>Path 入力 Handle</td><td><code>path_in_handles</code></td><td>一覧</td><td>（空）</td><td></td><td>自由形状の各頂点へ入る Bezier ハンドルを指定します。 頂点の数と同じ個数。頂点からのずれで、前の頂点から来る曲線の曲がり方を決めます（point[番号].in_handle）。 （詳細設定）</td></tr>
+<tr><td>Path 出力 Handle</td><td><code>path_out_handles</code></td><td>一覧</td><td>（空）</td><td></td><td>自由形状の各頂点から出る Bezier ハンドルを指定します。 頂点の数と同じ個数。頂点からのずれで、次の頂点へ向かう曲線の曲がり方を決めます（point[番号].out_handle）。 （詳細設定）</td></tr>
+</table></div>
+<!--/PROPS:UIShapeImageComponent-->
+    <ul>
+      <li>頂点の位置は、Image の範囲の左下を (0, 0)、右上を (1, 1) とした割合です。</li>
+      <li>各頂点には入力ハンドルと出力ハンドルがあり、頂点からのずれで曲がり方を決めます。頂点から次の頂点までは、前の頂点の出力ハンドルと次の頂点の入力ハンドルを使った 3 次ベジェ曲線で、1 区間を 8 つに分けて描きます。</li>
+      <li>頂点が 3 つ以上あるときだけ切り抜きます。</li>
+      <li>インスペクターの頂点ごとの項目（「Path Point 番号」の <b>位置</b>、<b>入力ハンドル</b>、<b>出力ハンドル</b>、内部名 <code>point[番号].position</code> など）は、モーションで動かせます。</li>
+    </ul>
+    <div class="note"><strong>Path を閉じる をオフにしても閉じた形になります</strong>このビルドの描画は、最後の頂点と最初の頂点を常につなぎます。</div>
+    <p>輪郭が自分自身と交差する形は、正しく塗れないことがあります。</p>
+
+    <h2 id="sprite-animator">Sprite Animator</h2>
+    <p>コマを格子状に並べた 1 枚の画像（スプライトシート）を、決まった速さで 1 コマずつ表示します。コンポーネントを追加での場所は <b>UI &gt; Sprite Animator</b> です。付けると、同じ GameObject に Rect Transform と Image も付きます。</p>
+    <!--PROPS:UISpriteAnimatorComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>列数</td><td><code>columns</code></td><td>整数</td><td>4</td><td>1〜256</td><td>Sprite Sheet の列数を指定します。 スプライトシートの横のコマ数。1 より小さい値は 1 として扱います。</td></tr>
+<tr><td>行数</td><td><code>rows</code></td><td>整数</td><td>4</td><td>1〜256</td><td>Sprite Sheet の行数を指定します。 縦のコマ数。1 より小さい値は 1 として扱います。</td></tr>
+<tr><td>開始フレーム</td><td><code>start_frame</code></td><td>整数</td><td>0</td><td>0〜65535</td><td>再生する Sprite Sheet の開始フレームを指定します。 左上を 0 として右へ、行の終わりで次の行へ数えます。0〜コマ数−1 に収められます。</td></tr>
+<tr><td>終了フレーム</td><td><code>end_frame</code></td><td>整数</td><td>-1</td><td>-1〜65535</td><td>-1 なら Sprite Sheet 全体の最後まで使います。</td></tr>
+<tr><td>FPS</td><td><code>frames_per_second</code></td><td>小数</td><td>12</td><td>0〜240</td><td>Sprite Sheet の再生速度を 1 秒あたりのフレーム数で指定します。 1 秒に進むコマ数。0 より小さい値は 0（止まる）として扱います。時間の倍率の影響は受けません。</td></tr>
+<tr><td>再生方式</td><td><code>play_mode</code></td><td>選択</td><td>ループ</td><td></td><td>Sprite Sheet の再生方法を指定します。 一回は最後で止まり、ループは繰り返し、ピンポンは往復、逆再生は後ろ向きに繰り返します。 選択肢：一回、ループ、ピンポン、逆再生</td></tr>
+<tr><td>再生中</td><td><code>playing</code></td><td>オン・オフ</td><td>オン</td><td></td><td>Sprite Animator を再生するか指定します。 一回 の再生が最後まで行くと自動でオフになります。</td></tr>
+<tr><td>フレーム</td><td><code>frame</code></td><td>小数</td><td>0</td><td>0〜65535</td><td>表示する Sprite Sheet のフレーム番号を指定します。 今のコマの位置（小数）。四捨五入した番号のコマを表示します。モーションで動かしているときは、その値のコマを表示します。</td></tr>
+</table></div>
+<!--/PROPS:UISpriteAnimatorComponent-->
+    <ul>
+      <li>コマの番号は、左上から右へ 0、1、2…と数え、行の終わりで次の行へ進みます。<b>列数</b> × <b>行数</b> がコマの数です。</li>
+      <li>毎回、同じ GameObject の Image の <b>UV スケール</b> を 1 コマの大きさ（1 ÷ 列数、1 ÷ 行数）に、<b>UV オフセット</b> を今のコマの位置に書き換えます。</li>
+      <li><b>フレーム</b> は小数で進み、表示するコマは四捨五入した番号です。<b>開始フレーム</b> と <b>終了フレーム</b> の範囲に収められます（終了フレームが -1 なら最後のコマまで）。</li>
+      <li>コマを進めるのはゲームの実行中だけです（ロード画面の表示中も進みます）。時間の倍率（Time.timeScale）の影響は受けません。一時停止メニューの中でも動きます。</li>
+      <li>モーションが <b>フレーム</b> を動かしているときは、FPS による自動の進行は止まり、モーションの値でコマが決まります。</li>
+    </ul>
+    <div class="table-wrap">
+    <table>
+      <tr><th>再生方式</th><th>動き</th></tr>
+      <tr><td>一回</td><td>終了フレームまで進んで止まり、<b>再生中</b> がオフになります</td></tr>
+      <tr><td>ループ</td><td>終了フレームを越えると開始フレームから繰り返します</td></tr>
+      <tr><td>ピンポン</td><td>開始と終了の間を往復します</td></tr>
+      <tr><td>逆再生</td><td>フレームを減らしていき、開始フレームより前になると終了フレームへ戻ります</td></tr>
+    </table>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>横に減っていく体力ゲージを作る</h3>
+    <ol>
+      <li><a href="../windows/ui-workspace.html">UI Workspace</a> で Canvas を選び、UI 階層の <b>Image</b> &gt; <b>通常のImageを追加</b> で、ゲージの背景になる Image を作ります。<b>色</b> を暗い色にし、大きさを (400, 30) などにします。</li>
+      <li>Canvas を選び直してから、もう 1 つ Image を作ります（Image を選んだまま作ると、その子になります）。同じ位置・大きさにして、<b>色</b> を赤などにします。これがゲージの中身です。</li>
+      <li>中身の Image の <b>塗り方向</b> を「水平」にします。<b>塗り量</b> を 0.5 にすると、左半分だけが表示されることを確かめます。</li>
+      <li>あとから作った中身は、同じ描画順なら背景より手前に描かれます。順番が逆になったときは、UI 階層の <b>前面</b> などで整えます。</li>
+      <li>ゲームの中では、スクリプトから中身の <b>塗り量</b> を「今の体力 ÷ 最大の体力」にします（<a href="../csharp/api-components.html">C# から UIImage を操作する</a>）。</li>
+    </ol>
+    <h3>時計回りに埋まる円を作る</h3>
+    <ol>
+      <li>円の画像を <b>画像</b> に指定した Image を作ります。</li>
+      <li><b>塗り方向</b> を「円形 360」、<b>塗りを反転</b> をオンにします。真下から時計回りに表示が広がります。</li>
+      <li><a href="../windows/motion-workspace.html">モーション</a>で <b>塗り量</b> を 0 から 1 へ動かすと、待ち時間の表示になります。</li>
+    </ol>
+    <h3>コマ送りのアニメーションを表示する</h3>
+    <ol>
+      <li>コマを格子状に並べた画像（例：横 4 コマ × 縦 2 コマ）を <b>画像</b> に指定した Image を作ります。</li>
+      <li>同じ GameObject に <b>コンポーネントを追加</b> &gt; <b>UI</b> &gt; <b>Sprite Animator</b> を付け、<b>列数</b> 4、<b>行数</b> 2、<b>FPS</b> を 12 などにします。</li>
+      <li>ゲームを実行すると、コマが進みます（エディターで止まっている間は進みません）。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="ui-layout.html">Canvas と Rect Transform</a></li>
+      <li><a href="../windows/sprite-atlas.html">Sprite Atlas Editor</a></li>
+      <li><a href="../csharp/api-components.html#ui">C# から UIImage を操作する</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

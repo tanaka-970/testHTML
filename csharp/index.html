@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>はじめてのスクリプト - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / C# スクリプト</div>
+    <h1>はじめてのスクリプト</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>C# でスクリプトを作り、GameObject に付けて動かすまでを説明します。例として、GameObject を回し続けるスクリプトを作ります。書き方は Unity の <code>MonoBehaviour</code> とほぼ同じです。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>キーやスティックで動かす、数を数える、条件で分けるなど、コンポーネントの設定だけではできない動きを付けたいとき</li>
+      <li>同じ動きを、いくつもの GameObject で使い回したいとき。変数をインスペクターに出せば、GameObject ごとに値を変えられます</li>
+      <li>ぶつかったとき、ボタンが押されたときなどに、決まった処理を起こしたいとき</li>
+    </ul>
+
+    <h2 id="create">1. スクリプトを作る</h2>
+    <ol>
+      <li><b>プロジェクト</b> パネルで、作りたいフォルダー（例：<code>Scripts</code>）を右クリックします。</li>
+      <li><b>Create</b> にカーソルを合わせます。開いたメニューの上にある <b>名前</b> の欄に、クラス名（例：<code>Spinner</code>）を入力します。</li>
+      <li><b>Script</b> &gt; <b>C# Script</b> を選びます。</li>
+    </ol>
+    <p><code>Spinner.cs</code> ができ、Visual Studio で開きます。ステータスに「C# Behaviour を作成しました。Add Component の Scripts/C# から載せられます: Spinner.cs」と出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>決まり</th></tr>
+      <tr><td>クラス名</td><td>英字か <code>_</code> で始まり、英字・数字・<code>_</code> だけでできた名前。日本語や空の名前では作れません</td></tr>
+      <tr><td>作られる場所</td><td>右クリックしたフォルダーが <code>Scripts/</code> の中ならそこ、それ以外なら <code>Scripts/</code> の直下</td></tr>
+      <tr><td>ファイル名</td><td><code>クラス名.cs</code>。同じ名前のファイルがあると <code>クラス名2.cs</code> のようになります（クラス名は入力したまま）</td></tr>
+      <tr><td>名前空間</td><td><code>Game</code>（メニューの「Namespace: Game」）</td></tr>
+    </table>
+    </div>
+
+    <p>作られたファイルの中身です。</p>
+    <pre><code>using ReplayEngine;
+
+namespace Game;
+
+[ReplayGuid("（作ったときに自動で入る 32 文字）")]
+public class Spinner : MonoBehaviour
+{
+    [SerializeField]
+    float speed = 1.0f;
+
+    void Start()
+    {
+    }
+
+    void Update()
+    {
+    }
+}</code></pre>
+    <div class="warning"><strong>ReplayGuid の行は消さない・書き換えない</strong>エンジンはこの値とクラス名で、シーンに付けたスクリプトを見分けます。この値やクラス名、名前空間を変えると、すでに GameObject に付けてあるスクリプトが見つからなくなります（状態が Unresolved になります）。</div>
+
+    <h2 id="write">2. 中身を書く</h2>
+    <p>Visual Studio で次のように書き換えて保存します。</p>
+    <pre><code>using ReplayEngine;
+
+namespace Game;
+
+[ReplayGuid("（そのまま）")]
+public class Spinner : MonoBehaviour
+{
+    [SerializeField]
+    float speed = 90.0f;
+
+    void Update()
+    {
+        transform.Rotate(0.0f, speed * Time.deltaTime, 0.0f);
+    }
+}</code></pre>
+    <p><code>Update</code> は毎フレーム呼ばれます。<code>transform.Rotate</code> は度で回し、<code>Time.deltaTime</code> は前のフレームからの秒数なので、1 秒に <code>speed</code> 度回ります。</p>
+
+    <h2 id="build">3. ビルドする</h2>
+    <p><b>プロジェクト</b> ウィンドウの <b>C# Scripts</b> の欄で <b>C# をすべて更新</b> を押します。コンソールに「===== C# 一括更新 終了 (Catalog=OK / Build=OK) =====」と出れば成功です。</p>
+    <p><b>自動更新</b> にチェックが入っていれば、保存しただけで自動でビルドされます。失敗したときは <a href="build.html">ビルドと、動かないとき</a> を見てください。</p>
+
+    <h2 id="attach">4. GameObject に付ける</h2>
+    <p>次のどちらかで付けます。</p>
+    <ul>
+      <li>GameObject を選び、インスペクターの <b>Add Component</b> で <b>Script / Scripts/C#</b> を開いて <b>Spinner</b> を選ぶ。</li>
+      <li>プロジェクトパネルの <code>Spinner.cs</code> を、シーンビューの GameObject の上へドラッグ＆ドロップする。GameObject の無い場所へ落とすと、選択中の GameObject に付きます。</li>
+    </ul>
+    <p>インスペクターに「Spinner (Script)」が追加され、<b>Speed</b> の欄が出ます。状態が「Loaded」になっていれば準備完了です。</p>
+    <p>1 つの GameObject に、スクリプトはいくつでも付けられます。</p>
+
+    <h2 id="play">5. 動かす</h2>
+    <p>Play を押すと回り始めます（<a href="../editor/play-mode.html">再生と停止</a>）。スクリプトは Play 中しか動きません。インスペクターの状態は「Running」になります。</p>
+
+    <h2 id="fields">インスペクターに出る変数</h2>
+    <p>クラスに書いた変数のうち、次の条件をすべて満たすものがインスペクターに出て、シーンに保存されます。</p>
+    <ul>
+      <li><code>public</code> である。または <code>[SerializeField]</code> が付いている</li>
+      <li><code>static</code> でも <code>readonly</code> でもない</li>
+      <li><code>[NonSerialized]</code> が付いていない</li>
+    </ul>
+    <p>インスペクターで変えた値は、Play を始めたときに <code>Awake</code> より前に変数へ入ります。</p>
+
+    <h3 id="field-types">使える型</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>型</th><th>インスペクターでの見た目・保存</th></tr>
+      <tr><td><code>bool</code></td><td>チェック</td></tr>
+      <tr><td><code>int</code>、<code>long</code>、<code>ulong</code>、<code>float</code>、<code>double</code></td><td>数値</td></tr>
+      <tr><td><code>string</code></td><td>文字</td></tr>
+      <tr><td><code>Vector2</code>、<code>Vector3</code>、<code>Vector4</code>、<code>Quaternion</code></td><td>数値の組</td></tr>
+      <tr><td><code>Color</code></td><td>色</td></tr>
+      <tr><td><code>enum</code>（中身が <code>int</code> のもの）</td><td>選択</td></tr>
+      <tr><td><code>GameObject</code></td><td>シーンの GameObject の参照</td></tr>
+      <tr><td><code>Component</code> を継承した型（<code>Transform</code>、ほかのスクリプトなど）</td><td>コンポーネントの参照</td></tr>
+      <tr><td><code>AssetReference</code>、<code>AssetReference&lt;ImageAsset&gt;</code> など</td><td>アセットの選択。<code>&lt;&gt;</code> の中で種類を絞れます（<code>SceneAsset</code>、<code>PrefabAsset</code>、<code>ImageAsset</code>、<code>SpriteAtlasAsset</code>、<code>ModelAsset</code>、<code>MaterialAsset</code>、<code>AudioAsset</code>、<code>MotionAsset</code>、<code>CompositionAsset</code>）</td></tr>
+      <tr><td>上の型の配列（<code>T[]</code>）と <code>List&lt;T&gt;</code></td><td>一覧</td></tr>
+      <tr><td><code>AnimationCurve</code>、<code>Dictionary&lt;string, T&gt;</code>、<code>[Serializable]</code> を付けた自作の型</td><td>まとめて文字（JSON）として保存</td></tr>
+    </table>
+    </div>
+
+    <h3 id="attributes">変数に付けられる属性</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>属性</th><th>働き</th></tr>
+      <tr><td><code>[Range(最小, 最大)]</code></td><td>数値をこの範囲のスライダーにします</td></tr>
+      <tr><td><code>[Tooltip("説明")]</code></td><td>カーソルを合わせたときに説明を出します</td></tr>
+      <tr><td><code>[Header("見出し")]</code></td><td>同じ見出しの変数を、折りたためる見出しの下にまとめます</td></tr>
+      <tr><td><code>[DisplayName("表示名")]</code></td><td>インスペクターの名前を変えます。付けないと、変数名の先頭を大文字にし、単語の区切りに空白を入れた名前になります（<code>moveSpeed</code> → Move Speed、<code>jump_power</code> → Jump power）</td></tr>
+      <tr><td><code>[HideInInspector]</code></td><td>保存はしますが、インスペクターには出しません</td></tr>
+      <tr><td><code>[ReadOnly]</code></td><td>インスペクターでは変えられません。スクリプトからは変えられます</td></tr>
+      <tr><td><code>[AssetType("Image")]</code></td><td>アセットの選択を種類で絞ります</td></tr>
+    </table>
+    </div>
+    <pre><code>[Header("移動")]
+[Range(0, 20)]
+[Tooltip("1 秒に進む距離")]
+public float moveSpeed = 5.0f;
+
+[HideInInspector]
+public int hitCount;</code></pre>
+
+    <h2 id="script-component">Script コンポーネントの項目</h2>
+    <p>スクリプトは、エンジンの <b>Script</b> コンポーネント（Scripting 分類）として付きます。インスペクターには、スクリプトの変数のほかに次の項目があります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>説明</th></tr>
+      <tr><td>Language</td><td><code>__script.language</code></td><td>言語（Lua / C#）</td></tr>
+      <tr><td>Script</td><td><code>__script.asset</code></td><td>.cs ファイル</td></tr>
+      <tr><td>Class</td><td><code>__script.class</code></td><td>名前空間付きのクラス名（例：<code>Game.Spinner</code>）</td></tr>
+      <tr><td>Execution Order</td><td><code>__script.execution_order</code></td><td>呼ばれる順番。小さいほど先（<a href="lifecycle.html#order">呼ばれる順番</a>）</td></tr>
+    </table>
+    </div>
+    <p>スクリプトの変数は、シーンファイルに <code>field.変数名</code> という名前で保存されます。1 つの .cs に、<code>[ReplayGuid]</code> を付けたクラスを複数書くこともできます。</p>
+    <div class="warning"><strong>.cs をコピーして別のスクリプトを作らない</strong><code>Scripts/</code> の中で、<code>ReplayGuid</code> の値か、名前空間付きのクラス名が 1 つでも重なると、スクリプトの一覧の更新そのものが失敗し、コンソールに「C# Catalog 更新失敗: duplicate C# ReplayGuid …」（クラス名のときは「duplicate C# Behaviour class …」）と出ます。新しいスクリプトは、いつも <b>Create &gt; Script &gt; C# Script</b> で作ってください。</div>
+    <div class="note"><strong>Lua について</strong>言語の選択肢に Lua がありますが、このビルドで実行できるのは C# だけです。</div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>移動キーでキャラクターを動かす</h3>
+    <ol>
+      <li>プロジェクト パネルの <b>Create</b> で、名前に <code>PlayerMove</code> と入れて <b>Script</b> &gt; <b>C# Script</b> を選びます。</li>
+      <li>Visual Studio で次のように書き、保存します。ReplayGuid の行は作られたときのままにします。</li>
+    </ol>
+    <pre><code>using ReplayEngine;
+
+namespace Game;
+
+[ReplayGuid(&quot;（作ったときの値のまま）&quot;)]
+public class PlayerMove : MonoBehaviour
+{
+    [Range(0, 20)]
+    [Tooltip(&quot;1 秒に進む距離&quot;)]
+    public float moveSpeed = 5.0f;
+
+    void Update()
+    {
+        float x = Input.GetAxis(&quot;MoveX&quot;);
+        float z = Input.GetAxis(&quot;MoveY&quot;);
+        transform.Translate(new Vector3(x, 0.0f, z) * (moveSpeed * Time.deltaTime));
+    }
+}</code></pre>
+    <ol start="3">
+      <li><b>C# をすべて更新</b> を押します（<b>自動更新</b> がオンなら保存しただけでビルドされます）。</li>
+      <li>動かしたい GameObject に、Add Component の <b>Script / Scripts/C#</b> から <b>PlayerMove</b> を付けます。インスペクターに <b>Move Speed</b> のスライダーが出ます。</li>
+      <li>Play を押し、移動キーで動くことを確かめます。速すぎるときは Move Speed を下げます。</li>
+    </ol>
+    <p>MoveX / MoveY にどのキーが割り当たっているかは <a href="api-input.html">入力（Input）</a> を見てください。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="lifecycle.html">呼ばれる順番（ライフサイクル）</a></li>
+      <li><a href="build.html">ビルドと、動かないとき</a></li>
+      <li><a href="../editor/inspector.html">インスペクター</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

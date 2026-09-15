@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>ゲームを実行する - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
+    <h1>ゲームを実行する</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>エディターの中でゲームを動かして確かめる方法です。実行すると、編集中のシーンの<b>コピー</b>が作られて動きます。実行中に物が動いたり増えたりしても、編集中のシーンは変わりません。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>作ったシーンやスクリプトが、ゲームとして動くか確かめたいとき</li>
+      <li>動きを途中で止めて、そのときの位置や値を見たいとき（一時停止）</li>
+      <li>シーンビューで見ている場所から、すぐに動きを試したいとき（Play From Here）</li>
+    </ul>
+
+    <h2 id="start">実行を始める</h2>
+    <p>次のどれかで始めます。</p>
+    <ul>
+      <li>ツールバーの緑の <b>▶ 実行 (F5)</b> ボタン</li>
+      <li><b>実行 &gt; ▲ 実行</b></li>
+      <li><kbd>F5</kbd></li>
+      <li>シーンビューの右クリックメニューの <b>Play From Here</b>、<b>Play From Here + Camera Direction</b>、<b>Play From Camera</b>、<b>Play From Checkpoint</b>（始める位置を選べます。<a href="scene-view.html#context-menu">シーンビュー</a>を見てください）</li>
+    </ul>
+
+    <h2 id="loading">実行の準備</h2>
+    <p>実行を始めると、エディター全体が暗くなり、中央に <b>実行準備中</b> のカードが表示されます。準備が終わるまで、エディターの操作はできません（準備中にシーンが変わらないようにするためです）。ツールバーのボタンは「… 読み込み中」になります。</p>
+    <p>カードには、今の段階の説明、進み具合のバー（%）、「編集中のシーンは保持されます。実行中の変更は編集シーンへ戻りません。」、<b>■ 中止</b> ボタンが表示されます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>進み具合</th><th>表示される段階</th></tr>
+      <tr><td>3%</td><td>実行環境を準備しています</td></tr>
+      <tr><td>12%</td><td>C# スクリプトを確認しています</td></tr>
+      <tr><td>26%</td><td>編集中のシーンを実行用に複製しています</td></tr>
+      <tr><td>43%</td><td>実行用ワールドへ新しいスナップショットを渡しています（前回の実行からシーンを変えていないときは「シーン変更なし：前回の Play スナップショットを再利用しています」）</td></tr>
+      <tr><td>50%〜</td><td>実行用シーンを構築しています</td></tr>
+      <tr><td>78%</td><td>実行用シーンを有効化しています</td></tr>
+      <tr><td>91%</td><td>物理・スクリプト・エディタ状態を最終化しています</td></tr>
+      <tr><td>100%</td><td>実行準備が完了しました</td></tr>
+    </table>
+    </div>
+    <p>前回の実行からシーンを変えていなければ、シーンの複製が使い回されるので、2 回目以降の実行は早く始まります。</p>
+    <p>準備中に <b>■ 中止</b> を押すと、実行をやめて編集に戻ります。</p>
+
+    <h3>準備中に出るメッセージ</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>コンソールに出るメッセージ</th><th>意味</th></tr>
+      <tr><td>Play 前の C# ビルドに失敗しました。…C# の変更は反映されていません</td><td>C# スクリプトのビルドに失敗しました。実行は止まらず、前にビルドに成功したスクリプトで動きます。</td></tr>
+      <tr><td>未保存の編集があります。SceneFlow の遷移先は保存済みのファイルから読み込むため、遷移した先の画面には反映されません</td><td>プロジェクトで Scene Flow を使っていて、シーンを保存していないときに出ます。実行中に別のシーンへ移ると、移った先は保存済みのファイルの内容になります。</td></tr>
+      <tr><td>Play を開始できません（Scene 遷移が進行中です）</td><td>シーンの切り替え中だったため、実行を始められませんでした。</td></tr>
+      <tr><td>実行用 Scene の構築に失敗しました: …</td><td>実行用のシーンを作れませんでした。編集中のシーンはそのままで、編集の状態に戻ります。</td></tr>
+    </table>
+    </div>
+
+    <h2 id="running">実行中</h2>
+    <p>準備が終わると、エディターの各部分が次のようになります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>場所</th><th>実行中の表示</th></tr>
+      <tr><td>ツールバー</td><td>黄色の <b>❚❚ 一時停止</b> と赤の <b>■ 停止</b>。右に緑で「▶ 実行中」「実行シーンで動作中 / 入力有効 / C# の Update が回っています」</td></tr>
+      <tr><td>階層パネル</td><td>シーン名の右に「[実行中]」。+ 作成・複製・削除などのボタンが消え、「実行中は階層を編集できません」</td></tr>
+      <tr><td>インスペクター</td><td>「実行中（読み取り専用）」「プレイ中の変更は編集シーンへ保存されません」。設定は変更できません</td></tr>
+      <tr><td>シーンビューの状態の文字</td><td>最後が「Playing」</td></tr>
+      <tr><td>Edit メニュー</td><td>Undo・Redo が押せません</td></tr>
+      <tr><td>File メニュー</td><td>Save しても「実行中はシーンを保存できません」</td></tr>
+    </table>
+    </div>
+    <p>シーンビューの <b>ゲーム</b> タブに切り替えると、ゲーム内のカメラから見た画面を確認できます。</p>
+
+    <h2 id="pause">一時停止と再開</h2>
+    <p>実行中にツールバーの <b>❚❚ 一時停止</b>（または <b>実行 &gt; ││ 一時停止</b>）を押すと、ゲームの動きが止まります。</p>
+    <ul>
+      <li>ボタンは <b>▶ 再開</b>、メニューは <b>▲ 再開</b> に変わります。</li>
+      <li>ツールバーの右の表示は黄色の「❚❚ 一時停止中」「実行シーンを一時停止中」になります。</li>
+      <li>シーンビューの状態の文字の最後は「Paused」になります。</li>
+    </ul>
+    <p>一時停止は編集の状態に戻るわけではありません。再開すると続きから動きます。</p>
+
+    <h2 id="stop">停止する</h2>
+    <p>ツールバーの <b>■ 停止</b>、<b>実行 &gt; ■ 停止</b>、または <kbd>Shift</kbd>+<kbd>F5</kbd> で停止します。</p>
+    <ul>
+      <li>鳴っている音はすべて止まります。</li>
+      <li>実行用のシーンは捨てられます。実行中に動いた位置、生まれた物、増えたコンポーネントは、編集中のシーンに戻りません。</li>
+      <li>「編集モードへ戻りました」と表示されます。</li>
+    </ul>
+    <p>実行していないときに <kbd>Shift</kbd>+<kbd>F5</kbd> を押すと「停止する Play Session はありません」と表示されます。</p>
+
+    <h2 id="timescale">ゲームの速さを変える</h2>
+    <p><a href="console.html">コンソール</a>に <code>timescale 0.5</code> のように入力すると、ゲームの時間の進む速さを変えられます（0〜100）。数字を付けずに <code>timescale</code> だけ入力すると、今の値が表示されます。停止すると 1 に戻ります。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>動きを確かめて、直してまた試す</h3>
+    <ol>
+      <li>F5（またはツールバーの ▶ 実行）で実行します。</li>
+      <li>気になる場面で ❚❚ 一時停止 を押し、階層で GameObject を選んで、インスペクターで今の値を見ます（実行中は変えられません）。</li>
+      <li>Shift+F5 で停止します。実行中に動いた位置などは、実行前の状態に戻ります。</li>
+      <li>編集中のシーンで値を直し、もう一度 F5 で確かめます。</li>
+    </ol>
+    <p>実行中にインスペクターで値を試しに変えても、停止すると残りません。よかった値は、停止してから編集中のシーンに入れ直します。</p>
+    <h3>見ている場所から始める</h3>
+    <ol>
+      <li>シーンビューで、試したい場所が見えるようにカメラを動かします。</li>
+      <li>シーンビューを右クリックし、<b>Play From Here</b> を選びます（始まる場所は <a href="scene-view.html">シーンビューとカメラ操作</a> を見てください）。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="toolbar.html#play">ツールバー：実行ボタン</a></li>
+      <li><a href="scene-view.html#context-menu">シーンビュー：右クリックメニュー</a></li>
+      <li><a href="console.html">コンソール</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

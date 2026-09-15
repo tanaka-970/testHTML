@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Validation と Diagnostics - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターのウィンドウ</div>
+    <h1>Validation と Diagnostics</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>開いているシーンに、よくある設定ミス（操作対象が無い、モデルのファイルが見つからない、Collider の設定がおかしい など）が無いかを自動で調べて一覧にするパネルです。シーンの数や、C# から触れるプロパティの一覧も見られます。<b>Window</b> &gt; <b>Validation / Diagnostics</b> で表示を切り替えます（最初から表示されていて、ふだんの画面では下段のタブにあります）。ウィンドウの名前は「Validation &amp; Diagnostics」です。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>シーンを保存する前や、ゲームを実行する前に、設定の抜けが無いかをまとめて確かめたいとき</li>
+      <li>物が表示されない、キャラクターが動かない、床をすり抜けるといったときに、原因の手がかりを探したいとき</li>
+      <li>ライトを増やしたのに明るくならないなど、数の上限にかかっていないか確かめたいとき</li>
+      <li>C# スクリプトや Text の数値の表示から触れるプロパティの内部名を調べたいとき（Component API タブ）</li>
+    </ul>
+
+    <h2 id="validation">Validation タブ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>働き</th></tr>
+      <tr><td><b>再検証</b></td><td>今のシーンを調べ直します</td></tr>
+      <tr><td>「Error 数 / Warning 数 / Total 数」</td><td>見つかった問題の数</td></tr>
+      <tr><td>問題の行</td><td>左に種類（ERROR は赤、WARN は橙、INFO は水色。ただし今のルールで INFO になるものはありません）、右に内容。GameObject に結び付いた問題は、行をクリックするとその GameObject が選ばれます。下に薄い文字で「修正案: …」が出ます</td></tr>
+      <tr><td>「現在検出できる問題はありません。」</td><td>問題が 1 つも無いとき（緑）</td></tr>
+    </table>
+    </div>
+    <p>GameObject やコンポーネントを足す・消すなど、シーンの構成が変わったときは自動で調べ直します。値を変えただけのときは、<b>再検証</b> を押して調べ直します。</p>
+    <p>GameObject を 1 つ選ぶと、インスペクターの上のほうにも、その GameObject の Error と Warning が「この GameObject の診断」の見出し（開いた状態）で「[コード] 内容」と、その下に薄い文字の修正案（「修正案:」の文字は付きません）の形で出ます。こちらは表示するたびに調べ直すので、値を直すとすぐ消えます。</p>
+
+    <h3 id="rules">調べる内容</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>コード</th><th>種類</th><th>出る条件</th><th>直し方</th></tr>
+      <tr><td>SCENE_CONTROLLED_UNSET</td><td>WARN</td><td>シーンに操作対象が設定されていない</td><td>操作するキャラクターを選び、<b>作成</b> &gt; <b>選択中を操作対象にする</b> で設定します（操作するキャラクターがいないシーンなら気にしなくてかまいません）</td></tr>
+      <tr><td>SCENE_CONTROLLED_MISSING</td><td>ERROR</td><td>操作対象に設定した GameObject がシーンに無い</td><td>操作対象を設定し直すか、参照を外します</td></tr>
+      <tr><td>OBJECT_ID_DUPLICATE</td><td>ERROR</td><td>同じ ObjectID の GameObject が 2 つ以上ある</td><td>保存する前に ID を振り直します（シーンファイルを手で写したときなどに起きます）</td></tr>
+      <tr><td>TRANSFORM_NON_FINITE</td><td>ERROR</td><td>位置・回転・拡大率に NaN（非数）や無限大が入っている</td><td>Transform をふつうの数値に戻します</td></tr>
+      <tr><td>TRANSFORM_ZERO_SCALE</td><td>WARN</td><td>拡大率の X・Y・Z のどれかがほぼ 0（0.00001 未満）</td><td>0 以外にします。0 のままだと表示や当たり判定がおかしくなります</td></tr>
+      <tr><td>COLLIDER_KEY_INVALID</td><td>ERROR</td><td>同じ GameObject の Collider の番号が未設定か、重なっている</td><td>Collider を付け直します</td></tr>
+      <tr><td>COLLIDER_LAYER_INVALID</td><td>ERROR</td><td>Collider の衝突レイヤーが範囲外</td><td>決められたレイヤーを選び直します</td></tr>
+      <tr><td>COLLIDER_MASK_EMPTY</td><td>WARN</td><td>Collider の「当たる相手」のレイヤーが 1 つも選ばれていない</td><td>わざとでなければ、当たる相手のレイヤーを選びます（<a href="../components/physics.html">物理</a>）</td></tr>
+      <tr><td>MOTOR_PRIMARY_MISSING</td><td>ERROR</td><td>Character Motor の移動用 Collider が見つからない</td><td>Trigger をオフにした Sphere / Capsule / Box / Mesh Collider を指定します</td></tr>
+      <tr><td>MOTOR_PRIMARY_INVALID</td><td>ERROR</td><td>移動用 Collider が Trigger か、使えない形。ただし今のビルドでは、この場合も MOTOR_PRIMARY_MISSING として出て、このコードは出ません</td><td>Sphere / Capsule / Box / Mesh Collider にします</td></tr>
+      <tr><td>ASSET_MESH_MISSING</td><td>ERROR</td><td>Mesh Renderer / Skinned Mesh Renderer のモデルのファイルが、プロジェクトに見つからない</td><td>プロジェクトパネルでモデルを取り込み直すか、指定し直します</td></tr>
+      <tr><td>MESH_COLLIDER_SOURCE_MISSING</td><td>WARN</td><td>Mesh Collider の形のもとになるモデルが無い</td><td>表示用のモデルか、当たり判定専用のモデルを指定します</td></tr>
+      <tr><td>LANDSCAPE_RENDERER_ORPHAN / LANDSCAPE_COLLIDER_ORPHAN</td><td>ERROR</td><td>Landscape Renderer / Landscape Collider があるのに、同じ GameObject に Landscape が無い</td><td>Landscape を付けるか、不要なコンポーネントを消します（<a href="../components/landscape.html">地形</a>）</td></tr>
+      <tr><td>LANDSCAPE_RENDERER_MISSING</td><td>WARN</td><td>Landscape はあるが Landscape Renderer が無い（表示されない）</td><td>Landscape Renderer を付けます</td></tr>
+      <tr><td>LANDSCAPE_COLLIDER_MISSING</td><td>WARN</td><td>Landscape はあるが Landscape Collider が無い（当たらない）</td><td>当たり判定が要るなら Landscape Collider を付けます</td></tr>
+      <tr><td>LANDSCAPE_PRIMITIVE_OVERLAP</td><td>WARN</td><td>同じ GameObject で Landscape と、表示がオンの Primitive Mesh Renderer が両方表示されている</td><td>Primitive Mesh Renderer の表示をオフにします</td></tr>
+      <tr><td>CONTROLLED_MESH_COLLIDER</td><td>ERROR</td><td>操作対象に Character Motor と Mesh Collider が両方付いている</td><td>操作対象の移動用は Sphere / Capsule Collider にし、Mesh Collider は床や壁などの側へ移します</td></tr>
+      <tr><td>GAMEPLAY_TRIGGER_MISSING</td><td>ERROR</td><td>触れると働くゲーム用のテンプレート部品があるのに、Trigger の Collider が無い</td><td>Box / Sphere / Capsule Collider を付けて Trigger をオンにします</td></tr>
+      <tr><td>PREFAB_SOURCE_MISSING</td><td>ERROR</td><td>Prefab から置いた GameObject の、元の Prefab のファイルが見つからない</td><td>Prefab を登録し直します</td></tr>
+      <tr><td>SCENE_COLLIDER_EMPTY</td><td>WARN</td><td>シーンに Collider が 1 つも無い</td><td>床や壁に Collider を付けます</td></tr>
+      <tr><td>LIGHT_DIRECTIONAL_MULTIPLE</td><td>WARN</td><td>Directional Light が 2 つ以上ある。使われるのは先頭の有効な 1 つだけ</td><td>要らない Directional Light を無効にするか消します</td></tr>
+      <tr><td>LIGHT_LIMIT_EXCEEDED</td><td>WARN</td><td>Point Light が 8 個、または Spot Light が 4 個を超えている</td><td>Point は 8 個、Spot は 4 個以下にします</td></tr>
+    </table>
+    </div>
+    <p>ライトと Collider の数は、無効なコンポーネントや非アクティブの GameObject のものも数えます。</p>
+
+    <h2 id="diagnostics">Diagnostics タブ</h2>
+    <p>今のシーンの状態を数字で表示します（表示のみ）。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>内容</th></tr>
+      <tr><td>Scene</td><td>シーンの名前</td></tr>
+      <tr><td>GameObjects</td><td>GameObject の数</td></tr>
+      <tr><td>Mode</td><td>Edit（編集中）か Runtime（実行中）</td></tr>
+      <tr><td>Dirty</td><td>保存していない変更があるか（Yes / No）</td></tr>
+      <tr><td>Render Items</td><td>描画に送っている物の数</td></tr>
+      <tr><td>Collision Backend</td><td>当たり判定の方式（「Scene Colliders Only」）</td></tr>
+      <tr><td>Gameplay events</td><td>ゲーム用の部品が出したイベントの数</td></tr>
+      <tr><td>Colliders</td><td>「有効な数 (blocking 押し戻す数 / trigger 数 / mesh 数)」</td></tr>
+    </table>
+    </div>
+    <p>シーンが無いときは「Sceneがありません」と出ます。当たり判定をもっと詳しく見るときは <a href="collision-diagnostics.html">衝突の診断</a> を使います。</p>
+
+    <div class="note"><strong>表示される Workspace</strong>UI Workspace と Motion Workspace にいる間は、このウィンドウは描かれません（Window メニューで切り替えても出ません）。基本などの Workspace に戻すと出ます。インスペクターの「この GameObject の診断」も、ふだんのインスペクターが出る Workspace でだけ見られます。</div>
+
+    <h2 id="component-api">Component API タブ</h2>
+    <p>エンジンに登録されているすべてのコンポーネントと、そのプロパティの内部名と型の一覧です。</p>
+    <ul>
+      <li>上に <b>検索</b> 欄と、「Component 数 種 / Property 数 個。C# から触れるのは 数 個」が出ます。検索はコンポーネントの型名で絞り込みます。</li>
+      <li>「型名  [分類]  数 個」の見出しを開くと、プロパティが「内部名  型」の形で並びます。書き換えられないものには「読取のみ」が付きます。</li>
+      <li>一覧（Array）の型のプロパティは C# から触れないため、薄い文字で「C# 未対応」と出ます。</li>
+    </ul>
+    <p>ここに出る内部名は、<a href="../components/ui-text.html#number">Text の数値プロパティ</a> や <a href="../components/property-link.html">Property Link</a> で使う名前と同じです。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>保存する前にシーンを点検する</h3>
+    <ol>
+      <li>下段の <b>Validation &amp; Diagnostics</b> タブを開き、<b>Validation</b> タブで <b>再検証</b> を押します。</li>
+      <li>ERROR の行から順に、行をクリックして該当の GameObject を選びます。</li>
+      <li>「修正案」とインスペクターの「この GameObject の診断」を見ながら直します。インスペクターの表示が消えれば直っています。</li>
+      <li>もう一度 <b>再検証</b> を押し、Error が 0 になったら保存します。</li>
+    </ol>
+    <h3>ライトを増やしたのに明るくならない</h3>
+    <ol>
+      <li><b>再検証</b> を押し、LIGHT_LIMIT_EXCEEDED が出ていないか見ます。</li>
+      <li>出ていたら、遠くて目立たない Point Light を消すか、1 つの大きな範囲のライトにまとめて、Point は 8 個、Spot は 4 個以下にします。</li>
+    </ol>
+    <h3>Text に表示したい値の内部名を調べる</h3>
+    <ol>
+      <li><b>Component API</b> タブの <b>検索</b> に、コンポーネントの型名の一部（例：<code>Slider</code>）を入れます。</li>
+      <li>見出しを開き、表示したい値の内部名（例：<code>value</code>）を探します。</li>
+      <li>その名前を Text の <b>数値プロパティ</b> に入れます。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="collision-diagnostics.html">衝突の診断</a></li>
+      <li><a href="../editor/inspector.html">インスペクター</a></li>
+      <li><a href="../editor/console.html">コンソール</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

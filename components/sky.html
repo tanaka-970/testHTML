@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>空 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+    <h1>空</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>シーンの背景に空の画像を表示するコンポーネントです。画像の上に雲・星・月を重ねたり、朝から夜へ空の画像を移り変わらせたりできます。コンポーネントを追加の一覧では「空」という名前です。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>シーンの背景に空を表示したいとき</li>
+      <li>空に雲、星、月を重ねたいとき</li>
+      <li>昼から夕方、夜へと、空を移り変わらせたいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Rendering &gt; 空</td></tr>
+      <tr><td>必須・推奨</td><td>なし</td></tr>
+      <tr><td>使う画像</td><td>キューブマップ、または HDR のパノラマ画像</td></tr>
+      <tr><td>効く範囲</td><td>画面の背景全体。GameObject の位置は関係ありません</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>空マップ</td><td><code>cubemap</code></td><td>アセット（画像）</td><td>（空）</td><td></td><td>空に使う画像。時間帯キーフレームに画像があるときは使われません</td></tr>
+      <tr><td>時間帯キーフレーム</td><td><code>keyframes</code></td><td>画像の一覧</td><td>（空）</td><td></td><td>時間帯によって切り替える空の画像を、朝から夜などの順に並べます（<a href="#keyframes">下を見てください</a>）</td></tr>
+      <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td>-100〜100</td><td>空が複数あるときに、どれを使うかを決めます</td></tr>
+      <tr><td>空を表示</td><td><code>sky_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オフにすると、この空は使われません</td></tr>
+      <tr><td>空の回転 (度)</td><td><code>rotation_degrees</code></td><td>小数</td><td>0</td><td></td><td>空を縦の軸のまわりに回します。太陽や山の向きを合わせるときに使います</td></tr>
+      <tr><td>空の強さ</td><td><code>intensity</code></td><td>小数</td><td>1</td><td>0〜16</td><td>空の明るさの倍率</td></tr>
+      <tr><td>トゥーンへの環境光</td><td><code>toon_environment</code></td><td>小数</td><td>0</td><td>0〜4</td><td>トゥーンの影になった側に、空の色をどれだけ乗せるか。0 なら乗せません</td></tr>
+      <tr><td>時間帯</td><td><code>time</code></td><td>小数</td><td>0</td><td>0〜1</td><td>時間帯キーフレームのどこを表示するか</td></tr>
+      <tr><td>時間の進行速度</td><td><code>time_speed</code></td><td>小数</td><td>0</td><td>-10〜10</td><td>ゲームの実行中に、1 秒ごとに 時間帯 を進める量。1 を超えたら 0 に戻ります。マイナスなら逆に進みます</td></tr>
+      <tr><td>雲を表示</td><td><code>clouds_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>2 層の雲を重ねます</td></tr>
+      <tr><td>雲1の速度</td><td><code>cloud_layer1_speed</code></td><td>2 つの小数</td><td>0.003, 0</td><td>-1〜1</td><td>1 層目の雲が流れる速さと向き</td></tr>
+      <tr><td>雲1の細かさ</td><td><code>cloud_layer1_scale</code></td><td>小数</td><td>3.5</td><td>0.1〜32</td><td>大きいほど雲の模様が細かくなります</td></tr>
+      <tr><td>雲1の濃さ</td><td><code>cloud_layer1_density</code></td><td>小数</td><td>0.45</td><td>0〜1</td><td>雲の量</td></tr>
+      <tr><td>雲1の色</td><td><code>cloud_layer1_color</code></td><td>色</td><td>白（不透明度 0.75）</td><td></td><td>1 層目の雲の色。不透明度で雲の透け具合が変わります</td></tr>
+      <tr><td>雲2の速度</td><td><code>cloud_layer2_speed</code></td><td>2 つの小数</td><td>-0.0015, 0.001</td><td>-1〜1</td><td>2 層目の雲が流れる速さと向き</td></tr>
+      <tr><td>雲2の細かさ</td><td><code>cloud_layer2_scale</code></td><td>小数</td><td>7</td><td>0.1〜32</td><td>2 層目の模様の細かさ</td></tr>
+      <tr><td>雲2の濃さ</td><td><code>cloud_layer2_density</code></td><td>小数</td><td>0.28</td><td>0〜1</td><td>2 層目の雲の量</td></tr>
+      <tr><td>雲2の色</td><td><code>cloud_layer2_color</code></td><td>色</td><td>薄い青（不透明度 0.55）</td><td></td><td>2 層目の雲の色</td></tr>
+      <tr><td>星を表示</td><td><code>stars_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>星を重ねます</td></tr>
+      <tr><td>星の密度</td><td><code>star_density</code></td><td>小数</td><td>0.35</td><td>0〜1</td><td>星の多さ</td></tr>
+      <tr><td>星の強さ</td><td><code>star_intensity</code></td><td>小数</td><td>2</td><td>0〜32</td><td>星の明るさ</td></tr>
+      <tr><td>星の色</td><td><code>star_color</code></td><td>色</td><td>薄い橙</td><td></td><td>星の色</td></tr>
+      <tr><td>月を表示</td><td><code>moon_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>月を重ねます</td></tr>
+      <tr><td>月の方向</td><td><code>moon_direction</code></td><td>3 つの小数</td><td>0.35, 0.25, 0.9</td><td>-1〜1</td><td>月が見える方向。長さは関係なく、向きだけが使われます。すべて 0 のときは 0, 0, 1 の方向になります</td></tr>
+      <tr><td>月の大きさ</td><td><code>moon_size</code></td><td>小数</td><td>0.04</td><td>0.001〜0.5</td><td>月の見かけの大きさ</td></tr>
+      <tr><td>月の強さ</td><td><code>moon_intensity</code></td><td>小数</td><td>5</td><td>0〜32</td><td>月の明るさ</td></tr>
+      <tr><td>月の色</td><td><code>moon_color</code></td><td>色</td><td>薄い黄</td><td></td><td>月の色</td></tr>
+    </table>
+    </div>
+
+    <h2 id="select">どの空が使われるか</h2>
+    <ul>
+      <li>使われるのは 1 つだけです。</li>
+      <li>対象になるのは、GameObject とコンポーネントが有効で、<b>空を表示</b> がオンで、<b>空マップ</b> か <b>時間帯キーフレーム</b> に読める画像が入っている空です。</li>
+      <li>その中で <b>優先度</b> がいちばん大きいものが使われます。優先度が同じなら、シーンの中で先にあるものが使われます。</li>
+    </ul>
+    <div class="warning"><strong>画像が無いと雲・星・月も出ません</strong>空マップと時間帯キーフレームの両方が空だと、その空は使われないため、雲・星・月だけを表示することもできません。</div>
+
+    <h2 id="keyframes">時間帯キーフレーム</h2>
+    <p>時間帯キーフレームに画像を並べると、<b>時間帯</b> の値に合わせて画像が移り変わります。</p>
+    <ul>
+      <li>画像は 0〜1 の間に等間隔に置かれます。3 枚なら、時間帯 0 で 1 枚目、0.5 で 2 枚目、1 で 3 枚目です。</li>
+      <li>間の値では、となりの 2 枚を混ぜて表示します（時間帯 0.25 なら 1 枚目と 2 枚目を半分ずつ）。</li>
+      <li>読めない画像は飛ばされます。</li>
+    </ul>
+
+    <h2 id="runtime">ゲームの実行中の動き</h2>
+    <ul>
+      <li><b>時間の進行速度</b> が 0 でなければ、時間帯 が進みます。たとえば 0.01 なら 100 秒で一周します。</li>
+      <li>雲は、実行を始めてからの時間に合わせて流れます。</li>
+    </ul>
+
+    <h2 id="usage">使い方</h2>
+    <h3>空を表示する</h3>
+    <ol class="steps">
+      <li>空の画像をプロジェクトに取り込みます。</li>
+      <li>空の GameObject を作り、<b>コンポーネントを追加 &gt; Rendering &gt; 空</b> を付けます。</li>
+      <li><b>空マップ</b> に画像を指定します。</li>
+      <li>太陽の向きなどが合わないときは <b>空の回転 (度)</b> で回します。</li>
+    </ol>
+    <h3>昼から夜へ移り変わらせる</h3>
+    <ol class="steps">
+      <li><b>時間帯キーフレーム</b> に、昼、夕方、夜の順で画像を入れます。</li>
+      <li><b>時間の進行速度</b> を 0.005 などの小さい値にします。</li>
+      <li><b>星を表示</b> と <b>月を表示</b> をオンにし、Motion などで夜の時間帯だけ星や月の強さを上げると、夜らしくなります。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="post-process-volume.html">Post Process Volume</a></li>
+      <li><a href="lights.html">ライト（Directional / Point / Spot）</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>シーンビューとカメラ操作 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
+    <h1>シーンビューとカメラ操作</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>画面中央の、シーンを 3D で表示する領域です。ここでシーンを見回し、オブジェクトを選んで動かします。このページでは、上部の表示設定、選択のしかた、カメラの動かし方、右クリックメニューを説明します。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>シーンを見回して、置いた物の位置や見た目を確かめたいとき</li>
+      <li>物をクリックして選び、ギズモで動かしたいとき</li>
+      <li>たくさんの物がある中で、1 つだけをじっくり見たいとき（単体表示）</li>
+      <li>当たり判定の形やライトの届く範囲を、線で確かめたいとき（コライダー、ライト範囲）</li>
+      <li>ゲームのカメラから見た画面を確かめたいとき（ゲームタブ）</li>
+    </ul>
+
+    <h2 id="tabs">シーンタブとゲームタブ</h2>
+    <p>いちばん上に <b>シーン</b> と <b>ゲーム</b> の 2 つのタブがあります。</p>
+    <ul>
+      <li><b>シーン</b>：編集用のカメラでシーンを表示します。オブジェクトの選択や移動はこのタブで行います。</li>
+      <li><b>ゲーム</b>：ゲーム内のカメラから見た画面を表示します。タブの下に「Runtime Camera | Free Aspect」と表示され、実行していないときは右に「PlayでRuntime Sceneをプレビュー」と黄色で表示されます。</li>
+    </ul>
+
+    <h2 id="header">シーンタブの上部</h2>
+    <figure>
+      <img src="../images/editor/scene-view-header.png" alt="シーンビュー上部。シーンとゲームのタブ、陰影付きの選択欄、コライダー、ライト範囲、リグ、グリッドのチェックボックス、単体表示ボタン、状態の文字、回転刻みの選択欄が並ぶ">
+      <figcaption>シーンタブの上部（Scene Workspace のとき）</figcaption>
+    </figure>
+    <p>タブの下の 1 行目に、左から次の順で並びます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>順</th><th>表示</th><th>説明</th></tr>
+      <tr><td>1</td><td>描画モードの選択欄（既定は「陰影付き」）</td><td>シーンの描き方を選びます。<b>陰影付き</b>、<b>陰影なし</b>、<b>ワイヤーフレーム</b>、<b>陰影付きワイヤーフレーム</b>、<b>衝突</b> の 5 つがあります。ただしこの版では、選んだモードを描画が使っていないため、どれを選んでも見た目は変わりません。当たり判定の形を見たいときは、右の <b>コライダー</b> を使います。</td></tr>
+      <tr><td>2</td><td>□ コライダー</td><td>チェックを付けると、当たり判定（コライダー）の形を線で表示します。コライダーを持つ GameObject があるときに意味があります。</td></tr>
+      <tr><td>3</td><td>□ ライト範囲</td><td>チェックを付けると、ライトの届く範囲を表示します。ライトのコンポーネントを持つ GameObject があるときに意味があります。</td></tr>
+      <tr><td>4</td><td>□ リグ</td><td>チェックを付けると、骨（リグ）を表示します。表示中は、骨をクリックして選べます。</td></tr>
+      <tr><td>5</td><td>□ グリッド</td><td>チェックを付けると、地面の目安になる格子を表示します。</td></tr>
+      <tr><td>6</td><td>単体表示</td><td>選択中の GameObject とその子だけを表示します。次の節で説明します。</td></tr>
+      <tr><td>7</td><td>Perspective | World | Free | Editing</td><td>今の状態を表す文字です。次の表を見てください。</td></tr>
+      <tr><td>8</td><td>回転刻み（既定は 15度）</td><td>ツールバーの Snap にチェックがあるときの、回転の刻みを選びます。1度、5度、10度、15度、30度、45度、90度から選べます。Snap にチェックが無いときは薄く表示され、選べません。</td></tr>
+    </table>
+    </div>
+    <p>状態の文字は、次の 4 つを「|」で区切って並べたものです。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>位置</th><th>表示</th><th>意味</th></tr>
+      <tr><td>1 つ目</td><td>Perspective</td><td>遠近のある表示です（常にこの表示）。</td></tr>
+      <tr><td>2 つ目</td><td>World / Local</td><td>ツールバーの World・Local の状態です。リグを表示して骨を選んでいるときは <b>World(骨)</b> / <b>Local(骨)</b> になります。</td></tr>
+      <tr><td>3 つ目</td><td>Snap / Free</td><td>ツールバーの Snap にチェックがあれば Snap、無ければ Free です。</td></tr>
+      <tr><td>4 つ目</td><td>Editing / Playing / Paused</td><td>編集中、実行中、一時停止中のどれかです。</td></tr>
+    </table>
+    </div>
+    <p>その下に次の 2 行が薄い文字で表示されます。</p>
+    <ul>
+      <li><b>Camera preset: （プリセット名） | カメラ &gt; プリセット管理 で操作を自由設定</b>：今使っているカメラ操作プリセットの名前です。</li>
+      <li><b>ACTIVE TOOL: Transform / Scene Selection</b>：今の道具です。地形（Landscape）を編集しているときは「ACTIVE TOOL: Landscape / Sculpt」などに変わり、「(Escで終了 / Ctrl・Alt+左クリックで通常選択)」が付きます。</li>
+    </ul>
+    <div class="note"><strong>UI Workspace のとき</strong>UI Workspace では、1 行目が UI のプレビュー用に変わります。解像度の選択欄（1920 x 1080、1280 x 720、1080 x 1920、カスタム）、<b>拡大</b> のスライダー（0.10〜2.00）、<b>グリッド</b> のチェックボックスが並びます。解像度で <b>カスタム</b> を選ぶと、幅（W）と高さ（H）の入力欄が増えます。</div>
+
+    <h2 id="isolate">単体表示</h2>
+    <p>たくさんの物が置かれたシーンで、1 つのオブジェクトだけをじっくり見たいときに使います。</p>
+    <ol class="steps">
+      <li>表示したい GameObject を選択します。何も選んでいないと、<b>単体表示</b> ボタンは薄く表示されます。</li>
+      <li><b>単体表示</b> を押します。選択した GameObject とその子だけが表示され、ボタンの色が押したときの色のままになります。</li>
+      <li>1 行目の下に「単体表示中: （名前）」と水色で表示されます。</li>
+      <li>元に戻すには、もう一度 <b>単体表示</b> を押すか、シーンビューを操作中に <kbd>Esc</kbd> を押します。カメラも単体表示を始める前の位置に戻ります。</li>
+    </ol>
+    <p>単体表示中に別の GameObject を選ぶと、表示の対象がその GameObject に移り、カメラがそこへ寄ります。ギズモをつかんでいる間の <kbd>Esc</kbd> は、ギズモの操作の取り消しが優先されます。</p>
+
+    <h2 id="select">オブジェクトの選択</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>操作</th><th>結果</th></tr>
+      <tr><td>オブジェクトをクリック</td><td>そのオブジェクトだけを選択します。</td></tr>
+      <tr><td><kbd>Shift</kbd> または <kbd>Ctrl</kbd> を押しながらクリック</td><td>今の選択に追加します。</td></tr>
+      <tr><td>何もない場所をクリック</td><td>選択を解除し、インスペクターにワールドの設定が出ます。</td></tr>
+      <tr><td>左ボタンを押したまま 4 ピクセルより長くドラッグ</td><td>水色の四角が表示され、離したときに、画面上でその四角に重なったオブジェクトをまとめて選択します。<kbd>Shift</kbd> か <kbd>Ctrl</kbd> を押していれば今の選択に追加します。何も重ならなかったときは選択が解除され、「選択を解除しました」と表示されます。</td></tr>
+    </table>
+    </div>
+    <p>四角で選べるのは、有効になっている GameObject だけです。<b>リグ</b> にチェックがあるときは、骨のクリックが GameObject の選択より先に判定されます。</p>
+
+    <h2 id="camera">カメラの動かし方</h2>
+    <p>シーンビューのカメラの操作は、<b>カメラ操作プリセット</b> で決まります。既定は <b>RePlay Hybrid</b> です。次の表は RePlay Hybrid の操作です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>操作</th><th>動き</th></tr>
+      <tr><td>右ボタンを押したままマウスを動かす</td><td>その場で見回します。</td></tr>
+      <tr><td><kbd>W</kbd> <kbd>S</kbd></td><td>前・後ろへ進みます。</td></tr>
+      <tr><td><kbd>A</kbd> <kbd>D</kbd></td><td>左・右へ進みます。</td></tr>
+      <tr><td><kbd>E</kbd> <kbd>Q</kbd></td><td>上・下へ進みます。カメラの向きに関係なく、ワールドの真上・真下に動きます。</td></tr>
+      <tr><td>移動中に <kbd>Shift</kbd></td><td>4 倍の速さになります。</td></tr>
+      <tr><td>移動中に <kbd>Ctrl</kbd></td><td>0.25 倍の速さになります。</td></tr>
+      <tr><td><kbd>Alt</kbd> を押しながら左ボタンでドラッグ</td><td>注目点のまわりを回り込みます（オービット）。</td></tr>
+      <tr><td>中ボタン（ホイール）を押したままドラッグ</td><td>画面と平行に動きます（パン）。</td></tr>
+      <tr><td><kbd>Alt</kbd> を押しながら右ボタンでドラッグ</td><td>前後に寄ったり離れたりします（ドリー）。</td></tr>
+      <tr><td>ホイールを回す</td><td>ズームします。</td></tr>
+      <tr><td>右ボタンを押して移動キーを押しながらホイールを回す</td><td>ズームではなく移動の速さが変わります。1 目盛りで 1.15 倍（逆に回すと 1/1.15）です。</td></tr>
+      <tr><td><kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> <kbd>↓</kbd></td><td>左右・上下へ向きを変えます。1 秒に 90 度の速さです。</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>←</kbd> / <kbd>Ctrl</kbd>+<kbd>→</kbd></td><td>カメラを左右に傾けます（ロール）。</td></tr>
+      <tr><td><kbd>F</kbd></td><td>選択中のオブジェクトにカメラを寄せます。</td></tr>
+      <tr><td>テンキー <kbd>1</kbd> / <kbd>Ctrl</kbd>+テンキー <kbd>1</kbd></td><td>正面から見る向き / 背面から見る向きにそろえます。</td></tr>
+      <tr><td>テンキー <kbd>3</kbd> / <kbd>Ctrl</kbd>+テンキー <kbd>3</kbd></td><td>右から見る向き / 左から見る向きにそろえます。</td></tr>
+      <tr><td>テンキー <kbd>7</kbd> / <kbd>Ctrl</kbd>+テンキー <kbd>7</kbd></td><td>上から見る向き / 下から見る向きにそろえます。</td></tr>
+      <tr><td>ドラッグ中に <kbd>Esc</kbd></td><td>見回し・オービット・パン・ドリーを途中で止めます。</td></tr>
+    </table>
+    </div>
+    <p>RePlay Hybrid では、右ボタンを押していなくても <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> <kbd>E</kbd> <kbd>Q</kbd> で移動できます。テンキーで向きをそろえても、遠近のある表示のままです。</p>
+
+    <h3>カメラが動かないとき</h3>
+    <p>次のどれかに当てはまるとき、カメラの操作は始まりません。</p>
+    <ul>
+      <li>エディターのウィンドウが前面に出ていない</li>
+      <li>マウスがシーンビューの上に無く、シーンビューも選ばれていない</li>
+      <li>文字の入力欄に入力している</li>
+      <li>メニューや確認画面などが開いている</li>
+      <li>ギズモをドラッグしている</li>
+    </ul>
+    <p><kbd>F</kbd> だけは、階層パネルで選んだ直後などシーンビューが選ばれていないときでも効きます。ただし、文字入力中、メニューなどが開いているとき、ギズモのドラッグ中は効きません。</p>
+    <p>ワールドを選択したときのインスペクターにある <b>カメラ操作の関門</b> を開くと、今どの条件で止まっているかを確認できます。</p>
+
+    <h3 id="presets">ほかの組み込みプリセット</h3>
+    <p><b>カメラ &gt; 操作プリセット</b> から、ほかのツールに似せた組み込みプリセットを選べます。RePlay Hybrid との主な違いは次のとおりです。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>プリセット</th><th>見回す</th><th>オービット</th><th>パン</th><th>ドリー</th><th>右ボタンなしで移動キー</th><th>上下移動（E / Q）</th></tr>
+      <tr><td>RePlay Hybrid</td><td>右ドラッグ</td><td>Alt+左ドラッグ</td><td>中ドラッグ</td><td>Alt+右ドラッグ</td><td>できる</td><td>あり</td></tr>
+      <tr><td>Unity Style</td><td>右ドラッグ</td><td>Alt+左ドラッグ</td><td>中ドラッグ</td><td>Alt+右ドラッグ</td><td>できない</td><td>あり</td></tr>
+      <tr><td>Unreal Style</td><td>右ドラッグ</td><td>Alt+左ドラッグ</td><td>中ドラッグ</td><td>Alt+右ドラッグ</td><td>できない</td><td>あり</td></tr>
+      <tr><td>Maya Style</td><td>なし</td><td>Alt+左ドラッグ</td><td>Alt+中ドラッグ</td><td>Alt+右ドラッグ</td><td>できない</td><td>なし</td></tr>
+      <tr><td>Blender Style</td><td>なし</td><td>中ドラッグ</td><td>Shift+中ドラッグ</td><td>Ctrl+中ドラッグ</td><td>できない</td><td>なし</td></tr>
+    </table>
+    </div>
+    <p>Maya Style と Blender Style では、右ボタンを押しながらホイールで速さを変える操作も無効です。どのプリセットでも、<kbd>F</kbd>、テンキーでの向きそろえ、矢印キーでの向き変更は同じです。</p>
+    <div class="note"><strong>自分用に変える</strong>組み込みプリセットはチーム共有のため、そのままは編集できません。<b>カメラ &gt; プリセット管理...</b> で自分用にコピーすると、キーやマウスの割り当て、速さ、感度を自由に変えられます。</div>
+
+    <h2 id="context-menu">右クリックメニュー</h2>
+    <p>シーンタブで、実行していないときに、右ボタンを<b>短く</b>クリックするとメニューが開きます。右ボタンを押したまま 6 ピクセルより動かした場合は見回しの操作になり、メニューは開きません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>押せる条件</th><th>説明</th></tr>
+      <tr><td>Play From Here</td><td>クリックした位置のワールド座標が求められるとき</td><td>クリックした場所から操作対象を始めて、ゲームを実行します。</td></tr>
+      <tr><td>Play From Here + Camera Direction</td><td>同上</td><td>クリックした場所から、今のカメラの向きで始めて実行します。</td></tr>
+      <tr><td>Play From Camera</td><td>いつでも</td><td>今のカメラの位置と向きから始めて実行します。</td></tr>
+      <tr><td>Play From Checkpoint ▶</td><td>シーンに Checkpoint コンポーネントがあるとき、または「テンプレート部品も表示する」がオンのとき</td><td>チェックポイントを選んで、そこから実行します。チェックポイントが無ければ「Checkpoint がありません」と表示されます。</td></tr>
+      <tr><td>Add Scene Memo Here</td><td>クリックした位置のワールド座標が求められるとき</td><td>クリックした場所にシーンメモを置きます。</td></tr>
+      <tr><td>Open Scene Notes</td><td>いつでも</td><td>シーンメモのウィンドウを開きます。</td></tr>
+    </table>
+    </div>
+
+    <h2 id="drop">アセットのドラッグ＆ドロップ</h2>
+    <p>プロジェクトパネルのアセットを、シーンタブの上にドラッグして離すと、そのアセットをシーンに置きます。置く位置は、マウスの下にある場所です。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>置いた物に寄って確かめる</h3>
+    <ol>
+      <li>階層パネルで、確かめたい GameObject を選びます。</li>
+      <li>F を押すと、カメラがその物に寄ります。</li>
+      <li>右ボタンを押したままマウスを動かして見回し、W A S D で前後左右に動きます。Alt を押しながら左ドラッグで、物のまわりを回り込めます。</li>
+    </ol>
+    <h3>真上から並び方を確かめる</h3>
+    <ol>
+      <li>シーンビューの上にマウスを置き、テンキーの 7 を押します。真上から見る向きにそろいます。</li>
+      <li>物の間隔や並びを確かめたら、右ボタンで見回すと、ふつうの見え方に戻ります。</li>
+    </ol>
+    <h3>1 つだけを表示して調整する</h3>
+    <ol>
+      <li>調整したい GameObject を選び、<b>単体表示</b> を押します。その物と子だけが表示されます。</li>
+      <li>見た目や当たり判定を調整します。</li>
+      <li>Esc（または もう一度 単体表示）で元に戻します。</li>
+    </ol>
+    <h3>いくつかの物をまとめて選ぶ</h3>
+    <ol>
+      <li>何もない場所から左ボタンでドラッグし、水色の四角で選びたい物を囲みます。</li>
+      <li>離すと、四角に入った物がまとめて選ばれます。足したいときは Shift を押しながらクリックします。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="toolbar.html">ツールバーと実行状態の表示</a></li>
+      <li><a href="hierarchy.html">階層パネル</a></li>
+      <li><a href="menu-bar.html#camera">メニューバー：カメラ</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

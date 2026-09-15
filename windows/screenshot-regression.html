@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>スクリーンショット回帰 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターのウィンドウ</div>
+    <h1>スクリーンショット回帰</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>画面を「基準画像」として撮っておき、あとで同じ画面を撮って、1 ピクセルずつ比べるウィンドウです。シェーダーや描画の設定を変えたときに、意図しない見た目の変化（回帰）が起きていないかを、目で見比べるのではなく機械で確かめます。<b>Window</b> &gt; <b>スクリーンショット回帰</b> で開きます。UI Workspace と Motion Workspace にいる間は、このウィンドウは描かれません（Window メニューで切り替えても出ません）。基本などの Workspace に戻すと出ます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>シェーダー、ライト、ポスト処理などを変える前後で、ほかの見た目が変わっていないか確かめたいとき</li>
+      <li>「なんとなく色が違う気がする」を、違ったピクセルの数と場所で確かめたいとき</li>
+      <li>エンジンを更新したあとに、いつもの場面の見た目が変わっていないか確かめたいとき</li>
+    </ul>
+
+    <h2 id="fields">ウィンドウの欄</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>既定</th><th>働き</th></tr>
+      <tr><td><b>名前</b></td><td>default</td><td>画像の名前（63 バイトまで）。右に保存先「Saved/Golden/名前.png」が出ます</td></tr>
+      <tr><td><b>止めるフレーム数</b></td><td>8</td><td>1〜60。撮る前に待つフレーム数です。TAA などで画面が落ち着くまで待ちます</td></tr>
+      <tr><td><b>許容差</b></td><td>0</td><td>0〜8。ピクセルの R・G・B のうち、いちばん大きい差がこの値を超えたら「違う」とみなします。0 なら完全に一致しないと違う扱いです。透明度（A）は比べません</td></tr>
+      <tr><td><b>基準を撮る</b></td><td>—</td><td>今の画面を基準画像として保存します</td></tr>
+      <tr><td><b>基準と比べる</b></td><td>—</td><td>今の画面を撮り、基準画像と比べます</td></tr>
+      <tr><td><b>自己診断</b></td><td>—</td><td>同じ画面を 2 回撮って、一致するかを調べます</td></tr>
+    </table>
+    </div>
+    <p>撮っている間はボタンの代わりに「撮影中... 残り 数 フレーム」と出ます。結果はいちばん下に、成功なら緑、そうでなければ橙で表示され、コンソールにも出ます。</p>
+
+    <h2 id="results">結果の見かた</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>操作</th><th>表示</th><th>作られるファイル</th></tr>
+      <tr><td>基準を撮る</td><td>「基準画像を保存しました: 場所」</td><td><code>Saved/Golden/名前.png</code></td></tr>
+      <tr><td>基準と比べる（一致）</td><td>「一致 / 幅x高さ / 数 ピクセル」、コンソールに「回帰なし: …」</td><td><code>名前_latest.png</code>（今回撮った画像）</td></tr>
+      <tr><td>基準と比べる（違う）</td><td>「差分あり / 違った数 / 全体 ピクセル (割合%) / 最大差 値 / 最初の差分 (x, y)」、コンソールに「回帰あり: …」</td><td><code>名前_latest.png</code> と <code>名前_diff.png</code>（違った場所を示す画像）</td></tr>
+      <tr><td>基準と比べる（基準が無い）</td><td>「基準画像がありません。先に「基準を撮る」を押してください: …」</td><td>—</td></tr>
+      <tr><td>基準と比べる（大きさが違う）</td><td>「大きさが違います。ウィンドウサイズを基準と合わせてください」</td><td><code>名前_latest.png</code></td></tr>
+      <tr><td>自己診断（一致）</td><td>「自己診断 OK: 2 回撮って一致しました。この設定で比較を信用してよい」</td><td>—</td></tr>
+      <tr><td>自己診断（違う）</td><td>「自己診断 NG: 同じ画面を 2 回撮ったのに一致しません。…比較結果はまだ信用できません」</td><td>—</td></tr>
+    </table>
+    </div>
+    <div class="note"><strong>先に自己診断を通します</strong>何も変えていないのに 2 回の撮影で一致しない画面（動いている物、ちらつくエフェクトなどがある）では、比べても差分が出てしまいます。自己診断が OK にならないときは、<b>止めるフレーム数</b> を増やすか、<b>許容差</b> を 1〜2 にするか、動く物の無い場面で撮ります。</div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>ライトの設定を変える前後で見た目を比べる</h3>
+    <ol>
+      <li>確かめたい場面をシーンビューに表示し、カメラを動かさないようにします。ウィンドウの大きさも変えないでおきます。</li>
+      <li><b>名前</b> に「light_test」と入れ、<b>自己診断</b> を押して「自己診断 OK」になることを確かめます。</li>
+      <li><b>基準を撮る</b> を押します。</li>
+      <li>ライトの設定を変えます。</li>
+      <li><b>基準と比べる</b> を押します。「差分あり」なら、<code>Saved/Golden/light_test_diff.png</code> を開いて、どこが変わったかを見ます。</li>
+    </ol>
+    <p>エディターを開かずに同じことをするには、起動オプションの <code>--capture-frame</code> と <code>--compare-golden</code> を使います（<a href="../settings/command-line.html">起動オプション</a>）。</p>
+    <div class="warning"><strong>起動オプションの比較は、置き場所と合格の条件が違います</strong><code>--compare-golden</code> は、基準画像を <code>Saved/Golden/reference/名前.png</code>、今回の画像を <code>Saved/Golden/名前.png</code> から読み、差分を <code>Saved/Golden/diff/名前.png</code> に書きます。このウィンドウの <b>基準を撮る</b> が書く <code>Saved/Golden/名前.png</code> は、起動オプションでは「今回の画像」の場所です。そのまま基準としては使われないので、基準にしたい画像は <code>reference</code> フォルダーへ写します。合格の条件も違い、最大差 2 以下かつ違ったピクセルが 0.1% 以下なら合格です。</div>
+    <div class="note"><strong>名前に使う文字</strong>このウィンドウの <b>名前</b> は、そのままファイル名になります。<code>/</code> や <code>..</code> を入れると <code>Saved/Golden</code> の下に別のフォルダーができてしまうので、英数字と <code>_</code>、<code>-</code> だけにしてください。差分画像の保存に失敗したときは、結果に「差分画像: 場所」が付きません。</div>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../settings/command-line.html">起動オプション（画面を撮影する）</a></li>
+      <li><a href="profiler.html">Profiler と DX12 Debug</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

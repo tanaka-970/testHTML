@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Folder と Scene Note - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / エディター専用</div>
+    <h1>Folder と Scene Note</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>作業を整理するための、エディター専用のコンポーネントです。どちらもシーンファイルには保存されますが、<b>ゲームの実行中の世界には作られません</b>。ゲームの動きには影響しません。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>階層パネルの GameObject が増えて、目当ての物を探しにくくなったとき（Folder）</li>
+      <li>「ここを直す」「ここにバグがある」など、シーンの場所にメモを残したいとき（Scene Note）</li>
+      <li>直すところの一覧を、チームで同じシーンを見ながら確かめたいとき（シーンメモウィンドウ）</li>
+    </ul>
+
+    <h2 id="folder">Folder</h2>
+    <p>階層パネルで GameObject をまとめるための入れ物の印です。プロパティはありません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Core &gt; Folder</td></tr>
+      <tr><td>作り方</td><td>階層パネルの <b>+ 作成 &gt; フォルダ</b>。「フォルダ」という名前の GameObject が作られ、「フォルダを作成しました」と表示されます</td></tr>
+      <tr><td>階層パネルでの表示</td><td>フォルダのアイコンで表示されます</td></tr>
+    </table>
+    </div>
+    <p>整理したい GameObject を、階層パネルでフォルダの GameObject へドラッグして子にします（<a href="../editor/hierarchy.html">階層パネル</a>）。フォルダの GameObject も Transform を持つので、動かすと子も一緒に動きます。</p>
+
+    <h2 id="scene-note">Scene Note</h2>
+    <p>シーンビューに作業メモ（直すところ、バグ、アイデアなど）を文字で表示するコンポーネントです。1 つの GameObject にいくつでも付けられます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>メモ</td><td><code>text</code></td><td>文字</td><td>ここを修正</td><td></td><td>表示する文字</td></tr>
+      <tr><td>カテゴリ</td><td><code>category</code></td><td>選択</td><td>TODO</td><td></td><td>TODO、BUG、ART、PROGRAM、LEVEL、IDEA。シーンメモウィンドウの一覧に表示されます</td></tr>
+      <tr><td>優先度</td><td><code>priority</code></td><td>選択</td><td>Normal</td><td></td><td>Low、Normal、High、Critical</td></tr>
+      <tr><td>完了</td><td><code>completed</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>済んだメモ。シーンビューでは薄く表示されます</td></tr>
+      <tr><td>Scene Viewに表示</td><td><code>show_in_viewport</code></td><td>オン・オフ</td><td>オン</td><td></td><td>シーンビューに文字を表示するかどうか</td></tr>
+      <tr><td>完了時に非表示</td><td><code>hide_when_completed</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、完了したメモをシーンビューに表示しません</td></tr>
+      <tr><td>文字色</td><td><code>color</code></td><td>色</td><td>黄色</td><td></td><td>文字の色</td></tr>
+      <tr><td>文字サイズ</td><td><code>text_scale</code></td><td>小数</td><td>1</td><td>0.35〜4</td><td>文字の大きさの倍率</td></tr>
+      <tr><td>表示オフセット</td><td><code>offset</code></td><td>3 つの小数</td><td>0, 0.25, 0</td><td></td><td>GameObject の位置から、文字を表示する位置をずらします</td></tr>
+      <tr><td>表示モード</td><td><code>mode</code></td><td>選択</td><td>Overlay</td><td></td><td>Overlay、World（<a href="#modes">下の表</a>）</td></tr>
+      <tr><td>水平揃え</td><td><code>horizontal_align</code></td><td>選択</td><td>Left</td><td></td><td>World のときの文字の横の揃え方</td></tr>
+      <tr><td>垂直揃え</td><td><code>vertical_align</code></td><td>選択</td><td>Top</td><td></td><td>World のときの文字の縦の揃え方</td></tr>
+    </table>
+    </div>
+
+    <h3 id="modes">表示モード</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示モード</th><th>見え方</th></tr>
+      <tr><td>Overlay</td><td>画面の手前に、いつも同じ大きさの文字で表示します。物に隠れません。カメラの後ろにあるメモは表示しません</td></tr>
+      <tr><td>World</td><td>3D 空間に置いた板のように表示します。GameObject の向きと拡大率に合わせて傾き、遠いと小さく見え、物に隠れます</td></tr>
+    </table>
+    </div>
+    <p>どちらも、エディターで編集しているときだけ表示されます（ゲームの実行中は表示されません）。GameObject が無効のときも表示されません。</p>
+
+    <h3 id="create-note">メモを置く</h3>
+    <ul>
+      <li>シーンビューで右クリックし、<b>Add Scene Memo Here</b> を選ぶと、クリックした場所に「Scene Note」という GameObject が作られます（<a href="../editor/scene-view.html#context-menu">右クリックメニュー</a>）。</li>
+      <li><b>Window &gt; シーンメモ</b> の <b>選択位置に新規メモ</b> を押すと、シーンビューのカメラが回り込む中心の位置にメモを置きます。</li>
+      <li><b>選択GameObjectにメモ追加</b> を押すと、選択中の GameObject に Scene Note を付けます。GameObject と一緒に動くメモになります。</li>
+    </ul>
+
+    <h3 id="notes-window">シーンメモウィンドウ</h3>
+    <p><b>Window &gt; シーンメモ</b>、またはシーンビューの右クリックの <b>Open Scene Notes</b> で開きます。</p>
+    <ul>
+      <li>上に「未完了 数 / 全 数」が表示されます。</li>
+      <li>メモが「カテゴリ | GameObject の名前 | メモ」の形で一覧になります。左のチェックボックスで <b>完了</b> を切り替えられます。</li>
+      <li>一覧の行をクリックすると、その GameObject が選択され、シーンビューのカメラがその位置へ寄ります。</li>
+    </ul>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>直すところにメモを置く</h3>
+    <ol>
+      <li>シーンビューで、直したい場所を右クリックし、<b>Add Scene Memo Here</b> を選びます。</li>
+      <li>できた「Scene Note」を選び、インスペクターの <b>メモ</b> に内容を書きます。</li>
+      <li><b>カテゴリ</b> を BUG、<b>優先度</b> を High などにします。</li>
+      <li>シーンを保存します。メモはシーンファイルに残り、ほかの人がシーンを開いても表示されます。</li>
+    </ol>
+    <h3>終わったメモを片付ける</h3>
+    <ol>
+      <li><b>Window</b> &gt; <b>シーンメモ</b> を開きます（UI Workspace と Motion Workspace にいる間は出ません。基本などの Workspace で開きます）。</li>
+      <li>終わったメモの行の左のチェックボックスを付け、<b>完了</b> にします。</li>
+      <li>シーンビューから消したいときは、そのメモの <b>完了時に非表示</b> をオンにします。</li>
+    </ol>
+    <h3>GameObject をフォルダーにまとめる</h3>
+    <ol>
+      <li>手順は <a href="../editor/hierarchy.html#howto">階層パネルの使い方の例</a> を見てください。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../editor/hierarchy.html">階層パネル</a></li>
+      <li><a href="../editor/scene-view.html">シーンビューとカメラ操作</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

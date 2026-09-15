@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>シーンファイルとプレハブ（.replayscene / .replayprefab） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / データ形式</div>
+    <h1>シーンファイルとプレハブ（.replayscene / .replayprefab）</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>シーン（<code>.replayscene</code>）は、GameObject、親子関係、Transform、コンポーネントとそのプロパティを保存するファイルです。プレハブ（<code>.replayprefab</code>）は、GameObject とその子だけを同じ形式で保存したファイルです。どちらも文字で書かれたテキストファイルで、メモ帳などで開いて読めます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>シーンやプレハブのファイルを、テキストエディターや差分ツールで読みたいとき（どこが変わったかを確かめる）</li>
+      <li>複数人で同じシーンを直して、ファイルの変更がぶつかったときに、中身を見て直したいとき</li>
+      <li>シーンが開けなくなったときに、ファイルのどこがおかしいかを確かめたいとき</li>
+    </ul>
+
+    <h2 id="summary">概要</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>形式</td><td>1 行に 1 つのキーワードと値を書くテキスト</td></tr>
+      <tr><td>1 行目</td><td><code>REPLAY_SCENE 11</code>（形式の名前と版）</td></tr>
+      <tr><td>今の版</td><td>11。版 7〜11 のファイルを読めます。7 より古い版や、12 以上の新しい版は読めません</td></tr>
+      <tr><td>作られる操作</td><td>シーン：<b>File &gt; Save Scene</b> など（<a href="../editor/scene-files.html">シーンを作る・開く・保存する</a>）。プレハブ：GameObject を Prefab として保存したとき</td></tr>
+      <tr><td>プレハブとの違い</td><td>中身の形式は同じです。プレハブでは、保存した起点の GameObject が親なし（<code>PARENT 0</code>）として書かれます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="example">例</h2>
+    <p>Canvas を 1 つ置いたシーンの先頭部分です。</p>
+    <pre><code>REPLAY_SCENE 11
+SCENE "新しいシーン"
+SCENE_STATE 0
+COLLISION_STATE 2 0
+OBJECT_COUNT 2
+OBJECT
+  ID 140
+  NAME "Canvas"
+  ENABLED 1
+  PARENT 0
+  TRANSFORM 0 0 0 0 0 0 1 1 1
+  PREFAB "" 0 0
+  COMPONENT_COUNT 3
+  COMPONENT "CanvasComponent" 1
+    STABLE_ID 2
+    TYPE_GUID "00000000000000000000000000000000"
+    TYPE_MODULE ""
+    TYPE_VERSION 1
+    PROPERTY_COUNT 6
+    PROPERTY "reference_resolution" vec2 1920 1080
+    PROPERTY "render_mode" enum 0
+    PROPERTY "scale_mode" enum 1
+    PROPERTY "match_width_or_height" float 0.5
+    PROPERTY "sort_order" int 0
+    PROPERTY "opacity" float 1
+  END_COMPONENT
+  ...
+END_OBJECT</code></pre>
+
+    <h2 id="structure">キーワード</h2>
+    <h3>ファイル全体</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>キーワード</th><th>値</th><th>意味</th></tr>
+      <tr><td><code>REPLAY_SCENE</code></td><td>版</td><td>ファイルの種類と版。必ず 1 行目</td></tr>
+      <tr><td><code>SCENE</code></td><td>"名前"</td><td>シーンの名前</td></tr>
+      <tr><td><code>SCENE_STATE</code></td><td>ID</td><td>操作対象の GameObject の ID。0 なら未設定</td></tr>
+      <tr><td><code>COLLISION_STATE</code></td><td>2 0</td><td>以前の版との互換のために残している行。常にこの値です</td></tr>
+      <tr><td><code>OBJECT_COUNT</code></td><td>数</td><td>GameObject の数。この後に <code>OBJECT</code> 〜 <code>END_OBJECT</code> の塊が続きます</td></tr>
+    </table>
+    </div>
+    <h3>GameObject（OBJECT 〜 END_OBJECT）</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>キーワード</th><th>値</th><th>意味</th></tr>
+      <tr><td><code>ID</code></td><td>数</td><td>シーンの中での GameObject の番号。参照や親子関係はこの番号でつながります</td></tr>
+      <tr><td><code>NAME</code></td><td>"名前"</td><td>GameObject の名前</td></tr>
+      <tr><td><code>ENABLED</code></td><td>1 / 0</td><td>有効かどうか</td></tr>
+      <tr><td><code>PARENT</code></td><td>ID</td><td>親の GameObject の ID。0 なら親なし</td></tr>
+      <tr><td><code>TRANSFORM</code></td><td>9 つの数</td><td>位置 X Y Z、回転 X Y Z、拡大率 X Y Z（親から見た値）</td></tr>
+      <tr><td><code>PREFAB</code></td><td>"GUID" 番号 ID</td><td>プレハブから置いた GameObject のとき、元のプレハブのアセット GUID、プレハブの中での番号、置いたプレハブの起点の ID。普通の GameObject は <code>"" 0 0</code></td></tr>
+      <tr><td><code>COMPONENT_COUNT</code></td><td>数</td><td>コンポーネントの数。この後に <code>COMPONENT</code> 〜 <code>END_COMPONENT</code> の塊が続きます</td></tr>
+    </table>
+    </div>
+    <h3>コンポーネント（COMPONENT 〜 END_COMPONENT）</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>キーワード</th><th>値</th><th>意味</th></tr>
+      <tr><td><code>COMPONENT</code></td><td>"型名" 1 / 0</td><td>コンポーネントの内部の型名（例：<code>CanvasComponent</code>）と、有効かどうか</td></tr>
+      <tr><td><code>STABLE_ID</code></td><td>数</td><td>GameObject の中でコンポーネントを見分ける番号。コンポーネントの参照に使われます</td></tr>
+      <tr><td><code>TYPE_GUID</code></td><td>"32 文字"</td><td>型を見分ける ID。エンジン組み込みのコンポーネントは 0 が並び、型名で見分けます</td></tr>
+      <tr><td><code>TYPE_MODULE</code></td><td>"名前"</td><td>型が属するモジュールの名前</td></tr>
+      <tr><td><code>TYPE_VERSION</code></td><td>数</td><td>型の版</td></tr>
+      <tr><td><code>PROPERTY_COUNT</code></td><td>数</td><td>プロパティの数</td></tr>
+      <tr><td><code>PROPERTY</code></td><td>"内部名" 種類 値…</td><td>プロパティ 1 つ。内部名は各コンポーネントのページのプロパティ表の「内部名」です</td></tr>
+    </table>
+    </div>
+
+    <h3 id="types">PROPERTY の種類と値の書き方</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>種類</th><th>値の書き方</th><th>使われる例</th></tr>
+      <tr><td><code>bool</code></td><td>1 または 0</td><td>オン・オフ</td></tr>
+      <tr><td><code>int</code></td><td>整数</td><td>整数</td></tr>
+      <tr><td><code>int64</code>、<code>uint64</code></td><td>整数</td><td>大きな整数</td></tr>
+      <tr><td><code>float</code>、<code>double</code></td><td>小数</td><td>小数</td></tr>
+      <tr><td><code>string</code></td><td>"文字"</td><td>文字</td></tr>
+      <tr><td><code>vec2</code> / <code>vec3</code> / <code>vec4</code></td><td>2 / 3 / 4 つの小数</td><td>位置、大きさ</td></tr>
+      <tr><td><code>quat</code></td><td>4 つの小数</td><td>回転（四元数）</td></tr>
+      <tr><td><code>color</code></td><td>赤 緑 青 不透明度（0〜1）</td><td>色</td></tr>
+      <tr><td><code>enum</code></td><td>選択肢の番号（0 から）</td><td>選択</td></tr>
+      <tr><td><code>asset</code>、<code>assetref</code>、<code>sceneref</code></td><td>"アセットの GUID"</td><td>アセットの参照</td></tr>
+      <tr><td><code>objref</code></td><td>GameObject の ID</td><td>GameObject の参照</td></tr>
+      <tr><td><code>compref</code></td><td>GameObject の ID と STABLE_ID</td><td>コンポーネントの参照</td></tr>
+      <tr><td><code>layer</code>、<code>layermask</code>、<code>colliderref</code></td><td>整数</td><td>衝突レイヤー、レイヤーの組み合わせ、Collider の番号</td></tr>
+      <tr><td><code>array</code></td><td>要素の種類 個数 値0 値1 …</td><td>一覧（配列の中に配列は入れられません）</td></tr>
+    </table>
+    </div>
+    <p>コンポーネントによっては、インスペクターの表に無い名前のプロパティも保存されます（例：<a href="../components/lines.html">3D ライン</a> の <code>points[0]</code>）。</p>
+
+    <h2 id="guid">アセットの参照と GUID</h2>
+    <p>シーンの中では、モデルや画像などのアセットを、ファイルの場所ではなく <b>GUID</b>（32 文字の英数字）で指します。GUID と実際のファイルの対応は、<code>resources/AssetDatabase.replaydb</code> に記録されます。</p>
+    <ul>
+      <li>GUID は、アセットを初めて登録したときのファイルの場所から作られます。</li>
+      <li>エディターのプロジェクトパネルで名前を変えたり移動したりしたときは、GUID はそのままで、記録されている場所だけが変わります。シーンからの参照は切れません。</li>
+      <li>エクスプローラーなど、エディターの外でファイルの名前や場所を変えると、別のファイルとして新しい GUID で登録されます。元の GUID を指していたシーンの参照は見つからなくなり、インスペクターの欄に「Missing Asset」と表示されます。値は消えないので、同じ場所にファイルを戻すと直ります。</li>
+    </ul>
+    <div class="warning"><strong>アセットの名前や場所はエディターの中で変えてください</strong>エクスプローラーで変えると、そのアセットを使っていたすべてのシーンやプレハブで参照が切れます。</div>
+
+    <h2 id="saving">保存のしくみ</h2>
+    <ol>
+      <li>内容をいったんメモリの中に書き出し、同じ読み込み処理で正しく読み戻せるかを確かめます。読み戻せないときは保存せず、元のファイルはそのままです。</li>
+      <li><code>ファイル名.replayscene.tmp</code> に書き込みます。</li>
+      <li>元のファイルがあれば <code>ファイル名.replayscene.bak</code> に名前を変えて残し、<code>.tmp</code> を正式な名前に変えます。途中で失敗したときは <code>.bak</code> から元に戻します。</li>
+    </ol>
+    <p>そのため、保存したシーンの隣には、1 つ前の保存内容が <code>.bak</code> として残ります。自動保存は別のファイル（<code>Saved/Autosave/</code>）に書かれます（<a href="../editor/scene-files.html">シーンを作る・開く・保存する</a>）。</p>
+
+    <h2 id="hand-edit">手で編集するとき</h2>
+    <ul>
+      <li>テキストなので編集はできますが、ID、STABLE_ID、GUID、プロパティの種類がずれると、参照が切れたり読み込めなくなったりします。基本はエディターで編集してください。</li>
+      <li>各塊の数（<code>OBJECT_COUNT</code>、<code>COMPONENT_COUNT</code>、<code>PROPERTY_COUNT</code>）は、実際の塊の数と合わせる必要があります。</li>
+      <li>型が見つからないコンポーネント（クラス名を変えた C# スクリプトなど）は、捨てられずに <b>Missing Component</b> として残ります。保存されていた値はそのまま持っていて、シーンを保存し直しても失われません。型が使えるようになると元のコンポーネントに戻ります。</li>
+      <li>コンポーネントが知らない名前のプロパティも、警告を出したうえで値を持ったままにし、保存するときに書き戻します。</li>
+      <li>数値の小数点は <code>.</code> です。ファイルは UTF-8 で保存します。</li>
+    </ul>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>変更の差分を読む</h3>
+    <ol>
+      <li>差分ツールで、変更前と変更後の <code>.replayscene</code> を並べます。</li>
+      <li>変わった行が、どの <code>OBJECT</code> 〜 <code>END_OBJECT</code>（GameObject）の、どの <code>COMPONENT</code> 〜 <code>END_COMPONENT</code> の中の <code>PROPERTY</code> かを見ます。</li>
+      <li>名前だけでなく GUID も見て、同じ GameObject かどうかを確かめます（<a href="#guid">アセットの参照と GUID</a>）。</li>
+    </ol>
+    <h3>手で直すとき</h3>
+    <ol>
+      <li>エディターでそのシーンを開いていない状態にし、元のファイルを別の場所にコピーしておきます。</li>
+      <li>テキストエディターで直して保存します。</li>
+      <li>エディターでシーンを開き、コンソールに警告が出ていないか確かめます。知らない種類のコンポーネントは Missing Component として残ります。</li>
+    </ol>
+    <p>詳しい決まりは、上の「手で編集するとき」を見てください。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="index.html">データ形式の一覧</a></li>
+      <li><a href="../editor/scene-files.html">シーンを作る・開く・保存する</a></li>
+      <li><a href="../components/index.html">コンポーネント一覧</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

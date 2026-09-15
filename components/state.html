@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>State - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Core</div>
+    <h1>State</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>「通常」「選択中」「開いている」のような、名前の付いた状態を持たせるコンポーネントです。状態が変わると、そのことを Motion Player などに知らせます。状態ごとに違うモーションを再生したいときに使います。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>「開いている」「閉じている」のような状態を持たせ、状態ごとに違う動きを再生したいとき（Motion Player と組み合わせます）</li>
+      <li>状態が変わったことを、ほかのコンポーネントやスクリプトに知らせたいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Core &gt; State</td></tr>
+      <tr><td>必須・推奨</td><td>なし</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>状態の数</td><td><code>state_count</code></td><td>整数</td><td>2</td><td>2〜16</td><td>持たせる状態の数。増やすと下に状態の欄が増えます</td></tr>
+      <tr><td>現在の状態</td><td><code>current_state</code></td><td>文字</td><td>State0</td><td></td><td>今の状態の名前。シーンファイルには保存されません</td></tr>
+      <tr><td>状態名（State 1、State 2、…の見出しの中）</td><td><code>states[番号].name</code></td><td>文字</td><td>State0、State1、…</td><td></td><td>それぞれの状態の名前。Motion Player の状態トリガーが、この名前を参照します</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li>状態の数を増やすと、新しい状態の名前は「State（番号）」になります。番号は 0 から数えます。</li>
+      <li>現在の状態に、状態の一覧に無い名前が入っているときは、最初の状態に戻ります。</li>
+    </ul>
+
+    <h2 id="event">状態が変わったとき</h2>
+    <p>現在の状態が別の名前に変わると、エンジンに <b>StateChanged</b> というイベントが送られます。イベントには、前の状態の名前と新しい状態の名前が入ります。同じ名前を入れ直したとき、一覧に無い名前を入れようとしたときは、状態は変わらず、イベントも送られません。</p>
+
+    <h2 id="usage">使い方</h2>
+    <ol class="steps">
+      <li>状態を持たせたい GameObject に <b>コンポーネントを追加 &gt; Core &gt; State</b> を付けます。</li>
+      <li><b>状態の数</b> を決め、それぞれの <b>状態名</b> を分かりやすい名前（例：Idle、Open）に変えます。</li>
+      <li>Motion Player のトリガーを「状態が変わった」にし、反応させたい状態の名前を入れます。</li>
+      <li>ゲームの実行中に、スクリプトなどから現在の状態を変えると、対応するモーションが再生されます。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="index.html#motion">Motion Player / Composition Player</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

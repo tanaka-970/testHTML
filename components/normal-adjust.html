@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Normal Adjust - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+    <h1>Normal Adjust</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>モデルの陰影の付き方を整えるコンポーネントです。光の当たり方を計算するときに使う面の向き（法線）を、指定した球の中心から外へ向かう向きに近づけます。細かい凹凸で陰影がばらばらになるモデルでも、球のようになめらかな陰影にできます。モデルの形そのものは変わりません。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>キャラクターの顔などで、細かい凹凸のせいで陰影がばらついて見えるとき</li>
+      <li>アニメ調の見た目で、影の形をなめらかに整えたいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Rendering &gt; Normal Adjust</td></tr>
+      <tr><td>1 つの GameObject に</td><td>いくつでも付けられます</td></tr>
+      <tr><td>必須・推奨</td><td>なし（効果を見るには、同じ GameObject にモデルを表示するコンポーネントが要ります）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>Blend</td><td><code>blend</code></td><td>小数</td><td>0</td><td>0〜1</td><td>法線を球の向きへ近づける割合。0 では何も変わりません。最初はこの値を上げてください</td></tr>
+      <tr><td>Center</td><td><code>center</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>球の中心。GameObject から見た位置です。<b>Bone</b> を指定したときは、その骨から見た位置になります</td></tr>
+      <tr><td>Radius</td><td><code>radius</code></td><td>小数</td><td>0.5</td><td>0〜10000</td><td>球の半径。球の外側の面は変わりません。GameObject の拡大率（3 方向のうち最大のもの）が掛かります。0 では何も変わりません</td></tr>
+      <tr><td>Falloff</td><td><code>falloff</code></td><td>小数</td><td>0.2</td><td>0〜1</td><td>球の外側から内側へ、効果をなめらかに弱めていく幅（半径に対する割合）。0.2 なら、半径の外側 2 割で効果が 0 までなめらかに弱まります。0 なら境目ではっきり切り替わります</td></tr>
+      <tr><td>Bone</td><td><code>bone</code></td><td>文字</td><td>（空）</td><td></td><td>骨の名前。指定すると、球の中心がその骨に付いて動きます（アニメーションするモデル向け）。名前の骨が見つからないときは、この Normal Adjust は使われません</td></tr>
+      <tr><td>対象</td><td><code>target_slot_mode</code></td><td>選択</td><td>モデル全体</td><td></td><td>モデル全体、マテリアルスロット</td></tr>
+      <tr><td>マテリアルスロット</td><td><code>target_slot_index</code></td><td>整数</td><td>0</td><td>0〜31</td><td>対象がマテリアルスロットのときに効果をかける部分の番号（0 から数えます）。<a href="mesh-renderers.html#slots">マテリアルスロット</a>を見てください</td></tr>
+    </table>
+    </div>
+
+    <h2 id="multiple">複数付けたとき</h2>
+    <p>モデルの部分（スロット）ごとに、上から順に Normal Adjust を調べ、有効で、対象の部分に合い、<b>Blend</b> と <b>Radius</b> が 0 より大きい最初の 1 つだけが使われます。顔と髪など、部分ごとに別の球を使いたいときは、<b>対象</b> を <b>マテリアルスロット</b> にして、部分ごとに Normal Adjust を付けます。</p>
+
+    <h2 id="editor">シーンビューでの操作</h2>
+    <h3>中心をドラッグで動かす</h3>
+    <ol class="steps">
+      <li>Normal Adjust を付けた GameObject を選択します（ゲームを実行していないとき）。</li>
+      <li>シーンビューの各 Normal Adjust の中心に、水色の点と「Normal」という文字が表示されます。マウスを乗せると黄色になります。</li>
+      <li>点をクリックすると、その点に移動用のギズモが表示されます。</li>
+      <li>ギズモの軸をドラッグして中心を動かします。離すと「Normal Adjust の中心を確定しました」と表示されます。ドラッグ中に <kbd>Esc</kbd> を押すと取り消せます。<kbd>Ctrl</kbd>+<kbd>Z</kbd> でも戻せます。</li>
+    </ol>
+    <h3>球の範囲を表示する</h3>
+    <ol class="steps">
+      <li><b>Window &gt; Collision Diagnostics</b> を選び、「衝突の診断」ウィンドウを開きます。</li>
+      <li><b>表示</b> の <b>Normal Adjust の範囲を描く</b> にチェックを付けます。</li>
+      <li>選択中の GameObject の Normal Adjust の球が、水色の 3 つの円で表示されます。</li>
+    </ol>
+
+    <h2 id="usage">使い方</h2>
+    <ol class="steps">
+      <li>陰影を整えたいモデルの GameObject に <b>コンポーネントを追加 &gt; Rendering &gt; Normal Adjust</b> を付けます。</li>
+      <li><b>Blend</b> を 0.5 程度にします。</li>
+      <li>シーンビューの「Normal」の点をドラッグして、中心をモデルの中心（顔なら頭の中心）に合わせます。</li>
+      <li>範囲を表示しながら、<b>Radius</b> をモデルがおおよそ入る大きさにします。</li>
+      <li>陰影を見ながら <b>Blend</b> と <b>Falloff</b> を調整します。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="mesh-renderers.html">メッシュの描画（Mesh / Primitive / Skinned Mesh Renderer）</a></li>
+      <li><a href="lights.html">ライト（Directional / Point / Spot）</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Camera - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Camera</div>
+    <h1>Camera</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>ゲーム中にシーンを映す視点です。付けた GameObject の位置と向き（Transform）が、そのままカメラの位置と向きになります。シーンビューで使う編集用のカメラとは別のものです。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>ゲーム中に、どこからシーンを映すか（視点）を決めたいとき</li>
+      <li>2 人で遊ぶ画面のように、画面を分けて映したいとき</li>
+      <li>視野の広さや、どこまで遠くを映すかを変えたいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Camera &gt; Camera</td></tr>
+      <tr><td>必須・推奨</td><td>なし</td></tr>
+      <tr><td>向き</td><td>GameObject の Z 軸の方向を見ます。上は Y 軸の方向です</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>投影方式</td><td><code>projection_mode</code></td><td>選択</td><td>Perspective</td><td>Perspective / Orthographic</td><td>Perspective は遠くの物ほど小さく見える普通の見え方、Orthographic は距離で大きさが変わらない見え方</td></tr>
+      <tr><td>視野角 (度)</td><td><code>field_of_view_degrees</code></td><td>小数</td><td>50</td><td>1〜179</td><td>Perspective のときの縦方向の見える角度。大きいほど広く映ります</td></tr>
+      <tr><td>Orthographic Size</td><td><code>orthographic_size</code></td><td>小数</td><td>10</td><td>0.01〜10000</td><td>Orthographic のときに画面の縦に映る広さ。横は画面の縦横比から決まります</td></tr>
+      <tr><td>Near Clip</td><td><code>near_clip</code></td><td>小数</td><td>0.1</td><td>0.001〜10</td><td>これより近い物は映りません</td></tr>
+      <tr><td>Far Clip</td><td><code>far_clip</code></td><td>小数</td><td>10000</td><td>10〜100000</td><td>これより遠い物は映りません。Near Clip の 10 倍より小さくはなりません</td></tr>
+      <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td>-100〜100</td><td>カメラが複数あるときに使います（下を見てください）</td></tr>
+      <tr><td>分割表示を使う</td><td><code>viewport_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>画面の一部だけにこのカメラの映像を出すかどうか</td></tr>
+      <tr><td>表示領域 (x y w h)</td><td><code>viewport_rect</code></td><td>4 つの小数</td><td>0, 0, 1, 1</td><td>0〜1</td><td>分割表示のときに映す場所。画面の左上を 0, 0、右下を 1, 1 として、左上の位置（x, y）と幅・高さ（w, h）を入れます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="multiple">カメラが複数あるとき</h2>
+    <h3>分割表示を使うカメラが 1 つも無いとき</h3>
+    <p>有効な Camera のうち、<b>優先度</b> がいちばん大きいカメラ 1 台の映像が画面全体に出ます。優先度が同じなら、シーンの中で先にあるカメラが使われます。</p>
+    <h3>分割表示を使うカメラがあるとき</h3>
+    <p><b>分割表示を使う</b> がオンのカメラが、それぞれの <b>表示領域</b> に映ります。優先度が小さいカメラから順に描かれるので、領域が重なった部分には優先度が大きいカメラの映像が上に出ます。画面全体にかける仕上げの効果は、最後に描くカメラの後にだけかかります。</p>
+    <p>表示領域が画面からはみ出す値は、画面の中に収まるように直されます。幅か高さが 0 になるカメラは描かれません。</p>
+
+    <h2 id="usage">使い方</h2>
+    <h3>ゲーム中の視点を置く</h3>
+    <ol class="steps">
+      <li><b>+ 作成 &gt; 空の GameObject</b> で GameObject を作り、名前を「Camera」などにします。</li>
+      <li><b>コンポーネントを追加 &gt; Camera &gt; Camera</b> を付けます。</li>
+      <li>Transform の <b>位置</b> と <b>回転 (度)</b> で、映したい場所に向けます。</li>
+      <li>ゲームを実行し、シーンビューの <b>ゲーム</b> タブで映り方を確かめます。</li>
+    </ol>
+    <h3>画面を左右に分ける</h3>
+    <ol class="steps">
+      <li>Camera を 2 つ用意し、両方の <b>分割表示を使う</b> をオンにします。</li>
+      <li>1 つ目の <b>表示領域</b> を 0, 0, 0.5, 1、2 つ目を 0.5, 0, 0.5, 1 にします。</li>
+      <li>実行すると、画面の左半分と右半分にそれぞれのカメラの映像が出ます。</li>
+    </ol>
+
+    <h2 id="combination">組み合わせ</h2>
+    <ul>
+      <li><a href="follow-target.html">Follow Target</a> を同じ GameObject に付けると、<a href="camera-target.html">Camera Target</a> を追いかけるカメラになります。</li>
+    </ul>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="camera-target.html">Camera Target</a></li>
+      <li><a href="follow-target.html">Follow Target</a></li>
+      <li><a href="../editor/scene-view.html#tabs">シーンビュー：ゲームタブ</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

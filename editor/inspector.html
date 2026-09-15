@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>インスペクター - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
+    <h1>インスペクター</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>画面右の <b>インスペクター</b> パネルには、選んでいる物の中身が表示されます。GameObject を選んでいるときは、名前や有効・無効と、付いているコンポーネントの設定がここに並びます。値を変えるとすぐシーンに反映されます。</p>
+
+    <figure>
+      <img src="../images/editor/inspector-transform-expanded.png" alt="インスペクター。上から編集テーブルの選択欄、有効チェックと名前 Sphere、操作対象に設定ボタン、Advanced / IDs、すべて・レンダー・スクリプト・その他のタブ、Transform を開いて位置・回転・拡大率の欄、Primitive Mesh Renderer の行、コンポーネントを追加ボタンが並ぶ">
+      <figcaption>Sphere を選び、Transform を開いたところ</figcaption>
+    </figure>
+    <div class="note"><strong>画像について</strong>この画像は、薄い文字（無効な文字）の色が黒になる見た目プリセットで撮影しています。そのため「編集テーブル」「親: なし（シーン直下）」「操作対象:」などの薄い文字が背景に溶けて見えていません。標準の見た目では読めます。</div>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>選んだ GameObject の位置、色、強さなどの設定を変えたいとき</li>
+      <li>GameObject にコンポーネント（ライト、当たり判定、スクリプトなど）を付けたい・外したいとき</li>
+      <li>付いているコンポーネントが多く、見たいものを探しにくいとき（4 つのタブ）</li>
+      <li>ワールド（プロジェクト設定など）やカメラの設定を開きたいとき</li>
+    </ul>
+
+    <h2 id="top">いちばん上：編集テーブル</h2>
+    <p>パネルの最上部に、薄い文字の <b>編集テーブル</b> と、パネル幅いっぱいの選択欄があります。選べるのは <b>基本</b>、<b>配置</b>、<b>モデリング</b>、<b>アニメーション</b>、<b>レンダリング</b>、<b>シェーダー調整</b> の 6 つです。</p>
+    <div class="warning"><strong>表示の絞り込みではありません</strong>この選択欄を変えると、エディター全体の Workspace が切り替わります。ツールバーの機能検索や Window メニューの「〜Workspaceへ」と同じ切り替えです。<b>シェーダー調整</b> を選ぶと、インスペクターの中身がシェーダー調整用の画面に変わります。ふだんは <b>基本</b> のままで使います。</div>
+    <p>UI Workspace や Motion Workspace に切り替えているときは、この 6 つのどれにも当てはまらないため、選択欄は何も選ばれていない表示になります。</p>
+
+    <h2 id="what">何が表示されるか</h2>
+    <p>インスペクターの中身は、最後に選んだ物によって変わります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>選んだ物</th><th>表示される内容</th></tr>
+      <tr><td>GameObject（階層パネルかシーンビューで選択）</td><td>GameObject のヘッダーとコンポーネント。このページの以下で説明します。</td></tr>
+      <tr><td>ワールド（階層パネルの「ワールド」、またはシーンビューの何もない場所をクリック）</td><td>「ワールド」の見出しの下に、<b>Scene / Game 背景色</b>、<b>背景画像</b>、<b>ゲームシーン</b>、<b>パーティクル</b>、<b>軌跡</b>、プロジェクト設定、カメラ操作の関門などが並びます。</td></tr>
+      <tr><td>メインカメラ（階層パネルの「メインカメラ」）</td><td>「カメラ」の見出しの下に、シーンビュー用の編集カメラの設定と、「Runtime Camera（ゲーム内）」の情報が並びます。</td></tr>
+      <tr><td>アセット（プロジェクトパネルで選択）</td><td>アセットの名前とファイルの場所。Prefab なら Prefab の情報。</td></tr>
+    </table>
+    </div>
+    <p>シーンが開かれていないときは「シーンが読み込まれていません」、GameObject を選んでいないときは「GameObject が選択されていません」と表示されます。</p>
+
+    <h2 id="header">GameObject のヘッダー</h2>
+    <p>GameObject を 1 つ選ぶと、上から次の順に表示されます。</p>
+    <ol>
+      <li><b>有効チェックボックスと名前欄</b>：チェックを外すと GameObject が無効になります。名前欄は、文字を入れて <kbd>Enter</kbd> を押すと決まります。同じ親の下に同じ名前があると「同じ階層に同名 GameObject があります（参照は ObjectID なので維持されます）」と表示されますが、名前はそのまま使えます。</li>
+      <li><b>親: （親の名前）</b>：親が無いときは「親: なし（シーン直下）」です。</li>
+      <li><b>操作対象:</b>：この GameObject がゲーム実行時の操作対象なら、緑の文字で「この GameObject」と表示されます。そうでないときは <b>この GameObject を操作対象に設定</b> ボタンが出ます。押すとこの GameObject が操作対象になり、「（名前） を操作対象にしました」と表示されます。</li>
+      <li><b>この GameObject の診断</b>：この GameObject に問題が見つかったときだけ開いた状態で出ます。エラーは赤、警告は橙で、コードと説明、直し方の案が並びます。</li>
+      <li><b>Prefab の情報</b>：Prefab から置いた GameObject のときだけ出ます。</li>
+      <li><b>Advanced / IDs</b>：開くと、この GameObject の ObjectID と、親の ObjectID が表示されます。</li>
+    </ol>
+    <p>有効・無効、名前、操作対象の変更は、どれも <kbd>Ctrl</kbd>+<kbd>Z</kbd> で元に戻せます。</p>
+
+    <h2 id="tabs">コンポーネントの表示：4 つのタブ</h2>
+    <p>ヘッダーの下に「分類を開くと設定を表示します。順序は ◆ / ボタン / ドラッグで変更できます」と表示され、その下に 4 つのタブがあります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>タブ</th><th>表示されるコンポーネント</th><th>並び方</th></tr>
+      <tr><td>すべて</td><td>付いているコンポーネント全部</td><td>分類でまとめず、付けた順に 1 列</td></tr>
+      <tr><td>レンダー</td><td>分類が Rendering、Lighting、Camera、Landscape、UI のもの</td><td>分類ごとの見出しの中</td></tr>
+      <tr><td>スクリプト / 動作</td><td>分類が Scripting、Gameplay、Motion、Physics、Navigation、Audio のもの</td><td>分類ごとの見出しの中</td></tr>
+      <tr><td>その他</td><td>それ以外（Core、Editor、Scene など）</td><td>分類ごとの見出しの中</td></tr>
+    </table>
+    </div>
+    <p>「すべて」以外のタブでは、分類ごとに「Rendering  (2)  Mesh Renderer / Point Light」のような見出しが出ます。見出しには分類名、その分類のコンポーネント数、名前の一覧が並び、クリックすると中のコンポーネントが開きます。該当するコンポーネントが無いタブでは「この分類にはコンポーネントがありません」と表示されます。</p>
+
+    <h2 id="component-row">コンポーネントの行</h2>
+    <p>コンポーネント 1 つにつき、次の部品が並びます。</p>
+    <ol>
+      <li><b>有効チェックボックス</b>（左端）：チェックを外すと、そのコンポーネントだけが無効になります。</li>
+      <li><b>◆</b>：並べ替え用のつまみです。押したままドラッグして、別のコンポーネントの行の上下に落とすと順番が変わります。ドラッグ中はタブの上に「移動中: （名前）   落としたい行の上下へ」と表示されます。</li>
+      <li><b>見出し</b>：コンポーネント名です。分類ごとの色で塗られています（色は <b>Window &gt; UI の見た目 &gt; Component カテゴリ色</b> で変えられます）。クリックすると設定が開きます。マウスを乗せると、そのコンポーネントの説明が出ます。</li>
+      <li><b>先頭 / ↑ / ↓ / 末尾</b>（見出しの下）：押すと、いちばん上へ、1 つ上へ、1 つ下へ、いちばん下へ移動します。すでに端にあるときは、その方向のボタンが薄くなります。</li>
+    </ol>
+    <p>並べ替えると「コンポーネントの順序を変更しました」と表示されます。並べ替えも <kbd>Ctrl</kbd>+<kbd>Z</kbd> で戻せます。</p>
+    <p>C# スクリプトのコンポーネントは、見出しが「（クラス名） (Script)」になります。スクリプトが指定されていないときは「Script (未指定)」です。</p>
+
+    <h2 id="component-body">コンポーネントを開いたとき</h2>
+    <p>見出しをクリックして開くと、上から次のものが表示されます。</p>
+    <ol>
+      <li><b>必須・推奨の警告</b>：このコンポーネントが一緒に必要とするコンポーネントが無いと、赤で「必須: （名前） がありません」、あったほうがよいものが無いと橙で「推奨: （名前） がありません」と表示されます。右の <b>追加</b> ボタンで、そのコンポーネントを付けられます。さらに必要なものがあれば一緒に付き、「（必須 Component N 個を自動追加）」と表示されます。</li>
+      <li><b>設定欄</b>：コンポーネントの設定がすべて並びます。設定が 1 つも無いコンポーネントでは「編集できる設定はありません」と表示されます。</li>
+      <li><b>コンポーネントを削除</b> ボタン（いちばん下）</li>
+    </ol>
+    <p>コンポーネントによっては、設定欄の前に次のような情報も出ます。</p>
+    <ul>
+      <li><b>C# スクリプト</b>：「状態」と、状態ごとの説明、「インスタンス: あり / なし」。失敗しているときは赤で「理由」が出ます。状態の説明は次のとおりです。
+        <ul>
+          <li>Running：インスタンス生成済み。Update が回っています</li>
+          <li>Loaded：型は解決済み。Play を押すとインスタンスが作られます</li>
+          <li>Unresolved：型が未解決。Build &amp;&amp; Reload C# と Refresh C# Catalog を試してください</li>
+          <li>Unassigned：Script が未指定です</li>
+          <li>Error：下の理由を確認してください</li>
+        </ul>
+      </li>
+      <li><b>Directional Light</b>：シーン内で有効な Directional Light が 2 つ以上あると、「Directional Light が N 個有効です。Runtime は先頭の 1 個だけを使用します。」と橙で表示されます。</li>
+      <li><b>Landscape</b>：同じ GameObject に Primitive Mesh Renderer もあると、重なって表示される注意が出ます。<b>設定値で平面を再生成</b> ボタンで、地形を平らな面に作り直せます（確認が出て、Undo できます）。</li>
+    </ul>
+
+    <h3 id="values">値の入れ方</h3>
+    <ul>
+      <li><b>数値</b>：欄の上で左右にドラッグすると値が増減します。<kbd>Ctrl</kbd> を押しながらクリックすると、文字で数値を入力できます。</li>
+      <li><b>チェックボックス</b>：クリックでオン・オフを切り替えます。</li>
+      <li><b>選択欄</b>：クリックして一覧から選びます。</li>
+    </ul>
+    <p>1 回のドラッグや入力で変えた値は、まとめて 1 回分の変更として <kbd>Ctrl</kbd>+<kbd>Z</kbd> で戻せます。</p>
+
+    <h2 id="add">コンポーネントを追加する</h2>
+    <ol class="steps">
+      <li>コンポーネントの一覧の下にある、パネル幅いっぱいの <b>コンポーネントを追加</b> ボタンを押します。</li>
+      <li><b>コンポーネントを追加</b> の一覧が開きます。分類の見出しをクリックして開くか、いちばん上の <b>Search Components...</b> に名前を入れて探します。</li>
+      <li>付けたいコンポーネント名をクリックします。</li>
+    </ol>
+    <figure>
+      <img src="../images/editor/inspector-add-component-rendering.png" alt="コンポーネントを追加の一覧。検索欄、テンプレート部品も表示するのチェック、分類ごとの見出しがあり、Rendering を開いて Mesh Renderer から Animator までが並ぶ。Primitive Mesh Renderer には追加済みと表示されている">
+      <figcaption>Rendering を開いたところ。付いているものは「（追加済み）」と表示され、選べません</figcaption>
+    </figure>
+    <p>分類の見出しには、その分類のコンポーネント数が「Rendering  (12)」のように付きます。<b>テンプレート部品も表示する</b> のチェックを外すと、ゲーム用のテンプレート部品が一覧から隠れます。この設定はプロジェクト設定に保存されます。</p>
+    <p>実行中は、ボタンの代わりに「実行中はコンポーネントを変更できません」と表示されます。</p>
+
+    <h2 id="remove">コンポーネントを削除する</h2>
+    <p>削除のしかたは 2 つあります。</p>
+    <ul>
+      <li>コンポーネントを開いて、いちばん下の <b>コンポーネントを削除</b> ボタンを押す</li>
+      <li>コンポーネントの見出しを右クリックして <b>コンポーネントを削除</b> を選ぶ</li>
+    </ul>
+    <p>削除すると「（名前） を削除しました」と表示され、<kbd>Ctrl</kbd>+<kbd>Z</kbd> で戻せます。次の場合は削除できません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>場合</th><th>表示</th></tr>
+      <tr><td>削除できない種類のコンポーネント</td><td>「このコンポーネントは削除できません」（ボタンの代わりに表示）</td></tr>
+      <tr><td>実行中</td><td>「実行中は削除できません」</td></tr>
+      <tr><td>別のコンポーネントが必須として使っている</td><td>ボタンが薄くなり「（使っている側の名前） が必須として使用中」</td></tr>
+    </table>
+    </div>
+
+    <div class="warning"><strong>Backspace ではコンポーネントを消さないでください</strong>見出しの右クリックメニューには「コンポーネントを削除 Backspace」と表示されますが、インスペクターに GameObject が表示されている状態で <kbd>Backspace</kbd> や <kbd>Delete</kbd> を押すと、コンポーネントではなく<b>選択中の GameObject ごと</b>削除されます。コンポーネントは右クリックメニューか <b>コンポーネントを削除</b> ボタンで消してください。GameObject を消してしまったときは <kbd>Ctrl</kbd>+<kbd>Z</kbd> で戻せます。</div>
+
+    <h2 id="missing">見つからないコンポーネント</h2>
+    <p>シーンファイルに書かれているコンポーネントの種類が、今のエンジンに無いときは、中身を預かったまま「見つからないコンポーネント」として表示されます。預かっている設定の一覧が読み取り専用で表示され、「型が使えるようになれば、次に読み込んだ時点で自動的に復元されます。」「保存し直しても、この内容は元の型として書き戻されます。」と説明が出ます。</p>
+    <p><b>この Missing Component を削除</b> ボタンで消せますが、「削除すると、預かっている内容も一緒に失われます。」</p>
+
+    <h2 id="play">実行中の表示</h2>
+    <p>ゲームを実行している間は、インスペクターの上に「実行中（読み取り専用）」と「プレイ中の変更は編集シーンへ保存されません」が表示され、設定欄は薄くなって変更できなくなります。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>立方体に当たり判定を付ける</h3>
+    <ol>
+      <li>階層パネルで立方体を選びます。</li>
+      <li>インスペクターの下の <b>コンポーネントを追加</b> を押し、いちばん上の検索欄に <code>Box</code> と入れます。</li>
+      <li><b>Box Collider</b> をクリックして付けます。付けたコンポーネントの見出しを開くと、大きさなどを変えられます（<a href="../components/physics.html">物理（Rigidbody と Collider）</a>）。</li>
+    </ol>
+    <h3>数値をきっちり入れる</h3>
+    <ol>
+      <li>変えたい数値の欄を、Ctrl を押しながらクリックします。</li>
+      <li>文字で入力できるようになるので、数値を入れて Enter を押します。</li>
+      <li>間違えたときは Ctrl+Z で元に戻します。</li>
+    </ol>
+    <h3>プロジェクト設定を開く</h3>
+    <ol>
+      <li>階層パネルの ゲームシーン にある <b>ワールド</b> を選びます（シーンビューの何もない場所をクリックしても同じです）。</li>
+      <li>インスペクターに出る <b>プロジェクト設定</b> を開きます。起動シーンや Localization などを設定できます（<a href="../settings/project-settings.html">プロジェクト設定</a>）。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="hierarchy.html">階層パネル</a></li>
+      <li><a href="menu-bar.html#window-style">メニューバー：UI の見た目</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

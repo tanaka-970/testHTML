@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Text・Text Animator - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / UI</div>
+    <h1>Text・Text Animator</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p><b>Text</b> は UI に文字を表示するコンポーネントです。言語ごとの文字の切り替え（ローカライズ）や、ほかのコンポーネントの数値の表示もできます。<b>Text Animator</b> は、同じ GameObject の Text の文字を 1 文字ずつ動かしたり色を変えたりします。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>タイトル、ボタンの文字、説明文などを画面に出したいとき（Text）</li>
+      <li>スライダーの値など、ほかのコンポーネントの数値をそのまま文字で表示し続けたいとき（数値の表示）</li>
+      <li>日本語と英語など、言語を切り替えて表示したいとき（Localization Key）</li>
+      <li>文章の一部だけ、色や大きさを変えたいとき（Rich Text）</li>
+      <li>文字を揺らす、文字の上を光が流れる、といった文字の演出を付けたいとき（Text Animator）</li>
+    </ul>
+
+    <h2 id="text">Text</h2>
+    <p>コンポーネントを追加での場所は <b>UI &gt; Text</b> です。付けると Rect Transform も付きます。UI Workspace の <b>UI 階層</b> の <b>Text</b> ボタンで、「Text」と書かれた 160 × 80 の GameObject が作られます。</p>
+    <!--PROPS:UITextComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>テキスト</td><td><code>text</code></td><td>文字</td><td>（空）</td><td></td><td>表示する文字列を指定します。 改行（\n）で行を分けます。Localization Key が設定されていて見つからないときは、この文字が代わりに表示されます。数値の接続元を使うと、この文字は毎回書き換えられます。</td></tr>
+<tr><td>フォント</td><td><code>font</code></td><td>アセット（フォント）</td><td>（空）</td><td></td><td>TTF / OTF / TTC のフォントアセット。TTC は先頭のフォントを使います。未設定、見つからない、または表示する文字がフォントに無いときは、Windows の meiryo.ttc、YuGothM.ttc、msgothic.ttc、segoeui.ttf の順に探したフォントで全体を表示します。</td></tr>
+<tr><td>文字サイズ</td><td><code>font_size</code></td><td>小数</td><td>24</td><td>1〜512</td><td>文字の大きさを指定します。 Canvas 座標での文字の大きさ。1 行の高さの基準にもなります。</td></tr>
+<tr><td>色</td><td><code>color</code></td><td>色</td><td>1, 1, 1, 1</td><td></td><td>描画する色を指定します。 文字の色。Rich Text の color タグの色と掛け合わされます。</td></tr>
+<tr><td>不透明度</td><td><code>opacity</code></td><td>小数</td><td>1</td><td>0〜1</td><td>表示の不透明度を 0〜1 で指定します。 0 のときは描かれません。Canvas の不透明度と掛け合わされます。</td></tr>
+<tr><td>文字間隔</td><td><code>character_spacing</code></td><td>小数</td><td>0</td><td></td><td>文字と文字の間隔を指定します。 文字ごとの送り幅に足す長さ（Canvas 座標）。マイナスで詰まります。</td></tr>
+<tr><td>行間倍率</td><td><code>line_spacing</code></td><td>小数</td><td>1</td><td>0.1〜4</td><td>行と行の間隔倍率を指定します。 1 行の高さ = 文字サイズ × この値。行の中に size タグで大きい文字があると、その行だけ高くなります。</td></tr>
+<tr><td>横揃え</td><td><code>horizontal_align</code></td><td>選択</td><td>中央</td><td></td><td>文字列の横方向の揃え方を指定します。 行ごとに、範囲の幅に対して揃えます。 選択肢：左、中央、右</td></tr>
+<tr><td>縦揃え</td><td><code>vertical_align</code></td><td>選択</td><td>中央</td><td></td><td>文字列の縦方向の揃え方を指定します。 全部の行の高さの合計を、範囲の高さに対して揃えます。 選択肢：上、中央、下</td></tr>
+<tr><td>折り返し</td><td><code>word_wrap</code></td><td>オン・オフ</td><td>オン</td><td></td><td>矩形幅を超えた文字列を折り返すか指定します。 オンのとき、次の文字が範囲の幅を超えるとそこで改行します（単語ではなく文字単位）。範囲からはみ出した文字は切り取られません。</td></tr>
+<tr><td>Rich Text</td><td><code>rich_text</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>Unity 互換: &lt;color&gt;, &lt;size&gt;, &lt;b&gt;, &lt;i&gt;。既定OFFなので既存Textの &#x27;&lt;&#x27; は変化しません。 タグが正しくないときは、文字列全体をタグも含めてそのまま表示します。</td></tr>
+<tr><td>Localization Key</td><td><code>localization_key</code></td><td>文字</td><td>（空）</td><td></td><td>空なら text をそのまま表示。キーが見つからない場合も text を fallback として表示します。 プロジェクト設定の Localization で選んだ表から、今の言語の文字を引きます。</td></tr>
+<tr><td>数値の接続元</td><td><code>number_source</code></td><td>コンポーネントの参照</td><td>（空）</td><td></td><td>表示文字列へ接続する数値の取得元を指定します。 数値を読むコンポーネント。数値の接続元と数値プロパティの両方が設定されているときだけ働きます。</td></tr>
+<tr><td>数値プロパティ</td><td><code>number_source_property</code></td><td>文字</td><td>（空）</td><td></td><td>数値の取得元に使うプロパティ名を指定します。 内部名で指定します。整数・小数・選択（番号）・64 ビット整数のプロパティだけ使えます。</td></tr>
+<tr><td>数値書式</td><td><code>number_format</code></td><td>文字</td><td>（空）</td><td></td><td>例: {0:0}% {0 から次の } までを数値に置き換えます。{0:0.00} のような書式指定は解釈されず、桁数は 小数桁 で決まります。空なら {0} と同じです。</td></tr>
+<tr><td>小数桁</td><td><code>number_digits</code></td><td>整数</td><td>0</td><td>0〜4</td><td>数値の小数点以下の桁数を指定します。 小数点以下の桁数。0〜4 に収められます。</td></tr>
+<tr><td>縁取り幅</td><td><code>outline_width</code></td><td>小数</td><td>0</td><td>0〜32</td><td>文字の縁取り幅を指定します。 画面のピクセル単位。欄には 32 まで入りますが、実際に表示される幅は 8 までです。</td></tr>
+<tr><td>縁取り色</td><td><code>outline_color</code></td><td>色</td><td>0, 0, 0, 1</td><td></td><td>文字の縁取り色を指定します。 縁取り幅が 0 より大きいときに使います。</td></tr>
+<tr><td>影オフセット</td><td><code>shadow_offset</code></td><td>2 つの小数</td><td>0, 0</td><td></td><td>文字の影をずらす距離を指定します。 画面のピクセル単位で、X はプラスで右、Y はプラスで下へ影をずらします。</td></tr>
+<tr><td>影色</td><td><code>shadow_color</code></td><td>色</td><td>0, 0, 0, 0</td><td></td><td>文字の影色を指定します。 既定は A が 0 なので影は出ません。A を 0 より大きくすると表示されます。</td></tr>
+</table></div>
+<!--/PROPS:UITextComponent-->
+
+    <h3 id="layout">文字の並び方</h3>
+    <ul>
+      <li>文字は Rect Transform の範囲の中に並べます。1 行の高さは <b>文字サイズ</b> × <b>行間倍率</b> です。</li>
+      <li><b>折り返し</b> がオンなら、次の文字で範囲の幅を超えるときに改行します。英語の単語の途中でも改行します。</li>
+      <li><b>横揃え</b> は行ごと、<b>縦揃え</b> は全部の行をまとめて揃えます。</li>
+      <li>範囲に入りきらない文字も、はみ出して表示されます。切り取りたいときは親に <a href="ui-controls.html#mask">Mask</a> を置きます。</li>
+      <li><b>不透明度</b> が 0 の Text は描かれません。</li>
+    </ul>
+
+    <h3 id="font">フォント</h3>
+    <p><b>フォント</b> にはプロジェクトの TTF、OTF、TTC ファイルを指定します。TTC に複数のフォントが入っているときは、最初のフォントを使います。</p>
+    <p>フォントを指定していないとき、フォントが見つからないとき、または表示する文字のどれかがそのフォントに無いときは、Windows に入っている次のフォントを順に探し、見つかったもので文字列全体を表示します。</p>
+    <ol>
+      <li><code>C:\Windows\Fonts\meiryo.ttc</code></li>
+      <li><code>C:\Windows\Fonts\YuGothM.ttc</code></li>
+      <li><code>C:\Windows\Fonts\msgothic.ttc</code></li>
+      <li><code>C:\Windows\Fonts\segoeui.ttf</code></li>
+    </ol>
+    <p>文字は、輪郭までの距離を持った画像（SDF）で描くので、大きくしてもぼやけにくくなっています。</p>
+
+    <h3 id="outline">縁取りと影</h3>
+    <ul>
+      <li><b>縁取り幅</b> は画面のピクセル単位です。欄には 32 まで入りますが、見た目に反映されるのは 8 ピクセルまでです。</li>
+      <li>影は <b>影色</b> の A が 0 より大きいときだけ表示されます（既定は A が 0）。<b>影オフセット</b> は画面のピクセル単位で、X がプラスなら右、Y がプラスなら下にずれます。縁取りがあるときは、影も縁取りの形になります。</li>
+    </ul>
+
+    <h3 id="rich-text">Rich Text</h3>
+    <p><b>Rich Text</b> をオンにすると、文字の中にタグを書いて、一部だけ色や大きさを変えられます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>タグ</th><th>働き</th></tr>
+      <tr><td><code>&lt;b&gt;…&lt;/b&gt;</code></td><td>太字風。文字を 3.5% 大きくし、送り幅を 2% 広げます（太いフォントには切り替わりません）</td></tr>
+      <tr><td><code>&lt;i&gt;…&lt;/i&gt;</code></td><td>斜体風。文字を斜めに傾けます</td></tr>
+      <tr><td><code>&lt;color=#RRGGBB&gt;…&lt;/color&gt;</code><br><code>&lt;color=#RRGGBBAA&gt;</code></td><td>色。16 進数で指定します。<b>色</b> と掛け合わされます</td></tr>
+      <tr><td><code>&lt;color=red&gt;</code> など</td><td>名前で色を指定。white、black、red、green、blue、yellow、cyan、magenta、gray（grey）、orange、clear（透明）。大文字でも同じです</td></tr>
+      <tr><td><code>&lt;size=数値&gt;…&lt;/size&gt;</code></td><td>文字の大きさ（1〜2048）。その行の高さも大きくなります</td></tr>
+    </table>
+    </div>
+    <pre><code>HP &lt;color=#FF4040&gt;&lt;b&gt;12&lt;/b&gt;&lt;/color&gt; / 100</code></pre>
+    <ul>
+      <li>知らないタグ（<code>&lt;u&gt;</code> など）や、値が正しくないタグは、タグとして扱わず文字として表示します。</li>
+      <li>タグの閉じ忘れや、閉じる順番の間違い（<code>&lt;b&gt;&lt;i&gt;…&lt;/b&gt;&lt;/i&gt;</code>）があると、文字列全体をタグも含めてそのまま表示します。</li>
+      <li>Rich Text がオフのときは、<code>&lt;</code> を含む文字もそのまま表示します。</li>
+    </ul>
+
+    <h3 id="localization">ローカライズ（言語の切り替え）</h3>
+    <p><b>Localization Key</b> に名前を入れると、言語ごとの文字の表（Localization Table）からその名前の文字を表示します。</p>
+    <ol>
+      <li><b>プロジェクト</b> パネルで右クリックし、<b>Create</b> &gt; <b>Data</b> &gt; <b>Localization Table</b> を選びます。言語「ja」「en」と、例のキー「sample.hello」（こんにちは / Hello）が入った表ができます。</li>
+      <li>できた表を選ぶと、プロジェクトパネルに <b>Localization Table Asset</b> の欄が出ます。ここで表を編集します（下の表）。変更はすぐファイルに保存されます。</li>
+      <li><b>階層</b> で <b>ゲームシーン</b> &gt; <b>ワールド</b> を選び、インスペクターの <b>プロジェクト設定</b> を開いて、<b>Localization</b> の選択欄でその表を選び、<b>既定言語</b> に言語の名前（例：ja）を入れます。</li>
+      <li>Text の <b>Localization Key</b> にキーの名前（例：sample.hello）を入れます。</li>
+    </ol>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Localization Table Asset の項目</th><th>働き</th></tr>
+      <tr><td><b>再読み込み</b></td><td>保存されている表を読み直します</td></tr>
+      <tr><td><b>Languages (comma)</b></td><td>言語の名前をカンマ区切りで並べます（例：<code>ja, en</code>）。最初の言語が、訳の無いときの代わりになります</td></tr>
+      <tr><td><b>New Key</b> と <b>追加</b></td><td>キーを追加します</td></tr>
+      <tr><td>左のキーの一覧</td><td>選んだキーの訳が右に言語ごとの欄で表示され、編集できます</td></tr>
+      <tr><td><b>このKeyを削除</b></td><td>選んでいるキーを消します</td></tr>
+    </table>
+    </div>
+    <p>ゲームの実行中は表を編集できません（「Play 中は Localization Asset を編集できません」）。</p>
+    <h4>文字が見つからないとき</h4>
+    <ol>
+      <li>表にキーが無い：Text の <b>テキスト</b> を表示します。テキストも空なら、キーの名前をそのまま表示します。</li>
+      <li>キーはあるが、今の言語の訳が無い：表の最初の言語の訳を表示します。</li>
+      <li>それも無い：そのキーにある、ほかのどれかの言語の訳を表示します。</li>
+      <li>表が設定されていない、または読めない：<b>テキスト</b>（空ならキーの名前）を表示します。</li>
+    </ol>
+    <p>既定言語が空のときは「ja」になります。ゲーム中に言語を変えるには <a href="ui-controls.html#language-switch">Language Switch</a> を使います。</p>
+
+    <h3 id="number">数値の表示</h3>
+    <p>ほかのコンポーネントの数値を、文字として表示し続けられます。スコアや残り時間の表示に使います。</p>
+    <ol>
+      <li><b>数値の接続元</b> で、数値を持つコンポーネントを選びます。</li>
+      <li><b>数値プロパティ</b> に、そのコンポーネントのプロパティの内部名を入れます（各コンポーネントのページの表の「内部名」）。</li>
+      <li><b>数値書式</b> に <code>{0}</code> を含む文を入れます（例：<code>SCORE {0}</code>）。<b>小数桁</b> で小数点以下の桁数を決めます。</li>
+    </ol>
+    <ul>
+      <li>使えるのは整数、小数、選択（番号として表示）、64 ビット整数のプロパティです。それ以外や、見つからないときは何も変わりません。</li>
+      <li><code>{0</code> から次の <code>}</code> までが数値に置き換わります。<code>{0:0.00}</code> と書いても書式としては読まれず、桁数は <b>小数桁</b>（0〜4）で決まります。</li>
+      <li>表示のたびに <b>テキスト</b> が書き換わります（エディターで編集している間も反映されます）。</li>
+    </ul>
+
+    <h2 id="text-animator">Text Animator</h2>
+    <p>同じ GameObject の Text の文字に、範囲を決めて動きや色の変化を掛けます。コンポーネントを追加での場所は <b>UI &gt; Text Animator</b> です。1 つの GameObject に複数付けられます。</p>
+    <!--PROPS:UITextAnimatorComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>範囲開始</td><td><code>range_start</code></td><td>小数</td><td>0</td><td>0〜1</td><td>アニメーション対象範囲の開始位置を指定します。 文字の並びを 0（最初の文字）〜1（最後の文字）とした、効果を掛け始める位置。</td></tr>
+<tr><td>範囲終了</td><td><code>range_end</code></td><td>小数</td><td>1</td><td>0〜1</td><td>アニメーション対象範囲の終了位置を指定します。 効果を掛け終える位置。開始より小さくても、小さい方から大きい方の範囲として扱います。</td></tr>
+<tr><td>範囲オフセット</td><td><code>range_offset</code></td><td>小数</td><td>0</td><td></td><td>アニメーション対象範囲をずらす量を指定します。 開始と終了の両方に足します。モーションで動かすと、効果が文字の上を流れていきます。範囲の外の文字には効きません。</td></tr>
+<tr><td>範囲形状</td><td><code>range_shape</code></td><td>選択</td><td>矩形</td><td></td><td>アニメーション対象範囲の形状を指定します。 範囲の中での効き方。矩形はずっと 1、上りは始めから終わりへ 0→1、下りは 1→0、三角と丸は真ん中が 1、滑らかは 0→1 をなめらかに変化します。 選択肢：矩形、上り、下り、三角、丸、滑らか</td></tr>
+<tr><td>境界の滑らかさ</td><td><code>range_smoothness</code></td><td>小数</td><td>0</td><td>0〜1</td><td>アニメーション対象範囲の境界を滑らかにする量を指定します。 範囲の両端で効き方を 0 からなめらかに立ち上げます。1 で範囲の半分ずつがなめらかな区間になります。</td></tr>
+<tr><td>位置オフセット</td><td><code>position_offset</code></td><td>2 つの小数</td><td>0, 0</td><td></td><td>アニメーション中の文字位置へ加えるずれを指定します。 効き方に比例して文字を動かします（Canvas 座標）。</td></tr>
+<tr><td>回転 (度)</td><td><code>rotation</code></td><td>小数</td><td>0</td><td></td><td>UI 要素の回転角度を度単位で指定します。 効き方に比例して、文字を 基準点 のまわりに回します。</td></tr>
+<tr><td>拡大率</td><td><code>scale</code></td><td>2 つの小数</td><td>1, 1</td><td></td><td>UI 要素の拡大率を指定します。 効き方に比例して、1 からこの値へ文字を拡大します。</td></tr>
+<tr><td>不透明度</td><td><code>opacity</code></td><td>小数</td><td>1</td><td>0〜1</td><td>表示の不透明度を 0〜1 で指定します。 効き方に比例して、不透明度をこの値へ近づけます。</td></tr>
+<tr><td>色</td><td><code>color</code></td><td>色</td><td>1, 1, 1, 1</td><td></td><td>描画する色を指定します。 効き方に比例して、文字の色をこの色を掛けた色へ近づけます。</td></tr>
+<tr><td>文字間隔</td><td><code>character_spacing</code></td><td>小数</td><td>0</td><td></td><td>文字と文字の間隔を指定します。 文字の番号 × この値 × 効き方だけ右へずらします。後ろの文字ほど大きくずれます。</td></tr>
+<tr><td>乱数の種</td><td><code>random_seed</code></td><td>整数</td><td>0</td><td></td><td>ランダムな配置や回転を再現するための種を指定します。 同じ値なら、毎回同じランダムなずれ方になります。</td></tr>
+<tr><td>ランダム位置</td><td><code>random_position</code></td><td>2 つの小数</td><td>0, 0</td><td></td><td>文字へ加えるランダムな位置ずれを指定します。 文字ごとに −値〜+値 のランダムなずれを、効き方に比例して加えます。</td></tr>
+<tr><td>ランダム回転</td><td><code>random_rotation</code></td><td>小数</td><td>0</td><td></td><td>文字へ加えるランダムな回転量を指定します。 文字ごとに −値〜+値 のランダムな回転を、効き方に比例して加えます。</td></tr>
+<tr><td>基準点</td><td><code>anchor</code></td><td>選択</td><td>中央</td><td></td><td>文字アニメーションの基準点を指定します。 回転と拡大の中心。ベースライン左は文字の左端の上下中央、ベースライン中央は 中央 と同じ、左上は文字の左上、下中央は文字の下端の中央です。 選択肢：中央、ベースライン左、ベースライン中央、左上、下中央</td></tr>
+</table></div>
+<!--/PROPS:UITextAnimatorComponent-->
+
+    <h3 id="influence">効き方の決まり方</h3>
+    <ol>
+      <li>各文字の位置を、<code>(文字の番号 + 0.5) ÷ 文字数</code> で 0〜1 に置きます（Rich Text のタグは数えません）。</li>
+      <li><b>範囲開始</b> ＋ <b>範囲オフセット</b> から <b>範囲終了</b> ＋ <b>範囲オフセット</b> までの外にある文字には、何も起きません。</li>
+      <li>範囲の中では、<b>範囲形状</b> で効き方（0〜1）を決め、<b>境界の滑らかさ</b> で端を弱めます。</li>
+      <li>位置、回転、拡大率、色、不透明度などの値を、効き方に比例して掛けます。</li>
+    </ol>
+    <p>複数の Text Animator があるときは、コンポーネントの並び順に重ねて掛けます。基準点は、最後に効いた Text Animator のものが使われます。</p>
+    <div class="note"><strong>文字が流れる演出</strong><b>範囲形状</b> を <b>三角</b> などにして範囲を狭くし、<b>範囲オフセット</b> をモーションで -1 から 1 まで動かすと、効果が文字の上を左から右へ流れていきます。</div>
+    <p>Text Animator はエディターで編集している間も表示に反映されます。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>背景の上でも読みやすい見出しにする</h3>
+    <ol>
+      <li><a href="../windows/ui-workspace.html">UI Workspace</a> の UI 階層で <b>Text</b> ボタンを押し、<b>テキスト</b> に見出しを入れます。</li>
+      <li><b>文字サイズ</b> を 48 にし、Rect Transform の <b>サイズ差分</b> を文字が入る大きさにします。</li>
+      <li><b>縁取り幅</b> を 3、<b>縁取り色</b> を黒にします（8 より大きくしても見た目は変わりません）。</li>
+      <li>影も付けるときは、<b>影色</b> の A を 0.5 にし、<b>影オフセット</b> を (3, 3) にします。右下に影が出ます。</li>
+    </ol>
+    <h3>スライダーの値を「音量 50」のように表示する</h3>
+    <ol>
+      <li>値を読みたい Slider の <b>最大値</b> を 100、<b>整数のみ</b> をオンにしておきます（<a href="ui-controls.html#slider">Slider</a>）。</li>
+      <li>表示用の Text を作り、<b>数値の接続元</b> にその Slider を指定します。</li>
+      <li><b>数値プロパティ</b> に <code>value</code>（Slider の 値 の内部名）、<b>数値書式</b> に <code>音量 {0}</code>、<b>小数桁</b> に 0 を入れます。</li>
+      <li>スライダーを動かすと、表示が変わることを確かめます。</li>
+    </ol>
+    <h3>日本語と英語を切り替える</h3>
+    <ol>
+      <li>プロジェクト パネルで <b>Create</b> &gt; <b>Data</b> &gt; <b>Localization Table</b> を作ります。</li>
+      <li>表を選び、プロジェクトパネルの Localization Table Asset の欄で、<b>New Key</b> に <code>title.start</code> と入れて <b>追加</b> し、ja に「はじめる」、en に「Start」と入れます。</li>
+      <li>階層 で ゲームシーン &gt; ワールド を選び、インスペクターの プロジェクト設定 の <b>Localization</b> でこの表を選び、既定言語を <code>ja</code> にします。</li>
+      <li>ボタンの文字の Text の <b>Localization Key</b> に <code>title.start</code> を入れます。</li>
+      <li>言語を切り替えるボタンには <a href="ui-controls.html#language-switch">Language Switch</a> を付けます。</li>
+    </ol>
+    <h3>文字の上を光が流れる</h3>
+    <ol>
+      <li>Text と同じ GameObject に <b>コンポーネントを追加</b> &gt; <b>UI</b> &gt; <b>Text Animator</b> を付けます。</li>
+      <li><b>範囲形状</b> を 三角、<b>範囲開始</b> を 0.4、<b>範囲終了</b> を 0.6、<b>色</b> を黄色にします。</li>
+      <li><a href="../windows/motion-workspace.html">モーション</a>で <b>範囲オフセット</b> を -1 から 1 へ動かし、Motion Player の <b>終了処理</b> をループにします。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="ui-layout.html">Canvas と Rect Transform</a></li>
+      <li><a href="../csharp/api-components.html#ui">C# から UIText を操作する</a></li>
+      <li><a href="../data/index.html">データ形式の一覧（.replayloc）</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

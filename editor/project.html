@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>プロジェクトパネル - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
+    <h1>プロジェクトパネル</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>画面下段の <b>プロジェクト</b> タブには、プロジェクトのフォルダとファイル（アセット）が並びます。モデル、シーン、マテリアル、スクリプトなどを探す、作る、名前を変える、移動する、シーンに置く、といった操作をここで行います。</p>
+    <p>下段にタブが見えないときは、<b>Window &gt; Project / Assets</b> か <b>作成 &gt; プロジェクトを開く</b> で表示できます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>モデル、画像、音などの素材を探して、シーンに置きたいとき</li>
+      <li>マテリアル、モーション、スクリプトなど、新しいアセットを作りたいとき（Create）</li>
+      <li>使っていないファイルを片付けたいとき（削除。使っている所があると警告が出ます）</li>
+      <li>エクスプローラーで足したファイルを、エディターに認識させたいとき（Refresh Assets）</li>
+    </ul>
+
+    <h2 id="layout">パネルの並び</h2>
+    <p>上から次の順に並びます。</p>
+    <ol>
+      <li><b>パンくず</b>：<b>Project</b> ボタンの右に、今開いているフォルダまでの道筋が「/」区切りのボタンで並びます。ボタンを押すと、そのフォルダに戻ります。</li>
+      <li><b>操作の行</b>：左から <b>Search Project...</b>（検索欄）、種類の絞り込み（既定は All）、<b>□ グリッド</b>、アイコンの大きさのスライダー（48〜160 px）、<b>Refresh Assets</b> ボタン。</li>
+      <li><b>左：フォルダのツリー</b>。いちばん上が <b>Project</b>（黄色の文字）で、フォルダとファイルが同じツリーに並びます。</li>
+      <li><b>右：今のフォルダの中身</b>。アイコンと名前が並びます。</li>
+      <li><b>Missing Assets (N)</b>：登録されているのにファイルが見つからないアセットがあるときだけ出ます。開くと「[Missing] 名前」とファイルの場所が並びます。</li>
+      <li><b>メッセージ</b>：直前の操作の結果（「resources を更新しました: N件追加」など）。</li>
+    </ol>
+    <p>左のツリーと右の中身の間のすき間をつかんで左右にドラッグすると、ツリーの幅を変えられます（ツリーは 150 ピクセルより狭くなりません）。</p>
+
+    <h2 id="search">探す・絞り込む</h2>
+    <ul>
+      <li><b>Search Project...</b> に文字を入れると、今のフォルダだけでなくプロジェクト全体から、名前にその文字を含むファイルが右側に並びます。英字の大文字と小文字は区別しません。</li>
+      <li>種類の絞り込みで、右側に出すファイルの種類を 1 つに絞れます。フォルダは絞り込みに関係なく表示されます。</li>
+    </ul>
+    <div class="table-wrap">
+    <table>
+      <tr><th>絞り込み</th><th>表示されるもの</th></tr>
+      <tr><td>All</td><td>すべて</td></tr>
+      <tr><td>Model</td><td>モデル（.glb、.gltf など）</td></tr>
+      <tr><td>Prefab</td><td>.replayprefab</td></tr>
+      <tr><td>Scene</td><td>.replayscene</td></tr>
+      <tr><td>Material</td><td>マテリアル</td></tr>
+      <tr><td>Script</td><td>スクリプト</td></tr>
+      <tr><td>Shader</td><td>シェーダー</td></tr>
+      <tr><td>Flow</td><td>Scene Flow</td></tr>
+      <tr><td>Motion</td><td>モーションとコンポジション</td></tr>
+      <tr><td>Font</td><td>フォント</td></tr>
+      <tr><td>Localization</td><td>ローカライズの表</td></tr>
+      <tr><td>EffectPreset</td><td>エフェクトのプリセット</td></tr>
+      <tr><td>Input</td><td>Input Action アセット</td></tr>
+      <tr><td>Other</td><td>上のどれにも当てはまらないもの</td></tr>
+      <tr><td>Easing</td><td>イージングカーブ</td></tr>
+    </table>
+    </div>
+    <p><b>Refresh Assets</b> は、エクスプローラーなどでエンジンの外から resources フォルダにファイルを足したときに押します。新しいファイルが登録され、「resources を更新しました: N件追加」と表示されます。</p>
+
+    <h2 id="contents">右側の表示</h2>
+    <ul>
+      <li><b>□ グリッド</b> にチェックがあると、アイコンが横に並びます。無いと 1 列に並びます。</li>
+      <li>画像ファイルはサムネイルで、それ以外は種類ごとの色の付いたアイコンで表示されます。イージングカーブはカーブの形が描かれます。</li>
+      <li>名前が 18 文字より長いときは、17 文字で切って「..」が付きます。マウスを乗せるとファイルの場所が表示されます。</li>
+      <li>選択中のファイルは名前が黄色になり、インスペクターにそのアセットの情報が出ます。</li>
+      <li>表示できる物が無いフォルダでは「このフォルダには表示できる項目がありません」と表示されます。</li>
+    </ul>
+
+    <h2 id="open">開く（ダブルクリック）</h2>
+    <p>アイコンか名前をダブルクリックすると、種類に応じて次のように開きます。右クリックの <b>開く</b> や、<kbd>Enter</kbd> でも同じです。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>種類</th><th>ダブルクリックしたとき</th></tr>
+      <tr><td>フォルダ</td><td>そのフォルダの中に入ります。</td></tr>
+      <tr><td>C# スクリプト</td><td>Visual Studio で開きます。</td></tr>
+      <tr><td>Scene Flow</td><td>Scene Flow の編集画面で開きます。</td></tr>
+      <tr><td>Motion、Composition</td><td>Motion の編集画面で開きます。</td></tr>
+      <tr><td>Sprite Atlas</td><td>スプライトアトラスの編集画面で開きます。</td></tr>
+      <tr><td>イージングカーブ</td><td>イージングカーブの編集画面で開きます。</td></tr>
+      <tr><td>Shader Composer のアセット</td><td>Shader Composer で開きます。</td></tr>
+      <tr><td>そのほかのシェーダー（.hlsl など）</td><td>Visual Studio で開きます。</td></tr>
+      <tr><td>シーン、マテリアル、画像、音など</td><td>選択するだけです。「Asset を選択しました: （名前）」と表示されます。</td></tr>
+    </table>
+    </div>
+    <div class="note"><strong>シーンはダブルクリックでは開きません</strong>シーンファイルをダブルクリックしても、今のシーンは切り替わりません。シーンを開くには <b>File &gt; Open Scene...</b> か <b>File &gt; Recent Scenes</b> を使います。</div>
+
+    <h2 id="create">作る（Create）</h2>
+    <ol class="steps">
+      <li>右側の何もない場所を右クリックします（ファイルやフォルダの上で右クリックしても、いちばん上に同じ <b>Create</b> があります）。</li>
+      <li><b>Create</b> にマウスを乗せます。「作成先: （フォルダ名）」が表示されるので、作る場所を確かめます。</li>
+      <li><b>名前</b> の欄に名前を入れます。</li>
+      <li>作りたい種類を選びます。</li>
+    </ol>
+    <div class="table-wrap">
+    <table>
+      <tr><th>分類</th><th>項目</th></tr>
+      <tr><td></td><td>Folder（ショートカット <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd>）</td></tr>
+      <tr><td>Script ▶</td><td>C# Script（下に作られる名前空間が表示されます）</td></tr>
+      <tr><td>Animation ▶</td><td>Motion Asset、Motion Composition</td></tr>
+      <tr><td>UI / Presentation ▶</td><td>Sprite Atlas、Effect Preset、イージングカーブ</td></tr>
+      <tr><td>Data ▶</td><td>Material、Scene Flow、Localization Table、Input Action Asset</td></tr>
+      <tr><td>Shader ▶</td><td>Surface Shader、Layer Shader、Shader Composer ▶（Surface、Layer、PostProcess）</td></tr>
+    </table>
+    </div>
+    <p>何もない場所の右クリックメニューには、ほかに <b>エクスプローラーで表示</b>、<b>Project相対パスをコピー</b>、<b>絶対パスをコピー</b> があります。</p>
+
+    <h2 id="item-menu">ファイル・フォルダの右クリックメニュー</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>キー</th><th>働き</th></tr>
+      <tr><td>Create ▶</td><td></td><td>このフォルダ（ファイルならその置き場所）に新しく作ります。</td></tr>
+      <tr><td>このフォルダを開く / 開く</td><td>Enter</td><td>ダブルクリックと同じです。</td></tr>
+      <tr><td>名前を変更</td><td>F2</td><td>名前が入力欄に変わります。<kbd>Enter</kbd> で決定、<kbd>Esc</kbd> で取り消しです。</td></tr>
+      <tr><td>複製</td><td>Ctrl+D</td><td>コピーを作ります。</td></tr>
+      <tr><td>エクスプローラーで表示</td><td></td><td>Windows のエクスプローラーでその場所を開きます。</td></tr>
+      <tr><td>Project相対パスをコピー / 絶対パスをコピー</td><td></td><td>ファイルの場所を文字としてコピーします。</td></tr>
+      <tr><td>Visual Studio で開く</td><td></td><td>C# スクリプトのときだけ出ます。</td></tr>
+      <tr><td>削除</td><td>Backspace / Del</td><td>確認を出してから削除します（次の節）。</td></tr>
+    </table>
+    </div>
+    <p>メニューのいちばん下に、対象のファイル名が薄い文字で表示されます。実行中は、名前を変更・複製・削除は押せません。</p>
+
+    <h2 id="delete">削除</h2>
+    <p>削除を選ぶと <b>Project Asset を削除</b> の確認が出ます。</p>
+    <ul>
+      <li>「ゴミ箱へ移動します: （場所）」</li>
+      <li>そのアセットを使っている物があるときは、橙で「この Asset を参照している項目があります:」と一覧（最大 24 件）</li>
+      <li>フォルダのときは「フォルダ内:」と中身の一覧</li>
+    </ul>
+    <p><b>ゴミ箱へ移動</b> を押すと、ファイルはすぐには消えず、プロジェクト内のゴミ箱に移されます。「Project Trashへ移動しました: （名前）（参照GUIDは保持 / Ctrl+Zで復元）」と表示され、<kbd>Ctrl</kbd>+<kbd>Z</kbd> で元に戻せます。</p>
+
+    <h2 id="drag">ドラッグ＆ドロップ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>つかむ物</th><th>落とす場所</th><th>結果</th></tr>
+      <tr><td>ファイル</td><td>シーンビューのシーンタブ</td><td>マウスの下の位置に、シーンに置きます。</td></tr>
+      <tr><td>ファイル</td><td>階層パネル</td><td>GameObject の行なら子として、何もない場所ならシーン直下に置きます。</td></tr>
+      <tr><td>ファイル・フォルダ</td><td>右側のフォルダのアイコン、または左ツリーの Project</td><td>そのフォルダへ移動します。</td></tr>
+    </table>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>モデルを探してシーンに置く</h3>
+    <ol>
+      <li>種類の絞り込みで <b>Model</b> を選び、Search Project... に名前の一部を入れます。</li>
+      <li>見つかったモデルを、シーンビューのシーンタブへドラッグして離します。マウスの下の位置に置かれます。</li>
+    </ol>
+    <h3>マテリアルを作って物に付ける</h3>
+    <ol>
+      <li>マテリアルを置きたいフォルダの右側の何もない場所を右クリックし、<b>Create</b> にマウスを乗せます。</li>
+      <li><b>名前</b> の欄に名前を入れ、<b>Data</b> &gt; <b>Material</b> を選びます。</li>
+      <li>できたマテリアルを選び、インスペクターで色やシェーダーを決めます。</li>
+      <li>マテリアルを、階層パネルかシーンビューの GameObject の上へドラッグして付けます（<a href="../components/mesh-renderers.html#material">マテリアルを付ける</a>）。</li>
+    </ol>
+    <h3>エクスプローラーで足した画像を使えるようにする</h3>
+    <ol>
+      <li>エクスプローラーで、画像ファイルをプロジェクトの <code>resources</code> の中にコピーします。</li>
+      <li>プロジェクトパネルの <b>Refresh Assets</b> を押します。</li>
+      <li>「resources を更新しました: N件追加」と出て、画像がパネルに表示されます。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="hierarchy.html#asset-drop">階層パネル：アセットを置く</a></li>
+      <li><a href="scene-view.html#drop">シーンビュー：アセットのドラッグ＆ドロップ</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

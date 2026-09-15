@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Canvas と Rect Transform - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / UI</div>
+    <h1>Canvas と Rect Transform</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>ゲーム画面に重ねるメニューや HP ゲージなどの UI は、<b>Canvas</b> を根元にして、その子に Image や Text などを並べて作ります。UI の部品はどれも <b>Rect Transform</b> で、四角い範囲の位置と大きさを決めます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>ゲーム画面に重ねる UI（メニュー、スコア、体力ゲージなど）を作り始めるとき。最初に Canvas を置きます</li>
+      <li>画面の右上や下の端など、決まった場所にくっつけて表示したいとき（アンカー）</li>
+      <li>親の幅いっぱいに広げたいとき（アンカーを範囲にする）</li>
+      <li>画面の大きさが変わっても、UI の見た目の割合を保ちたいとき（スケール方式、基準解像度）</li>
+      <li>3D 空間の中に、看板のように UI を置きたいとき（World Space）</li>
+      <li>UI のまとまりを、まとめて薄くしたり消したりしたいとき（Canvas の不透明度）</li>
+    </ul>
+
+    <h2 id="basics">基本のしくみ</h2>
+    <ul>
+      <li>UI が表示され、クリックなどに反応するのは、<b>Canvas を持つ GameObject の子孫</b> だけです。Canvas の外に置いた Image や Text は表示されません。</li>
+      <li>UI の座標は、画面の <b>左下が原点</b> で、右が +X、上が +Y です。単位は Canvas の基準解像度でのピクセルです。</li>
+      <li>Canvas を付けると、同じ GameObject に Rect Transform も自動で付きます。Image、Text などのコンポーネントも Rect Transform が必要です。</li>
+    </ul>
+
+    <h2 id="create">作る</h2>
+    <ol>
+      <li><b>Window</b> &gt; <b>UI Workspaceへ</b> で UI Workspace に切り替えます（<a href="../editor/workspaces.html">Workspace</a>）。</li>
+      <li><b>UI 階層</b> ウィンドウの上部のボタンで追加します。ボタンは <b>Canvas</b>、<b>Image</b>、<b>Text</b>、<b>Button</b>、<b>Mask</b>、<b>図形</b> などです（ウィンドウが狭いと <b>＋ UIを追加</b> 1 つにまとまります）。</li>
+    </ol>
+    <div class="table-wrap">
+    <table>
+      <tr><th>追加するもの</th><th>作られる内容</th></tr>
+      <tr><td>Canvas</td><td>Canvas と Rect Transform を持つ GameObject。Rect Transform は画面全体に広がる設定（アンカー 0,0〜1,1、サイズ差分 0）</td></tr>
+      <tr><td>Image、Text、Mask</td><td>選んでいる UI の子（UI を選んでいなければ最初の Canvas の子）に作ります。大きさは 160 × 80</td></tr>
+      <tr><td>Button</td><td>Image と Button を持つ 180 × 52 の GameObject と、その子の「Button Text」（文字「Button」、大きさ 24）</td></tr>
+    </table>
+    </div>
+    <p>親にできる Canvas が無いときは、Canvas も自動で作られます。通常の階層パネルの作成メニューには UI の項目はありません。</p>
+
+    <h2 id="rect-transform">Rect Transform</h2>
+    <p>UI 部品の四角い範囲を、親の範囲をもとに決めるコンポーネントです。コンポーネントを追加での場所は <b>UI &gt; Rect Transform</b> です。</p>
+    <!--PROPS:RectTransformComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>アンカー最小</td><td><code>anchor_min</code></td><td>2 つの小数</td><td>0.5, 0.5</td><td></td><td>UI矩形の左下アンカー位置を指定します。 0〜1 の割合（0,0 が親の左下、1,1 が右上）。X と Y それぞれ、アンカー最大と同じなら 1 点、違えば範囲として扱います。</td></tr>
+<tr><td>アンカー最大</td><td><code>anchor_max</code></td><td>2 つの小数</td><td>0.5, 0.5</td><td></td><td>UI矩形の右上アンカー位置を指定します。 0〜1 の割合。アンカー最小と同じ値にすると、大きさはサイズ差分で決まります。</td></tr>
+<tr><td>位置</td><td><code>anchored_position</code></td><td>2 つの小数</td><td>0, 0</td><td></td><td>アンカー基準からの相対位置です。 単位は Canvas の座標（基準解像度でのピクセル）。アンカーが 1 点ならその点からピボットまでのずれです。</td></tr>
+<tr><td>サイズ差分</td><td><code>size_delta</code></td><td>2 つの小数</td><td>100, 100</td><td></td><td>アンカーが一点なら矩形サイズ、範囲なら親サイズとの差分です。</td></tr>
+<tr><td>ピボット</td><td><code>pivot</code></td><td>2 つの小数</td><td>0.5, 0.5</td><td></td><td>回転や拡縮の基準になる UI 要素内の位置を指定します。 0,0 が自分の左下、1,1 が右上。位置の基準点で、回転・拡大の中心にもなります。</td></tr>
+<tr><td>回転 (度)</td><td><code>rotation</code></td><td>小数</td><td>0</td><td></td><td>UI 要素の回転角度を度単位で指定します。 ピボットを中心に回します。プラスの値で反時計回りです。子の範囲の計算には影響しません。</td></tr>
+<tr><td>拡大率</td><td><code>scale</code></td><td>2 つの小数</td><td>1, 1</td><td></td><td>UI 要素の拡大率を指定します。 ピボットを中心に拡大します。子の範囲の計算には影響しません（子へ回転・拡大を伝える がオンのとき、見た目だけ子にもかかります）。</td></tr>
+<tr><td>描画順</td><td><code>sort_order</code></td><td>整数</td><td>0</td><td></td><td>同じ Canvas 内の兄弟 UI の描画順です。値が大きいほど手前に描きます。 同じ親の子どうしだけで比べます。同じ値なら階層の並び順です。</td></tr>
+<tr><td>子へ回転・拡大を伝える</td><td><code>propagate_transform</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、この要素の回転と拡大率を子孫の UI にも掛けます。</td></tr>
+<tr><td>確定矩形</td><td><code>resolved_rect</code></td><td>4 つの小数</td><td></td><td></td><td>UILayout が毎フレーム計算した結果です。Scene には保存しません。 左下の X、左下の Y、幅、高さの順です。 （表示のみ、実行中の値、保存されません、詳細設定）</td></tr>
+</table></div>
+<!--/PROPS:RectTransformComponent-->
+
+    <h3 id="anchor">アンカーと大きさの決まり方</h3>
+    <p><b>アンカー最小</b> と <b>アンカー最大</b> は、親の範囲の中の位置を 0〜1 の割合で表します（0,0 が親の左下、1,1 が右上）。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>アンカーの状態</th><th>位置</th><th>大きさ</th><th>使いどころ</th></tr>
+      <tr><td>最小と最大が同じ（1 点）</td><td>アンカーの点から <b>位置</b> だけずらした所に <b>ピボット</b> が来ます</td><td><b>サイズ差分</b> がそのまま幅と高さ</td><td>決まった大きさのボタンやアイコン</td></tr>
+      <tr><td>最小と最大が違う（範囲）</td><td>アンカーの範囲から <b>位置</b> だけずらします</td><td>アンカーの範囲の大きさ ＋ <b>サイズ差分</b>（マイナスにすると内側に余白）</td><td>親に合わせて伸び縮みする背景や帯</td></tr>
+    </table>
+    </div>
+    <p>X と Y は別々に判定します（差が 0.0001 以下なら同じとみなします）。計算した幅や高さがマイナスになると 0 になります。</p>
+    <pre><code>アンカーが 1 点のとき
+  中心 = 親の左下 + 親の大きさ × アンカー + 位置
+  左下 = 中心 − サイズ差分 × ピボット
+
+アンカーが範囲のとき
+  左下 = アンカー最小の点 + 位置 − サイズ差分 × ピボット
+  右上 = アンカー最大の点 + 位置 + サイズ差分 × (1 − ピボット)</code></pre>
+
+    <h3 id="rotation">回転と拡大率</h3>
+    <ul>
+      <li><b>回転 (度)</b> と <b>拡大率</b> は、決まった範囲の <b>ピボット</b> を中心にかかります。</li>
+      <li>子の範囲は、親の回転や拡大率に関係なく計算されます。親の <b>子へ回転・拡大を伝える</b> をオンにすると、親の回転と拡大率が子孫にもかかります（オフのときは、その要素だけが回転・拡大して見えます）。</li>
+      <li>クリックの判定も、回転と拡大率を反映した形で行われます。</li>
+    </ul>
+
+    <h3 id="order">描画順</h3>
+    <ul>
+      <li>親を描いてから、その子を描きます。</li>
+      <li>同じ親の子どうしは、Rect Transform の <b>描画順</b> が小さい順に描きます（大きいほど手前）。同じ値なら階層の並び順です。</li>
+      <li><b>描画順</b> は兄弟どうしの順番で、別の親の子とは比べません。</li>
+    </ul>
+
+    <h2 id="canvas">Canvas</h2>
+    <p>UI のまとまりの根元です。コンポーネントを追加での場所は <b>UI &gt; Canvas</b> です。</p>
+    <!--PROPS:CanvasComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>基準解像度</td><td><code>reference_resolution</code></td><td>2 つの小数</td><td>1920, 1080</td><td></td><td>Canvas が基準にする画面解像度を指定します。 スケール方式が「画面サイズに合わせる」のときの基準の画面の大きさ。World Space では板の縦横比にも使います。0 以下の値は 1920 × 1080 として扱います。</td></tr>
+<tr><td>描画モード</td><td><code>render_mode</code></td><td>選択</td><td>Screen Space Overlay</td><td></td><td>Canvas を画面へ重ねるかワールド空間へ置くかを指定します。 World Space では Canvas の GameObject の位置・回転・拡大率で 3D 空間に置きます。 選択肢：Screen Space Overlay、World Space</td></tr>
+<tr><td>スケール方式</td><td><code>scale_mode</code></td><td>選択</td><td>画面サイズに合わせる</td><td></td><td>画面サイズに対する Canvas の拡縮方法を指定します。 固定ピクセルは倍率 1。画面サイズに合わせるは基準解像度との比で倍率を決めます。 選択肢：固定ピクセル、画面サイズに合わせる</td></tr>
+<tr><td>幅/高さの一致</td><td><code>match_width_or_height</code></td><td>小数</td><td>0.5</td><td>0〜1</td><td>Canvas の基準解像度を幅と高さのどちらへ合わせるかを指定します。 0 で幅の比、1 で高さの比に合わせます。スケール方式が「画面サイズに合わせる」のときだけ使います。</td></tr>
+<tr><td>描画順</td><td><code>sort_order</code></td><td>整数</td><td>0</td><td></td><td>同じ Canvas 内の描画順を指定します。値が大きいほど手前に描きます。 実際には Canvas どうしの順番です。大きいほど手前に描かれ、クリックも手前の Canvas が先に受け取ります。</td></tr>
+<tr><td>不透明度</td><td><code>opacity</code></td><td>小数</td><td>1</td><td>0〜1</td><td>表示の不透明度を 0〜1 で指定します。 中のすべての UI に掛かります。Canvas の中の Canvas は、両方の値が掛け合わされます。</td></tr>
+</table></div>
+<!--/PROPS:CanvasComponent-->
+
+    <h3 id="render-mode">描画モード</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>選択肢</th><th>表示のしかた</th></tr>
+      <tr><td>Screen Space Overlay</td><td>画面にそのまま重ねます。Canvas の GameObject の位置や回転は使いません</td></tr>
+      <tr><td>World Space</td><td>Canvas の GameObject の位置・回転・拡大率で、3D 空間の中の板として置き、カメラから見た位置に描きます。板の大きさは高さ 1、幅は「基準解像度の幅 ÷ 高さ」です。有効なカメラが無いと描かれず、コンソールに「カメラが無いためワールド空間 Canvas を配置できません」と出ます</td></tr>
+    </table>
+    </div>
+
+    <h3 id="scale">スケール方式と基準解像度</h3>
+    <p>Canvas の中で使う座標の広さは「画面の大きさ ÷ 倍率」です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>スケール方式</th><th>倍率</th></tr>
+      <tr><td>固定ピクセル</td><td>いつも 1。画面が大きくなると、UI は相対的に小さく見えます</td></tr>
+      <tr><td>画面サイズに合わせる</td><td>基準解像度に対する画面の大きさの比。<b>幅/高さの一致</b> が 0 なら幅の比、1 なら高さの比、その間は両方を混ぜた値（対数で補間）</td></tr>
+    </table>
+    </div>
+    <pre><code>倍率 = 2 ^ ( log2(画面の幅 ÷ 基準の幅) × (1 − 一致) + log2(画面の高さ ÷ 基準の高さ) × 一致 )</code></pre>
+    <p>基準解像度の幅や高さが 0 以下のときは、1920 × 1080 として計算します。</p>
+
+    <h3 id="multiple">Canvas が複数あるとき</h3>
+    <ul>
+      <li>Canvas の <b>描画順</b> が小さいものから描きます（大きいほど手前）。同じ値ならシーンの並び順です。</li>
+      <li>クリックなどの判定は手前の Canvas から行います。</li>
+      <li>Canvas の <b>不透明度</b> は、その中のすべての UI にかかります。Canvas の中に別の Canvas があると、両方の不透明度が掛け合わされます。</li>
+      <li>GameObject が非アクティブ、または Canvas が無効の Canvas は描かれません。</li>
+    </ul>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>画面の右上にスコアを置く</h3>
+    <ol>
+      <li><a href="../windows/ui-workspace.html">UI Workspace</a> で Canvas を選び、UI 階層の <b>Text</b> ボタンで Text を作ります。</li>
+      <li>Text の Rect Transform を、<b>アンカー最小</b> (1, 1)、<b>アンカー最大</b> (1, 1)、<b>ピボット</b> (1, 1) にします。親（Canvas）の右上の点を基準にし、自分の右上の角をそこに合わせる設定です。</li>
+      <li><b>位置</b> を (-20, -20) にすると、右上から左へ 20、下へ 20 離れます。<b>サイズ差分</b> を (300, 60) にして文字が入る大きさにします。</li>
+      <li>シーンビュー上部の解像度を変えても、右上に付いたままになることを確かめます。</li>
+    </ol>
+    <h3>画面の下に横いっぱいの帯を敷く</h3>
+    <ol>
+      <li>Canvas を選び、UI 階層の <b>Image</b> &gt; <b>通常のImageを追加</b> で Image を作ります。</li>
+      <li>Rect Transform を、<b>アンカー最小</b> (0, 0)、<b>アンカー最大</b> (1, 0)、<b>ピボット</b> (0.5, 0) にします。横は親の幅に合わせて伸び、縦は下の辺に付きます。</li>
+      <li><b>位置</b> を (0, 0)、<b>サイズ差分</b> を (0, 120) にします。高さ 120 の帯になります。</li>
+      <li>左右に 20 ずつ余白を空けたいときは、<b>サイズ差分</b> の X を -40 にします。</li>
+    </ol>
+    <h3>画面の大きさが違っても同じ割合で見せる</h3>
+    <ol>
+      <li>Canvas を選び、<b>スケール方式</b> を「画面サイズに合わせる」（既定）にします。</li>
+      <li><b>基準解像度</b> に、UI を作るときに想定する画面の大きさ（例：1920 × 1080）を入れます。</li>
+      <li><b>幅/高さの一致</b> を決めます。横に長い画面で、縦方向の配置を崩したくないときは 1（高さに合わせる）、縦に長い画面が中心なら 0（幅に合わせる）が目安です。</li>
+      <li>UI Workspace のシーンビューで解像度を切り替えて確かめます。</li>
+    </ol>
+    <h3>3D 空間に看板を置く</h3>
+    <ol>
+      <li>Canvas の <b>描画モード</b> を World Space にします。</li>
+      <li>Canvas の GameObject の Transform の <b>位置</b>、<b>回転 (度)</b>、<b>拡大率</b> で、看板を置く場所と大きさを決めます。板は高さ 1 で、幅は基準解像度の縦横比で決まります。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../editor/workspaces.html">Workspace</a></li>
+      <li><a href="../csharp/api-components.html#ui">C# から UI を操作する</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

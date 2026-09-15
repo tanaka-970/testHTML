@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Motion Player と Composition Player - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Motion</div>
+    <h1>Motion Player と Composition Player</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>Motion Workspace で作ったモーション（位置・色・不透明度などを時間で動かすデータ）を、ゲームの中で再生するコンポーネントです。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>コンポーネント</th><th>再生するもの</th><th>コンポーネントを追加での場所</th></tr>
+      <tr><td>Motion Player</td><td>1 つのモーション（<code>.replaymotion</code>）</td><td>Motion &gt; Motion Player</td></tr>
+      <tr><td>Composition Player</td><td>複数のモーションを並べたコンポジション（<code>.replaycomp</code>）</td><td>Motion &gt; Composition Player</td></tr>
+    </table>
+    </div>
+    <p>どちらも<b>ゲームの実行中だけ</b>再生されます。エディターでの確認は Motion Workspace のプレビューで行います。骨で動くモデルのアニメーションには <a href="animator.html">Animator</a> を使います。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>Motion Workspace で作った動きを、ゲームの中で再生したいとき（Motion Player）</li>
+      <li>ボタンが押された、状態が変わった、などのきっかけで動きを始めたいとき（きっかけ）</li>
+      <li>同じ動きを、少しずつずらしていくつもの物で再生したいとき（開始時刻のばらつき）</li>
+      <li>複数のモーションをまとめたコンポジションを再生したいとき（Composition Player）</li>
+    </ul>
+
+    <h2 id="motion-player">Motion Player</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>Motion Asset</td><td><code>motion</code></td><td>アセット（モーション）</td><td>（空）</td><td></td><td>再生するモーション</td></tr>
+      <tr><td>キー</td><td><code>key</code></td><td>文字</td><td>（空）</td><td></td><td>この Motion Player を見分ける名前。1 つの GameObject に複数あるとき、C# スクリプトで名前を指定して探すのに使います。終了のイベントにも入ります</td></tr>
+      <tr><td>開始時に再生</td><td><code>play_on_start</code></td><td>オン・オフ</td><td>オン</td><td></td><td><b>きっかけ</b> が <b>開始時</b> のとき、ゲームの開始時に再生するかどうか</td></tr>
+      <tr><td>きっかけ</td><td><code>trigger</code></td><td>選択</td><td>開始時</td><td></td><td>再生を始めるきっかけ（<a href="#triggers">下の表</a>）</td></tr>
+      <tr><td>開始を遅らせる秒数</td><td><code>trigger_delay</code></td><td>小数</td><td>0</td><td>0〜10</td><td>きっかけを受けてから再生を始めるまでの秒数。待っている間、それまで再生していたモーションは止まります</td></tr>
+      <tr><td>対象</td><td><code>trigger_source</code></td><td>コンポーネントの参照</td><td>（未設定）</td><td></td><td>きっかけを見張る相手。未設定なら、この Motion Player と同じ GameObject です</td></tr>
+      <tr><td>対象の状態</td><td><code>trigger_state</code></td><td>文字</td><td>（空）</td><td></td><td>きっかけが <b>状態が変わった</b> のとき、この名前の状態になったときだけ再生します。空ならどの状態でも再生します</td></tr>
+      <tr><td>ループ (旧)</td><td><code>loop</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>以前のシーンのための項目。オンにすると <b>終了処理</b> に関係なくループします</td></tr>
+      <tr><td>終了処理</td><td><code>wrap_mode</code></td><td>選択</td><td>一回</td><td></td><td>最後まで再生したときの動き（<a href="#wrap">下の表</a>）</td></tr>
+      <tr><td>終了時に停止</td><td><code>auto_stop_on_end</code></td><td>オン・オフ</td><td>オフ</td><td></td><td><b>終了処理</b> が <b>一回</b> のとき、最後まで再生したら停止します。停止すると、動かした値は再生前の値に戻ります</td></tr>
+      <tr><td>Time Scaleを無視</td><td><code>ignore_time_scale</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、ゲームの時間の速さ（一時停止中を含む）に関係なく進みます。ポーズメニューの演出などに使います</td></tr>
+      <tr><td>Blend In 秒</td><td><code>blend_in_seconds</code></td><td>小数</td><td>0</td><td>0〜30</td><td>再生開始から、この秒数をかけて、再生前の値からモーションの値へなめらかに移ります</td></tr>
+      <tr><td>再生速度</td><td><code>speed</code></td><td>小数</td><td>1</td><td>-8〜8</td><td>再生の速さの倍率。マイナスで逆再生します</td></tr>
+      <tr><td>乱数の種</td><td><code>random_seed</code></td><td>整数</td><td>0</td><td></td><td>下の 2 つのばらつきの決め方。0 なら再生のたびに変わります。0 以外なら、同じ GameObject では毎回同じばらつきになります</td></tr>
+      <tr><td>開始時刻のばらつき</td><td><code>time_offset_random</code></td><td>小数</td><td>0</td><td>0〜10</td><td>再生を始める位置を、この秒数の範囲で前後にずらします。同じモーションを付けた物を少しずつずらして動かすときに使います</td></tr>
+      <tr><td>速度のばらつき</td><td><code>speed_random</code></td><td>小数</td><td>0</td><td>0〜1</td><td>再生速度を、この割合の範囲で速くしたり遅くしたりします（0.2 なら 0.8〜1.2 倍）</td></tr>
+      <tr><td>重み</td><td><code>weight</code></td><td>小数</td><td>1</td><td>0〜1</td><td>ほかの Motion Player と同じ値を動かすときの混ぜる割合。0 なら何も動かしません</td></tr>
+      <tr><td>再生状態</td><td><code>state</code></td><td>選択（読み取り専用）</td><td></td><td></td><td>停止、再生、一時停止。実行中だけ変わり、保存されません</td></tr>
+      <tr><td>現在時刻</td><td><code>time</code></td><td>小数（秒）</td><td></td><td></td><td>今の再生位置。実行中に書き込むと、その位置へ移ります（モーションの長さの範囲に収めます）。保存されません</td></tr>
+    </table>
+    </div>
+
+    <h3 id="triggers">きっかけ</h3>
+    <p>「対象」は、<b>対象</b> を設定していればその GameObject、未設定ならこの Motion Player の GameObject です。どのきっかけでも、再生はモーションの最初から始まります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>きっかけ</th><th>再生するとき</th></tr>
+      <tr><td>開始時</td><td>ゲームの開始時（<b>開始時に再生</b> がオンのとき）</td></tr>
+      <tr><td>押された</td><td>対象の <a href="index.html#ui">Button</a> が押された状態になったとき</td></tr>
+      <tr><td>離された</td><td>対象の Button が押された状態から離されたとき</td></tr>
+      <tr><td>カーソルが乗った</td><td>対象の Button にマウスカーソルが乗ったとき</td></tr>
+      <tr><td>カーソルが外れた</td><td>対象の Button からマウスカーソルが外れたとき（押したことで外れた扱いになる場合を除く）</td></tr>
+      <tr><td>有効になった</td><td>この Motion Player が有効になったとき</td></tr>
+      <tr><td>無効になった</td><td>この Motion Player が無効になったとき</td></tr>
+      <tr><td>シーン遷移の開始</td><td>シーンの読み込みが始まったとき</td></tr>
+      <tr><td>シーン遷移の完了</td><td>シーンの読み込みが終わったとき</td></tr>
+      <tr><td>イベントを受け取った</td><td>対象からモーションのイベントが送られたとき。<b>対象</b> を設定しているときは、対象へ向けて送られたイベントでも再生します</td></tr>
+      <tr><td>手動のみ</td><td>C# スクリプトなどから再生を指示したときだけ</td></tr>
+      <tr><td>状態が変わった</td><td>対象の <a href="state.html">State</a> の状態が変わったとき（<b>対象の状態</b> を入れたときは、その状態になったときだけ）</td></tr>
+    </table>
+    </div>
+
+    <h3 id="wrap">終了処理</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>終了処理</th><th>最後まで再生したとき</th></tr>
+      <tr><td>一回</td><td>最後の位置で止まった状態になります。<b>終了時に停止</b> がオンなら停止し、値は再生前に戻ります</td></tr>
+      <tr><td>ループ</td><td>最初に戻って繰り返します</td></tr>
+      <tr><td>ピンポン</td><td>折り返して逆向きに再生し、往復を繰り返します</td></tr>
+      <tr><td>最後で保持</td><td>最後の値のまま保ちます（停止しません）</td></tr>
+    </table>
+    </div>
+    <p>停止したとき（<b>終了時に停止</b> による停止を含む）と、<b>一回</b> で最後に着いたときに、<b>MotionFinished</b> というイベントが送られます。イベントには、モーションの名前、<b>キー</b>、終わった時刻が入ります。</p>
+
+    <h3 id="stop">停止と値</h3>
+    <ul>
+      <li>再生を始めたときに、モーションが動かす値を覚えておきます。停止すると、覚えておいた値に戻ります。</li>
+      <li>複数の Motion Player が同じ値を動かしているときは、<b>重み</b> に応じて混ぜた値になります。</li>
+    </ul>
+
+    <h2 id="composition-player">Composition Player</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>Composition</td><td><code>composition</code></td><td>アセット（コンポジション）</td><td>（空）</td><td></td><td>再生するコンポジション</td></tr>
+      <tr><td>キー</td><td><code>key</code></td><td>文字</td><td>（空）</td><td></td><td>この Composition Player を見分ける名前。終了のイベントに入ります</td></tr>
+      <tr><td>開始時に再生</td><td><code>play_on_start</code></td><td>オン・オフ</td><td>オン</td><td></td><td>ゲームの開始時に再生します。止まっているときに有効になった場合も、最初から再生します</td></tr>
+      <tr><td>State変更で再生</td><td><code>play_on_state_change</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>State の状態が変わったときに、最初から再生します</td></tr>
+      <tr><td>State 対象</td><td><code>state_source</code></td><td>コンポーネントの参照</td><td>（未設定）</td><td></td><td>見張る State。未設定なら同じ GameObject の State です</td></tr>
+      <tr><td>State 名</td><td><code>state_name</code></td><td>文字</td><td>（空）</td><td></td><td>この名前の状態になったときだけ再生します。空ならどの状態でも再生します</td></tr>
+      <tr><td>ループ</td><td><code>loop</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>最後まで再生したら最初から繰り返します</td></tr>
+      <tr><td>Time Scaleを無視</td><td><code>ignore_time_scale</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>Motion Player と同じ</td></tr>
+      <tr><td>終了位置を保持</td><td><code>hold_on_end</code></td><td>オン・オフ</td><td>オン</td><td></td><td>ループしないとき、最後まで再生したら、オンなら最後の値のまま一時停止、オフなら停止します</td></tr>
+      <tr><td>再生速度</td><td><code>speed</code></td><td>小数</td><td>1</td><td>-8〜8</td><td>再生の速さの倍率。マイナスで逆再生します</td></tr>
+      <tr><td>重み</td><td><code>weight</code></td><td>小数</td><td>1</td><td>0〜1</td><td>ほかの再生と混ぜる割合</td></tr>
+      <tr><td>再生状態</td><td><code>state</code></td><td>選択（読み取り専用）</td><td></td><td></td><td>停止、再生、一時停止。保存されません</td></tr>
+      <tr><td>現在時刻</td><td><code>time</code></td><td>小数（秒）</td><td></td><td></td><td>今の再生位置。保存されません</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li>最後に着いて止まったとき（一時停止を含む）に、<b>MotionFinished</b> イベントが送られます。</li>
+      <li>Motion Player と違い、停止しても値は再生前に戻りません。</li>
+    </ul>
+
+    <h2 id="usage">使い方</h2>
+    <h3>ボタンを押したら拡大する演出</h3>
+    <ol class="steps">
+      <li>Motion Workspace で、ボタンの拡大率を大きくしてから戻すモーションを作ります。</li>
+      <li>ボタンの GameObject に <b>コンポーネントを追加 &gt; Motion &gt; Motion Player</b> を付けます。</li>
+      <li><b>Motion Asset</b> に作ったモーションを指定し、<b>きっかけ</b> を <b>押された</b> にします。</li>
+      <li>ゲームを実行してボタンを押すと、モーションが再生されます。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="state.html">State</a></li>
+      <li><a href="property-link.html">Property Link</a></li>
+      <li><a href="animator.html">Animator</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

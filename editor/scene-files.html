@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>シーンを作る・開く・保存する - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
+    <h1>シーンを作る・開く・保存する</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>シーンは、GameObject とその設定をまとめて保存したファイル（<code>.replayscene</code>）です。このページでは、シーンの新規作成、開く、保存、保存していない変更の扱い、自動保存からの復旧を説明します。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>新しいステージを作り始めるとき（New Default Scene、New Empty Scene）</li>
+      <li>作業を保存して、あとで続きをするとき（Save）</li>
+      <li>今のシーンをもとに、別のシーンを作りたいとき（Save As...）</li>
+      <li>エディターが途中で落ちたあと、作業を取り戻したいとき（自動保存からの復旧）</li>
+    </ul>
+
+    <h2 id="title">今のシーンの名前と未保存の印</h2>
+    <p>階層パネルの <b>GameObject</b> の見出しの下に、今のシーンの名前が表示されます。</p>
+    <ul>
+      <li>一度も保存していないシーンは <b>(未保存のシーン)</b> と表示されます。</li>
+      <li>保存していない変更があると、名前の最後に <b>*</b> が付きます。</li>
+    </ul>
+
+    <h2 id="new">新しいシーンを作る</h2>
+    <p><b>File</b> メニューから選びます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>作られるシーン</th></tr>
+      <tr><td>New Empty Scene</td><td>何も入っていないシーン。GameObject もライトもありません。ライトが無いため、オブジェクトを置いてもほとんど真っ暗に見えます。</td></tr>
+      <tr><td>New Default Scene</td><td>地形の地面「Ground」と太陽のライト「Sun」が入ったシーン。プロジェクト設定で既定の操作キャラクター Prefab を決めていれば、それも置かれ、操作対象になります。</td></tr>
+    </table>
+    </div>
+    <p>作ったシーンは「未保存」の状態から始まります。<b>Save</b> か <b>Save As...</b> を選ぶまで、ファイルは作られず、既存のシーンファイルが上書きされることもありません。</p>
+
+    <h2 id="open">シーンを開く</h2>
+    <ol class="steps">
+      <li><b>File &gt; Open Scene...</b> を選びます。</li>
+      <li><b>Open RePlayEngine Scene</b> という Windows のファイル選択画面が開きます。ファイルの種類は「RePlayEngine Scene (*.replayscene)」と「All Files (*.*)」から選べます。</li>
+      <li>シーンファイルを選んで開きます。</li>
+    </ol>
+    <p>最近開いたシーンは <b>File &gt; Recent Scenes</b> からも開けます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>結果</th><th>表示</th></tr>
+      <tr><td>開けた</td><td>「読み込みました: （ファイル名）」。読み込み中に問題があったときは後ろに「（警告 N 件）」が付きます。</td></tr>
+      <tr><td>ファイル選択画面を閉じた</td><td>「読み込みをキャンセルしました」</td></tr>
+      <tr><td>開けなかった（壊れている、古い形式など）</td><td>「読み込めませんでした: （理由）」。今開いているシーンはそのまま残ります。</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li>今のシーンに保存していない変更があると、開く前に<a href="#unsaved">未保存のシーン</a>の確認が出ます。</li>
+      <li>ゲームを実行中に別のシーンを開くと、実行は止まります。</li>
+      <li>シーンビューのカメラの位置は、シーンごとに覚えています。前に開いたことのあるシーンは、そのときの視点から始まります。</li>
+    </ul>
+
+    <h2 id="save">保存する</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>操作</th><th>働き</th></tr>
+      <tr><td><b>File &gt; Save</b>（<kbd>Ctrl</kbd>+<kbd>S</kbd>）</td><td>今のファイルに上書きします。まだ一度も保存していないシーンでは、保存先を選ぶ画面が開きます。</td></tr>
+      <tr><td><b>File &gt; Save As...</b>（<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>）</td><td>保存先と名前を選んで保存します。</td></tr>
+    </table>
+    </div>
+    <p>保存先を選ぶ画面は <b>Save RePlayEngine Scene</b> です。拡張子を付けずに名前を入れると <code>.replayscene</code> が付きます。同じ名前のファイルがあると、上書きしてよいかを Windows が確認します。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>結果</th><th>表示</th></tr>
+      <tr><td>保存できた</td><td>「保存しました: （ファイル名）」。名前の最後の <b>*</b> が消え、Recent Scenes に加わります。</td></tr>
+      <tr><td>保存先を選ぶ画面を閉じた</td><td>「保存をキャンセルしました」</td></tr>
+      <tr><td>保存できなかった</td><td>「保存に失敗しました: （理由）」</td></tr>
+      <tr><td>ゲームを実行中</td><td>「実行中はシーンを保存できません」（保存されません）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="unsaved">未保存のシーンの確認</h2>
+    <p>保存していない変更があるときに、次の操作をすると確認が出ます。</p>
+    <ul>
+      <li>New Empty Scene / New Default Scene</li>
+      <li>Open Scene... / Recent Scenes で別のシーンを開く</li>
+      <li>エディターを終了する（File &gt; Exit やウィンドウを閉じる）</li>
+    </ul>
+    <p>確認の画面 <b>未保存のシーン</b> には、「現在のシーンには未保存の変更があります。」、シーン名、「保存してから続行しますか？」（終了のときは「保存してから終了しますか？」）が表示され、下にボタンが並びます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ボタン（終了のとき）</th><th>押したとき</th></tr>
+      <tr><td>保存して続行（保存して終了）</td><td>今のシーンを上書き保存してから、操作を続けます。</td></tr>
+      <tr><td>別名で保存</td><td>保存先を選んで保存してから、操作を続けます。</td></tr>
+      <tr><td>破棄して続行（破棄して終了）</td><td>変更を保存せずに捨て、自動保存のファイルも消してから、操作を続けます。</td></tr>
+      <tr><td>キャンセル</td><td>何もせずに編集に戻ります。<kbd>Esc</kbd> で閉じたときも同じです。</td></tr>
+    </table>
+    </div>
+    <div class="note"><strong>保存に失敗したとき</strong>保存に失敗すると、確認の画面は閉じずに、赤い文字で「保存できませんでした」と理由、「別名で保存するか、破棄して終了を選んでください。」が表示されます。</div>
+
+    <h2 id="autosave">自動保存</h2>
+    <p>保存していない変更があり、ゲームを実行していない間は、60 秒ごとに自動でシーンの控えが保存されます。控えは元のシーンファイルとは別の場所に保存されるので、元のファイルは変わりません。</p>
+    <ul>
+      <li>保存場所：<code>Saved/Autosave/（シーン名）_（数字）.autosave.replayscene</code>（一度も保存していないシーンは「Untitled」という名前）</li>
+      <li>自分で保存したとき、または確認画面で破棄したときは、控えは消されます。</li>
+    </ul>
+
+    <h2 id="recovery">自動保存からの復旧</h2>
+    <p>シーンを開いたときに、そのシーンファイルより新しい自動保存の控えがあると（エディターが途中で落ちたときなど）、<b>Scene Recovery</b> の確認が出ます。</p>
+    <p>「A newer autosave was found.」の下に、元のシーンのファイル（Scene）と控えのファイル（Autosave）の場所、控えの中身（「Version N / M GameObjects」）が表示されます。控えが読めないときは、その理由が赤い文字で表示されます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ボタン</th><th>押したとき</th></tr>
+      <tr><td>Recover</td><td>控えの内容で今のシーンを置き換えます。「Autosaveを復旧しました。Saveで本Sceneへ反映してください」と表示されます。この時点では元のファイルは変わっていないので、残したいときは Save してください。控えが読めないときは押しても何も起きません。</td></tr>
+      <tr><td>Keep for later</td><td>控えを残したまま閉じます。「Autosaveを保持しました」と表示されます。</td></tr>
+      <tr><td>Discard</td><td>控えを削除します。「Autosaveを破棄しました」と表示されます。</td></tr>
+    </table>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>新しいステージを作って保存する</h3>
+    <ol>
+      <li><b>File</b> &gt; <b>New Default Scene</b> を選びます。地面と太陽のライトが入ったシーンができます。</li>
+      <li>物を置いてステージを作ります。</li>
+      <li>Ctrl+S を押します。まだ保存していないシーンなので、保存先を選ぶ画面が開きます。</li>
+      <li>プロジェクトの <code>resources</code> の中のシーン用のフォルダーを選び、名前を入れて保存します。階層パネルのシーン名が保存した名前になります。</li>
+    </ol>
+    <p>ゲームとして書き出すときの最初のシーンは <code>resources</code> の中にある必要があります（<a href="../windows/export-game.html">ゲームを書き出す</a>）。</p>
+    <h3>今のシーンを写して別のステージにする</h3>
+    <ol>
+      <li>元にしたいシーンを開きます。</li>
+      <li><b>File</b> &gt; <b>Save As...</b>（Ctrl+Shift+S）で、新しい名前を付けて保存します。</li>
+      <li>これからの編集は、新しい名前のファイルに対して行われます。元のシーンは変わりません。</li>
+    </ol>
+    <h3>落ちたあとに作業を取り戻す</h3>
+    <ol>
+      <li>エディターを起動し、作業していたシーンを開きます。</li>
+      <li>「A newer autosave was found.」の画面が出たら、<b>Recover</b> を押します。</li>
+      <li>中身を確かめ、Ctrl+S で本来のシーンファイルに保存します。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="menu-bar.html#file">メニューバー：File</a></li>
+      <li><a href="play-mode.html">ゲームを実行する</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

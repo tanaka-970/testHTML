@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>ショートカット一覧 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
+    <h1>ショートカット一覧</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>エディターで使えるキーボードショートカットの一覧です。表のキーは、キー割り当てを変えていないときの既定の割り当てです。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>保存、元に戻す、実行など、よく使う操作をキーだけで素早く行いたいとき</li>
+      <li>使い慣れたキーに、割り当てを変えたいとき（キー割り当て）</li>
+      <li>Delete を押したら思わぬ物が消えた、など、キーがどこに効くかを確かめたいとき</li>
+    </ul>
+
+    <h2 id="rules">共通のきまり</h2>
+    <ul>
+      <li>保存、名前を付けて保存、元に戻す、やり直し、複製、コピー、貼り付け、新規フォルダー、ギズモの切り替え、<kbd>Delete</kbd>・<kbd>Backspace</kbd>・<kbd>Enter</kbd> は、文字の入力欄に入力している間は効きません（文字の入力が優先されます）。</li>
+      <li>一方、<kbd>F1</kbd>〜<kbd>F5</kbd>、<kbd>Shift</kbd>+<kbd>F5</kbd>、<kbd>F11</kbd>、<kbd>F2</kbd>、<kbd>Ctrl</kbd>+<kbd>F2</kbd>、<kbd>Ctrl</kbd>+<kbd>F</kbd> は、入力欄に入力している間も効きます。</li>
+      <li>シーンビューの上にマウスがあり、シーン内の UI の入力欄（Input Field）に入力しているときも、上の 1 つ目のショートカットは効きません。</li>
+      <li>ツールバーの Search...（機能検索）に入力している間は、<kbd>Ctrl</kbd>+<kbd>F</kbd> 以外のキーは検索欄への入力になります。</li>
+      <li>キーを押し続けたときの連続入力では、同じ操作は繰り返されません。</li>
+    </ul>
+
+    <h2 id="editor">エディター全体</h2>
+    <p>キー割り当てウィンドウでは <b>Editor</b> の分類に並ぶショートカットです。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>既定のキー</th><th>働き</th></tr>
+      <tr><td>保存</td><td><kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>シーンを保存します。Motion Workspace でモーションを開いているときは、モーションを保存します。</td></tr>
+      <tr><td>名前を付けて保存</td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd></td><td>保存先を選んでシーンを保存します。</td></tr>
+      <tr><td>元に戻す</td><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>直前の操作を取り消します。</td></tr>
+      <tr><td>やり直し</td><td><kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>取り消した操作をやり直します。</td></tr>
+      <tr><td>複製</td><td><kbd>Ctrl</kbd>+<kbd>D</kbd></td><td>プロジェクトパネルを選んでいてファイルを選択しているときは、そのファイルを複製します。それ以外では、選択中の GameObject を複製します。Motion Workspace では GameObject は複製されません。</td></tr>
+      <tr><td>コピー</td><td><kbd>Ctrl</kbd>+<kbd>C</kbd></td><td>選択中の GameObject をコピーし、「GameObject をコピーしました」と表示します。子もまとめてコピーされます。親と子を両方選んでいるときは、親の側だけがコピーされます（子が 2 回入ることはありません）。一度にコピーできるのは 100,000 個までです。プロジェクトパネルを選んでいるときと、Motion Workspace では GameObject はコピーされません。ゲームの実行中もコピーはできます。</td></tr>
+      <tr><td>貼り付け</td><td><kbd>Ctrl</kbd>+<kbd>V</kbd></td><td>コピーした GameObject を貼り付けます。GameObject を選択していれば、最初に選んだものの子として貼り付けます。名前の末尾には「 コピー」が付き、同じ名前があるときは重ならない名前になります。貼り付けたものが選択され、「（数） 個を貼り付けました」と表示されます。ゲームの実行中は貼り付けられず、「停止してから貼り付けてください。」と表示されます。プロジェクトパネルを選んでいるときと、Motion Workspace では GameObject は貼り付けられません。</td></tr>
+      <tr><td>新規フォルダー</td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd></td><td>プロジェクトパネルを選んでいるとき、今のフォルダに「New Folder」を作り、すぐ名前の変更を始めます。</td></tr>
+      <tr><td>検索</td><td><kbd>Ctrl</kbd>+<kbd>F</kbd></td><td>ツールバーの Search...（機能検索）に入力できる状態にします。</td></tr>
+      <tr><td>移動ギズモ</td><td><kbd>Shift</kbd>+<kbd>W</kbd></td><td>ギズモを Move にします。GameObject を選択しているときだけ効きます。</td></tr>
+      <tr><td>回転ギズモ</td><td><kbd>Shift</kbd>+<kbd>E</kbd></td><td>ギズモを Rotate にします。条件は同上です。</td></tr>
+      <tr><td>拡縮ギズモ</td><td><kbd>Shift</kbd>+<kbd>R</kbd></td><td>ギズモを Scale にします。条件は同上です。</td></tr>
+      <tr><td>名前変更</td><td><kbd>F2</kbd></td><td>プロジェクトパネルを選んでいてファイルを選択しているときは、そのファイルの名前変更を始めます。GameObject を選択しているときは、その GameObject の名前変更を始めます。</td></tr>
+      <tr><td>描画出力切り替え</td><td><kbd>Ctrl</kbd>+<kbd>F2</kbd></td><td>画面に出す描画結果（描画の途中段階）を順番に切り替えます。</td></tr>
+      <tr><td>エディタ表示</td><td><kbd>F1</kbd></td><td>エディターの画面（メニューやパネル）の表示・非表示を切り替えます。</td></tr>
+      <tr><td>入力キャプチャ</td><td><kbd>F3</kbd></td><td>エディターを表示しているときに、エディターの入力キャプチャを切り替えます。</td></tr>
+      <tr><td>プロファイラ</td><td><kbd>F4</kbd></td><td><b>Profiler / 描画統計 (F4)</b> ウィンドウの表示・非表示を切り替えます。</td></tr>
+      <tr><td>実行</td><td><kbd>F5</kbd></td><td>ゲームを実行します。実行中や準備中は何もしません。</td></tr>
+      <tr><td>停止</td><td><kbd>Shift</kbd>+<kbd>F5</kbd></td><td>実行を止めて編集に戻ります。実行していないときは「停止する Play Session はありません」と表示されます。</td></tr>
+      <tr><td>全画面</td><td><kbd>F11</kbd> または <kbd>Alt</kbd>+<kbd>Enter</kbd></td><td>全画面表示を切り替えます。</td></tr>
+    </table>
+    </div>
+
+    <h2 id="fixed">割り当てを変えられないキー</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>キー</th><th>働き</th></tr>
+      <tr><td><kbd>Delete</kbd> / <kbd>Backspace</kbd></td><td>何を消すかは、その時の状態で次の順に決まります。
+        <ol>
+          <li>スプライトアトラスの編集画面を操作しているとき：アトラスの領域を消します。</li>
+          <li>Motion Workspace のとき：モーションのキーを消します（GameObject は消えません）。</li>
+          <li>プロジェクトパネルを選んでいて、ファイルを選択しているとき：そのファイルの削除確認を出します。</li>
+          <li>インスペクターが GameObject を表示しているとき：<b>選択中の GameObject を削除します。</b></li>
+        </ol>
+      </td></tr>
+      <tr><td><kbd>Enter</kbd></td><td>プロジェクトパネルを選んでいて、ファイルかフォルダを選択しているとき、それを開きます（ダブルクリックと同じ）。</td></tr>
+      <tr><td><kbd>Esc</kbd></td><td>ギズモのドラッグ中は操作を取り消します。カメラのドラッグ中は操作を止めます。単体表示中は単体表示を終わります。</td></tr>
+    </table>
+    </div>
+    <div class="warning"><strong>Delete / Backspace で GameObject が消えることがあります</strong>インスペクターに GameObject が表示されている状態では、どのパネルを選んでいても、文字を入力していなければ <kbd>Delete</kbd> や <kbd>Backspace</kbd> で選択中の GameObject が削除されます。インスペクターで数値や文字を消すつもりのときは、入力欄に入力している状態（カーソルが点滅している状態）になっているか確かめてください。消してしまったときは <kbd>Ctrl</kbd>+<kbd>Z</kbd> で戻せます。</div>
+
+    <h2 id="motion">Motion Workspace</h2>
+    <p>キー割り当てウィンドウでは <b>Motion</b> の分類に並ぶショートカットです。Motion Workspace でモーションを編集するときに使います。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>既定のキー</th></tr>
+      <tr><td>キーを追加</td><td><kbd>S</kbd> または <kbd>Shift</kbd>+<kbd>S</kbd></td></tr>
+      <tr><td>キーを削除</td><td><kbd>Delete</kbd></td></tr>
+      <tr><td>キーを複製</td><td><kbd>Ctrl</kbd>+<kbd>D</kbd></td></tr>
+      <tr><td>キーをコピー</td><td><kbd>Ctrl</kbd>+<kbd>C</kbd></td></tr>
+      <tr><td>キーを貼り付け</td><td><kbd>Ctrl</kbd>+<kbd>V</kbd></td></tr>
+      <tr><td>キーを全選択</td><td><kbd>Ctrl</kbd>+<kbd>A</kbd></td></tr>
+      <tr><td>再生/停止</td><td><kbd>Space</kbd></td></tr>
+      <tr><td>先頭へ移動</td><td><kbd>Home</kbd></td></tr>
+      <tr><td>末尾へ移動</td><td><kbd>End</kbd></td></tr>
+      <tr><td>1コマ進む</td><td><kbd>PageDown</kbd></td></tr>
+      <tr><td>1コマ戻る</td><td><kbd>PageUp</kbd></td></tr>
+      <tr><td>次のキーへ</td><td><kbd>Shift</kbd>+<kbd>PageDown</kbd></td></tr>
+      <tr><td>前のキーへ</td><td><kbd>Shift</kbd>+<kbd>PageUp</kbd></td></tr>
+      <tr><td>プリセットを適用</td><td><kbd>F9</kbd></td></tr>
+    </table>
+    </div>
+
+    <h2 id="camera">シーンビューのカメラ</h2>
+    <p>カメラの移動や回転のキー（<kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd>、<kbd>F</kbd>、テンキーなど）は、このキー割り当てではなく、<b>カメラ操作プリセット</b> で決まります。一覧は<a href="scene-view.html#camera">シーンビューとカメラ操作</a>を見てください。</p>
+
+    <h2 id="bindings">キー割り当てを変える</h2>
+    <p><b>Window &gt; キー割り当て</b> で <b>キー割り当て</b> ウィンドウを開きます。</p>
+    <p>ウィンドウのいちばん上に、<b>名前で絞り込み</b> の入力欄、<b>保存</b> ボタン、<b>既定へ戻す</b> ボタンが並びます。その下に、分類（Editor、Motion、UI など）ごとの見出しがあり、中に操作の名前が並びます。</p>
+    <p>操作（Actions）1 つにつき、次の欄が 1 行に並びます。</p>
+    <ul>
+      <li><b>主キー</b> と <b>副キー</b>：今のキーが書かれたボタンです。どちらのキーを押しても、その操作になります。</li>
+      <li><b>ゲームパッド</b>：ゲームパッドのボタンを選ぶ欄です。</li>
+    </ul>
+    <p>移動のように両方向がある操作（Axes）では、<b>負1</b>、<b>負2</b>、<b>正1</b>、<b>正2</b> のキーと、<b>ゲームパッド軸</b>、<b>デッドゾーン</b>（0.00〜0.95）が並びます。</p>
+
+    <h3>キーを変える手順</h3>
+    <ol class="steps">
+      <li>変えたい操作の <b>主キー</b> か <b>副キー</b> のボタンを押します。ボタンの文字が「キーを押してください」に変わり、上に「（名前）: キーを押してください（Esc で取り消し）」と表示されます。</li>
+      <li>割り当てたいキーを押します。<kbd>Ctrl</kbd>、<kbd>Shift</kbd>、<kbd>Alt</kbd> を押しながらキーを押すと、組み合わせで割り当てられます。<kbd>Ctrl</kbd> などを 1 つだけ押して離すと、そのキーだけが割り当てられます。マウスのボタンも割り当てられます。</li>
+      <li>上に「未保存の変更があります」と表示されます。この時点で、エディターではもう新しいキーが効きます。</li>
+      <li><b>保存</b> を押します。「Saved/Editor/InputBindings.ini に保存しました」と表示され、次に起動したときも同じ割り当てになります。</li>
+    </ol>
+    <p>キーを押す前に <kbd>Esc</kbd> を押すと、「キーの入力を取り消しました」と表示され、元のままになります。</p>
+    <p>同じ分類の中で、ほかの操作と同じキーを割り当てると、その操作の下に橙で「警告: 同じキーが Action: （名前） にも割り当てられています」と表示されます。</p>
+    <div class="note"><strong>既定へ戻す</strong><b>既定へ戻す</b> を押すと、すべての割り当てがこのページの表の状態に戻り、「既定の割り当てへ戻しました（未保存）」と表示されます。ファイルにも残したいときは、続けて <b>保存</b> を押してください。</div>
+    <p>割り当ては <code>Saved/Editor/InputBindings.ini</code> に保存されます。Saved フォルダは人ごとの設定なので、チームのほかの人の割り当てには影響しません。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>実行のキーを変える</h3>
+    <ol>
+      <li><b>Window</b> &gt; <b>キー割り当て</b> を開きます。</li>
+      <li><b>名前で絞り込み</b> に「実行」と入れます。</li>
+      <li>実行 の <b>主キー</b> のボタンを押し、「キーを押してください」と出たら、割り当てたいキーを押します。</li>
+      <li>橙の「警告: 同じキーが …」が出ていないか確かめ、<b>保存</b> を押します。</li>
+    </ol>
+    <h3>割り当てを最初の状態に戻す</h3>
+    <ol>
+      <li>キー割り当て ウィンドウの <b>既定へ戻す</b> を押します。</li>
+      <li><b>保存</b> を押して、次に起動したときも既定のままにします。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="menu-bar.html">メニューバー</a></li>
+      <li><a href="toolbar.html">ツールバーと実行状態の表示</a></li>
+      <li><a href="scene-view.html#camera">シーンビューとカメラ操作</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

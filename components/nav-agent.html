@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Nav Agent - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Navigation</div>
+    <h1>Nav Agent</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>指定したワールドの位置まで、GameObject を移動させるコンポーネントです。障害物をよけて進む道を自動で探します。敵やお供のキャラクターを目的地へ歩かせるときに使います。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>敵やお供のキャラクターを、指定した場所まで歩かせたいとき</li>
+      <li>壁などの障害物をよけて、目的地まで進ませたいとき（Character Motor と組み合わせます）</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Navigation &gt; Nav Agent</td></tr>
+      <tr><td>必須・推奨</td><td>なし</td></tr>
+      <tr><td>動く場面</td><td>ゲームの実行中。移動先は C# スクリプトなどから指示します</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>移動速度</td><td><code>move_speed</code></td><td>小数</td><td>3</td><td>0〜1000</td><td>1 秒に進む距離</td></tr>
+      <tr><td>旋回速度（度/秒）</td><td><code>turn_speed_degrees</code></td><td>小数</td><td>360</td><td>0〜10000</td><td>進む方向へ向きを変える速さ。上下の軸（Y）のまわりにだけ回ります</td></tr>
+      <tr><td>停止距離</td><td><code>stopping_distance</code></td><td>小数</td><td>0.5</td><td>0〜1000</td><td>目的地までこの距離に近づいたら着いたとみなして止まります</td></tr>
+      <tr><td>経路グリッド間隔</td><td><code>path_grid_size</code></td><td>小数</td><td>1</td><td>0.05〜100</td><td>道を探すときに地面を調べる升目の大きさ。小さいほど細かい道を見つけられますが、計算が重くなります</td></tr>
+      <tr><td>経路探索最大範囲</td><td><code>path_max_range</code></td><td>小数</td><td>24</td><td>1〜1000</td><td>今の位置から前後左右に、どこまで道を探すか。範囲の外が目的地のときは、まっすぐ進みます</td></tr>
+      <tr><td>経路探索最大升目数</td><td><code>path_max_search_cells</code></td><td>整数</td><td>4096</td><td>16〜65536</td><td>調べる升目の上限。道が見つかる前に上限に達したら、まっすぐ進みます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="how">動き方</h2>
+    <ul>
+      <li>移動先を指示すると、当たり判定を升目ごとに調べて、障害物をよける道を探します。道が見つからないときや、上限に達したときは、目的地へまっすぐ進みます。</li>
+      <li>道を探すのは、同じ GameObject に <b>Character Motor</b>（Gameplay 分類のテンプレート部品）があり、その移動用の Collider（球・カプセル・箱）が有効なときだけです。Collider の大きさと、Sphere Collider の <a href="physics.html#sphere">歩ける傾斜のしきい値</a> が道探しに使われます。</li>
+      <li>Character Motor があるときは、その移動（重力・接地・衝突）を使って水平方向に歩きます。<b>移動速度</b> は Character Motor の移動速度に対する倍率に直して渡されます。</li>
+      <li>Character Motor が無いときは、道を探さず、Transform の位置を直接動かして目的地へまっすぐ進みます（上下にも動き、壁をすり抜けます）。</li>
+      <li>目的地が升目の半分より小さく動いただけのときは、道を探し直さず、終点だけを動かします。毎フレーム移動先を指示して追いかけても重くなりにくくなっています。</li>
+    </ul>
+
+    <h2 id="csharp">操作</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>操作</th><th>働き</th></tr>
+      <tr><td>MoveTo（目的地）</td><td>ワールドの位置へ移動を始めます</td></tr>
+      <tr><td>Stop</td><td>移動をやめます。Character Motor があれば、その移動も止めます</td></tr>
+      <tr><td>Arrived</td><td>目的地に着いているかどうか（移動先が無いときも着いている扱いです）</td></tr>
+    </table>
+    </div>
+    <p>C# スクリプトからの呼び出し方は「C# スクリプト」の章で説明します。Nav Agent を無効にしたときも、Character Motor の移動は止まります。</p>
+
+    <h2 id="debug">道を確かめる</h2>
+    <p>シーンビューに、Nav Agent の目的地までの道（矢印）、目的地（×印と停止距離の円）、実際に通った跡（約 6 秒ぶん）を表示する仕組みがあります。ただし表示されるのは、同じ GameObject に <b>Enemy Behaviour</b>（Gameplay 分類のテンプレート部品）が付いているときだけです。</p>
+    <ul>
+      <li>通常は、選択中の GameObject の Enemy Behaviour の <b>Scene View デバッグ表示</b> がオンのときに表示されます。</li>
+      <li>「衝突の診断」ウィンドウの <b>非選択の AI・ステージのデバッグ表示</b> にチェックを付けると、選択していない GameObject の分も表示されます。</li>
+    </ul>
+    <p>Enemy Behaviour の無い GameObject の Nav Agent は、この表示には出ません。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>障害物をよけて歩くキャラクターにする</h3>
+    <ol>
+      <li>歩かせたい GameObject に、移動用の Collider（球かカプセル）と Character Motor を付けます。</li>
+      <li><b>コンポーネントを追加</b> &gt; <b>Navigation</b> &gt; <b>Nav Agent</b> を付けます。</li>
+      <li><b>停止距離</b> を、目的地の手前で止まってほしい距離にします。道が細いときは <b>経路グリッド間隔</b> を小さくします。</li>
+      <li>スクリプトから、目的地のワールドの位置を指定して移動を始めます（上の「操作」の MoveTo）。</li>
+      <li>ゲームを実行し、<a href="../windows/collision-diagnostics.html">衝突の診断</a> の <b>非選択の AI・ステージのデバッグ表示</b> などで、道の矢印を確かめます。</li>
+    </ol>
+    <p>Character Motor が無いと、道を探さずに目的地へまっすぐ進み、壁もすり抜けます。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="physics.html">物理（Rigidbody と Collider）</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

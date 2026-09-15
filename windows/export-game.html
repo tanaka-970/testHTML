@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>ゲームを書き出す - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターのウィンドウ</div>
+    <h1>ゲームを書き出す</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>プロジェクトを、エディターなしで起動できるゲームのフォルダーとして書き出すダイアログです。書き出したフォルダーをそのまま配ったり、別の PC にコピーして遊んだりできます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>作ったゲームを、エディターを持っていない人に遊んでもらうとき</li>
+      <li>提出や配布のために、ゲームを 1 つのフォルダーにまとめたいとき</li>
+      <li>エディターを使わずに起動したときの動きや、別の PC で動くかを確かめたいとき</li>
+    </ul>
+
+    <h2 id="before">書き出す前に</h2>
+    <ul>
+      <li><b>シーンを保存します。</b>書き出しはディスク上のファイルをコピーするので、保存していない変更は入りません。</li>
+      <li><b>C# スクリプトをビルドして読み込んでおきます。</b>エディターが C# の DLL を読み込んでいないと書き出せません（スクリプトを使っていないプロジェクトでも同じです）。<a href="../csharp/build.html">C# スクリプトのビルド</a> を見てください。</li>
+      <li>最初に開くシーンは、プロジェクトの <code>resources</code> フォルダーの中に置きます。</li>
+    </ul>
+
+    <h2 id="open">開き方</h2>
+    <p><b>File</b> &gt; <b>ゲームを書き出す...</b> を選びます。</p>
+
+    <h2 id="fields">ダイアログの欄</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>開いたときの値</th><th>働き</th></tr>
+      <tr><td><b>ゲーム名</b></td><td>いまのシーンのファイル名（拡張子なし）。シーンが未保存なら MyGame</td><td>書き出すフォルダーと実行ファイルの名前になります。<code>&lt; &gt; : " / \ | ? *</code> は <code>_</code> に置き換え、前後の空白と末尾の <code>.</code> は取り除きます。空なら MyGame です</td></tr>
+      <tr><td><b>書き出し先</b> と <b>選択</b></td><td>プロジェクトの <code>Saved\Build</code></td><td>この中に「ゲーム名」のフォルダーを作ります。<b>選択</b> でフォルダーを選ぶダイアログが開きます</td></tr>
+      <tr><td><b>最初の Scene</b> と <b>選択</b></td><td>いま開いているシーンのパス</td><td>ゲームを起動したとき最初に開くシーン。<b>選択</b> で <code>.replayscene</code> を選ぶダイアログが開きます</td></tr>
+      <tr><td><b>書き出す</b></td><td>—</td><td>書き出しを始めます。「書き出し先\ゲーム名」が空でないフォルダーとしてすでにあると、先に <a href="#overwrite">上書きの確認</a> が出ます</td></tr>
+      <tr><td><b>閉じる</b></td><td>—</td><td>ダイアログを閉じます</td></tr>
+    </table>
+    </div>
+    <p>ダイアログを開くたびに、欄は上の値に戻り、前回の結果の表示は消えます。書き出しが終わるまで、エディターは操作できません（C# のビルドとシェーダーのコンパイルを含むので、時間がかかります）。</p>
+
+    <h3 id="overwrite">既存フォルダーの上書き</h3>
+    <p>「既存フォルダーを上書きしますか？」とフォルダーのパスが表示されます。<b>上書き</b> で書き出し、<b>キャンセル</b> で何もしません。上書きしても、書き出しがすべて成功するまで前のフォルダーはそのまま残ります。</p>
+
+    <h2 id="result">書き出されるもの</h2>
+    <p>成功すると「書き出しました: パス」と表示され、エクスプローラーでそのフォルダーが開きます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ファイル・フォルダー</th><th>中身</th></tr>
+      <tr><td><code>ゲーム名.exe</code></td><td>いま動いているエンジンの実行ファイルのコピー</td></tr>
+      <tr><td><code>ゲーム名.replaygame</code></td><td>起動設定（<a href="#replaygame">下記</a>）</td></tr>
+      <tr><td><code>resources\</code></td><td>プロジェクトの <code>resources</code> フォルダーのコピー（<a href="#excluded">除外するもの</a>を除く）</td></tr>
+      <tr><td><code>resources\ShaderCache.replaypack</code></td><td>エンジンのシェーダーを書き出し時にコンパイルしてまとめたもの</td></tr>
+      <tr><td><code>resources\ScriptCatalog.replaypack</code></td><td>C# スクリプトの一覧（Release ビルドのもの）</td></tr>
+      <tr><td>C# の DLL のフォルダー</td><td>Managed API とゲームスクリプトの DLL（Release と Debug のビルド結果のうち、あるもの）</td></tr>
+    </table>
+    </div>
+
+    <h3 id="replaygame">.replaygame の中身</h3>
+    <pre><code>REPLAY_GAME 1
+NAME ゲーム名
+STARTUP_SCENE resources/Scenes/Title.replayscene
+WINDOW 1600 900
+FULLSCREEN 0</code></pre>
+    <ul>
+      <li><code>STARTUP_SCENE</code> は、<b>最初の Scene</b> をプロジェクトのフォルダーからの相対パスにしたものです。</li>
+      <li><code>WINDOW</code> には、書き出したときのエディターのウィンドウの描画領域の大きさが入ります。</li>
+      <li><code>FULLSCREEN</code> は常に 0 です。全画面にしたいときは、書き出したあとでこのファイルを書き換えます。行の意味は <a href="../settings/command-line.html#replaygame">.replaygame による起動設定</a> を見てください。</li>
+    </ul>
+    <p>書き出したゲームのセーブデータやログは、ゲームのフォルダーではなく <code>%LOCALAPPDATA%\ゲーム名</code> に作られます（<a href="../data/index.html">データ形式</a>）。</p>
+
+    <h3 id="excluded">除外するもの</h3>
+    <p><code>resources</code> をコピーするとき、次のものは入れません。</p>
+    <ul>
+      <li><code>.replay_cache</code> という名前のフォルダーとその中身</li>
+      <li>拡張子が <code>.hlsl</code>、<code>.hlsli</code>、<code>.cs</code>、<code>.csproj</code>、<code>.sln</code>、<code>.pdb</code> のファイル</li>
+      <li>名前が <code>.bak</code> で終わるファイル、<code>imgui.ini</code></li>
+      <li>元からある <code>ShaderCache.replaypack</code> と <code>ScriptCatalog.replaypack</code>（書き出し時に作り直します）</li>
+    </ul>
+
+    <h2 id="steps">書き出しの手順</h2>
+    <p>どこかで失敗すると、そこまでに作ったものは消し、「書き出しに失敗しました」と、理由の一覧を表示します。</p>
+    <ol>
+      <li>書き出し先の場所を確かめます。</li>
+      <li>「書き出し先」の中に、<code>.ゲーム名.export-</code> で始まる作業用フォルダーを作ります。</li>
+      <li>読み込み中の C# の DLL が最新かを確かめ、C# の一覧を読み直し、Managed API とゲームスクリプトを Release でビルドして、<code>ScriptCatalog.replaypack</code> を作ります。</li>
+      <li>エンジンのシェーダーをすべてコンパイルして <code>ShaderCache.replaypack</code> を作ります。</li>
+      <li>実行ファイル、<code>resources</code>、C# の DLL をコピーします。</li>
+      <li>コピーしたマテリアル（<code>.replaymaterial</code>）が使うシェーダーと、C# の一覧の中身が、パックにそろっているかを確かめます。</li>
+      <li>最初の Scene が書き出した中にあるかを確かめ、<code>.replaygame</code> を書きます。</li>
+      <li>シェーダーや C# のソースファイル、<code>Shader</code>・<code>ThirdParty</code> フォルダーが入っていないかを確かめます。</li>
+      <li>前の「ゲーム名」フォルダーがあれば一時的に別名にし、作業用フォルダーを「ゲーム名」に変えます。うまくいったら前のフォルダーを消します。</li>
+    </ol>
+
+    <h2 id="errors">書き出せないとき</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>原因と対処</th></tr>
+      <tr><td>書き出し先フォルダーを指定してください</td><td><b>書き出し先</b> が空です</td></tr>
+      <tr><td>プロジェクト本体またはその親フォルダーへは書き出せません</td><td>「書き出し先\ゲーム名」が、プロジェクトのフォルダーそのものか、その親になっています</td></tr>
+      <tr><td>コピー元フォルダーの内側へは書き出せません</td><td>書き出し先がプロジェクトの <code>resources</code>、<code>Shader</code>、<code>Scripts</code>、<code>Managed</code> の中です。既定の <code>Saved\Build</code> などを使ってください</td></tr>
+      <tr><td>実行中のエンジンを含むフォルダーへは書き出せません</td><td>いま動いているエンジンの実行ファイルが、「書き出し先\ゲーム名」の中にあります</td></tr>
+      <tr><td>C# export: C# assembly is not ready for export</td><td>C# の DLL を読み込んでいません。C# Scripts パネルでビルドして読み込んでください</td></tr>
+      <tr><td>C# export: C# sources are newer than the export DLLs; build and reload C# before exporting</td><td>.cs を変えたあとビルドしていません。ビルドして読み込み直してください</td></tr>
+      <tr><td>C# export: C# game DLL changed since it was loaded; reload C# before exporting</td><td>読み込んだあとに DLL が変わりました。読み込み直してください</td></tr>
+      <tr><td>C# export: Managed API DLL differs from the loaded API; restart the editor with matching DLLs</td><td>エディターを起動し直してください</td></tr>
+      <tr><td>C# Managed API Release build failed / C# GameScripts Release build failed</td><td>Release でのビルドに失敗しました。続けて出るビルドの出力を見て、スクリプトのエラーを直してください</td></tr>
+      <tr><td>Missing shader key: …</td><td>エンジンのシェーダーのコンパイルに失敗しました</td></tr>
+      <tr><td>Missing shader catalog key: GUID / ファイル</td><td>そのマテリアルが、存在しないシェーダーを指しています。マテリアルのシェーダーを設定し直してください</td></tr>
+      <tr><td>Missing C# catalog key: …</td><td>C# スクリプトの一覧にある型が、ビルドした DLL から見つかりません。ビルドし直して読み込み直してください</td></tr>
+      <tr><td>Startup Scene はプロジェクト内を指定してください</td><td><b>最初の Scene</b> がプロジェクトの外です</td></tr>
+      <tr><td>Startup Scene が書き出し結果に含まれていません</td><td><b>最初の Scene</b> が <code>resources</code> の外にあるか、ファイルがありません</td></tr>
+      <tr><td>配布禁止のソースが含まれています</td><td>書き出した中に <code>.hlsl</code>、<code>.hlsli</code>、<code>.cs</code> が残っています</td></tr>
+      <tr><td>書き出し結果を配置できません</td><td>作業用フォルダーを「ゲーム名」に変えられませんでした。前のフォルダーを開いているアプリ（エクスプローラー、実行中のゲームなど）を閉じてやり直してください。前のフォルダーを戻せなかったときは、その場所が表示されます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>はじめて書き出す</h3>
+    <ol>
+      <li>開いているシーンを保存します（Ctrl+S）。</li>
+      <li>C# Scripts パネルで、スクリプトがビルドされ、エラーが出ていないことを確かめます。</li>
+      <li><b>File</b> &gt; <b>ゲームを書き出す...</b> を選びます。</li>
+      <li><b>ゲーム名</b> を入れます。<b>最初の Scene</b> がタイトル画面など、起動したとき最初に出したいシーンになっているか確かめ、違えば <b>選択</b> で選び直します。</li>
+      <li><b>書き出す</b> を押します。終わるとエクスプローラーで書き出したフォルダーが開きます。</li>
+      <li><code>ゲーム名.exe</code> をダブルクリックして、起動することを確かめます。</li>
+      <li>配るときは、フォルダーごと ZIP などにまとめて渡します。</li>
+    </ol>
+    <h3>直してから書き出し直す</h3>
+    <p>同じゲーム名と書き出し先のまま <b>書き出す</b> を押すと、上書きの確認が出ます。<b>上書き</b> を押すと、新しい内容に入れ替わります。書き出しに失敗したときは、前に書き出したフォルダーがそのまま残ります。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../settings/command-line.html#replaygame">.replaygame による起動設定</a></li>
+      <li><a href="../csharp/build.html">C# スクリプトのビルド</a></li>
+      <li><a href="../editor/menu-bar.html">メニューバー</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

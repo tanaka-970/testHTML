@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>コンポーネント一覧 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / コンポーネント</div>
+    <h1>コンポーネント一覧</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>コンポーネントは、GameObject に付けて機能を足す部品です。たとえば「Mesh Renderer」を付けるとモデルが表示され、「Rigidbody」を付けると物理で動くようになります。このページは、エンジンに入っているコンポーネントを分類ごとに並べた一覧です。</p>
+
+    <h2 id="basics">コンポーネントの基本</h2>
+    <ul>
+      <li>付ける：GameObject を選び、インスペクターの <b>コンポーネントを追加</b> から選びます（<a href="../editor/inspector.html#add">インスペクター</a>）。</li>
+      <li>同じ種類は 1 つの GameObject に 1 つだけ付けられます。すでに付いているものは一覧で「（追加済み）」と表示されます。Audio Source など、いくつも付けられる種類もあります。</li>
+      <li><b>必須</b>：あるコンポーネントを動かすのに必要な別のコンポーネントです。付けるときに無ければ自動で一緒に付きます。後から外れているとインスペクターに赤で「必須: … がありません」と出ます。</li>
+      <li><b>推奨</b>：一緒に付けると役に立つコンポーネントです。無くても付けられ、インスペクターに橙で「推奨: … がありません」と出ます。</li>
+      <li>Transform は全ての GameObject が必ず持っていて、外せません。</li>
+    </ul>
+
+    <h2 id="core">Core</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>役割</th></tr>
+      <tr><td><a href="transform.html">Transform</a></td><td>位置・回転・拡大率。GameObject が必ず持つ</td></tr>
+      <tr><td><a href="pivot.html">Pivot</a></td><td>エディターで回転・拡縮するときの基準点を決める</td></tr>
+      <tr><td><a href="state.html">State</a></td><td>名前付きの状態を持ち、変わったことを Motion Player に知らせる</td></tr>
+      <tr><td><a href="editor-helpers.html#folder">Folder</a></td><td>階層パネルを整理するためのフォルダ（階層パネルの「+ 作成 &gt; フォルダ」で作る）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="rendering">Rendering</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>役割</th></tr>
+      <tr><td><a href="mesh-renderers.html">Mesh Renderer</a></td><td>モデルファイルを表示する</td></tr>
+      <tr><td><a href="mesh-renderers.html">Primitive Mesh Renderer</a></td><td>Cube や Sphere などの基本形状を表示する</td></tr>
+      <tr><td><a href="mesh-renderers.html">Skinned Mesh Renderer</a></td><td>骨で動くモデルを表示する</td></tr>
+      <tr><td><a href="animator.html">Animator</a></td><td>アニメーションの状態と切り替えを管理する</td></tr>
+      <tr><td><a href="post-process-volume.html">Post Process Volume</a></td><td>ブルームや色補正など、画面全体の仕上げの設定</td></tr>
+      <tr><td><a href="sky.html">空</a></td><td>空・雲・星・月の背景</td></tr>
+      <tr><td><a href="effect-stacks.html#screen">Screen Effect Stack</a></td><td>3D の画面全体にエフェクトを重ねる</td></tr>
+      <tr><td><a href="effect-stacks.html#model">Model Effect Stack</a></td><td>モデルの見た目にエフェクトを重ねる</td></tr>
+      <tr><td><a href="normal-adjust.html">Normal Adjust</a></td><td>モデルの法線を寄せて陰影の出方を整える</td></tr>
+      <tr><td><a href="particle-emitter.html">Particle Emitter</a></td><td>小さな粒を出す（煙、火花など）</td></tr>
+      <tr><td><a href="lines.html">3D ライン</a></td><td>点をつないだ線や帯を描く</td></tr>
+      <tr><td><a href="lines.html#trail">軌跡</a></td><td>動いた跡を線として残す（この版では表示されません）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="lighting">Lighting</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>役割</th></tr>
+      <tr><td><a href="lights.html">Directional Light</a></td><td>太陽のように一方向から照らす</td></tr>
+      <tr><td><a href="lights.html">Point Light</a></td><td>点から全方向に照らす</td></tr>
+      <tr><td><a href="lights.html">Spot Light</a></td><td>円錐の形に照らす</td></tr>
+    </table>
+    </div>
+
+    <h2 id="camera">Camera</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>役割</th></tr>
+      <tr><td><a href="camera.html">Camera</a></td><td>ゲーム中の視点</td></tr>
+      <tr><td><a href="camera-target.html">Camera Target</a></td><td>カメラに追いかけられる目印</td></tr>
+      <tr><td><a href="follow-target.html">Follow Target</a></td><td>カメラを Camera Target に追いかけさせる</td></tr>
+    </table>
+    </div>
+
+    <h2 id="audio">Audio</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>役割</th></tr>
+      <tr><td><a href="audio-listener.html">Audio Listener</a></td><td>音を聞く位置（耳）</td></tr>
+      <tr><td><a href="audio-source.html">Audio Source</a></td><td>音を鳴らす</td></tr>
+    </table>
+    </div>
+
+    <h2 id="physics">Physics</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>役割</th></tr>
+      <tr><td><a href="physics.html#rigidbody">Rigidbody</a></td><td>重さや速度を持たせ、物理で動かす</td></tr>
+      <tr><td><a href="physics.html#sphere">Sphere Collider</a></td><td>球の当たり判定</td></tr>
+      <tr><td><a href="physics.html#box">Box Collider</a></td><td>箱の当たり判定</td></tr>
+      <tr><td><a href="physics.html#capsule">Capsule Collider</a></td><td>カプセルの当たり判定（人型に向く）</td></tr>
+      <tr><td><a href="physics.html#mesh">Mesh Collider</a></td><td>モデルの形そのままの当たり判定</td></tr>
+    </table>
+    </div>
+
+    <h2 id="landscape">Landscape</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>役割</th></tr>
+      <tr><td><a href="landscape.html#landscape">Landscape</a></td><td>地形の形のデータ</td></tr>
+      <tr><td><a href="landscape.html#renderer">Landscape Renderer</a></td><td>地形を表示する</td></tr>
+      <tr><td><a href="landscape.html#collider">Landscape Collider</a></td><td>地形の当たり判定</td></tr>
+    </table>
+    </div>
+
+    <h2 id="ui">UI</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>役割</th></tr>
+      <tr><td>Rect Transform</td><td>UI の位置と大きさ。UI の部品の土台</td></tr>
+      <tr><td>Canvas</td><td>UI を描く領域</td></tr>
+      <tr><td>Image</td><td>画像を表示する</td></tr>
+      <tr><td>Shape Image</td><td>形（パス）で画像を切り抜いて表示する</td></tr>
+      <tr><td>Sprite Animator</td><td>スプライトシートをコマ送りで再生する</td></tr>
+      <tr><td>Text</td><td>文字を表示する</td></tr>
+      <tr><td>Text Animator</td><td>文字を 1 文字ずつ動かす</td></tr>
+      <tr><td>Shape</td><td>四角・円・多角形などの図形を描く</td></tr>
+      <tr><td>Puppet Deform</td><td>画像をピンで変形する</td></tr>
+      <tr><td>Button</td><td>押せるボタン</td></tr>
+      <tr><td>Selectable</td><td>キーやゲームパッドで選べるようにする</td></tr>
+      <tr><td>Horizontal Layout Group</td><td>子を横に並べる</td></tr>
+      <tr><td>Vertical Layout Group</td><td>子を縦に並べる</td></tr>
+      <tr><td>Grid Layout Group</td><td>子を格子状に並べる</td></tr>
+      <tr><td>Scroll View</td><td>中身をスクロールして見せる</td></tr>
+      <tr><td>Slider</td><td>つまみで値を選ぶ</td></tr>
+      <tr><td>Input Field</td><td>文字を入力する欄</td></tr>
+      <tr><td>Mask</td><td>子の表示範囲を切り抜く</td></tr>
+      <tr><td>Language Switch</td><td>表示する言語を切り替える</td></tr>
+      <tr><td>Button Property Toggle</td><td>ボタンで別のコンポーネントの設定をオン・オフする</td></tr>
+      <tr><td><a href="effect-stacks.html#ui">Effect Stack</a></td><td>UI にエフェクトを重ねる</td></tr>
+    </table>
+    </div>
+
+    <h2 id="motion">Motion</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>役割</th></tr>
+      <tr><td><a href="motion-players.html#motion-player">Motion Player</a></td><td>モーション（アニメーション）を再生する</td></tr>
+      <tr><td><a href="motion-players.html#composition-player">Composition Player</a></td><td>複数のモーションをまとめたコンポジションを再生する</td></tr>
+      <tr><td><a href="property-link.html">Property Link</a></td><td>ある設定の数値を、別のコンポーネントの設定へ変換してつなぐ</td></tr>
+    </table>
+    </div>
+
+    <h2 id="scene">Scene</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>役割</th></tr>
+      <tr><td><a href="persistent.html">Persistent</a></td><td>シーンが切り替わっても残す</td></tr>
+      <tr><td><a href="scene-loader.html">Scene Loader</a></td><td>シーンの読み込みの進み具合を表示用に出す</td></tr>
+    </table>
+    </div>
+
+    <h2 id="other">そのほか</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>分類</th><th>名前</th><th>役割</th></tr>
+      <tr><td>Editor</td><td><a href="editor-helpers.html#scene-note">Scene Note</a></td><td>シーンに作業メモを置く（エディター専用）</td></tr>
+      <tr><td>Scripting</td><td>Script</td><td>C# スクリプトを付ける</td></tr>
+      <tr><td>Navigation</td><td><a href="nav-agent.html">Nav Agent</a></td><td>目的地まで道を探して移動する</td></tr>
+      <tr><td>UI</td><td><a href="ui-layout.html#canvas">Canvas</a></td><td>UI のまとまりの根元。画面に重ねるか 3D 空間に置くか</td></tr>
+      <tr><td>UI</td><td><a href="ui-layout.html#rect-transform">Rect Transform</a></td><td>UI 部品の四角い範囲（アンカー、ピボット、描画順）</td></tr>
+      <tr><td>UI</td><td><a href="ui-image.html#image">Image</a></td><td>画像や色の四角を表示する。塗り量でゲージにもなる</td></tr>
+      <tr><td>UI</td><td><a href="ui-image.html#shape-image">Shape Image</a></td><td>Image を自由な形で切り抜く</td></tr>
+      <tr><td>UI</td><td><a href="ui-image.html#sprite-animator">Sprite Animator</a></td><td>スプライトシートのコマを順に表示する</td></tr>
+      <tr><td>UI</td><td><a href="ui-text.html#text">Text</a></td><td>文字を表示する。ローカライズや数値の表示にも対応</td></tr>
+      <tr><td>UI</td><td><a href="ui-text.html#text-animator">Text Animator</a></td><td>Text の文字ごとに動きや色の変化を付ける</td></tr>
+      <tr><td>UI</td><td><a href="ui-shape.html#shape">Shape</a></td><td>四角・円・多角形・線などの図形を描く</td></tr>
+      <tr><td>UI</td><td><a href="ui-shape.html#puppet">Puppet Deform</a></td><td>Image の画像を Pin で部分的に曲げる</td></tr>
+      <tr><td>UI</td><td><a href="ui-controls.html#button">Button</a></td><td>押せるボタン。状態ごとの色とモーション</td></tr>
+      <tr><td>UI</td><td><a href="ui-controls.html#selectable">Selectable</a></td><td>キーやパッドでのフォーカス移動</td></tr>
+      <tr><td>UI</td><td><a href="ui-controls.html#layout-groups">Horizontal / Vertical / Grid Layout Group</a></td><td>子の UI を並べる</td></tr>
+      <tr><td>UI</td><td><a href="ui-controls.html#scroll-view">Scroll View</a></td><td>中身をスクロールさせる</td></tr>
+      <tr><td>UI</td><td><a href="ui-controls.html#slider">Slider</a></td><td>ドラッグやキーで数値を変える</td></tr>
+      <tr><td>UI</td><td><a href="ui-controls.html#input-field">Input Field</a></td><td>文字入力欄（日本語入力対応）</td></tr>
+      <tr><td>UI</td><td><a href="ui-controls.html#mask">Mask</a></td><td>子孫を形や画像で切り抜く</td></tr>
+      <tr><td>UI</td><td><a href="ui-controls.html#language-switch">Language Switch</a></td><td>ボタンで表示言語を切り替える</td></tr>
+      <tr><td>UI</td><td><a href="ui-controls.html#property-toggle">Button Property Toggle</a></td><td>ボタンでほかのコンポーネントのオン・オフを反転する</td></tr>
+      <tr><td>Behaviours</td><td>Rotator Behaviour、Trigger Counter Behaviour、Scene Transition</td><td>動作確認用の部品（Scene Transition は触れたらシーンを切り替える）</td></tr>
+      <tr><td>Script / Scripts/C#</td><td>（プロジェクトの C# スクリプトの数だけ）</td><td>プロジェクトにある C# スクリプト。選ぶと Script コンポーネントとして付く</td></tr>
+    </table>
+    </div>
+
+    <div class="note"><strong>このドキュメントで扱わないもの</strong>コンポーネントを追加の <b>Gameplay</b> 分類（Character Motor、Character Input、Player Controller、Rotator、Health、Spawn Point、Checkpoint、Goal、Kill Volume、Jump Pad、Damage Area、Enemy Behaviour）は、アクションゲームのテンプレート用の部品なので、このドキュメントでは説明しません。これらは「テンプレート部品も表示する」をオフにすると一覧から隠れます（検索欄に名前を入れている間は表示されます）。</div>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

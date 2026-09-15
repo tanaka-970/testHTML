@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>ゲームシーンの設定 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
+    <h1>ゲームシーンの設定（ワールド・メインカメラ・描画設定・ポスト処理）</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p><a href="hierarchy.html">階層パネル</a> のいちばん上の「ゲームシーン」には、<b>ワールド</b>、<b>メインカメラ</b>、<b>描画設定</b>、<b>ポスト処理</b> の 4 つが並びます。どれかをクリックすると、インスペクターにその設定が出ます。GameObject のコンポーネントではなく、エディターと画面全体に関わる設定です。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>プロジェクト設定（起動シーンなど）を開きたいとき（ワールド）</li>
+      <li>シーンビューのカメラが動かなくなった原因を調べたいとき（ワールドの「カメラ操作の関門」）</li>
+      <li>シーンビューのカメラの速さや視野角を変えたいとき（メインカメラ）</li>
+      <li>影が出ない、SSAO（隙間の影）や反射の効き具合を確かめたいとき（描画設定）</li>
+      <li>光のにじみ（Bloom）、周辺の暗さ（ビネット）、明るさ（露出）を変えたいとき（ポスト処理）</li>
+    </ul>
+
+    <h2 id="world">ワールド</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>働き</th></tr>
+      <tr><td><b>Scene / Game 背景色</b></td><td>シーンビューとゲームビューの背景の色</td></tr>
+      <tr><td><b>ゲームシーン</b></td><td>シーンに使える Camera が無いときに、エンジン内部のゲーム用カメラを予備に使うかどうかの切り替えです。ふだんは変える必要はありません</td></tr>
+      <tr><td><b>背景画像</b>、<b>パーティクル</b>、<b>軌跡</b></td><td>このビルドでは、切り替えても効果がありません</td></tr>
+      <tr><td><b>プロジェクト設定</b></td><td>見出しを開くと、起動シーンなどの設定が出ます（<a href="../settings/project-settings.html">プロジェクト設定</a>）</td></tr>
+      <tr><td><b>カメラ操作の関門</b></td><td>見出しを開くと、シーンビューのカメラ操作を止めている条件が分かります（<a href="#camera-gate">下記</a>）</td></tr>
+    </table>
+    </div>
+
+    <h3 id="camera-gate">カメラ操作の関門</h3>
+    <p>シーンビューのカメラの見回し・移動・ズームは、次の 7 つの条件のどれにも当てはまらないときだけ始まります。当てはまっている条件は赤く「✕ 条件」、当てはまっていない条件は薄く「○ 条件」と表示されます。</p>
+    <ul>
+      <li>ウィンドウが非アクティブ</li>
+      <li>Scene View に hover / focus が無い（マウスが上に無く、選ばれてもいない）</li>
+      <li>UI がマウスを要求（ほかのパネルやメニューがマウスを使っている）</li>
+      <li>UI がキーボードを要求</li>
+      <li>テキスト入力中</li>
+      <li>ポップアップが開いている</li>
+      <li>Gizmo / 範囲選択のドラッグ中</li>
+    </ul>
+    <p>下に「→ 上の ✕ が原因でカメラ操作が止まっています」または「→ 関門は開いています（カメラは操作できる状態）」と出ます。その下の「内訳」は、原因をさらに細かく見るための値です。</p>
+
+    <h2 id="camera">メインカメラ</h2>
+    <p>インスペクターの見出しは「カメラ」です。シーンビューで使う編集用のカメラの設定で、ゲームの中のカメラ（<a href="../components/camera.html">Camera</a> コンポーネント）とは別のものです。</p>
+    <h3 id="scene-camera">Scene Camera</h3>
+    <p>見出し（閉じた状態）を開くと、次の欄が出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>働き</th></tr>
+      <tr><td>「操作プリセット: 名前」[Personal] / [Shared]</td><td>今使っている <a href="../windows/camera-presets.html">カメラ操作プリセット</a></td></tr>
+      <tr><td><b>プリセット管理を開く</b></td><td>カメラ操作プリセット ウィンドウを開きます</td></tr>
+      <tr><td><b>自分用に複製</b></td><td>共有（Shared）プリセットを使っているときだけ出ます。複製して自分用にします</td></tr>
+      <tr><td><b>移動速度</b>、<b>高速倍率</b>（0.01〜100）、<b>低速倍率</b>（0.001〜1）、<b>回転感度</b>（0.001〜5）、<b>平行移動感度</b>（0.001〜20）、<b>Zoom/Dolly感度</b>（0.001〜20）、<b>視野角</b>（5〜170）</td><td>自分用（Personal）プリセットのときだけ出ます。変えるとすぐにプリセットへ保存されます。共有プリセットでは「Shared preset の値は直接変更しません。複製すると編集できます。」と出ます</td></tr>
+      <tr><td><b>選択対象へフォーカス</b></td><td>選んでいる物にカメラを寄せます（F キーと同じ）</td></tr>
+      <tr><td>位置、回転（yaw / pitch / roll）、Orbit 距離</td><td>今のカメラの状態（表示のみ）</td></tr>
+    </table>
+    </div>
+    <p>その下の「Runtime Camera（ゲーム内）」には、ゲーム用のカメラがあるとき、その位置と注視点、「追従対象は CameraTargetComponent が決めます」、<b>水平回転オフセット</b>（-3.14〜3.14）、<b>垂直回転オフセット</b>（-1.40〜1.40）が出ます。ゲーム用のカメラが無いときは <b>位置</b> の欄だけが出ますが、この値は描画に使われていないので、変えても何も変わりません。移動速度に 0 以下を入れると、直前の値（無ければ 5）に戻ります。シーンビューのカメラの位置は、シーンごとに覚えていて、シーンを開き直すとその視点に戻ります。</p>
+
+    <h2 id="rendering">描画設定</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>働き</th></tr>
+      <tr><td><b>全画面表示</b>（既定は F11 と Alt+Enter）</td><td>エディターのウィンドウを全画面にします</td></tr>
+      <tr><td>「レンダラー: Deferred（固定）」</td><td>描画の方式（変えられません）。輪郭線と半透明は、照明のあとに追加で描きます</td></tr>
+      <tr><td><b>静的メッシュ</b></td><td>このビルドでは、切り替えても効果がありません</td></tr>
+      <tr><td><b>シェーダー調整テーブルを開く</b></td><td><a href="shader-adjustment.html">シェーダー調整 Workspace</a> に切り替えます</td></tr>
+      <tr><td><b>追加パス</b>（<b>輪郭線パス</b>、<b>PBR影パス</b>）</td><td>見出しを開くと出ます。このビルドでは、描画側でこの値が使われていません。見た目の種類（PBR / トゥーン / アンリット）はマテリアルごとに決めます（<a href="../windows/material-editor.html">マテリアルの編集</a>）</td></tr>
+      <tr><td><b>描画出力</b>（既定は Ctrl+F2）</td><td>画面に出す途中の結果を選びます。最終合成、HDRシーン、ブルーム、Deferred照明、GBuffer ベースカラー、GBuffer 法線、GBuffer マテリアル、深度、SSAO、SSR、影の可視性。ふだんは「最終合成」です</td></tr>
+    </table>
+    </div>
+
+    <h3 id="screen-space">スクリーン空間パス (SSAO / SSR / TAA)</h3>
+    <p>見出し（閉じた状態）を開くと、画面の仕上げの細かい設定が出ます。「効果が見えないときは描画出力を SSAO / SSR に切り替えてバッファそのものを確認してください。」と表示されます。SSAO・SSR・TAA の欄は、マウスを乗せると説明が出ます。キー割り当てを変えると、欄名の横のキーの表示も変わります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>まとまり</th><th>欄（範囲、<b>既定値へ戻す</b> で入る値）</th></tr>
+      <tr><td>SSAO (GTAO)：物の接地部や隙間を暗くします</td><td><b>有効</b>、探索半径（0.05〜4 m、0.75）、強さ（0〜1、1）、コントラスト（0.5〜4、1.6）、方向スライス数（1〜8、4）、探索ステップ数（2〜12、8）、法線オフセット（0〜2、0.35）、薄物補正（0〜1、1）、フェード開始（1〜400 m、60）、フェード終了（2〜800 m、140）</td></tr>
+      <tr><td>SSR：画面に映っている物を、金属やつるつるの面に映り込ませます</td><td><b>有効</b>、レイ長（1〜200 m、40）、交差の厚み（0.01〜2、0.4）、ステップ幅（1〜16 px、3）、最大マーチ数（4〜64、48）、二分探索回数（0〜8、5）、適用する最大ラフネス（0.05〜1、0.65）、強さ（0〜2、1）、画面端フェード（0.01〜0.4、0.12）、レイ押し出し（0〜4、1）、resolve半径（0〜40 px、12）、resolveタップ数（1〜16、8）</td></tr>
+      <tr><td>TAA：複数フレームを使って、ちらつきとギザギザを抑えます</td><td><b>有効</b>、履歴比率（0〜0.98、0.88。上げると滑らか、下げると残像が減ります）、クリップ幅（0.25〜3、1）、シャープ化（0〜1、0.35）、速度リジェクト（4〜200 px、48）、「履歴: 有効 / 無効」</td></tr>
+      <tr><td>影 (Shadow)</td><td><b>動的影を使う</b>（切るとすべてのライトの影を止めます）、<b>ライトが無いときも Scene View で影を出す</b>（シーンに保存されないプレビュー用の光の影。実行中は使いません）、<b>Point / Spot の影</b>、<b>影マップ解像度</b>（256〜2048。Spot は 1 灯 1 枚、Point は 1 灯 6 枚使います）。下に「このフレームの影」として、Directional Light の有無、影を落とした物の数、Cast Shadow がオフで除いた数、描画コール数などが出ます</td></tr>
+      <tr><td>CSM (カスケードシャドウ)（閉じた状態）</td><td><b>有効</b>（稼働中 / 停止中）、<b>PCSS (可変半影)</b>、深度バイアス・法線オフセット・影の濃さ・影の最遠距離（Directional Light があるときは、その Light の値を表示のみ）、フィルタ半径、カスケード混合幅、光源サイズ、傾斜バイアス倍率、分割の偏り、キャスター延長、「分割: 距離 / 距離 / 距離 / 距離」（表示のみ）</td></tr>
+      <tr><td>タイルドDeferred (Compute)</td><td><b>有効</b>（ライトが多いときに速くなる計算方法）、<b>ライト数ヒートマップ</b>（ライトの多い所を色で表示）、赤になるライト数（1〜128）、タイル数、投入ライト数</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li>SSAO・SSR・TAA の <b>有効</b> と、それぞれの数値は、プロジェクト設定に保存されます。影、CSM、タイルドDeferred の欄はプロジェクト設定には保存されません。</li>
+      <li><b>スクリーン空間パスを既定値へ戻す</b> で、SSAO・SSR・TAA を有効にし、数値を上の表の値に戻します（表に無い SSAO のぼかしもオンに戻ります）。</li>
+      <li>この「既定値」は、新しいプロジェクトを作ったときの値とは一部違います。たとえば新しいプロジェクトでは、交差の厚み 0.55、最大マーチ数 32、二分探索回数 4、適用する最大ラフネス 0.6、画面端フェード 0.08、レイ押し出し 0.001、resolve半径 0、resolveタップ数 1、シャープ化 0 です。ボタンを押すと、上の表の値に変わります。</li>
+      <li>シーンに有効な <a href="../components/post-process-volume.html">Post Process Volume</a> があると、SSAO・SSR・TAA のオン・オフ、SSAO の探索半径と強さ、SSR の強さは Volume の値が使われます。SSR のレイ長や TAA の履歴比率など、それ以外の数値はこの画面の値のままです。</li>
+    </ul>
+
+    <h2 id="post-process">ポスト処理</h2>
+    <p>インスペクターに「画面エフェクトスタック」「上から順に処理し、最後に画面へ合成します」と出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>働き</th></tr>
+      <tr><td><b>1. 輝度抽出</b></td><td>明るい部分を取り出します（Bloom のもと）</td></tr>
+      <tr><td><b>2. Bloom</b></td><td>明るい部分を光のようににじませます。オンにすると、輝度抽出 と 最終合成 もオンになります</td></tr>
+      <tr><td><b>3. ビネット</b></td><td>画面の周りを暗くします。オンにすると 最終合成 もオンになります</td></tr>
+      <tr><td><b>4. FXAA</b></td><td>輪郭のギザギザをぼかして目立たなくします。オンにすると 最終合成 もオンになります</td></tr>
+      <tr><td><b>5. 最終合成</b></td><td>上の結果を画面に合成します</td></tr>
+      <tr><td><b>輝度しきい値</b>（0〜8）</td><td>これより明るい部分をにじませます。小さいほど広くにじみます</td></tr>
+      <tr><td><b>露出</b>（0〜4）</td><td>画面全体の明るさ</td></tr>
+      <tr><td><b>Bloom強度</b>（0〜4）、<b>ビネット強度</b>（0〜1）、<b>FXAA強度</b>（0〜1）</td><td>それぞれの効果の強さ</td></tr>
+    </table>
+    </div>
+    <p>輝度抽出・輝度しきい値・最終合成はプロジェクト設定に保存されます。Bloom はコンソールの <code>bloom on</code> / <code>bloom off</code> でも切り替えられます（<a href="console.html">コンソール</a>）。シーンに有効な Post Process Volume があると、Bloom・ビネット・露出などは Volume の値が使われます。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>影が出ない原因を調べる</h3>
+    <ol>
+      <li>階層パネルの <b>描画設定</b> を選び、<b>スクリーン空間パス (SSAO / SSR / TAA)</b> を開きます。</li>
+      <li><b>影 (Shadow)</b> の <b>動的影を使う</b> がオンか確かめます。</li>
+      <li>「このフレームの影」を見ます。「Directional Light なし」なら、シーンに Directional Light を置きます。「キャスターが 0 件です」なら、物の Cast Shadow（影を落とす）や、ライトの影の最遠距離を確かめます（<a href="../components/lights.html">ライト</a>）。</li>
+    </ol>
+    <h3>SSAO の効き具合を目で確かめる</h3>
+    <ol>
+      <li><b>描画設定</b> の <b>描画出力</b> を「SSAO」にします（Ctrl+F2 でも切り替わります）。隙間ほど暗い白黒の画面になります。</li>
+      <li><b>スクリーン空間パス</b> の SSAO の <b>探索半径</b> や <b>強さ</b> を変えて、暗さの付き方を見ます。</li>
+      <li>終わったら <b>描画出力</b> を「最終合成」に戻します。</li>
+    </ol>
+    <h3>明るい所をもっと光らせる</h3>
+    <ol>
+      <li><b>ポスト処理</b> を選び、<b>2. Bloom</b> をオンにします。</li>
+      <li><b>輝度しきい値</b> を下げると、にじむ範囲が広がります。<b>Bloom強度</b> を上げると、にじみが強くなります。</li>
+      <li>変わらないときは、シーンに Post Process Volume が無いか確かめます。あると Volume の値が優先されます。</li>
+    </ol>
+    <h3>シーンビューのカメラが急に動かなくなった</h3>
+    <ol>
+      <li>階層パネルの <b>ワールド</b> を選び、<b>カメラ操作の関門</b> を開きます。</li>
+      <li>赤い ✕ の条件を見ます。「テキスト入力中」なら入力欄から抜ける（Esc や別の場所をクリック）、「ポップアップが開いている」ならメニューを閉じる、といった具合に解消します。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="hierarchy.html">階層パネル</a></li>
+      <li><a href="../components/post-process-volume.html">Post Process Volume</a></li>
+      <li><a href="../settings/project-settings.html">プロジェクト設定</a></li>
+      <li><a href="../windows/camera-presets.html">カメラ操作プリセット</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

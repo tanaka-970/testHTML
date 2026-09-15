@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Scene Loader - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Scene</div>
+    <h1>Scene Loader</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>シーンの読み込みの進み具合を、ほかのコンポーネントから読める値として出すコンポーネントです。読み込み画面で進み具合のゲージや文字を表示するときに使います。このコンポーネントがシーンを読み込むわけではありません。読み込みはエンジンのシーン切り替えの仕組み（Scene Flow）が行い、その状態をここに映します。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>読み込み画面で、進み具合のゲージや文字を出したいとき</li>
+      <li>読み込みが終わったかどうかを、ほかのコンポーネントで使いたいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Scene &gt; Scene Loader</td></tr>
+      <tr><td>必須・推奨</td><td>なし</td></tr>
+      <tr><td>働く場面</td><td>ゲームの実行中</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <p>すべて読み取り専用で、シーンファイルには保存されません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>進捗</td><td><code>progress</code></td><td>小数</td><td>0〜1</td><td>読み込みの進み具合。1 で完了</td></tr>
+      <tr><td>読込中</td><td><code>is_loading</code></td><td>オン・オフ</td><td></td><td>読み込み中ならオン</td></tr>
+      <tr><td>状態</td><td><code>state</code></td><td>選択</td><td></td><td>Idle、Loading、ReadyToSwap、Swapping、Completed、Failed のどれか</td></tr>
+    </table>
+    </div>
+
+    <h2 id="states">状態の意味</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>状態</th><th>意味</th></tr>
+      <tr><td>Idle</td><td>読み込みをしていない</td></tr>
+      <tr><td>Loading</td><td>次のシーンを読み込んでいる</td></tr>
+      <tr><td>ReadyToSwap</td><td>読み込みが終わり、切り替えを待っている</td></tr>
+      <tr><td>Swapping</td><td>シーンを切り替えている</td></tr>
+      <tr><td>Completed</td><td>切り替えが終わった</td></tr>
+      <tr><td>Failed</td><td>読み込みに失敗した</td></tr>
+    </table>
+    </div>
+
+    <h2 id="usage">使い方</h2>
+    <p>読み込み画面のシーンにこのコンポーネントを付けた GameObject を置き、<a href="property-link.html">Property Link</a> で <code>progress</code> を UI のゲージにつなぎます。手順は <a href="property-link.html#usage">Property Link の使い方</a> を見てください。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="property-link.html">Property Link</a></li>
+      <li><a href="persistent.html">Persistent</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

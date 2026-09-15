@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>メニューバー - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
+    <h1>メニューバー</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>エディターのいちばん上にある文字のメニューです。左から <b>File</b>、<b>Edit</b>、<b>作成</b>、<b>カメラ</b>、<b>UI</b>、<b>Window</b>、<b>実行</b>、<b>Help</b> の 8 つが並びます。このページでは、それぞれのメニューに何が入っているかと、押すと何が起きるかを説明します。</p>
+
+    <div class="note"><strong>画像について</strong>このページの画像は、エディターの見た目プリセットを変えた状態で撮影しています。色や文字の大きさは、<b>Window &gt; UI の見た目</b> の設定によって違って見えます。項目の並びと名前は同じです。</div>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>シーンを新しく作る・開く・保存するなど、ファイルの操作をしたいとき（File）</li>
+      <li>閉じてしまったパネルを、もう一度出したいとき（Window）</li>
+      <li>UI やモーションを作る画面に切り替えたいとき（Window の Workspace の切り替え）</li>
+      <li>シーンビューのカメラの移動の速さを変えたいとき（カメラ）</li>
+      <li>作ったゲームを、エディターなしで遊べる形にしたいとき（File &gt; ゲームを書き出す...）</li>
+    </ul>
+
+    <h2>メニューの開き方</h2>
+    <ol class="steps">
+      <li>画面左上のメニュー名（たとえば <b>File</b>）をクリックします。下に項目の一覧が開きます。</li>
+      <li>開いたまま、となりのメニュー名にマウスを乗せると、そのメニューに切り替わります。</li>
+      <li>項目名の右に <b>▶</b> があるものは、マウスを乗せるとさらに右に一覧（サブメニュー）が開きます。</li>
+      <li>メニューを閉じるには、メニューの外側をクリックします。</li>
+    </ol>
+    <p>文字が薄く表示されている項目は、今は押せません。押せない理由は項目ごとの説明を見てください。</p>
+    <p>項目名の右に出ているキー（<kbd>Ctrl</kbd>+<kbd>S</kbd> など）は、そのショートカットです。ショートカットは <b>Window &gt; キー割り当て</b> で変えられ、変えるとメニューの表示も変わります。既定の割り当ては<a href="shortcuts.html">ショートカット一覧</a>を見てください。</p>
+
+    <h2 id="file">File</h2>
+    <figure>
+      <img src="../images/editor/menu-file.png" alt="File メニューを開いたところ。New Empty Scene から Exit までの項目が並んでいる">
+      <figcaption>File メニュー</figcaption>
+    </figure>
+    <p>シーンを作る・開く・保存するためのメニューです。区切り線で 3 つのまとまりに分かれています。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>ショートカット</th><th>説明</th></tr>
+      <tr><td>New Empty Scene</td><td></td><td>何も入っていない新しいシーンを作ります。GameObject もライトも置かれません。</td></tr>
+      <tr><td>New Default Scene</td><td></td><td>地面（Landscape の Ground）と太陽（Directional Light の Sun）が置かれた新しいシーンを作ります。プロジェクト設定で既定の操作キャラクター Prefab が設定されていれば、それも置かれます。</td></tr>
+      <tr><td>Open Scene...</td><td></td><td>保存されているシーンファイル（.replayscene）を選んで開きます。</td></tr>
+      <tr><td>Recent Scenes ▶</td><td></td><td>最近開いたシーンの一覧です。ファイルが消えているシーンは名前の後ろに <b>[Missing]</b> が付き、押せません。履歴が無いときは「履歴はありません」と表示されます。</td></tr>
+      <tr><td>Save</td><td><kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>今のシーンを上書き保存します。まだ一度も保存していないシーンでは、保存先を選ぶ画面が開きます。拡張子を付けずに名前を入れると .replayscene が付きます。<b>Motion Workspace</b> でモーションを開いているときは、この項目が <b>Save Motion</b> に変わり、モーションを保存します。</td></tr>
+      <tr><td>Save As...</td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd></td><td>名前と保存先を選んでシーンを保存します。</td></tr>
+      <tr><td>ゲームを書き出す...</td><td></td><td>エディター無しで遊べるゲームとして書き出すための画面を開きます。開いた時点で、ゲーム名には今のシーンのファイル名（未保存なら MyGame）、書き出し先には Saved フォルダ内の Build、最初に開くシーンには今のシーンが入っています。</td></tr>
+      <tr><td>Exit</td><td></td><td>エディターを終了します。</td></tr>
+    </table>
+    </div>
+    <div class="note"><strong>新しいシーンは保存するまでファイルになりません</strong>New Empty Scene と New Default Scene で作ったシーンは「未保存」の状態で始まり、階層パネルには <b>(未保存のシーン)*</b> と表示されます。Save か Save As... を選ぶまで、ディスクにファイルは作られません。</div>
+    <div class="warning"><strong>実行中は保存できません</strong>ゲームを実行している間に Save や Save As... を選ぶと、保存されずに「実行中はシーンを保存できません」と表示されます。実行中に動いた位置や減った HP などがファイルに残らないようにするためです。</div>
+    <h3>未保存の変更があるとき</h3>
+    <p>今のシーンに保存していない変更があるときに New Empty Scene、New Default Scene、Recent Scenes のシーンを選ぶと、<b>未保存のシーン</b> という確認が出ます。「現在のシーンには未保存の変更があります。」とシーン名、「保存してから続行しますか？」が表示され、ボタンは左から次の 4 つです。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ボタン</th><th>押したとき</th></tr>
+      <tr><td>保存して続行</td><td>今のシーンを保存してから、選んだ操作を続けます。</td></tr>
+      <tr><td>別名で保存</td><td>保存先を選んで今のシーンを保存してから、選んだ操作を続けます。</td></tr>
+      <tr><td>破棄して続行</td><td>今のシーンの変更を捨てて、選んだ操作を続けます。</td></tr>
+      <tr><td>キャンセル</td><td>何もせずに元の画面に戻ります。<kbd>Esc</kbd> で閉じたときも同じです。</td></tr>
+    </table>
+    </div>
+    <p>エディターを終了しようとしたときも同じ確認が出ます。このときは「保存してから終了しますか？」と表示され、ボタンが <b>保存して終了</b>、<b>別名で保存</b>、<b>破棄して終了</b>、<b>キャンセル</b> になります。保存に失敗したときは、確認を閉じずに赤い文字で「保存できませんでした」と理由が表示されるので、別名で保存するか、破棄を選んでください。詳しくは<a href="scene-files.html">シーンを作る・開く・保存する</a>を見てください。</p>
+
+    <h2 id="edit">Edit</h2>
+    <figure>
+      <img src="../images/editor/menu-edit.png" alt="Edit メニューを開いたところ。Undo と Redo の 2 項目がある">
+      <figcaption>Edit メニュー</figcaption>
+    </figure>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>ショートカット</th><th>説明</th></tr>
+      <tr><td>Undo</td><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>直前の操作を取り消します。</td></tr>
+      <tr><td>Redo</td><td><kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>取り消した操作をやり直します。</td></tr>
+    </table>
+    </div>
+    <p>何を取り消すかは、今どこを編集しているかで自動的に決まります。ふだんはシーンの編集が対象ですが、スプライトアトラスの編集画面を操作しているときはアトラスの編集、Motion Workspace ではモーションの編集が対象になります。</p>
+    <div class="warning"><strong>実行中はシーンの Undo ができません</strong>ゲームを実行している間は Undo と Redo が半透明になり、押せません。マウスを乗せると「実行中は元に戻せません。Shift+F5 で停止してください。」と表示されます。<kbd>Shift</kbd>+<kbd>F5</kbd> で実行を止めてから操作してください。</div>
+
+    <h2 id="create">作成</h2>
+    <figure>
+      <img src="../images/editor/menu-create.png" alt="作成メニューを開いたところ。空の GameObject からプロジェクトを開くまでの 6 項目がある">
+      <figcaption>作成メニュー</figcaption>
+    </figure>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>押せる条件</th><th>説明</th></tr>
+      <tr><td>空の GameObject</td><td>実行中でないとき</td><td>コンポーネントを何も持たない GameObject をシーンに 1 つ作り、選択します。</td></tr>
+      <tr><td>選択中を操作対象にする</td><td>実行中でなく、GameObject を選択しているとき</td><td>選択中の GameObject を、ゲームを実行したときにプレイヤーが操作する対象にします。この操作は Undo できます。</td></tr>
+      <tr><td>モデルを取り込む...</td><td>いつでも</td><td>モデルファイルを選んで取り込みます。</td></tr>
+      <tr><td>Prefab を置く...</td><td>いつでも</td><td>Prefab ファイルを選んで、シーンに置きます。</td></tr>
+      <tr><td>インスペクターを開く</td><td>GameObject を選択しているとき</td><td>インスペクターパネルを表示し、選択中の GameObject の中身を出します。</td></tr>
+      <tr><td>プロジェクトを開く</td><td>いつでも</td><td>プロジェクトパネル（アセットの一覧）を表示します。</td></tr>
+    </table>
+    </div>
+    <p>操作対象がまだ決まっていないシーンでは、階層パネルの GameObject の見出しの下に「このシーンには操作対象が設定されていません」と黄色の文字で表示されます。</p>
+
+    <h2 id="camera">カメラ</h2>
+    <figure>
+      <img src="../images/editor/menu-camera.png" alt="カメラメニューを開いたところ。操作プリセット、移動速度の候補、自由入力欄が並んでいる">
+      <figcaption>カメラメニュー</figcaption>
+    </figure>
+    <p>シーンビューを見回すときのカメラの操作方法と、移動の速さを決めるメニューです。上から次の順に並びます。</p>
+    <ol>
+      <li><b>操作プリセット</b>：見出しの下に、今使っているプリセット名（画像では <b>RePlay Hybrid - My</b>）が ▶ 付きで表示されます。マウスを乗せると、選べるプリセットの一覧が開きます。一覧では名前の後ろに、チーム共有のものは <b>[Shared]</b>、自分用のものは <b>[Personal]</b> が付きます。</li>
+      <li><b>プリセット管理...</b>：<b>カメラ操作プリセット</b> ウィンドウを開き、プリセットを作ったり編集したりします。</li>
+      <li><b>移動速度（active preset）</b>：「現在: 5.000」のように今の速さが表示され、その下に 0.5、1.0、2.5、5.0、10、25、50、100、250、500、1000 の候補が並びます。今の速さと同じ候補には ✓ が付きます。クリックするとその速さになります。</li>
+      <li><b>自由入力（上限なし）</b>：候補に無い速さを数値で入れる欄です。0 より大きい値だけが使われます。</li>
+    </ol>
+    <div class="note"><strong>共有プリセットは自動でコピーされます</strong>いちばん下に「他人の Shared preset は選択だけ。編集時は My copy を作ります」と表示されているとおり、チーム共有のプリセットを選んだまま速さを変えると、自分用のコピーが作られ、そちらに保存されます。共有プリセット自体は変わりません。</div>
+
+    <h2 id="ui">UI</h2>
+    <figure>
+      <img src="../images/editor/menu-ui.png" alt="UI メニューを開いたところ。フォーカス表示管理の 1 項目だけがある">
+      <figcaption>UI メニュー</figcaption>
+    </figure>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>説明</th></tr>
+      <tr><td>フォーカス表示管理...</td><td><b>UI フォーカス表示</b> ウィンドウを開きます。ゲーム内 UI で、今フォーカスが当たっている部品に付く枠線を表示するかどうか、その色と太さを決めます。この設定はシーンごとではなく<b>プロジェクト設定</b>に保存され、ゲーム全体の既定値になります。<b>Window &gt; UI フォーカス表示...</b> と同じウィンドウです。</td></tr>
+    </table>
+    </div>
+
+    <h2 id="window">Window</h2>
+    <figure>
+      <img src="../images/editor/menu-window.png" alt="Window メニューを開いたところ。パネルの表示切り替え、Workspace の移動、各種ウィンドウ、見た目の設定が並んでいる">
+      <figcaption>Window メニュー（Scene Workspace にいるとき）</figcaption>
+    </figure>
+    <p>パネルやウィンドウを出したり消したりするメニューです。区切り線で 6 つのまとまりに分かれています。項目の右に ✓ が付いているものは、今表示されているパネルです。クリックするたびに表示と非表示が切り替わります。</p>
+
+    <div class="warning"><strong>UI Workspace と Motion Workspace では出ないウィンドウがあります</strong>Window メニューの項目は、どの Workspace でも同じように並びます。しかし UI Workspace と Motion Workspace にいる間は、Hierarchy（Motion では出ます）、Inspector、Workspace、Validation / Diagnostics、シーンメモ、Scene Flow、カメラ操作プリセット、Collision Diagnostics、ImGui Metrics、シェーダ一覧、Shader Composer、スクリーンショット回帰 は、✓ を付けても描かれません。Scene Workspace に戻すと出ます。どの Workspace でも出るのは、Scene / Game View、Project / Assets、イージングカーブ、Console、DX12 Debug、UI フォーカス表示、キー割り当て などです。</div>
+
+    <h3>パネルの表示</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>説明</th></tr>
+      <tr><td>Scene / Game View</td><td>中央のシーンビューとゲームビュー</td></tr>
+      <tr><td>Hierarchy</td><td>左の階層パネル（シーン内の GameObject の一覧）</td></tr>
+      <tr><td>Inspector</td><td>右のインスペクターパネル（選択中のものの中身）</td></tr>
+      <tr><td>Project / Assets</td><td>下段のプロジェクトパネル（アセットの一覧）</td></tr>
+      <tr><td>イージングカーブ</td><td>イージングカーブを編集するパネル</td></tr>
+      <tr><td>Console</td><td>下段のコンソール（ログ）</td></tr>
+      <tr><td>Workspace</td><td>下段のワークスペースパネル</td></tr>
+      <tr><td>Validation / Diagnostics</td><td>下段の検証と診断のパネル。シーンの問題点が WARN などで一覧されます</td></tr>
+      <tr><td>DX12 Debug</td><td>描画（DirectX 12）の状態を確認するパネル</td></tr>
+      <tr><td>UI フォーカス表示...</td><td>UI メニューの「フォーカス表示管理...」と同じ <b>UI フォーカス表示</b> ウィンドウ</td></tr>
+    </table>
+    </div>
+
+    <h3>Workspace の切り替え</h3>
+    <p>エディターには作業ごとの画面構成（Workspace）が 3 つあります。今いる Workspace には ✓ が付きます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>説明</th></tr>
+      <tr><td>Scene Workspaceへ</td><td>シーンを組み立てる通常の画面に戻ります。</td></tr>
+      <tr><td>UI Workspaceへ</td><td>ゲーム内 UI を作る画面に切り替えます。</td></tr>
+      <tr><td>Motion Workspaceへ</td><td>モーション（アニメーション）を作る画面に切り替えます。</td></tr>
+    </table>
+    </div>
+    <p>Workspace によって、このまとまりの下に項目が増えます。</p>
+    <ul>
+      <li><b>UI Workspace</b> にいるとき：<b>UI 階層</b>、<b>UI インスペクター</b></li>
+      <li><b>Motion Workspace</b> にいるとき：<b>Motion レイヤー</b>、<b>Motion プレビュー</b>、<b>Motion インスペクター</b>、<b>タイムライン</b>、<b>グラフエディター</b></li>
+    </ul>
+
+    <h3>シーンの補助ウィンドウ</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>説明</th></tr>
+      <tr><td>シーンメモ</td><td>シーンに書き残すメモのウィンドウ</td></tr>
+      <tr><td>Scene Flow</td><td>シーンからシーンへの移り変わりを組み立てるウィンドウ</td></tr>
+      <tr><td>カメラ操作プリセット</td><td>カメラメニューの「プリセット管理...」と同じウィンドウ</td></tr>
+      <tr><td>Collision Diagnostics</td><td>当たり判定の状態を調べるウィンドウ</td></tr>
+      <tr><td>ImGui Metrics</td><td>エディターの画面部品（ImGui）の内部状態を表示する、開発者向けのウィンドウ</td></tr>
+    </table>
+    </div>
+
+    <h3>シェーダーと見た目の確認</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>押せる条件</th><th>説明</th></tr>
+      <tr><td>シェーダ一覧</td><td>いつでも</td><td>使えるシェーダーの一覧</td></tr>
+      <tr><td>Shader Composer</td><td>Shader Composer のアセットを開いているとき</td><td>シェーダーを組み立てるウィンドウ</td></tr>
+      <tr><td>スクリーンショット回帰</td><td>いつでも</td><td>基準の画面写真と今の画面を比べて、見た目が変わっていないかを確かめるウィンドウ</td></tr>
+    </table>
+    </div>
+
+    <h3>レイアウトと見た目</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>説明</th></tr>
+      <tr><td>レイアウトを初期化</td><td>パネルの配置を最初の状態に戻します。</td></tr>
+      <tr><td>キー割り当て</td><td>ショートカットキーを変えるウィンドウを開きます。</td></tr>
+      <tr><td>UI の見た目 ▶</td><td>エディター自体の色や文字の大きさを変えます。次の節で説明します。</td></tr>
+    </table>
+    </div>
+
+    <h3 id="window-style">UI の見た目</h3>
+    <p><b>Window &gt; UI の見た目</b> にマウスを乗せると、エディターの見た目を調整するサブメニューが開きます。ここで変えた内容は、使用中の見た目プリセットに保存されます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>部分</th><th>内容</th></tr>
+      <tr><td>見た目プリセット</td><td>プリセットを選ぶ一覧です。名前の後ろに、自分用は <b>[個人]</b>、チーム共有は <b>[共有]</b> が付きます。下の入力欄に名前を入れて <b>名前を付けて保存</b> を押すと、今の見た目を自分用プリセットとして保存します。<b>個人コピー</b> は今のプリセットを自分用に複製します。自分用プリセットを選んでいるときだけ、<b>チーム共有コピー</b>（「プリセット名 Shared」という名前で共有用に複製）と <b>削除</b> が表示されます。組み込みの既定プリセットは削除できません。</td></tr>
+      <tr><td>大きさ</td><td><b>ボタンの余白</b>（×0.60〜×3.00）、<b>文字の大きさ</b>（×0.70〜×2.50）、<b>テクスチャ見本の大きさ</b>（×1.5〜×12.0。マテリアルスロットに出るテクスチャの見本の大きさ）のスライダーです。</td></tr>
+      <tr><td>文字色</td><td>エディターの文字の色です。</td></tr>
+      <tr><td>Component カテゴリ色</td><td><b>カテゴリごとの色</b> を開くと、コンポーネントの分類（Core、Rendering など）ごとに、インスペクターの見出しと仕切りに使う色を選べます。<b>カテゴリ色を既定へ戻す</b> で元に戻ります。</td></tr>
+      <tr><td>種類別アイコン...</td><td>種類ごとのアイコンを設定するウィンドウを開きます。</td></tr>
+      <tr><td>詳細</td><td>開くと <b>色</b>（全体の背景、パネルの背景、見出しの背景、ツールバーの背景、枠線、補助文字、無効な文字、強調、選択中、ホバー、操作中、成功、警告、エラー、見つからない項目、Prefab、通常の当たり判定、トリガーの当たり判定、主な当たり判定）、<b>余白と大きさ</b>（ウィンドウの余白、項目の間隔、パネルの間隔、見出しの高さ、ツールバーの高さ、入力欄の高さ、基準の文字サイズ）、<b>枠</b>（枠線の太さ、角の丸み）を細かく変えられます。<b>詳細を既定へ戻す</b> で元に戻ります。</td></tr>
+      <tr><td>カテゴリ色を元に戻す／カテゴリ色をやり直す</td><td>見た目の変更を 1 つ取り消す／やり直します。名前は「カテゴリ色」ですが、大きさや色など、このサブメニューでの変更すべてが対象です。</td></tr>
+      <tr><td>大きめにする</td><td>ボタンの余白を ×1.80、文字の大きさを ×1.30 にします。</td></tr>
+      <tr><td>既定へ戻す</td><td>組み込みの既定プリセットに切り替えます。</td></tr>
+    </table>
+    </div>
+
+    <h2 id="run">実行</h2>
+    <figure>
+      <img src="../images/editor/menu-run.png" alt="実行メニューを開いたところ。実行、一時停止、停止の 3 項目がある">
+      <figcaption>実行メニュー（実行していないとき）</figcaption>
+    </figure>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>ショートカット</th><th>押せる条件</th><th>説明</th></tr>
+      <tr><td>▲ 実行</td><td><kbd>F5</kbd></td><td>実行していないとき</td><td>今のシーンでゲームを動かします。</td></tr>
+      <tr><td>││ 一時停止</td><td></td><td>実行中</td><td>ゲームを一時停止します。一時停止中は項目名が <b>▲ 再開</b> に変わり、押すと続きから動きます。</td></tr>
+      <tr><td>■ 停止</td><td><kbd>Shift</kbd>+<kbd>F5</kbd></td><td>実行中、または実行の準備中</td><td>ゲームを止めて、編集の状態に戻ります。</td></tr>
+    </table>
+    </div>
+
+    <h2 id="help">Help</h2>
+    <figure>
+      <img src="../images/editor/menu-help.png" alt="Help メニューを開いたところ。エディター名と説明文が表示されている">
+      <figcaption>Help メニュー</figcaption>
+    </figure>
+    <p>エディターの名前と、「SceneをGameObjectとComponentの組み合わせで制作します。」という説明文が表示されます。押せる項目はありません。</p>
+    <div class="warning"><strong>表記について</strong>Help メニューには「Direct3D 11」と表示されますが、描画には DirectX 12 を使っています。表記が更新されていないだけです。</div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>閉じてしまったコンソールを出す</h3>
+    <ol>
+      <li><b>Window</b> を開きます。</li>
+      <li><b>Console</b> を選ぶと、下段にコンソールが出ます。並びごと崩れたときは <b>レイアウトを初期化</b> を選びます。</li>
+    </ol>
+    <h3>カメラの移動を遅くする</h3>
+    <ol>
+      <li><b>カメラ</b> を開き、<b>移動速度（active preset）</b> の下の候補から、今より小さい値（例：1.0）を選びます。</li>
+      <li>候補に無い値にしたいときは、<b>自由入力（上限なし）</b> に数値を入れます。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="shortcuts.html">ショートカット一覧</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

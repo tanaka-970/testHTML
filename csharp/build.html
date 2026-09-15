@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>ビルドと、動かないとき - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / C# スクリプト</div>
+    <h1>ビルドと、動かないとき</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>C# スクリプトは、書いたあとにビルド（コンパイル）して、エディターに読み込ませると動くようになります。このページでは、ビルドのしかたと、スクリプトが動かないときに見る場所を説明します。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>.cs を書き換えたのに、ゲームの動きが変わらないとき</li>
+      <li>作ったスクリプトが、Add Component の一覧に出てこないとき</li>
+      <li>インスペクターの状態に Unresolved や Error と出ているとき</li>
+      <li>別の PC でプロジェクトを開き、はじめてスクリプトを動かすとき</li>
+    </ul>
+
+    <h2 id="requirements">必要なもの</h2>
+    <ul>
+      <li><b>.NET 8 SDK</b>。エディターは、環境変数 <code>DOTNET_ROOT</code>、<code>C:\Program Files\dotnet</code>、<code>C:\Program Files (x86)\dotnet</code> の順に探します。見つからないと「hostfxr.dll was not found. Install .NET 8 SDK/runtime.」と出ます。</li>
+      <li>コードの編集には Visual Studio を使います。スクリプトを作ると Visual Studio で開きます。</li>
+    </ul>
+
+    <h2 id="panel">ビルドのボタン</h2>
+    <p><b>プロジェクト</b> ウィンドウの <b>C# Scripts</b> の欄にあります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>働き</th></tr>
+      <tr><td><b>C# をすべて更新</b>（青いボタン）</td><td>スクリプトの一覧を作り直し、ビルドして読み込みます。迷ったらこれを押します</td></tr>
+      <tr><td><b>自動更新</b>（チェック）</td><td>オンにすると、.cs を保存したときに自動でビルドします</td></tr>
+      <tr><td><b>Open Selected .cs</b></td><td>プロジェクトパネルで選んでいる .cs を Visual Studio で開きます</td></tr>
+      <tr><td>変更検出 → まもなく更新<br>変更検出済み（自動更新は無効）</td><td>.cs の変更を見つけたときに、ボタンの右に黄色で出ます</td></tr>
+      <tr><td><b>個別に実行</b> &gt; <b>Refresh C# Catalog</b></td><td>スクリプトの一覧だけを作り直します。新しく作った .cs を Add Component に出したいときなど</td></tr>
+      <tr><td><b>個別に実行</b> &gt; <b>Build &amp;&amp; Reload C#</b></td><td>ビルドと読み込みだけを行います</td></tr>
+    </table>
+    </div>
+    <p>欄の下には、スクリプトのプロジェクトファイル（<code>Scripts/RePlayGameScripts.csproj</code>）とソリューション（<code>Scripts/RePlayScripts.sln</code>）の場所が表示されます。</p>
+
+    <h3 id="auto">自動でビルドされるとき</h3>
+    <ul>
+      <li><b>自動更新</b> がオンのとき：エディターは 1 秒ごとに .cs の保存を確かめます。保存を見つけた次の確認で、ほかに保存が続いていなければビルドします（Visual Studio が複数のファイルを続けて保存しても 1 回で済みます）。コンソールに「C# の変更を検出したので自動で再コンパイルします」と出ます。</li>
+      <li>Play を押したとき：ビルドしたものが無いか、.cs の方が新しいと、Play の前にビルドします。コンソールに「C# のソースが Assembly より新しいため、Play の前にビルドします」などと出ます。</li>
+    </ul>
+
+    <h3 id="failure">ビルドに失敗したとき</h3>
+    <ul>
+      <li>コンパイルエラーはコンソールに、エラー番号、内容、ファイル、行とともに出ます。ファイルと行が付いたログは、選んで Visual Studio で開けます（<a href="../editor/console.html">コンソール</a>）。</li>
+      <li>「C# Compile/Reload 失敗。直前に成功した Assembly は維持しています。」と出て、前に成功したビルドのままで動き続けます。直したつもりの変更が反映されていないときは、まずこれを疑います。</li>
+      <li>同じ内容のまま失敗していると、Play のたびに同じビルドを繰り返しません。.cs を直して保存するか、<b>Build &amp;&amp; Reload C#</b> を押すと、もう一度ビルドします。</li>
+    </ul>
+
+    <h2 id="status">インスペクターの状態表示</h2>
+    <p>Script コンポーネントの見出しは「（クラス名） (Script)」です。クラスが決まっていないときは「Script (未指定)」になります。その下に <b>状態</b> が出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>状態</th><th>表示</th><th>意味と対処</th></tr>
+      <tr><td>Running</td><td>インスタンス生成済み。Update が回っています</td><td>Play 中で、動いています</td></tr>
+      <tr><td>Loaded</td><td>型は解決済み。Play を押すとインスタンスが作られます</td><td>正常です。編集中はこの状態です</td></tr>
+      <tr><td>Unresolved</td><td>型が未解決。Build &amp;&amp; Reload C# と Refresh C# Catalog を試してください</td><td>ビルドが済んでいないか、クラスの名前や <code>ReplayGuid</code> が変わってスクリプトが見つかりません</td></tr>
+      <tr><td>Unassigned</td><td>Script が未指定です</td><td>どのスクリプトかが決まっていません。Add Component から付け直します</td></tr>
+      <tr><td>Error</td><td>下の理由を確認してください</td><td>赤い「理由」の欄に原因が出ます</td></tr>
+    </table>
+    </div>
+    <p>その下に「インスタンス: あり / なし」が出ます。</p>
+    <p>Unresolved の間も、インスペクターで設定したフィールドの値は消えずに残り、スクリプトが見つかると元に戻ります。</p>
+
+    <h2 id="checklist">動かないときに見る順番</h2>
+    <ol>
+      <li><b>Play しているか</b>：スクリプトは Play 中しか動きません。</li>
+      <li><b>インスペクターの状態</b>：Loaded や Running 以外なら、上の表の対処をします。</li>
+      <li><b>コンソール</b>：コンパイルエラー、例外、「… は呼び出されません」の警告が出ていないか。</li>
+      <li><b>GameObject とコンポーネントが有効か</b>：非アクティブの GameObject や、チェックを外したコンポーネントでは Update が呼ばれません。</li>
+      <li><b><code>Saved/engine_log.txt</code></b>：C# そのものが起動できていないときの原因が書かれます。「C# を用意できませんでした。C# の Component はすべて動きません」と出ていたら、.NET の場所やビルドを確かめます。</li>
+    </ol>
+
+    <h3 id="log-messages">よく出るメッセージ</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>メッセージ</th><th>意味</th></tr>
+      <tr><td>hostfxr.dll was not found. Install .NET 8 SDK/runtime.</td><td>.NET が見つかりません</td></tr>
+      <tr><td>Managed API runtimeconfig is missing: （場所）</td><td>エンジン側の C# ライブラリ（RePlayEngine.Managed）がビルドされていません。<b>C# をすべて更新</b> を押します</td></tr>
+      <tr><td>Native API table mismatch: … Rebuild RePlayEngine.Managed and the engine together.</td><td>エンジン本体と C# ライブラリの版が合っていません。両方をビルドし直します</td></tr>
+      <tr><td>Script Typeが見つかりません。Refresh C# Catalogを実行してください</td><td>.cs をドロップしたとき、一覧にまだ載っていません</td></tr>
+    </table>
+    </div>
+
+    <h2 id="files">ファイルの置き場所</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>場所</th><th>中身</th></tr>
+      <tr><td><code>Scripts/</code></td><td>ゲームのスクリプト（.cs）。サブフォルダーの .cs もビルドされます。<code>bin</code> と <code>obj</code> フォルダーは対象外です</td></tr>
+      <tr><td><code>Scripts/RePlayGameScripts.csproj</code></td><td>スクリプトのプロジェクト（.NET 8）。名前空間の既定は <code>Game</code></td></tr>
+      <tr><td><code>Scripts/RePlayScripts.sln</code></td><td>Visual Studio で開くソリューション</td></tr>
+      <tr><td><code>Scripts/bin/（構成）/net8.0/RePlayGameScripts.dll</code></td><td>ビルドされたスクリプト</td></tr>
+      <tr><td><code>Managed/RePlayEngine.Managed/</code></td><td>エンジンの C# ライブラリ（<code>using ReplayEngine;</code> で使うもの）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>はじめて開いたプロジェクトでスクリプトを動かす</h3>
+    <ol>
+      <li>.NET 8 SDK を入れておきます。</li>
+      <li>エディターを起動し、プロジェクト ウィンドウの C# Scripts の欄で <b>C# をすべて更新</b> を押します。</li>
+      <li>コンソールに「===== C# 一括更新 終了 (Catalog=OK / Build=OK) =====」と出ることを確かめます。</li>
+      <li>スクリプトの付いた GameObject を選び、インスペクターの状態が Loaded になっていることを確かめてから、Play を押します。</li>
+    </ol>
+    <h3>直したはずの変更が反映されない</h3>
+    <ol>
+      <li>コンソールに「C# Compile/Reload 失敗。直前に成功した Assembly は維持しています。」が出ていないか見ます。出ていたら、前のビルドのまま動いています。</li>
+      <li>その上に出ているコンパイルエラーを選び、Visual Studio で該当の行を開いて直し、保存します。</li>
+      <li><b>自動更新</b> がオフなら、<b>個別に実行</b> &gt; <b>Build &amp;&amp; Reload C#</b> を押します。</li>
+      <li>エラーが出なくなったら、もう一度 Play して確かめます。</li>
+    </ol>
+    <h3>作ったスクリプトが Add Component に出ない</h3>
+    <ol>
+      <li><b>個別に実行</b> &gt; <b>Refresh C# Catalog</b> を押して、スクリプトの一覧を作り直します。</li>
+      <li>それでも出ないときは、コンソールに一覧の更新の失敗（ReplayGuid やクラス名の重なりなど）が出ていないか見ます。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="index.html">はじめてのスクリプト</a></li>
+      <li><a href="lifecycle.html">呼ばれる順番（ライフサイクル）</a></li>
+      <li><a href="../editor/console.html">コンソール</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

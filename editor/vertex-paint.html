@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>頂点カラーペイント - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
+    <h1>頂点カラーペイント</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>頂点カラーペイントは、モデルの頂点ひとつひとつに 0〜1 の値を、シーンビューの上から筆で塗るように書き込む機能です。<b>モデリング Workspace</b> の <b>ワークスペース</b> パネルにあります。塗った値はモデルとは別のファイル（<code>.replayvcolor</code>）に保存され、モデルそのものは書き換えません。</p>
+    <p>頂点カラーは「色」という名前ですが、見た目の色として直接出るわけではありません。シェーダーが「この頂点は影になりやすい」などの目印として読む値です。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li><b>GGST Toon</b> のマテリアルで、首の下や服のしわなど、光が当たっても影にしておきたい場所を決めたいとき（R チャンネル）</li>
+      <li>自分のシェーダーで使うための目印の値を、頂点に書き込んでおきたいとき</li>
+    </ul>
+
+    <h2 id="effect">塗った値がどう使われるか</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>チャンネル</th><th>組み込みのシェーダーでの使われ方</th></tr>
+      <tr><td>R</td><td><b>GGST Toon</b>：R が マテリアルの <b>しきい値微調整</b> より小さい頂点は、光の向きに関係なく影の色になります。R が小さいほど、光の当たる側でも影になりやすくなります。R = 0 ならいつも影です</td></tr>
+      <tr><td>G、B、A</td><td>マテリアルの Shader Stack の <b>輪郭線</b> レイヤーが、距離で太さを変える方式のときに読みます。A は太さ（A × 2 倍）、G はカメラからの距離による太さの増し分（1 + G 倍）、B は輪郭線を奥へずらす量です。そのほかの組み込みのシェーダーは読みません</td></tr>
+    </table>
+    </div>
+    <p>ほかのマテリアル（PBR、Toon、Shader Stack の StylizedCharacter レイヤーなど）では、今の DirectX 12 の描画では頂点カラーは見た目に影響しません。</p>
+    <div class="warning"><strong>塗って保存すると輪郭線が変わることがあります</strong>塗っていないモデルは G = 0、B = 0、A ≒ 0.5 なので、輪郭線は設定どおりの太さです。頂点カラーペイントは、ファイルが無いモデルをすべて 1（白）から塗り始めます。そのまま保存すると G・B・A も 1 になり、輪郭線レイヤーのあるマテリアルでは、輪郭線が太くなって奥へずれます。輪郭線を使うモデルでは、G を 0、B を 0、A を 0.5 に <b>一定値で置換</b> してから保存してください。</div>
+    <div class="note"><strong>塗っていないモデルの値</strong><code>.replayvcolor</code> が無いモデルは、glTF に頂点カラー（<code>COLOR_1</code>、無ければ <code>COLOR_0</code>）が入っていればそれを使います。全頂点が同じ色のものは無いものとして扱います。どちらも無いときは R = 1、G = 0、B = 0、A ≒ 0.5 として描かれます。R が 1 なので、GGST Toon の見た目は変わりません。</div>
+
+    <h2 id="start">塗れる状態にする</h2>
+    <p>次の条件がすべてそろったときだけ塗れます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>条件</th><th>そろっていないとき</th></tr>
+      <tr><td>Workspace が <b>モデリング</b></td><td>インスペクターの編集テーブルで「モデリング」を選びます（<a href="workspaces.html">Workspace</a>）</td></tr>
+      <tr><td>ワークスペースパネルの <b>頂点カラーペイント</b> がオン</td><td>下段の <b>ワークスペース</b> タブ（<b>Window</b> &gt; <b>Workspace</b>）で入れます</td></tr>
+      <tr><td>シーンビューを表示している（ゲームビューではない）</td><td>表示をシーンに切り替えます</td></tr>
+      <tr><td>実行中ではない</td><td>停止します</td></tr>
+      <tr><td>エディターを表示していて、エディターが入力を受けている</td><td><kbd>F1</kbd>（エディタ表示）や <kbd>F3</kbd>（入力キャプチャ）で戻します（<a href="shortcuts.html">ショートカット一覧</a>）</td></tr>
+      <tr><td>選んでいる GameObject に、モデルファイルを使う Mesh Renderer か Skinned Mesh Renderer がある</td><td>「モデルファイルを持つ MeshRenderer / SkinnedMeshRenderer を選択してください。」と出ます。Cube などの組み込みの形は塗れません</td></tr>
+    </table>
+    </div>
+    <p>準備ができると「白は１、黒は０。Scene View の左ドラッグで選択モデルを塗ります。」と出ます。Landscape（地形）を塗っている途中でオンにしようとすると、「Landscape のストロークを終了してから切り替えてください。」と出てオンになりません。</p>
+    <div class="note"><strong>塗っている間は画面が白黒になります</strong>塗れる状態のあいだ、シーンビュー全体が、選んでいるチャンネルの値の濃淡（1 が白、0 が黒）で表示されます。マテリアルの見た目は一時的に消えます。<b>頂点カラーペイント</b> をオフにすると元に戻ります。</div>
+
+    <h2 id="panel">パネルの欄</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>既定</th><th>範囲</th><th>働き</th></tr>
+      <tr><td><b>頂点カラーペイント</b></td><td>オフ</td><td>—</td><td>塗る機能のオン・オフ</td></tr>
+      <tr><td><b>チャンネル</b></td><td>R</td><td>R / G / B / A</td><td>書き込むチャンネル。ほかのチャンネルの値は変わりません</td></tr>
+      <tr><td><b>モード</b></td><td>減算</td><td>加算 / 減算 / 一定値で置換 / ならし</td><td>塗り方（下の表）</td></tr>
+      <tr><td><b>半径（ワールド）</b></td><td>0.25</td><td>0.001〜10000</td><td>筆の大きさ。画面のピクセルではなく、シーンの中の長さです</td></tr>
+      <tr><td><b>強さ（毎秒）</b></td><td>1</td><td>0〜10</td><td>1 秒あたりに変える量</td></tr>
+      <tr><td><b>減衰</b></td><td>1</td><td>0.01〜8</td><td>筆の中心から外側への弱まり方。大きいほど中心だけが強く塗られます</td></tr>
+      <tr><td><b>置換値</b></td><td>0</td><td>0〜1</td><td><b>一定値で置換</b> のときだけ出ます。近づける値です</td></tr>
+    </table>
+    </div>
+    <p>対象のモデルを選んでいると、その下に「保存先: 場所」、「未保存の変更あり」か「変更なし」、<b>頂点カラーを保存</b>、<b>頂点カラーを再読込</b> が出ます。選んでいないときは「モデルを選択し、ペイントをオンにしてください。」です。いちばん下には最後の結果（「対象頂点: 数 / 面: 番号」など）が出ます。</p>
+
+    <h3 id="modes">モード</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>モード</th><th>動き</th></tr>
+      <tr><td>加算</td><td>値を増やします（白に近づく）。押している時間に比例して増えます</td></tr>
+      <tr><td>減算</td><td>値を減らします（黒に近づく）</td></tr>
+      <tr><td>一定値で置換</td><td>値を <b>置換値</b> に近づけます。近づくほどゆっくりになり、行き過ぎません</td></tr>
+      <tr><td>ならし</td><td>値を、筆の範囲の中にあるとなりの頂点の平均に近づけます（範囲の中にとなりが無い頂点は変わりません）。境目をぼかすときに使います</td></tr>
+    </table>
+    </div>
+    <p>1 回に変わる量は「強さ × 経過時間 × 重み」です。重みは「(1 − 中心からの距離 ÷ 半径) の <b>減衰</b> 乗」で、中心が 1、半径の端が 0 です。経過時間は 1 フレームあたり 0.1 秒までに抑えられるので、重いときに一気に塗られることはありません。値はいつも 0〜1 に収まります。</p>
+
+    <h2 id="paint">塗る操作</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>操作</th><th>働き</th></tr>
+      <tr><td>モデルの上にマウスを乗せる</td><td>カーソルに黄色の小さな円が出ます。円が出ている場所だけ塗れます</td></tr>
+      <tr><td>左ドラッグ</td><td>塗ります。ボタンを押してから放すまでが 1 回（1 ストローク）です</td></tr>
+      <tr><td><kbd>Alt</kbd>+左ドラッグ、右ボタンを押しながらの操作</td><td>塗らずに、ふだんのカメラ操作になります。塗れる状態のあいだ、<kbd>Alt</kbd> なしの左ドラッグはカメラを動かしません</td></tr>
+      <tr><td><kbd>Ctrl</kbd> を押しながら</td><td>塗りません</td></tr>
+      <tr><td><kbd>Esc</kbd></td><td>塗っている途中のストロークを取り消し、<b>頂点カラーペイント</b> をオフにします</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd>（塗っている途中）</td><td>そのストロークを取り消します</td></tr>
+      <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd>（塗り終えたあと）</td><td>ストローク 1 回ぶんずつ、元に戻す・やり直す</td></tr>
+    </table>
+    </div>
+    <p>筆が届く範囲は、マウスが当たった面から、面どうしがつながっている範囲のうち、半径の中にある頂点です。つながっていない別の部品（離れた髪の房など）は、半径の中にあっても塗られません。同じ位置に重なっている頂点（UV の切れ目など）は、まとめて同じ値になります。</p>
+    <p>塗っている途中で選択を変えたり、チャンネルやモードを変えたり、ペイントをオフにしたりすると、そこでストロークが確定します。</p>
+
+    <h2 id="save">保存と再読込</h2>
+    <div class="warning"><strong>シーンの保存では保存されません</strong>塗った値は、<b>頂点カラーを保存</b> を押したときだけファイルに書かれます。<kbd>Ctrl</kbd>+<kbd>S</kbd>（シーンの保存）では保存されません。「未保存の変更あり」と出ていたら、保存を押してください。</div>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ボタン</th><th>働き</th><th>表示</th></tr>
+      <tr><td><b>頂点カラーを保存</b></td><td>モデルの隣に <code>（モデルのファイル名）.replayvcolor</code> を書きます（例：<code>Hero.glb.replayvcolor</code>）。書いたあとに読み直して、色が一致するかを確かめます</td><td>「保存・色一致を確認しました: 場所」。一致しなければ「保存後の色照合に失敗しました。」</td></tr>
+      <tr><td><b>頂点カラーを再読込</b></td><td>ファイルの内容に戻します。この操作も <kbd>Ctrl</kbd>+<kbd>Z</kbd> で元に戻せます</td><td>「再読込しました: 場所」。ファイルが無ければ「頂点カラーを開けません」</td></tr>
+    </table>
+    </div>
+    <div class="note"><strong>同じモデルを使う物はすべて同じ色になります</strong>頂点カラーはモデルのファイルごとに 1 つです。同じモデルを置いた GameObject が複数あると、どれか 1 つで塗っても、全部に同じ値が付きます（パネルにも「同じモデル資産の全インスタンスで色を共有します。」と出ます）。物ごとに変えたいときは、モデルのファイルを複製して別のモデルにします。</div>
+
+    <h2 id="errors">うまくいかないとき</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>原因と対処</th></tr>
+      <tr><td>「頂点カラーの指紋がモデルと一致しません」</td><td>保存したあとにモデルを作り直し、頂点の数・順番・位置が変わりました。古い <code>.replayvcolor</code> は使えません。ファイルを別の場所へ移してから塗り直します</td></tr>
+      <tr><td>「CPU メッシュを取得できないか、頂点・インデックスが不正です。」</td><td>モデルの形のデータを読めません。モデルが正しく表示されているか確かめます</td></tr>
+      <tr><td>「描画形式の切替で頂点番号が変わったため、ペイントを中止しました。」</td><td>同じモデルを、Mesh Renderer と Skinned Mesh Renderer の両方で使い分けたなどで、頂点の並びが変わりました。一方だけで塗ります</td></tr>
+      <tr><td>黄色の円が出ない</td><td>マウスがモデルに当たっていないか、上の「塗れる状態にする」の条件がそろっていません</td></tr>
+      <tr><td>塗ったのに見た目が変わらない</td><td>マテリアルが GGST Toon で、チャンネルが R か確かめます。ほかのマテリアルやチャンネルは見た目に出ません</td></tr>
+    </table>
+    </div>
+
+    <h2 id="file">ファイルの形式</h2>
+    <p><code>.replayvcolor</code> は、先頭に文字のヘッダーがあり、そのあとに色のバイト列が続くファイルです（版 1）。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>行</th><th>内容</th></tr>
+      <tr><td><code>VERTEX_COLOR_VERSION 1</code></td><td>形式の版</td></tr>
+      <tr><td><code>MESH_COUNT 数</code></td><td>中に入っているメッシュの数</td></tr>
+      <tr><td><code>MESH 番号 頂点数 インデックス数 ハッシュ</code></td><td>メッシュごとの「指紋」。ハッシュは頂点の位置から作る 16 桁の 16 進数です。書かれているメッシュが 1 つでもモデルと合わなければ、ファイル全体を読みません。ファイルに書かれていないメッシュは、白（すべて 1）として扱います</td></tr>
+      <tr><td><code>COLORS バイト数</code></td><td>このあとに、頂点 1 つにつき R・G・B・A の 4 バイトが並びます。合計は 1 GiB までです</td></tr>
+    </table>
+    </div>
+    <p>手で編集することは考えられていません。壊れていると「頂点カラーのヘッダが不正です」「頂点カラーのファイル長が不正です」などが出ます。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>GGST Toon のキャラクターで、首の下をいつも影にする</h3>
+    <ol>
+      <li>キャラクターのモデル（<code>.glb</code>）を置き、マテリアルの Shader を <b>GGST Toon</b> にしておきます（<a href="../windows/material-editor.html">マテリアルの編集</a>）。</li>
+      <li>インスペクターの <b>編集テーブル</b> で「モデリング」を選び、階層パネルでキャラクターの GameObject を選びます。</li>
+      <li>下段の <b>ワークスペース</b> タブで <b>頂点カラーペイント</b> をオンにします。シーンビューが白黒になり、塗っていなければ全体が白く見えます。</li>
+      <li><b>チャンネル</b> を R、<b>モード</b> を「一定値で置換」、<b>置換値</b> を 0 にします。<b>半径（ワールド）</b> は、首まわりが収まるくらい（例：0.05）にします。</li>
+      <li>首の下を左ドラッグでなぞります。黒くなった場所が、いつも影になる場所です。</li>
+      <li>境目を柔らかくしたいときは、<b>モード</b> を「ならし」にして境目をなぞります。</li>
+      <li><b>頂点カラーを保存</b> を押し、「保存・色一致を確認しました」と出たことを確かめます。</li>
+      <li><b>頂点カラーペイント</b> をオフにして、ふだんの見た目で影の出方を確かめます。</li>
+    </ol>
+    <h3>塗りすぎた場所を元に戻す</h3>
+    <ol>
+      <li>直前のストロークなら <kbd>Ctrl</kbd>+<kbd>Z</kbd> で戻します。</li>
+      <li>広い範囲を戻したいときは、<b>モード</b> を「一定値で置換」、<b>置換値</b> を 1 にしてなぞり直します。</li>
+      <li>保存したときの状態に全部戻したいときは、<b>頂点カラーを再読込</b> を押します。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="workspaces.html">Workspace</a></li>
+      <li><a href="../windows/material-editor.html">マテリアルの編集（GGST Toon）</a></li>
+      <li><a href="../data/index.html">データ形式の一覧</a></li>
+      <li><a href="../components/mesh-renderers.html">メッシュの描画（Mesh / Primitive / Skinned）</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

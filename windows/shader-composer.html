@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Shader Composer - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターのウィンドウ</div>
+    <h1>Shader Composer</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>ノード（箱）を線でつないで、シェーダー（色の計算の仕方）を作るウィンドウです。HLSL を書かなくても、テクスチャに色を掛ける、UV を流す、ディゾルブで消す、といったシェーダーを作れます。つないだグラフは <code>.replayshadergraph</code> ファイルに保存され、<b>Ctrl+S</b> を押すとそこから HLSL ファイルが作られ、コンパイルされます。</p>
+    <div class="note"><strong>このバージョンでできること</strong>ライティングは Unlit（光の影響を受けない）だけです。PBR やトゥーンの陰影は付けられません。</div>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>テクスチャを流して、水面、滝、ベルトコンベアのように見せたいとき（UV Scroll）</li>
+      <li>モデルのふちを光らせたいとき（Fresnel を Emission へつなぐ）</li>
+      <li>少しずつ消えていく見た目を作りたいとき（Noise と Dissolve を Opacity へつなぐ）</li>
+      <li>色や強さを、マテリアルのインスペクターのスライダーで調整できるようにしたいとき（Material Property）</li>
+      <li>UI の画像に、独自の色の加工をかけたいとき（PostProcess を Effect Stack で使う）</li>
+    </ul>
+
+    <h2 id="domain">3 つの種類</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>種類</th><th>使い道</th><th>出力ノード</th><th>HLSL の置き場所</th></tr>
+      <tr><td>Surface</td><td>マテリアルのシェーダーとして、モデルの見た目を決めます</td><td>Surface Output</td><td><code>Shader\Materials\Generated</code></td></tr>
+      <tr><td>Layer</td><td>マテリアルのレイヤーとして、色を重ねます（このビルドでは描画されません。下の注意）</td><td>Layer Output</td><td><code>Shader\Layers\Generated</code></td></tr>
+      <tr><td>PostProcess</td><td><a href="../components/effect-stacks.html#effect-items">Effect Stack</a> の <b>カスタムシェーダー</b> として、描いた画像を加工します</td><td>PostProcess Output</td><td><code>Shader\PostProcess\Generated</code></td></tr>
+    </table>
+    </div>
+    <p>作ったあとで種類は変えられません。</p>
+    <div class="warning"><strong>Layer の種類は描画されません</strong>Layer で作ったシェーダーをマテリアルの Shader Stack に足すと、「[保存済み: カスタム Layer は DX12 描画へ未接続]」と表示され、このビルドの描画には使われません。Surface で作ったシェーダーは、マテリアルの Shader に選べば描画されます。ただし、そのマテリアルに陰影モデルやピクセレーションのレイヤーが有効だと使われません（<a href="material-editor.html#stack">マテリアルの編集</a>）。</div>
+
+    <h2 id="create">作る・開く</h2>
+    <ul>
+      <li><a href="../editor/project.html#create">プロジェクト</a> ウィンドウの <b>Create</b> &gt; <b>Shader</b> &gt; <b>Shader Composer</b> &gt; <b>Surface</b> / <b>Layer</b> / <b>PostProcess</b> で作ります。</li>
+      <li>グラフのファイルは、いま開いているフォルダーに、名前欄の名前で作られます。空なら NewShaderGraph / NewLayerGraph / NewPostProcessGraph です。同じ名前があると末尾に 2、3 … が付きます。</li>
+      <li>同時に「ファイル名_GUID の先頭 8 文字.hlsl」が上の表の場所に作られ、コンパイルされ、Shader Composer ウィンドウが開きます。</li>
+      <li>あとから開くには、プロジェクト ウィンドウで <code>.replayshadergraph</code> をダブルクリックします。閉じたウィンドウは、グラフを一度開いていれば <b>Window</b> &gt; <b>Shader Composer</b> で開き直せます（UI Workspace と Motion Workspace にいる間は出ません。基本などの Workspace で開きます）。</li>
+    </ul>
+    <p>新しく作ったグラフには、次のノードが最初から入っています。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ノード</th><th>内容</th></tr>
+      <tr><td>UV → Texture Property</td><td>HLSL Name「BaseMap」、Display Name「Base Map」</td></tr>
+      <tr><td>Color Property</td><td>Surface では「BaseColor」（Base Color）、Layer と PostProcess では「Tint」</td></tr>
+      <tr><td>Multiply</td><td>テクスチャの色 × Color Property</td></tr>
+      <tr><td>出力ノード</td><td>Multiply の結果を Base Color（Layer では Color）へ</td></tr>
+    </table>
+    </div>
+
+    <h2 id="window">ウィンドウ</h2>
+    <p>最初は 1180 × 720 の浮いたウィンドウで開きます。左がノードを置くキャンバス、右が選んだノードのインスペクターです。</p>
+    <h3 id="window-top">上部</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>内容</th></tr>
+      <tr><td>ファイル名</td><td>保存していない変更があると「 *」が付きます</td></tr>
+      <tr><td>「-&gt; パス」</td><td>生成する HLSL ファイルの場所（表示のみ）</td></tr>
+      <tr><td>状態</td><td>直前の操作の結果（<a href="#status">下記</a>）</td></tr>
+      <tr><td><b>Display</b></td><td>シェーダーの表示名。マテリアルでシェーダーを選ぶ一覧に出る名前です。作ったときはファイル名</td></tr>
+      <tr><td><b>Category</b></td><td>シェーダーの分類。既定は「Project/Composer」</td></tr>
+      <tr><td>Lighting: Unlit (Composer v1)</td><td>ライティングの種類（変えられません）</td></tr>
+    </table>
+    </div>
+
+    <h3 id="menu">メニューバー</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>働き</th></tr>
+      <tr><td><b>Save + Generate + Compile</b>（Ctrl+S）</td><td>グラフを保存し、HLSL を作り、プロジェクトのシェーダーをコンパイルし直します</td></tr>
+      <tr><td><b>Generate Preview</b></td><td>ファイルには書かずに HLSL を作ってみて、作れるかどうかだけを状態に表示します。作れなければ最初のエラーが出ます</td></tr>
+    </table>
+    </div>
+
+    <h3 id="canvas">キャンバスの操作</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>操作</th><th>結果</th></tr>
+      <tr><td>何もないところを右クリック</td><td>ノードを足すメニュー。クリックした場所に置かれます</td></tr>
+      <tr><td>ノードの見出し（上の帯）をクリック</td><td>そのノードを選びます（オレンジの枠）</td></tr>
+      <tr><td>ノードの見出しをドラッグ</td><td>ノードを動かします</td></tr>
+      <tr><td>右端の青い丸（Out）をクリックし、ほかのノードの左の丸（入力）をクリック</td><td>つなぎます。Out を押した後は、オレンジの線がマウスについてきます。右クリックで取りやめます</td></tr>
+      <tr><td>入力の丸を右クリック</td><td>その入力の線を外します</td></tr>
+      <tr><td>Delete（ウィンドウにフォーカスがあるとき）</td><td>選んでいるノードと、その線を消します。出力ノードは消せません（「Output node is protected…」と出ます）</td></tr>
+      <tr><td>中ボタンでドラッグ</td><td>キャンバス全体を動かします。拡大・縮小はできません</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li>1 つの入力には線を 1 本だけつなげます。つなぎ直すと前の線は外れます。1 つの出力からは何本でも出せます。</li>
+      <li>つながっている入力の丸は緑、つながっていない丸は灰色です。つながっていない入力には、<a href="#nodes">ノード一覧</a>の「つながないとき」の値が使われます。</li>
+      <li>自分自身にはつなげません。ぐるっと回ってつながる（循環する）線も置けます。出力ノードにつながる部分に循環があると、生成するときに「Graph に cycle があります」というエラーになります。</li>
+    </ul>
+    <div class="warning"><strong>元に戻せません</strong>Shader Composer の操作は、元に戻す（Ctrl+Z）の対象になりません。大きく変える前に Ctrl+S で保存しておくか、ファイルを複製しておいてください。</div>
+
+    <h3 id="inspector">インスペクター</h3>
+    <p>ノードを選んでいないときは「Node を選択してください」と操作の説明が出ます。選ぶと「ノード名 #番号」と、次の欄が出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ノード</th><th>欄</th></tr>
+      <tr><td>Float</td><td><b>Value</b>（既定 1）</td></tr>
+      <tr><td>Color</td><td><b>Color</b>（既定 白）</td></tr>
+      <tr><td>Float / Color / Texture Property</td><td><b>HLSL Name</b>、<b>Display Name</b>、<b>Category</b>、<b>Tooltip</b>（<a href="#properties">下記</a>）</td></tr>
+      <tr><td>Float Property</td><td><b>Default</b>（既定 1）、<b>Minimum</b>（既定 0）、<b>Maximum</b>（既定 1）。Minimum を Maximum より大きくすると入れ替わります</td></tr>
+      <tr><td>Color Property</td><td><b>Default</b>（既定 白）</td></tr>
+      <tr><td>Texture Property</td><td><b>Default Texture</b>：white / black / gray / bump（既定 white）。マテリアルでテクスチャを指定しないときに使う画像です</td></tr>
+      <tr><td>Fresnel</td><td><b>Fallback Power</b>（0.01〜32、既定 2）。Power の入力をつながないときの値</td></tr>
+      <tr><td>UV Scroll</td><td><b>Fallback Speed</b>（既定 0.1, 0）。Speed をつながないときの値</td></tr>
+      <tr><td>Noise</td><td><b>Fallback Scale</b>（0.01〜256、既定 4）。Scale をつながないときの値</td></tr>
+      <tr><td>Dissolve</td><td><b>Fallback Threshold</b>（0〜1、既定 0.5）、<b>Fallback Edge</b>（0.001〜0.5、既定 0.02）</td></tr>
+      <tr><td>Split Component</td><td><b>Channel</b>：R / X、G / Y、B / Z、A / W（既定 R / X）</td></tr>
+      <tr><td>Rotate UV</td><td><b>Fallback Center</b>（−4〜4、既定 0.5, 0.5）。Center をつながないときの回転の中心</td></tr>
+    </table>
+    </div>
+    <p>表の既定値は、キャンバスでノードを足した直後の値です。</p>
+
+    <h3 id="properties">マテリアルプロパティ</h3>
+    <p>Float / Color / Texture Property のノードは、マテリアルのインスペクターで変えられる項目になります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>意味</th></tr>
+      <tr><td><b>HLSL Name</b></td><td>シェーダーの中での名前。英字か <code>_</code> で始め、英数字と <code>_</code> だけを使います。グラフの中で重なってはいけません。足したときは「Value番号」「Color番号」「Texture番号」</td></tr>
+      <tr><td><b>Display Name</b></td><td>マテリアルのインスペクターに出る名前。空なら HLSL Name を使います</td></tr>
+      <tr><td><b>Category</b></td><td>インスペクターでまとめる見出し。空なら「Composer」</td></tr>
+      <tr><td><b>Tooltip</b></td><td>項目にマウスを乗せたときの説明</td></tr>
+    </table>
+    </div>
+    <p>Float Property は Minimum〜Maximum のスライダー、Color Property は色、Texture Property は画像の欄になります。PostProcess で Texture Property を使ったときの制限は <a href="../components/effect-stacks.html#effect-items">Effect Stack</a> を見てください。</p>
+
+    <h2 id="types">値の型</h2>
+    <p>線を流れる値は、数 1 つ（Float）か、2〜4 個の組（Float2〜Float4）です。色は Float4（R, G, B, A）、UV は Float2 です。</p>
+    <ul>
+      <li>2 つの入力をまとめる計算（Add など）では、同じ型どうし、または数 1 つと組をつなげます。数 1 つと組なら、数を組の全部に使います。Float2 と Float3 のように違う組どうしはエラーです。</li>
+      <li>決まった型が要る入力に違う型をつなぐと、次のように変えます。</li>
+    </ul>
+    <div class="table-wrap">
+    <table>
+      <tr><th>つないだ値</th><th>要る型</th><th>使われる値</th></tr>
+      <tr><td>数 1 つ</td><td>組</td><td>同じ数を並べます（0.5 → (0.5, 0.5, 0.5, 0.5)）</td></tr>
+      <tr><td>組</td><td>数 1 つ</td><td>1 つ目（X / R）</td></tr>
+      <tr><td>Float4</td><td>Float3</td><td>X, Y, Z（R, G, B）</td></tr>
+      <tr><td>Float3 / Float4</td><td>Float2</td><td>X, Y</td></tr>
+      <tr><td>Float2</td><td>Float3</td><td>(X, Y, 0)</td></tr>
+      <tr><td>Float2</td><td>Float4</td><td>(X, Y, 0, 1)</td></tr>
+      <tr><td>Float3</td><td>Float4</td><td>(X, Y, Z, 1)</td></tr>
+    </table>
+    </div>
+
+    <h2 id="nodes">ノード一覧</h2>
+    <p>「結果の型」が「入力と同じ」のノードは、つないだ値の型のまま計算します。</p>
+    <h3 id="nodes-input">Input</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ノード</th><th>結果</th><th>結果の型</th></tr>
+      <tr><td>UV</td><td>メッシュの UV（PostProcess では加工する画像の UV）</td><td>Float2</td></tr>
+      <tr><td>Time</td><td>時間。PostProcess では Effect Stack が渡す時間</td><td>Float</td></tr>
+      <tr><td>Normal</td><td>ワールド空間の法線（長さ 1）。PostProcess にはありません</td><td>Float3</td></tr>
+      <tr><td>View Direction</td><td>表面からカメラへ向かう方向（長さ 1）。PostProcess にはありません</td><td>Float3</td></tr>
+      <tr><td>Float</td><td>Value の数</td><td>Float</td></tr>
+      <tr><td>Color</td><td>Color の色</td><td>Float4</td></tr>
+      <tr><td>Pixel Size</td><td>描画先の 1 ピクセルの大きさ。PostProcess だけ</td><td>Float2</td></tr>
+      <tr><td>Aspect Ratio</td><td>描画先の 幅 ÷ 高さ。PostProcess だけ</td><td>Float</td></tr>
+    </table>
+    </div>
+
+    <h3 id="nodes-property">Material Property</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>メニュー</th><th>入力（つないだとき → つながないとき）</th><th>結果</th><th>結果の型</th></tr>
+      <tr><td>Float / Slider</td><td>なし</td><td>マテリアルで設定した数</td><td>Float</td></tr>
+      <tr><td>Color</td><td>なし</td><td>マテリアルで設定した色</td><td>Float4</td></tr>
+      <tr><td>Texture</td><td>UV → メッシュの UV</td><td>その UV で読んだテクスチャの色</td><td>Float4</td></tr>
+    </table>
+    </div>
+
+    <h3 id="nodes-math">Math</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ノード</th><th>入力とつながないときの値</th><th>結果</th><th>結果の型</th></tr>
+      <tr><td>Add / Subtract / Multiply</td><td>A = 0、B = 0</td><td>A + B、A − B、A × B</td><td>A と B をまとめた型</td></tr>
+      <tr><td>Divide</td><td>A = 0、B = 0</td><td>A ÷ (B + 0.000001)。0 で割ってもエラーにしないためです</td><td>A と B をまとめた型</td></tr>
+      <tr><td>Lerp</td><td>A = 0、B = 1、T = 0.5</td><td>A から B へ T の割合だけ進んだ値。T は数 1 つか、A・B と同じ型</td><td>A と B をまとめた型</td></tr>
+      <tr><td>Gradient / Ramp</td><td>Color A = 0、Color B = 1、Position = 0.5</td><td>Lerp と同じ計算</td><td>A と B をまとめた型</td></tr>
+      <tr><td>Saturate</td><td>In = 0</td><td>0〜1 に収めた値</td><td>入力と同じ</td></tr>
+      <tr><td>Power</td><td>Base = 1、Power = 2</td><td>Base の Power 乗。Base が負なら 0 として計算します</td><td>Base と同じ</td></tr>
+      <tr><td>Sin / Cos / Abs</td><td>In = 0</td><td>sin、cos（ラジアン）、絶対値</td><td>入力と同じ</td></tr>
+      <tr><td>One Minus</td><td>In = 0</td><td>1 − In</td><td>入力と同じ</td></tr>
+      <tr><td>Step</td><td>Edge = 0、X = 0</td><td>X が Edge 以上なら 1、小さければ 0</td><td>2 つをまとめた型</td></tr>
+      <tr><td>Smoothstep</td><td>Edge 0 = 0、Edge 1 = 1、X = 0.5</td><td>X が Edge 0 から Edge 1 へ進むにつれ、なめらかに 0 から 1</td><td>3 つをまとめた型</td></tr>
+      <tr><td>Min / Max</td><td>A = 0、B = 0</td><td>小さい方 / 大きい方</td><td>2 つをまとめた型</td></tr>
+      <tr><td>Clamp</td><td>Value = 0、Min = 0、Max = 1</td><td>Value を Min〜Max に収めた値</td><td>3 つをまとめた型</td></tr>
+      <tr><td>Dot</td><td>A、B = (0, 0)</td><td>内積。A と B は同じ組の型にします（数 1 つだけではエラー）</td><td>Float</td></tr>
+      <tr><td>Length</td><td>In = (0, 0)</td><td>長さ</td><td>Float</td></tr>
+      <tr><td>Remap</td><td>Value = 0、In Min = 0、In Max = 1、Out Min = 0、Out Max = 1</td><td>Value を In Min〜In Max の範囲から Out Min〜Out Max の範囲へ置き換えた値（範囲の外にもはみ出します）</td><td>Value と同じ</td></tr>
+      <tr><td>Split Component</td><td>In = (0, 0, 0, 0)</td><td>Channel で選んだ 1 つの成分</td><td>Float</td></tr>
+      <tr><td>Combine RGBA</td><td>R/X = 0、G/Y = 0、B/Z = 0、A/W = 1</td><td>4 つの数をまとめた組</td><td>Float4</td></tr>
+    </table>
+    </div>
+    <div class="note"><strong>Remap の In Max は In Min より大きくします</strong>計算で割る数に「In Max − In Min」の絶対値を使うため、In Max を In Min より小さくすると、結果の向きが逆になりません。</div>
+
+    <h3 id="nodes-effect">Effect</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ノード</th><th>入力とつながないときの値</th><th>結果</th><th>結果の型</th></tr>
+      <tr><td>Fresnel</td><td>Normal = 法線、View = カメラへの方向、Power = Fallback Power</td><td>(1 − 法線と視線の内積) の Power 乗。正面は 0、ふちほど 1 に近づきます。PostProcess にはありません</td><td>Float</td></tr>
+      <tr><td>UV Scroll</td><td>UV = メッシュの UV、Speed = Fallback Speed、Time = 時間</td><td>UV + Speed × Time。テクスチャを流すのに使います</td><td>Float2</td></tr>
+      <tr><td>Noise</td><td>UV = メッシュの UV、Scale = Fallback Scale</td><td>UV × Scale から作る、ばらばらに見える 0〜1 の値（なめらかにはつながりません）</td><td>Float</td></tr>
+      <tr><td>Dissolve</td><td>Value = 1、Threshold = Fallback Threshold、Edge = Fallback Edge</td><td>Value が Threshold − Edge 以下で 0、Threshold + Edge 以上で 1、その間はなめらか。Noise を Value に、結果を Opacity につなぐと、少しずつ消える見た目になります</td><td>Float</td></tr>
+      <tr><td>Rotate UV</td><td>UV = メッシュの UV、Angle(rad) = 0、Center = Fallback Center</td><td>UV を Center のまわりに Angle ラジアン回した値</td><td>Float2</td></tr>
+      <tr><td>Polar UV</td><td>In = メッシュの UV</td><td>(0.5, 0.5) を中心にした極座標。X は角度（0〜1）、Y は中心からの距離 × 2</td><td>Float2</td></tr>
+    </table>
+    </div>
+
+    <h3 id="nodes-output">Output</h3>
+    <p>出力ノードはグラフに 1 つだけ置けます。ほかのノードの入力にはつなげません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ノード</th><th>入力とつながないときの値</th><th>最終的な色</th></tr>
+      <tr><td>Surface Output（Surface）</td><td>Base Color = 白、Emission = (0, 0, 0)、Opacity = 1</td><td>Base Color の RGB に Emission を足し、A に Opacity（0〜1 に収める）を掛け、さらに頂点カラーを掛けます</td></tr>
+      <tr><td>PostProcess Output（PostProcess）</td><td>Base Color = 加工前の画像の色、Emission = (0, 0, 0)、Opacity = 1</td><td>Surface Output と同じ計算（頂点カラーは掛けません）</td></tr>
+      <tr><td>Layer Output（Layer）</td><td>Color = 白</td><td>Color × 頂点カラー</td></tr>
+    </table>
+    </div>
+    <p>PostProcess のキャンバスでは、出力ノードの見出しは「Surface Output」と表示されます。</p>
+
+    <h2 id="save">保存と自動保存</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>きっかけ</th><th>グラフ（.replayshadergraph）</th><th>HLSL</th></tr>
+      <tr><td>Ctrl+S、<b>Save + Generate + Compile</b></td><td>保存</td><td>作り直してコンパイル</td></tr>
+      <tr><td>変更したままウィンドウを × で閉じる</td><td>自動保存</td><td>変えません</td></tr>
+      <tr><td>変更したまま別のグラフを開く</td><td>自動保存（できなければ別のグラフは開きません）</td><td>変えません</td></tr>
+      <tr><td>エディターを終了する</td><td>自動保存</td><td>変えません</td></tr>
+    </table>
+    </div>
+    <p>自動保存では HLSL を作らないので、途中のエラーのあるグラフで、前にうまく作れたシェーダーが壊れることはありません。Ctrl+S でも、HLSL を作れなかったときは前の HLSL ファイルをそのまま残します。自動保存に失敗すると、ウィンドウは閉じずに「Autosave failed: …」と出ます。</p>
+    <div class="note"><strong>Ctrl+S はウィンドウが開いていれば効きます</strong>Shader Composer ウィンドウが表示されていれば、ほかのウィンドウで Ctrl+S を押しても、グラフの保存と HLSL の生成が行われます（そのときシーンなどの保存も行われます）。Shader Composer にフォーカスがあるときは、シーンの保存は行われません。</div>
+
+    <h3 id="status">状態の表示</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>意味</th></tr>
+      <tr><td>Saved / generated / compiled</td><td>保存、生成、コンパイルがすべて成功しました</td></tr>
+      <tr><td>Saved / generated. Compile errors: 数</td><td>保存と生成はできましたが、コンパイルに失敗したシェーダーがあります（プロジェクト全体の数です）。<b>Window</b> &gt; <b>シェーダ一覧</b> で確かめます</td></tr>
+      <tr><td>Generate failed: Shader Composer generation failed / node 番号: 理由</td><td>HLSL を作れませんでした。番号はインスペクターの「#番号」です</td></tr>
+      <tr><td>Save failed: …</td><td>グラフを保存できませんでした</td></tr>
+      <tr><td>Graph autosaved (generated HLSL unchanged until Ctrl+S)</td><td>自動保存しました。HLSL はまだ古いままです</td></tr>
+      <tr><td>HLSL generation OK</td><td>Generate Preview で問題が見つかりませんでした</td></tr>
+    </table>
+    </div>
+
+    <h3 id="errors">生成のエラー</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>理由</th><th>直し方</th></tr>
+      <tr><td>Output node がありません / Output node は graph に 1 つだけ置けます</td><td>出力ノードを 1 つにします</td></tr>
+      <tr><td>Property name は HLSL identifier が必要です</td><td>HLSL Name を英字か _ で始まる英数字と _ だけにします</td></tr>
+      <tr><td>Property name が重複しています</td><td>HLSL Name を別の名前にします</td></tr>
+      <tr><td>Graph に cycle があります</td><td>循環している線を外します</td></tr>
+      <tr><td>Math node は同じ vector size または scalar と vector を接続してください</td><td>Add などに、違う組の型（Float2 と Float3 など）をつないでいます</td></tr>
+      <tr><td>Lerp A/B type が互換ではありません など</td><td>そのノードの入力の型を合わせます</td></tr>
+      <tr><td>Dot は同じvector型を接続してください</td><td>Dot の A と B に同じ組の型をつなぎます</td></tr>
+      <tr><td>Base Color input の型を float4 へ変換できません など</td><td>出力ノードの入力の型を確かめます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>テクスチャが流れるシェーダーを作り、マテリアルで使う</h3>
+    <ol>
+      <li>プロジェクト パネルで右クリックし、<b>Create</b> &gt; <b>Shader</b> &gt; <b>Shader Composer</b> &gt; <b>Surface</b> を選びます。名前欄を「ScrollTexture」にしておくと、その名前で作られます。</li>
+      <li>キャンバスの空いたところで右クリックし、<b>Effect</b> &gt; <b>UV Scroll</b> を足します。</li>
+      <li>UV Scroll の右の青い丸（Out）をクリックし、Texture Property（Base Map）の左の <b>UV</b> の丸をクリックします。UV ノードからの線は置き換わります。</li>
+      <li>UV Scroll を選び、インスペクターの <b>Fallback Speed</b> を (0.1, 0) にします。</li>
+      <li>Ctrl+S を押し、状態が「Saved / generated / compiled」になることを確かめます。</li>
+      <li>プロジェクト パネルでマテリアルを選び、インスペクターの <b>Shader</b> で「Project/Composer/ScrollTexture」を選びます（<a href="material-editor.html">マテリアルの編集</a>）。</li>
+      <li>マテリアルの <b>Base Map</b> にテクスチャを指定し、そのマテリアルをモデルに付けます（<a href="../components/mesh-renderers.html#material">マテリアルを付ける</a>）。</li>
+    </ol>
+    <h3>ふちを光らせる</h3>
+    <ol>
+      <li><b>Effect</b> &gt; <b>Fresnel</b> を足し、インスペクターの <b>Fallback Power</b> を 3 にします。</li>
+      <li><b>Material Property</b> &gt; <b>Color</b> を足し、<b>HLSL Name</b> を <code>RimColor</code>、<b>Display Name</b> を「ふちの色」にします。</li>
+      <li><b>Math</b> &gt; <b>Multiply</b> を足し、A に Fresnel、B に RimColor の Color Property をつなぎます。</li>
+      <li>Multiply の Out を、出力ノードの <b>Emission</b> につなぎます。</li>
+      <li>Ctrl+S を押します。マテリアルのインスペクターに「ふちの色」が出るので、光らせたい色にします。</li>
+    </ol>
+    <h3>少しずつ消えていく見た目にする</h3>
+    <ol>
+      <li><b>Effect</b> &gt; <b>Noise</b> を足し、<b>Fallback Scale</b> を 20 にします。</li>
+      <li><b>Material Property</b> &gt; <b>Float / Slider</b> を足し、<b>HLSL Name</b> を <code>Amount</code>、<b>Default</b> 0、<b>Minimum</b> 0、<b>Maximum</b> 1 にします。</li>
+      <li><b>Effect</b> &gt; <b>Dissolve</b> を足し、<b>Fallback Edge</b> を 0.05 にします。Noise を <b>Value</b>、Amount を <b>Threshold</b> につなぎます。</li>
+      <li>Dissolve の Out を、出力ノードの <b>Opacity</b> につなぎ、Ctrl+S を押します。</li>
+      <li>マテリアルの <b>Rendering</b> &gt; <b>Alpha Mode</b> を Blend にして、透けるようにします。</li>
+      <li>マテリアルの Amount を 0 から 1 へ動かすと、ばらばらに消えていきます。<a href="motion-workspace.html">モーション</a>で Amount を動かせば、時間で消す演出になります。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../editor/project.html#create">プロジェクト ウィンドウの Create</a></li>
+      <li><a href="../components/effect-stacks.html">Effect Stack</a></li>
+      <li><a href="../editor/menu-bar.html">メニューバー</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

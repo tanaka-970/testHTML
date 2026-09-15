@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>ScriptBehaviour（ボタン・セーブ・イベント） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / C# スクリプト / API</div>
+    <h1>ScriptBehaviour（ボタン・セーブ・イベント）</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>スクリプトの基底クラスには、<code>MonoBehaviour</code> のほかに、エンジンに古くからある <code>ScriptBehaviour</code> があります。次のことは、このビルドでは <b><code>ScriptBehaviour</code> を継承したスクリプトでしかできません</b>。</p>
+    <ul>
+      <li>UI のボタンが押された、スライダーが動いた、などを受け取る</li>
+      <li>シーンの読み込みやアニメーションの終わりを受け取る</li>
+      <li>セーブデータを読み書きする</li>
+      <li>決まった秒数のあとに処理を呼ぶ（Timer）、値をなめらかに変える（Tween）</li>
+    </ul>
+    <p>それ以外は <code>MonoBehaviour</code> の方が書きやすいので、上のことが要るスクリプトだけ <code>ScriptBehaviour</code> で書きます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>タイトル画面などで、UI のボタンが押されたときの処理を書きたいとき</li>
+      <li>スライダーや文字入力の欄が変わったことを受け取りたいとき</li>
+      <li>ハイスコアや設定をファイルに保存し、次に起動したときも残したいとき（セーブデータ）</li>
+      <li>モーションのイベントや、アニメーションの終わりに合わせて処理したいとき</li>
+      <li>「2 秒後に 1 回」「1 秒ごとに」といった処理や、値をなめらかに変える処理を手軽に書きたいとき（Timer と Tween）</li>
+    </ul>
+
+    <h2 id="write">書き方</h2>
+    <pre><code>using ReplayEngine;
+
+namespace Game;
+
+[ReplayGuid("（Create で作ったときの値をそのまま使う）")]
+public class TitleMenu : ScriptBehaviour
+{
+    public override void Start()
+    {
+    }
+
+    public override void Update(float deltaTime)
+    {
+    }
+
+    public override void OnAnyButtonClicked(ButtonEventInfo button)
+    {
+        if (TryFindObject("StartButton", out var start) &amp;&amp; button.Button.Equals(start))
+        {
+            Log("スタートが押された");
+        }
+    }
+
+    void Log(string text) =&gt; Runtime.LogInfo(text, GameObject);
+}</code></pre>
+    <p><b>Create &gt; Script &gt; C# Script</b> で作ったファイルの <code>: MonoBehaviour</code> を <code>: ScriptBehaviour</code> に書き換えます。<code>MonoBehaviour</code> との違いは次のとおりです。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>MonoBehaviour</th><th>ScriptBehaviour</th></tr>
+      <tr><td>メソッドの書き方</td><td><code>void Update()</code></td><td><code>public override void Update(float deltaTime)</code>（<code>override</code> が要ります）</td></tr>
+      <tr><td>FixedUpdate、LateUpdate</td><td>引数なし</td><td><code>float</code> の引数あり</td></tr>
+      <tr><td>自分の GameObject</td><td><code>gameObject</code>（GameObject 型）</td><td><code>GameObject</code>（<code>ObjectHandle</code> 型。番号のようなもの）</td></tr>
+      <tr><td>位置・回転</td><td><code>transform.position</code>、角度は度</td><td><code>Transform.Position</code>、<code>Transform.LocalRotationEuler</code>（角度は <b>ラジアン</b>）</td></tr>
+      <tr><td>GameObject を名前で探す</td><td><code>GameObject.Find</code></td><td><code>TryFindObject(名前, out handle)</code>、<code>RequireObject(名前)</code>（見つからないと例外）</td></tr>
+      <tr><td>エンジンの機能</td><td>静的クラス（<code>Physics</code> など）</td><td><code>Runtime</code> から（<code>Runtime.Raycast</code> など）</td></tr>
+      <tr><td>インスペクターの変数</td><td colspan="2">どちらも同じ（<a href="index.html#fields">インスペクターに出る変数</a>）</td></tr>
+    </table>
+    </div>
+    <p>呼ばれる順番は <a href="lifecycle.html">MonoBehaviour と同じ</a> です。<code>ScriptBehaviour</code> の <code>StartCoroutine</code> は、呼んだその場では進まず、そのフレームのコルーチンを進める時点で始まります。</p>
+
+    <h2 id="events">受け取れるイベント</h2>
+    <p>受け取りたいものだけ <code>override</code> します。書いたものだけが届きます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>メソッド</th><th>呼ばれるとき</th><th>引数で分かること</th></tr>
+      <tr><td><code>OnButtonClicked(ButtonEventInfo)</code></td><td>自分の GameObject の UI Button が押されたとき</td><td rowspan="3"><code>Button</code>（ボタンの GameObject）、<code>State</code>、<code>PreviousState</code>（0=通常、1=カーソルが乗っている、2=押している、3=押せない）</td></tr>
+      <tr><td><code>OnAnyButtonClicked(ButtonEventInfo)</code></td><td>どこかの UI Button が押されたとき。メニューを 1 つのスクリプトでまとめて扱うときに使います</td></tr>
+      <tr><td><code>OnButtonStateChanged(ButtonEventInfo)</code></td><td>自分のボタンの状態が変わったとき</td></tr>
+      <tr><td><code>OnSliderValueChanged(SliderEventInfo)</code></td><td>自分の UI Slider の値が変わったとき</td><td><code>Value</code>、<code>NormalizedValue</code>（0〜1）</td></tr>
+      <tr><td><code>OnInputFieldValueChanged</code>、<code>OnInputFieldSubmitted</code>、<code>OnInputFieldCanceled</code>（<code>InputFieldEventInfo</code>）</td><td>自分の UI Input Field の文字が変わった・確定した・取り消したとき</td><td><code>Text</code></td></tr>
+      <tr><td><code>OnAnimationEvent(MotionEventInfo)</code></td><td>自分のモーションのイベントに来たとき</td><td rowspan="3"><code>Name</code>、<code>Parameter</code>、<code>Time</code></td></tr>
+      <tr><td><code>OnCompositionMarker(MotionEventInfo)</code></td><td>自分のコンポジションのマーカーに来たとき</td></tr>
+      <tr><td><code>OnAnimationFinished(MotionEventInfo)</code></td><td>自分のモーション・コンポジションが最後まで再生されたとき（ループ中は呼ばれません）</td></tr>
+      <tr><td><code>OnAnimatorStateChanged(AnimatorStateEventInfo)</code></td><td>自分の Animator のステートが変わったとき</td><td><code>State</code>、<code>PreviousState</code></td></tr>
+      <tr><td><code>OnSceneLoadRequested</code>、<code>OnSceneLoadStarted</code>、<code>OnSceneLoaded</code>、<code>OnSceneLoadFailed</code>、<code>OnBeforeSceneUnload</code>、<code>OnWorldChanged</code>（<code>SceneEventInfo</code>）</td><td>シーンの切り替えの各段階</td><td><code>SceneAssetGuid</code>、<code>Status</code></td></tr>
+      <tr><td><code>OnApplicationQuit(ApplicationQuitEventInfo)</code></td><td>ゲームの終了が要求されたとき</td><td><code>Reason</code></td></tr>
+      <tr><td><code>OnCollisionEnter/Stay/Exit(CollisionInfo)</code></td><td>自分がぶつかったとき</td><td><code>Other</code>、<code>OtherValid</code>、<code>ContactPoint</code>、<code>ContactNormal</code>、<code>RelativeVelocity</code>、<code>PenetrationDepth</code></td></tr>
+      <tr><td><code>OnTriggerEnter/Stay/Exit(TriggerInfo)</code></td><td>トリガーに入った・出たとき</td><td><code>Other</code>、<code>OtherValid</code>、<code>SelfIsTrigger</code>（自分がトリガー側か）</td></tr>
+    </table>
+    </div>
+    <p>GameObject や コンポーネントが無効の間は届きません。</p>
+
+    <h2 id="save">セーブデータ</h2>
+    <p><code>Runtime</code> から読み書きします。値はまずメモリに置かれ、<code>SaveGame</code> を呼んだときにファイルへ書かれます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>Runtime.SetSaveBool(スロット, キー, 値)</code><br><code>SetSaveInt</code>（long）、<code>SetSaveFloat</code>（double）、<code>SetSaveString</code></td><td>値をメモリに置きます</td></tr>
+      <tr><td><code>Runtime.GetSaveBool(スロット, キー)</code><br><code>GetSaveInt</code>、<code>GetSaveFloat</code>、<code>GetSaveString</code></td><td>メモリの値を読みます。値は <code>.Value</code>、あったかは <code>.Succeeded</code></td></tr>
+      <tr><td><code>Runtime.HasSaveKey(スロット, キー)</code>、<code>DeleteSaveKey</code></td><td>キーがあるか、キーを消す</td></tr>
+      <tr><td><code>Runtime.SaveGame(スロット)</code></td><td>そのスロットのメモリの値を、ファイルに書きます</td></tr>
+      <tr><td><code>Runtime.LoadGame(スロット)</code></td><td>ファイルを読み、そのスロットのメモリの値を置き換えます</td></tr>
+      <tr><td><code>Runtime.DeleteSave(スロット)</code></td><td>メモリの値とファイルを消します</td></tr>
+    </table>
+    </div>
+    <pre><code>public override void Start()
+{
+    if (Runtime.LoadGame("slot1") == RuntimeStatus.Ok)
+    {
+        var best = Runtime.GetSaveInt("slot1", "best_score");
+        if (best.Succeeded) bestScore = best.Value;
+    }
+}
+
+void SaveBest(long score)
+{
+    Runtime.SetSaveInt("slot1", "best_score", score);
+    Runtime.SaveGame("slot1");
+}</code></pre>
+    <p>スロット名は英字・数字・<code>_</code>・<code>-</code> の 1〜64 文字です。ファイルの場所や上限は <a href="../data/index.html#replaysave">セーブデータ（.replaysave）</a> を見てください。</p>
+
+    <h2 id="timer">Timer と Tween</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>After(秒, () =&gt; { … })</code></td><td>秒数のあとに 1 回だけ呼びます</td></tr>
+      <tr><td><code>Every(秒, () =&gt; { … })</code></td><td>秒数ごとに呼び続けます。1 フレームで何回分の時間が過ぎても、呼ぶのは 1 回です</td></tr>
+      <tr><td><code>TweenValue(開始, 終了, 秒, v =&gt; { … }, Easing.OutQuad)</code></td><td>値を秒数かけて開始から終了へ変え、毎フレーム渡します。最後の引数（変わり方）は省けます</td></tr>
+      <tr><td>戻り値の <code>Cancel()</code>、<code>Finished</code></td><td>止める、終わったか</td></tr>
+      <tr><td><code>Easing.Linear</code>、<code>InQuad</code>、<code>OutQuad</code>、<code>InOutQuad</code>、<code>InCubic</code>、<code>OutCubic</code></td><td>変わり方</td></tr>
+    </table>
+    </div>
+    <p>どれも <code>Time.timeScale</code> の影響を受け、コルーチンと同じ時点で進みます。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>ボタンを押したら次のシーンへ移る</h3>
+    <pre><code>using ReplayEngine;
+
+namespace Game;
+
+[ReplayGuid(&quot;（作ったときの値のまま）&quot;)]
+public class StartButton : ScriptBehaviour
+{
+    public override void OnButtonClicked(ButtonEventInfo button)
+    {
+        Runtime.TriggerSceneFlow(&quot;Start&quot;);
+    }
+}</code></pre>
+    <p>このスクリプトを UI Button の GameObject に付けます。移り先は <a href="../windows/scene-flow.html">Scene Flow</a> に、Event「Start」の遷移として書いておきます。</p>
+    <h3>モーションの決まった時刻に処理する</h3>
+    <ol>
+      <li><a href="../windows/motion-workspace.html">Motion Workspace</a> でイベントトラックを足し、<b>イベント名</b> を「Hit」にしたイベントを置きます。</li>
+      <li>そのモーションを再生する Motion Player と同じ GameObject に、次のメソッドを持つ ScriptBehaviour を付けます。</li>
+    </ol>
+    <pre><code>public override void OnAnimationEvent(MotionEventInfo motionEvent)
+{
+    if (motionEvent.Name == &quot;Hit&quot;)
+    {
+        Runtime.LogInfo(&quot;Hit のタイミングです&quot;, GameObject);
+    }
+}</code></pre>
+    <h3>2 秒後に 1 回だけ処理する</h3>
+    <pre><code>public override void Start()
+{
+    After(2.0f, () =&gt; Runtime.LogInfo(&quot;2 秒たちました&quot;, GameObject));
+}</code></pre>
+    <p>ハイスコアを残す書き方は、上の「セーブデータ」の例を見てください。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="index.html">はじめてのスクリプト</a></li>
+      <li><a href="lifecycle.html">呼ばれる順番（ライフサイクル）</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>ライト（Directional / Point / Spot） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Lighting</div>
+    <h1>ライト（Directional Light / Point Light / Spot Light）</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>シーンを照らす光のコンポーネントです。3 種類あり、照らし方が違います。ライトが 1 つも無いシーンでは、物がほとんど暗く見えます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>種類</th><th>照らし方</th><th>使う Transform</th><th>影の既定</th></tr>
+      <tr><td id="directional">Directional Light</td><td>太陽のように、シーン全体を同じ向きから照らします</td><td>回転（向き）だけ</td><td>オン</td></tr>
+      <tr><td id="point">Point Light</td><td>電球のように、1 点から全方向を照らします。離れるほど暗くなります</td><td>位置</td><td>オフ</td></tr>
+      <tr><td id="spot">Spot Light</td><td>懐中電灯のように、円錐の形に照らします</td><td>位置と回転</td><td>オフ</td></tr>
+    </table>
+    </div>
+    <p>どれも <b>コンポーネントを追加 &gt; Lighting</b> にあります。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>シーン全体が暗いので、太陽の光で明るくしたいとき（Directional Light）</li>
+      <li>電球やたいまつのように、まわりだけを照らしたいとき（Point Light）</li>
+      <li>懐中電灯やスポットライトのように、一方向を照らしたいとき（Spot Light）</li>
+      <li>物の影を地面に落としたいとき</li>
+    </ul>
+
+    <h2 id="directional-props">Directional Light のプロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>色</td><td><code>color</code></td><td>色</td><td>白</td><td></td><td>光の色</td></tr>
+      <tr><td>強さ</td><td><code>intensity</code></td><td>小数</td><td>3</td><td>0〜100</td><td>明るさ</td></tr>
+      <tr><td>影を落とす</td><td><code>cast_shadows</code></td><td>オン・オフ</td><td>オン</td><td></td><td>この光で影を作るかどうか</td></tr>
+      <tr><td>影の濃さ</td><td><code>shadow_strength</code></td><td>小数</td><td>1</td><td>0〜1</td><td>影の暗さ。0 で影が見えなくなります</td></tr>
+      <tr><td>深度バイアス (m)</td><td><code>shadow_depth_bias</code></td><td>小数</td><td>0.02</td><td>0〜0.5</td><td>影の縞模様（影のちらつき）を抑えるためのずらし量</td></tr>
+      <tr><td>法線バイアス</td><td><code>shadow_normal_bias</code></td><td>小数</td><td>1.4</td><td>0〜6</td><td>面の向きに沿って影をずらす量。縞模様が出るときに上げます</td></tr>
+      <tr><td>影の最遠距離</td><td><code>shadow_distance</code></td><td>小数</td><td>120</td><td>1〜2000</td><td>影を描く最大の距離</td></tr>
+    </table>
+    </div>
+    <div class="warning"><strong>Directional Light は 1 つだけ使われます</strong>有効な Directional Light がシーンに 2 つ以上あっても、ゲームで使われるのはシーンの中で先にある 1 つだけです。2 つ以上あると、インスペクターに「Directional Light が N 個有効です。Runtime は先頭の 1 個だけを使用します。」と橙で表示されます。</div>
+
+    <h2 id="point-props">Point Light のプロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>色</td><td><code>color</code></td><td>色</td><td>淡い橙（1, 0.9, 0.75）</td><td></td><td>光の色</td></tr>
+      <tr><td>強さ</td><td><code>intensity</code></td><td>小数</td><td>2</td><td>0〜100</td><td>明るさ</td></tr>
+      <tr><td>範囲</td><td><code>range</code></td><td>小数</td><td>10</td><td>0.01〜10000</td><td>光が届く距離</td></tr>
+      <tr><td>影を落とす</td><td><code>cast_shadows</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>影を作るかどうか。全方向の影を描くため処理が重く、既定はオフです</td></tr>
+      <tr><td>影の濃さ</td><td><code>shadow_strength</code></td><td>小数</td><td>1</td><td>0〜1</td><td>影の暗さ</td></tr>
+      <tr><td>深度バイアス (m)</td><td><code>shadow_depth_bias</code></td><td>小数</td><td>0.02</td><td>0〜0.5</td><td>影のちらつきを抑えるずらし量。影の計算では 0.05 より大きい値は 0.05 として扱うので、0.05 を超えても効き方は変わりません</td></tr>
+      <tr><td>法線バイアス</td><td><code>shadow_normal_bias</code></td><td>小数</td><td>1.5</td><td>0〜6</td><td>面の向きに沿って影をずらす量</td></tr>
+      <tr><td>影のニア</td><td><code>shadow_near_plane</code></td><td>小数</td><td>0.15</td><td>0.01〜10</td><td>ライトからこれより近い物は影を作りません</td></tr>
+    </table>
+    </div>
+
+    <h2 id="spot-props">Spot Light のプロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>色</td><td><code>color</code></td><td>色</td><td>淡い黄（1, 0.95, 0.85）</td><td></td><td>光の色</td></tr>
+      <tr><td>強さ</td><td><code>intensity</code></td><td>小数</td><td>2</td><td>0〜100</td><td>明るさ</td></tr>
+      <tr><td>範囲</td><td><code>range</code></td><td>小数</td><td>12</td><td>0.01〜10000</td><td>光が届く距離</td></tr>
+      <tr><td>内側角度</td><td><code>inner_angle_degrees</code></td><td>小数</td><td>25</td><td>0.1〜179</td><td>しっかり明るく照らす円錐の角度</td></tr>
+      <tr><td>外側角度</td><td><code>outer_angle_degrees</code></td><td>小数</td><td>40</td><td>0.1〜179</td><td>光が届く円錐の角度。内側から外側にかけて少しずつ暗くなります</td></tr>
+      <tr><td>影を落とす</td><td><code>cast_shadows</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>影を作るかどうか</td></tr>
+      <tr><td>影の濃さ</td><td><code>shadow_strength</code></td><td>小数</td><td>1</td><td>0〜1</td><td>影の暗さ</td></tr>
+      <tr><td>深度バイアス (m)</td><td><code>shadow_depth_bias</code></td><td>小数</td><td>0.02</td><td>0〜0.5</td><td>影のちらつきを抑えるずらし量。影の計算では 0.05 より大きい値は 0.05 として扱うので、0.05 を超えても効き方は変わりません</td></tr>
+      <tr><td>法線バイアス</td><td><code>shadow_normal_bias</code></td><td>小数</td><td>1.5</td><td>0〜6</td><td>面の向きに沿って影をずらす量</td></tr>
+      <tr><td>影のニア</td><td><code>shadow_near_plane</code></td><td>小数</td><td>0.15</td><td>0.01〜10</td><td>ライトからこれより近い物は影を作りません</td></tr>
+    </table>
+    </div>
+
+    <div class="note"><strong>ライトの数の上限</strong>ゲームの描画に使われるのは、Point Light が 8 個、Spot Light が 4 個までです。シーンの中で先に見つかったものから使われ、あふれたライトは光りません（Validation に「GPUへ送れるPoint/Spot Light数を超えています。」と出ます）。影を落とすライトはさらに枠が決まっていて、枠が足りないライトは影なしで光ります。</div>
+
+    <h2 id="usage">使い方</h2>
+    <h3>シーンを明るくする</h3>
+    <ol class="steps">
+      <li><b>+ 作成 &gt; 空の GameObject</b> で GameObject を作り、名前を「Sun」などにします。</li>
+      <li><b>コンポーネントを追加 &gt; Lighting &gt; Directional Light</b> を付けます。</li>
+      <li>Transform の <b>回転 (度)</b> で光の向きを決めます。たとえば X を 45 にすると、斜め上から照らします。</li>
+    </ol>
+    <p><b>File &gt; New Default Scene</b> で作ったシーンには、最初から「Sun」という Directional Light が入っています。</p>
+    <h3>ライトの届く範囲を見る</h3>
+    <p>シーンビュー上部の <b>ライト範囲</b> にチェックを付けると、ライトの届く範囲が表示されます（<a href="../editor/scene-view.html#header">シーンビュー</a>）。</p>
+
+    <h2 id="tips">影が見えないときは</h2>
+    <ul>
+      <li>ライトの <b>影を落とす</b> がオンか確かめます（Point Light と Spot Light は既定でオフです）。</li>
+      <li>影を受ける側・落とす側のモデルの設定（Mesh Renderer などの影の設定）も確かめます。</li>
+      <li>ライトの <b>強さ</b> が弱いと、影ができていても周りとの差が小さく見えにくくなります。</li>
+    </ul>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="index.html">コンポーネント一覧</a></li>
+      <li><a href="../editor/scene-files.html#new">New Default Scene</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

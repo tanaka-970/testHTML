@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Follow Target - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Camera</div>
+    <h1>Follow Target</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>カメラを <a href="camera-target.html">Camera Target</a> の後ろに付いていかせるコンポーネントです。三人称視点のゲームのように、キャラクターを少し上の後ろから映し続けるカメラが作れます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>三人称視点のゲームのように、キャラクターの少し上の後ろからカメラを付いていかせたいとき</li>
+      <li>マウスやスティックで、カメラをキャラクターのまわりに回したいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Camera &gt; Follow Target</td></tr>
+      <tr><td>必須</td><td><a href="camera.html">Camera</a>（同じ GameObject。無ければ一緒に付きます）</td></tr>
+      <tr><td>働く場面</td><td>毎フレーム、ほかの更新が終わった後に、カメラの位置と向きを書き換えます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>追従距離</td><td><code>follow_distance</code></td><td>小数</td><td>6.5</td><td>0.5〜100</td><td>見る点からカメラまでの距離</td></tr>
+      <tr><td>追従高さ</td><td><code>follow_height</code></td><td>小数</td><td>2.25</td><td>-10〜50</td><td>見る点よりどれだけ上にカメラを置くか</td></tr>
+      <tr><td>追従の速さ</td><td><code>follow_lag</code></td><td>小数</td><td>12</td><td>0〜60</td><td>目標の位置へ近づく速さ。大きいほどすぐ追いつき、小さいほどゆっくり遅れて付いてきます。0 にすると遅れずにその場へ移ります</td></tr>
+      <tr><td>回転入力を使う</td><td><code>rotation_input_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>プレイヤーの入力でカメラを回り込ませるかどうか（下を見てください）</td></tr>
+      <tr><td>Motion 中は追従を止める</td><td><code>yield_to_motion</code></td><td>オン・オフ</td><td>オン</td><td></td><td>同じフレームにモーションがこの GameObject の Transform を動かしたときは、追従しません。モーションでカメラ演出をするときに、追従が上書きしないようにします</td></tr>
+      <tr><td>水平回転オフセット</td><td><code>yaw_offset</code></td><td>小数</td><td>0</td><td></td><td>見る点のまわりを水平に回り込む角度（ラジアン）。0 のときは、見る点から Z 軸のマイナス方向に離れた位置から、Z 軸のプラス方向を見ます</td></tr>
+      <tr><td>垂直回転オフセット</td><td><code>pitch_offset</code></td><td>小数</td><td>0</td><td>-1.4〜1.4</td><td>見る点のまわりを上下に回り込む角度（ラジアン）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="how">カメラの置かれ方</h2>
+    <ol>
+      <li>追いかける <a href="camera-target.html#select">Camera Target</a> を決めます。見つからないフレームでは、カメラは動きません。</li>
+      <li>Camera Target の GameObject の位置に <b>追従基準のオフセット</b> を足した点を「追う点」、そこに <b>注視点オフセット</b> を足した点を「見る点」とします。</li>
+      <li>見る点から、水平・垂直の回転オフセットの方向へ <b>追従距離</b> だけ離れ、<b>追従高さ</b> だけ上がった場所を目標の位置にします。</li>
+      <li>カメラを目標の位置へ <b>追従の速さ</b> に応じて近づけ、見る点の方へ向けます。</li>
+    </ol>
+
+    <h2 id="input">回転入力</h2>
+    <p><b>回転入力を使う</b> がオンのとき、ゲームの実行中に次の入力でカメラを回り込ませられます。入力の名前は <a href="../editor/shortcuts.html#bindings">キー割り当て</a> の一覧に出ている名前です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>入力の名前</th><th>既定のキー</th><th>動き</th></tr>
+      <tr><td>CameraRotate</td><td>マウスの右ボタン</td><td>押している間、マウスを動かした分だけ回り込みます</td></tr>
+      <tr><td>CameraYawLeft / CameraYawRight</td><td><kbd>J</kbd> / <kbd>L</kbd></td><td>左右に回り込みます</td></tr>
+      <tr><td>CameraPitchUp / CameraPitchDown</td><td><kbd>I</kbd> / <kbd>K</kbd></td><td>上下に回り込みます</td></tr>
+    </table>
+    </div>
+    <p>上下の角度は -1.4〜1.4 の範囲で止まります。</p>
+
+    <h2 id="usage">使い方</h2>
+    <ol class="steps">
+      <li>映したいキャラクターの GameObject に <b>コンポーネントを追加 &gt; Camera &gt; Camera Target</b> を付けます。</li>
+      <li>カメラ用の GameObject を作り、<b>コンポーネントを追加 &gt; Camera &gt; Follow Target</b> を付けます。Camera も一緒に付きます。</li>
+      <li>キャラクターを操作対象にしておきます（インスペクターの <b>この GameObject を操作対象に設定</b>）。</li>
+      <li>ゲームを実行すると、カメラがキャラクターの後ろ上方から付いていきます。距離や高さは <b>追従距離</b> と <b>追従高さ</b> で調整します。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="camera-target.html">Camera Target</a></li>
+      <li><a href="camera.html">Camera</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

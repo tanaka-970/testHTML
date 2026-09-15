@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>物理（Rigidbody と Collider） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Physics</div>
+    <h1>物理（Rigidbody と Collider）</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>物が落ちる、ぶつかって止まる、跳ね返る、といった動きを作るコンポーネントです。2 種類の役割があります。</p>
+    <ul>
+      <li><b>Collider（当たり判定）</b>：物の「形」です。球、箱、カプセル、メッシュの 4 種類があります。</li>
+      <li><b>Rigidbody（剛体）</b>：重さや速度を持たせ、重力や衝突で動くようにします。形は同じ GameObject の Collider を使います。</li>
+    </ul>
+    <p>床や壁のように動かない物には Collider だけを付けます。落ちたり転がったりする物には Collider と Rigidbody の両方を付けます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>物を重力で落とす、ぶつかって止める、跳ね返らせるなど、物理で動かしたいとき（Rigidbody と Collider）</li>
+      <li>壁や床など、動かないけれど当たる物を作りたいとき（Collider だけ）</li>
+      <li>入ると何かが起きるエリア（ゴール、ダメージを受ける床など）を作りたいとき（Trigger）</li>
+      <li>スクリプトから物に力を加えたり、速度を読んだりしたいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>コンポーネント</th><th>コンポーネントを追加での場所</th><th>1 つの GameObject に</th><th>推奨</th></tr>
+      <tr><td>Rigidbody</td><td>Physics &gt; Rigidbody</td><td>1 つだけ</td><td>Sphere / Box / Capsule Collider</td></tr>
+      <tr><td>Sphere Collider</td><td>Physics &gt; Sphere Collider</td><td>いくつでも</td><td></td></tr>
+      <tr><td>Box Collider</td><td>Physics &gt; Box Collider</td><td>いくつでも</td><td></td></tr>
+      <tr><td>Capsule Collider</td><td>Physics &gt; Capsule Collider</td><td>いくつでも</td><td></td></tr>
+      <tr><td>Mesh Collider</td><td>Physics &gt; Mesh Collider</td><td>いくつでも</td><td></td></tr>
+    </table>
+    </div>
+
+    <h2 id="timing">物理が動く場面</h2>
+    <ul>
+      <li>物理の計算は<b>ゲームの実行中だけ</b>行われます。エディターで編集しているときは、Rigidbody を付けても物は落ちません。</li>
+      <li>計算は 1/60 秒ごとの決まった間隔で行われます。画面の更新が遅れたときは、1 フレームで最大 5 回まで計算して追いつきます。それ以上の遅れは切り捨てます。</li>
+      <li>重力は下向きに 9.81（毎秒毎秒）です。</li>
+    </ul>
+
+    <h2 id="rigidbody">Rigidbody</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>種別</td><td><code>body_type</code></td><td>選択</td><td>動的</td><td></td><td>静的、キネマティック、動的（<a href="#body-type">下の表</a>）</td></tr>
+      <tr><td>質量</td><td><code>mass</code></td><td>小数</td><td>1</td><td>0.001〜10000</td><td>重さ。ぶつかったときに、重い物ほど押されにくくなります</td></tr>
+      <tr><td>移動の減衰</td><td><code>linear_damping</code></td><td>小数</td><td>0.05</td><td>0〜10</td><td>大きいほど、移動の速さが早く落ちます（空気抵抗のようなもの）</td></tr>
+      <tr><td>回転の減衰</td><td><code>angular_damping</code></td><td>小数</td><td>0.05</td><td>0〜10</td><td>大きいほど、回転が早く止まります</td></tr>
+      <tr><td>重力の倍率</td><td><code>gravity_scale</code></td><td>小数</td><td>1</td><td>-10〜10</td><td>重力に掛ける倍率。0 で重力なし、マイナスで上へ落ちます</td></tr>
+      <tr><td>反発</td><td><code>restitution</code></td><td>小数</td><td>0</td><td>0〜1</td><td>跳ね返りやすさ。0 で跳ねず、1 でほぼ同じ勢いで跳ね返ります</td></tr>
+      <tr><td>摩擦</td><td><code>friction</code></td><td>小数</td><td>0.5</td><td>0〜2</td><td>滑りにくさ。0 でつるつる滑ります</td></tr>
+      <tr><td>位置を固定</td><td><code>freeze_position</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>X・Y・Z のうち 0.5 以上にした軸の方向へは動かなくなります。たとえば 0, 1, 0 で上下に動かなくなります</td></tr>
+      <tr><td>回転を固定</td><td><code>freeze_rotation</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>X・Y・Z のうち 0.5 以上にした軸のまわりには回らなくなります</td></tr>
+      <tr><td>停止状態で開始</td><td><code>start_asleep</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、力を加えられるまで止まった状態で始まります</td></tr>
+      <tr><td>高速移動の貫通対策</td><td><code>use_ccd</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、毎回、動いた道筋に沿って当たりを調べ、最初に当たった物で止まります。オフでも、1 回の計算で自分の大きさ以上動くときは同じ調べ方に切り替わります</td></tr>
+      <tr><td>移動速度</td><td><code>linear_velocity</code></td><td>3 つの小数（読み取り専用）</td><td></td><td></td><td>今の移動の速さ。実行中だけ変わり、保存されません</td></tr>
+      <tr><td>回転速度</td><td><code>angular_velocity</code></td><td>3 つの小数（読み取り専用）</td><td></td><td></td><td>今の回転の速さ。実行中だけ変わり、保存されません</td></tr>
+      <tr><td>停止中</td><td><code>is_sleeping</code></td><td>オン・オフ（読み取り専用）</td><td></td><td></td><td>止まっていて計算を休んでいるか（<a href="#sleep">停止</a>）</td></tr>
+      <tr><td>状態</td><td><code>status</code></td><td>文字（読み取り専用）</td><td></td><td></td><td>設定に問題があるときの警告（<a href="#status">下の表</a>）</td></tr>
+    </table>
+    </div>
+
+    <h3 id="body-type">種別</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>種別</th><th>動き</th><th>使う場面</th></tr>
+      <tr><td>静的</td><td>動きません。ほかの物がぶつかると止められます</td><td>動かない障害物</td></tr>
+      <tr><td>キネマティック</td><td>重力や衝突では動きません。Transform の位置（Motion やスクリプトで動かした位置）に従います。ぶつかった動的な物を押しのけます</td><td>動く床、エレベーター</td></tr>
+      <tr><td>動的</td><td>重力、力、衝突で動きます</td><td>落ちる箱、転がるボール</td></tr>
+    </table>
+    </div>
+
+    <h3 id="shape">Rigidbody の形</h3>
+    <ul>
+      <li>Rigidbody は、同じ GameObject に付いている<b>一番上の Collider 1 つ</b>を形として使います。</li>
+      <li>動的な Rigidbody の形になれるのは Sphere・Box・Capsule Collider です。Mesh Collider（や地形の Collider）を動的にすると、警告が出てキネマティックとして扱われます。</li>
+      <li>トリガーにした Collider は、Rigidbody の形として押し戻しに使われません。</li>
+      <li>Rigidbody の付いていない GameObject の Collider は、動かない障害物として扱われます。</li>
+    </ul>
+    <div class="warning"><strong>回転した Box Collider</strong>Rigidbody の衝突計算では、回転した Box Collider は、回転した箱を囲む「回転していない箱」として扱われます。斜めに置いた箱の上では、見た目より大きな箱に当たったように止まることがあります。斜面などには Mesh Collider を使ってください。トリガーの判定では、回転はそのまま反映されます。</div>
+
+    <h3 id="combine">2 つの物がぶつかったとき</h3>
+    <ul>
+      <li>反発は、2 つの物の <b>反発</b> のうち小さい方が使われます。</li>
+      <li>摩擦は、2 つの物の <b>摩擦</b> を掛けた値の平方根が使われます。Rigidbody の無い物の摩擦は 0.5、反発は 0 として計算します。</li>
+    </ul>
+
+    <h3 id="sleep">停止</h3>
+    <p>動的な物の移動と回転の速さが、どちらも 0.05 より遅い状態が 0.5 秒続くと、止まったものとして計算を休みます（<b>停止中</b> がオン）。力を加えたり、ほかの物が当たったりすると、また動き出します。</p>
+
+    <h3 id="status">状態の警告</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>意味</th></tr>
+      <tr><td>Collider がありません。衝突しない質点として扱います。</td><td>同じ GameObject に Collider が無いので、何にもぶつからずに落ち続けます</td></tr>
+      <tr><td>Trigger Collider は Rigidbody の押し戻し対象になりません。</td><td>一番上の Collider がトリガーです</td></tr>
+      <tr><td>Mesh / Landscape は Dynamic に対応しないため、Kinematic として扱います。</td><td>メッシュや地形の Collider で動的を選んでいます</td></tr>
+    </table>
+    </div>
+
+    <h3 id="csharp">C# スクリプトから操作する</h3>
+    <p>C# では <code>RigidbodyComponent</code> 型で操作します。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>メンバー</th><th>働き</th></tr>
+      <tr><td><code>AddForce(force)</code></td><td>力を加えます。次の計算で、質量で割った加速として速度に加わります。止まっていた物は動き出します</td></tr>
+      <tr><td><code>AddTorque(torque)</code></td><td>回転させる力を加えます</td></tr>
+      <tr><td><code>AddImpulse(impulse)</code></td><td>瞬間的な力。速度に「impulse ÷ 質量」をすぐ足します</td></tr>
+      <tr><td><code>ClearForces()</code></td><td>まだ計算に使われていない力を消します</td></tr>
+      <tr><td><code>Velocity</code>、<code>SetVelocity(value)</code></td><td>移動の速さの読み書き</td></tr>
+      <tr><td><code>AngularVelocity</code>、<code>SetAngularVelocity(value)</code></td><td>回転の速さの読み書き</td></tr>
+      <tr><td><code>Teleport(position, rotationEuler)</code></td><td>位置と回転を一気に変えます。速度はそのまま残ります</td></tr>
+      <tr><td><code>BodyType</code>、<code>Mass</code>、<code>GravityScale</code> など</td><td>プロパティの読み書き（<code>BodyType</code> は 0 = 静的、1 = キネマティック、2 = 動的）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="collider-common">Collider の共通項目</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>中心オフセット</td><td><code>center_offset</code></td><td>3 つの小数</td><td>0, 0, 0</td><td>形の中心を GameObject の位置からずらします</td></tr>
+      <tr><td>レイヤー</td><td><code>collision_layer</code></td><td>レイヤー</td><td>Default</td><td>この Collider が属するグループ（<a href="#layers">レイヤー</a>）</td></tr>
+      <tr><td>衝突する相手</td><td><code>collision_mask</code></td><td>レイヤーの組み合わせ</td><td>すべて</td><td>ぶつかる相手のレイヤー。お互いが相手のレイヤーを含んでいるときだけぶつかります</td></tr>
+      <tr><td>トリガー</td><td><code>is_trigger</code></td><td>オン・オフ</td><td>オフ</td><td>オンにすると、ほかの物が通り抜けます。押し戻しと接地には使われず、代わりに<a href="#events">トリガーのイベント</a>が届きます</td></tr>
+      <tr><td>形状を表示</td><td><code>debug_draw</code></td><td>オン・オフ</td><td>オン</td><td>シーンビューに形を線で表示します（<a href="#debug">形を確かめる</a>）</td></tr>
+    </table>
+    </div>
+    <p>ほかに、GameObject の中で Collider を区別するための番号（<code>collider_key</code>）が自動で付きます。インスペクターには表示されません。</p>
+
+    <h3 id="layers">レイヤー</h3>
+    <p>レイヤーは次の 8 つで固定です。名前は変えられません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>番号</th><th>名前</th></tr>
+      <tr><td>0</td><td>Default</td></tr>
+      <tr><td>1</td><td>Player</td></tr>
+      <tr><td>2</td><td>Enemy</td></tr>
+      <tr><td>3</td><td>Environment</td></tr>
+      <tr><td>4</td><td>Player Attack</td></tr>
+      <tr><td>5</td><td>Enemy Attack</td></tr>
+      <tr><td>6</td><td>Projectile</td></tr>
+      <tr><td>7</td><td>Trigger</td></tr>
+    </table>
+    </div>
+    <p>例：Player の Collider の <b>衝突する相手</b> から Player Attack を外すと、自分の攻撃に当たらなくなります。片方だけ外しても、ぶつからなくなります。</p>
+
+    <h2 id="sphere">Sphere Collider</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>半径</td><td><code>radius</code></td><td>小数</td><td>0.38</td><td>0.01〜100</td><td>球の半径。GameObject の拡大率（3 方向のうち最大のもの）が掛かります</td></tr>
+      <tr><td>接触余白</td><td><code>skin_width</code></td><td>小数</td><td>0.015</td><td>0〜1</td><td>Character Motor や Nav Agent がこの球を移動に使うとき、壁や床との間に空けるすき間</td></tr>
+      <tr><td>歩ける傾斜のしきい値</td><td><code>walkable_normal_y</code></td><td>小数</td><td>0.25</td><td>-1〜1</td><td>Character Motor や Nav Agent がこの球を移動に使うとき、地面とみなす面の傾き。面の向きの上向きの成分がこの値以上の面だけを地面とします（1 が水平な床、0 が垂直な壁）</td></tr>
+    </table>
+    </div>
+    <p>拡大率が軸ごとに違うと、球は楕円にならず、「拡大率が軸ごとに異なります。球は楕円体になりませんので、最大軸に合わせた大きめの半径として扱います。」と警告が出ます。半径が 0 以下のときは「半径が 0 以下です。この Collider は衝突しません。」と出ます。</p>
+
+    <h2 id="box">Box Collider</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>サイズ</td><td><code>size</code></td><td>3 つの小数</td><td>1, 1, 1</td><td>箱の辺の長さ（半分の長さではありません）。GameObject の拡大率が軸ごとに掛かります</td></tr>
+    </table>
+    </div>
+    <p>サイズに 0 以下の軸があると「サイズに 0 以下の軸があります。この Collider は衝突しません。」と出ます。回転の扱いは <a href="#shape">Rigidbody の形</a> の注意を見てください。</p>
+
+    <h2 id="capsule">Capsule Collider</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>半径</td><td><code>radius</code></td><td>小数</td><td>0.4</td><td>0.01〜100</td><td>カプセルの太さ。軸と直角な 2 方向の拡大率のうち大きい方が掛かります</td></tr>
+      <tr><td>高さ</td><td><code>height</code></td><td>小数</td><td>1.8</td><td>0.01〜200</td><td>両端の丸い部分を含めた全体の長さ。軸方向の拡大率が掛かります</td></tr>
+      <tr><td>軸</td><td><code>axis</code></td><td>選択</td><td>Y</td><td></td><td>カプセルの向き。X、Y、Z。GameObject の回転に合わせて傾きます</td></tr>
+    </table>
+    </div>
+    <p>高さが直径（半径の 2 倍）より小さいときは、判定は直径まで伸ばした高さで行われ、「高さが直径 (値) を下回っています。…」と警告が出ます。</p>
+
+    <h2 id="mesh">Mesh Collider</h2>
+    <p>モデルの三角形をそのまま当たり判定にします。地形や建物などの<b>動かない</b>環境に使います。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>メッシュの取得元</td><td><code>mesh_source</code></td><td>選択</td><td>Renderer のメッシュ</td><td></td><td>Renderer のメッシュ：同じ GameObject の Mesh Renderer、無ければ Skinned Mesh Renderer の <b>メッシュ</b> を使います（Primitive Mesh Renderer の形は使えません）。衝突専用メッシュ：下の欄のモデルを使います</td></tr>
+      <tr><td>衝突専用メッシュ</td><td><code>mesh_asset</code></td><td>アセット（モデル）</td><td>（空）</td><td></td><td>当たり判定だけに使う、三角形の少ないモデル</td></tr>
+      <tr><td>セルサイズ</td><td><code>cook_cell_size</code></td><td>小数</td><td>4</td><td>0.05〜100</td><td>当たりを速く調べるための区切りの大きさ。小さいほど速く調べられますが、メモリを多く使います</td></tr>
+      <tr><td>両面に当たる</td><td><code>double_sided</code></td><td>オン・オフ</td><td>オン</td><td></td><td>この版では、オフにしても当たり方は変わりません（常に両面に当たります）</td></tr>
+      <tr><td>三角形を表示</td><td><code>debug_draw_wireframe</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>三角形そのものを線で表示します（<a href="#debug">形を確かめる</a>）。重いので必要なときだけ使います</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li>変形するモデル（骨で動くモデル）の動きには追従しません。</li>
+      <li>プロジェクトパネルの <b>SceneへModel配置時にMesh Colliderも追加</b> にチェックを付けてモデルを置くと、Renderer のメッシュを使う Mesh Collider が、レイヤー Environment で付きます（<a href="mesh-renderers.html#create">置き方</a>）。</li>
+      <li>トリガーにした Mesh Collider は、三角形ではなく、形を囲む箱の中に入ったかどうかで判定します。へこんだ形では、外側でも反応することがあります。正確に判定したい場所には Box・Sphere・Capsule のトリガーを使ってください。</li>
+    </ul>
+
+    <h2 id="events">衝突とトリガーのイベント</h2>
+    <p>ゲームの実行中、ぶつかったときや重なったときにイベントが送られます。C# スクリプトで受け取れます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>イベント</th><th>送られるとき</th></tr>
+      <tr><td>CollisionEnter / CollisionStay / CollisionExit</td><td>Rigidbody どうし、または Rigidbody と障害物が実際にぶつかったとき（両方の GameObject に届きます）。Character Motor が床や壁に触れたときにも届きます</td></tr>
+      <tr><td>TriggerEnter / TriggerStay / TriggerExit</td><td>トリガーの Collider に、別の GameObject のトリガーでない Collider が重なったとき（両方の GameObject に届きます）。レイヤーがお互いにぶつかる設定のときだけです。Rigidbody は要りません</td></tr>
+    </table>
+    </div>
+    <p>Enter は触れ始めたとき、Stay は触れている間の毎回、Exit は離れたとき（相手が消えたときを含む）です。CollisionEnter には、当たった位置、面の向き、相対速度、めり込みの深さなどが入ります。</p>
+    <p>トリガーの判定では、入ってくる側の形を、それを囲む球として扱います。そのため、実際に触れる少し手前で反応することがあります。</p>
+
+    <h2 id="debug">形を確かめる</h2>
+    <ul>
+      <li>シーンビュー上部の <b>コライダー</b> にチェックを付けると、<b>形状を表示</b> がオンの Collider の形が線で表示されます。</li>
+      <li><b>Window &gt; Collision Diagnostics</b> の「衝突の診断」ウィンドウの <b>表示</b> で、<b>境界ボックスを描く</b> と <b>Mesh の三角形を描く</b> を選べます。Mesh Collider の三角形は、ここの <b>Mesh の三角形を描く</b> と、各 Collider の <b>三角形を表示</b> の両方がオンのときだけ表示されます。</li>
+    </ul>
+
+    <h2 id="usage">使い方</h2>
+    <h3>箱を床に落とす</h3>
+    <ol class="steps">
+      <li>階層パネルの <b>+ 作成 &gt; 3D Object &gt; Plane</b> で床を作り、<b>コンポーネントを追加 &gt; Physics &gt; Box Collider</b> を付けます。<b>サイズ</b> を 10, 0.1, 10 など、床の広さに合わせます。</li>
+      <li><b>+ 作成 &gt; 3D Object &gt; Cube</b> で箱を作り、床より上に置きます。</li>
+      <li>箱に <b>Box Collider</b> と <b>Rigidbody</b> を付けます。</li>
+      <li>ゲームを実行すると、箱が落ちて床で止まります。</li>
+    </ol>
+    <h3>通り抜けると反応するエリアを作る</h3>
+    <ol class="steps">
+      <li>空の GameObject に <b>Box Collider</b> を付け、<b>トリガー</b> をオンにします。</li>
+      <li><b>サイズ</b> と位置で、反応させたい範囲を決めます。</li>
+      <li>C# スクリプトで TriggerEnter を受け取り、入ってきた相手に応じて処理します。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="mesh-renderers.html">メッシュの描画</a></li>
+      <li><a href="transform.html">Transform</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

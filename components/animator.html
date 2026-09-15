@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Animator - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+    <h1>Animator</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>骨の入ったモデルのアニメーションを再生するコンポーネントです。「待機」「走る」のような<b>状態（State）</b>ごとに再生するアニメーションを決め、条件がそろったら別の状態へ<b>遷移（Transition）</b>させます。姿勢は同じ GameObject の <a href="mesh-renderers.html#animator">Skinned Mesh Renderer</a> に表示されます。</p>
+    <p>UI やオブジェクトの位置・色などを時間で動かすときは、このコンポーネントではなく Motion Player を使います。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>骨の入ったキャラクターに、待機・歩く・走るなどのアニメーションを付けたいとき</li>
+      <li>速さやボタンの入力に合わせて、アニメーションを自動で切り替えたいとき（Transition と条件）</li>
+      <li>スクリプトから、決まったアニメーションに切り替えたいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Rendering &gt; Animator</td></tr>
+      <tr><td>必須・推奨</td><td>なし（表示には Skinned Mesh Renderer が要ります）</td></tr>
+      <tr><td>動く場面</td><td>ゲームの実行中</td></tr>
+      <tr><td>自動で付く場面</td><td>アニメーションの入ったモデルをプロジェクトパネルからシーンに置いたとき（<a href="mesh-renderers.html#create">置き方</a>）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>State 数</td><td><code>state_count</code></td><td>整数</td><td>0</td><td>0〜64</td><td>状態の数。増やすと下に「State 1」「State 2」…の見出しが増えます。0 のときは<a href="#legacy">旧方式</a>で動きます</td></tr>
+      <tr><td>開始 State</td><td><code>default_state</code></td><td>文字</td><td>（空）</td><td></td><td>実行を始めたときの状態の名前。空か、無い名前のときは State 1 から始まります</td></tr>
+      <tr><td>Transition 数</td><td><code>transition_count</code></td><td>整数</td><td>0</td><td>0〜256</td><td>遷移の数。増やすと下に「Transition 1」「Transition 2」…の見出しが増えます</td></tr>
+      <tr><td>全体再生速度</td><td><code>playback_speed</code></td><td>小数</td><td>1</td><td>0〜5</td><td>すべての状態にかかる再生の速さの倍率</td></tr>
+      <tr><td>再生</td><td><code>playing</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オフにすると時間が進まず、その姿勢で止まります。遷移の判定は続きます</td></tr>
+      <tr><td>現在の State</td><td><code>current_state</code></td><td>文字（読み取り専用）</td><td></td><td></td><td>今の状態の名前。保存されません</td></tr>
+      <tr><td>現在のクリップ</td><td><code>current_clip</code></td><td>整数（読み取り専用）</td><td></td><td></td><td>今のアニメーションの番号。保存されません</td></tr>
+      <tr><td>再生時間</td><td><code>animation_time</code></td><td>小数（読み取り専用）</td><td></td><td></td><td>今の状態に入ってからの再生位置（秒）。保存されません</td></tr>
+      <tr><td>ブレンド率</td><td><code>blend_factor</code></td><td>小数（読み取り専用）</td><td></td><td></td><td>遷移中の混ぜ具合。0 が遷移前、1 が遷移後。遷移中でなければ 1。保存されません</td></tr>
+      <tr><td>旧: 待機クリップ</td><td><code>idle_clip</code></td><td>整数</td><td>-1</td><td>-1〜255</td><td>旧方式で使うアニメーションの番号</td></tr>
+      <tr><td>旧: 移動クリップ</td><td><code>walk_clip</code></td><td>整数</td><td>-1</td><td>-1〜255</td><td>旧方式で使うアニメーションの番号</td></tr>
+      <tr><td>旧: ジャンプクリップ</td><td><code>jump_clip</code></td><td>整数</td><td>-1</td><td>-1〜255</td><td>旧方式で使うアニメーションの番号</td></tr>
+      <tr><td>旧: ループ</td><td><code>loop</code></td><td>オン・オフ</td><td>オン</td><td></td><td>旧方式で繰り返すかどうか</td></tr>
+      <tr><td>旧: 移動とみなす速度</td><td><code>walk_speed_threshold</code></td><td>小数</td><td>0.2</td><td>0〜10</td><td>旧方式で、これより速く動いていたら移動クリップにします</td></tr>
+    </table>
+    </div>
+
+    <h3 id="state-items">「State 番号」の見出しの中</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>状態名</td><td><code>states[番号].name</code></td><td>文字</td><td>State0、State1、…</td><td></td><td>状態の名前。開始 State と遷移の 遷移元・遷移先 はこの名前で指定します</td></tr>
+      <tr><td>クリップ</td><td><code>states[番号].clip</code></td><td>整数</td><td>-1</td><td>-1〜255</td><td>再生するアニメーションの番号。モデルに入っている順に 0 から数えます。-1 は何も再生しません</td></tr>
+      <tr><td>ループ</td><td><code>states[番号].loop</code></td><td>オン・オフ</td><td>オン</td><td></td><td>最後まで再生したら繰り返すかどうか</td></tr>
+      <tr><td>状態再生速度</td><td><code>states[番号].speed</code></td><td>小数</td><td>1</td><td>0〜5</td><td>この状態だけの再生の速さ。全体再生速度と掛け合わされます</td></tr>
+    </table>
+    </div>
+    <p>内部名の番号は 0 から数えます（見出しの「State 1」は <code>states[0]</code>）。</p>
+
+    <h3 id="transition-items">「Transition 番号」の見出しの中</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>遷移元</td><td><code>transitions[番号].from</code></td><td>文字</td><td>（空）</td><td></td><td>どの状態のときにこの遷移を調べるか。空か <code>*</code> なら、どの状態からでも調べます</td></tr>
+      <tr><td>遷移先</td><td><code>transitions[番号].to</code></td><td>文字</td><td>（空）</td><td></td><td>移る先の状態の名前</td></tr>
+      <tr><td>パラメーター</td><td><code>transitions[番号].parameter</code></td><td>文字</td><td>（空）</td><td></td><td>条件が Bool、Float、Trigger のときに見るパラメーターの名前</td></tr>
+      <tr><td>条件</td><td><code>transitions[番号].condition</code></td><td>選択</td><td>常に</td><td></td><td>遷移する条件（下の表）</td></tr>
+      <tr><td>しきい値</td><td><code>transitions[番号].threshold</code></td><td>小数</td><td>0</td><td></td><td>速度や Float と比べる値</td></tr>
+      <tr><td>ブレンド時間</td><td><code>transitions[番号].blend_time</code></td><td>小数</td><td>0.15</td><td>0〜5</td><td>前の状態のアニメーションから、何秒かけて混ぜながら切り替えるか。0 ならすぐ切り替わります</td></tr>
+    </table>
+    </div>
+
+    <h2 id="conditions">条件の種類</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>条件</th><th>成り立つとき</th></tr>
+      <tr><td>常に</td><td>いつでも</td></tr>
+      <tr><td>接地中</td><td>地面に立っている</td></tr>
+      <tr><td>空中</td><td>地面から離れている</td></tr>
+      <tr><td>水平速度 &gt;</td><td>水平方向の速さが しきい値 より大きい</td></tr>
+      <tr><td>水平速度 &lt;=</td><td>水平方向の速さが しきい値 以下</td></tr>
+      <tr><td>垂直速度 &gt;</td><td>上下方向の速さ（上が正）が しきい値 より大きい</td></tr>
+      <tr><td>垂直速度 &lt;=</td><td>上下方向の速さが しきい値 以下</td></tr>
+      <tr><td>Bool true</td><td>パラメーター の Bool がオン</td></tr>
+      <tr><td>Bool false</td><td>パラメーター の Bool がオフ（一度も設定していない名前はオフ扱い）</td></tr>
+      <tr><td>Float &gt;</td><td>パラメーター の Float が しきい値 より大きい（一度も設定していない名前は 0 扱い）</td></tr>
+      <tr><td>Float &lt;=</td><td>パラメーター の Float が しきい値 以下</td></tr>
+      <tr><td>Trigger</td><td>パラメーター の Trigger が設定されている。遷移すると Trigger は消えます</td></tr>
+    </table>
+    </div>
+    <div class="note"><strong>接地中・空中・速度の条件</strong>この 6 つは、同じ GameObject に付いた Character Motor（Gameplay 分類のテンプレート部品）の状態を見ます。Character Motor が無いか無効のときは、どれも成り立ちません。自分で作ったキャラクターでは、C# スクリプトから Bool や Float のパラメーターを設定して判定してください。</div>
+    <p>Bool・Float・Trigger の条件に使う名前は、どこかで登録しておく必要はありません。C# スクリプトから設定した名前がそのまま使われます。パラメーターは実行を始めるたびに空に戻ります。</p>
+
+    <h2 id="how">動き方</h2>
+    <ol>
+      <li>実行を始めると、<b>開始 State</b> の状態に入ります。</li>
+      <li>毎フレーム、遷移を <b>Transition 1 から順に</b> 調べます。<b>遷移元</b> が今の状態に合い、<b>遷移先</b> の状態があって今の状態と違い、<b>条件</b> が成り立つ遷移が見つかったら、その状態へ移ります。</li>
+      <li>1 フレームで移るのは 1 回だけです。複数の遷移が成り立つときは、番号の小さいものが勝ちます。</li>
+      <li>状態に入ると、再生位置は 0 に戻ります。<b>ブレンド時間</b> が 0 より大きければ、その秒数をかけて前のアニメーションから混ぜながら切り替わります。</li>
+      <li><b>再生</b> がオンの間、再生位置は「経過時間 × 全体再生速度 × 状態再生速度」ずつ進みます。</li>
+    </ol>
+    <p>状態が変わると、エンジンに <b>AnimatorStateChanged</b> というイベントが送られます。イベントには、前の状態の名前（<code>previous_state</code>）、新しい状態の名前（<code>state</code>）、前と新しいアニメーションの番号（<code>previous_clip</code>、<code>clip</code>）、ブレンド時間（<code>blend_time</code>）が入ります。</p>
+    <p>Animator を無効にすると、表示は続きますが、その時点の姿勢で止まります。</p>
+
+    <h2 id="csharp">C# スクリプトから操作する</h2>
+    <p>C# では <code>AnimatorComponent</code> 型で操作します。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>メンバー</th><th>働き</th></tr>
+      <tr><td><code>Play(stateName, blendTime = 0, startTime = 0)</code></td><td>指定した状態へすぐ移り、再生を始めます。<code>blendTime</code> 秒かけて混ぜ、<code>startTime</code> 秒の位置から再生します。今と同じ状態を指定したときは、再生位置だけを <code>startTime</code> に戻します。無い状態名なら失敗を返します</td></tr>
+      <tr><td><code>Play()</code> / <code>Resume()</code></td><td>止めていた再生を続けます</td></tr>
+      <tr><td><code>Pause()</code></td><td>再生を止めます（姿勢はそのまま）</td></tr>
+      <tr><td><code>Stop()</code></td><td>再生を止め、再生位置を 0 に戻します</td></tr>
+      <tr><td><code>SetBool(name, value)</code></td><td>Bool パラメーターを設定します</td></tr>
+      <tr><td><code>SetFloat(name, value)</code></td><td>Float パラメーターを設定します</td></tr>
+      <tr><td><code>SetTrigger(name)</code> / <code>ResetTrigger(name)</code></td><td>Trigger を設定する / 消します</td></tr>
+      <tr><td><code>Playing</code>、<code>PlaybackSpeed</code></td><td>再生、全体再生速度 の読み書き</td></tr>
+      <tr><td><code>CurrentState</code>、<code>CurrentClip</code>、<code>AnimationTime</code>、<code>BlendFactor</code></td><td>今の状態の読み取り</td></tr>
+    </table>
+    </div>
+    <p>C# スクリプトの書き方は「C# スクリプト」の章で説明します。</p>
+
+    <h2 id="legacy">旧方式（State 数が 0 のとき）</h2>
+    <p><b>State 数</b> が 0 のときは、状態と遷移を使わず、次の決まった動きをします。以前に作ったシーンのための動きです。</p>
+    <ul>
+      <li>同じ GameObject の Character Motor が空中にいれば <b>旧: ジャンプクリップ</b>、地面で <b>旧: 移動とみなす速度</b> より速く動いていれば <b>旧: 移動クリップ</b>、それ以外は <b>旧: 待機クリップ</b> を再生します。</li>
+      <li>Character Motor が無ければ、常に <b>旧: 待機クリップ</b> を再生します。</li>
+      <li>繰り返すかどうかは <b>旧: ループ</b> で決まります。遷移のブレンドはありません。</li>
+    </ul>
+    <p>アニメーションの入ったモデルをプロジェクトパネルから置いたときは、この旧方式で <b>旧: 待機クリップ</b> が 0 になっています。状態と遷移を使うときは <b>State 数</b> を 1 以上にします。</p>
+
+    <h2 id="usage">使い方</h2>
+    <h3>速さで待機と走りを切り替える</h3>
+    <ol class="steps">
+      <li>アニメーションの入ったモデルをシーンに置きます。Skinned Mesh Renderer と Animator が付きます。</li>
+      <li><b>State 数</b> を 2 にします。</li>
+      <li>State 1 の <b>状態名</b> を <code>Idle</code>、<b>クリップ</b> を待機アニメーションの番号にします。</li>
+      <li>State 2 の <b>状態名</b> を <code>Run</code>、<b>クリップ</b> を走るアニメーションの番号にします。</li>
+      <li><b>開始 State</b> に <code>Idle</code> を入れます。</li>
+      <li><b>Transition 数</b> を 2 にします。</li>
+      <li>Transition 1：遷移元 <code>Idle</code>、遷移先 <code>Run</code>、条件 <b>Float &gt;</b>、パラメーター <code>speed</code>、しきい値 <code>0.1</code>。</li>
+      <li>Transition 2：遷移元 <code>Run</code>、遷移先 <code>Idle</code>、条件 <b>Float &lt;=</b>、パラメーター <code>speed</code>、しきい値 <code>0.1</code>。</li>
+      <li>C# スクリプトで、キャラクターの速さを毎フレーム <code>SetFloat("speed", 速さ)</code> で渡します。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="mesh-renderers.html">メッシュの描画（Mesh / Primitive / Skinned Mesh Renderer）</a></li>
+      <li><a href="state.html">State</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

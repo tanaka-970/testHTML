@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Effect Stack と Effect Preset - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+    <h1>Effect Stack と Effect Preset</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>ぼかし、発光、色調補正、ワイプなどの画面効果（エフェクト）を、上から順に重ねてかけるコンポーネントです。かける相手によって 3 種類あります。エフェクトの並びは Effect Preset というファイルに保存して、使い回すこともできます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>コンポーネント</th><th>コンポーネントを追加での場所</th><th>効果をかける相手</th><th>1 つの GameObject に</th></tr>
+      <tr><td>Screen Effect Stack</td><td>Rendering &gt; Screen Effect Stack</td><td>3D の画面全体（UI にはかかりません）</td><td>1 つだけ</td></tr>
+      <tr><td>Model Effect Stack</td><td>Rendering &gt; Model Effect Stack</td><td>その GameObject のモデルだけ</td><td>いくつでも</td></tr>
+      <tr><td>Effect Stack（UI）</td><td>UI &gt; Effect Stack</td><td>その UI 要素（Rect Transform が必要です）</td><td>1 つだけ</td></tr>
+    </table>
+    </div>
+    <p>使えるエフェクトは 86 種類あります。種類ごとの項目は <a href="effect-kinds.html">エフェクトの種類</a> を見てください。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>画面全体をセピア調にする、ぼかすなど、画面に効果をかけたいとき（Screen Effect Stack）</li>
+      <li>キャラクターだけを光らせる、輪郭線を付けるなど、特定のモデルだけに効果をかけたいとき（Model Effect Stack）</li>
+      <li>UI の画像にワイプやディゾルブをかけて、出し入れの演出を作りたいとき（Effect Stack（UI））</li>
+      <li>同じ効果の組み合わせを、いくつもの場所で使い回したいとき（Effect Preset）</li>
+    </ul>
+
+    <h2 id="add">エフェクトを並べる</h2>
+    <ol class="steps">
+      <li>GameObject にいずれかの Effect Stack を付けます。</li>
+      <li><b>Effect 数</b> を 1 以上にします（最大 16）。</li>
+      <li>プロパティの下に「Effect 1 / ぼかし」のような見出しが増えます。見出しを開き、<b>種類</b> を選びます。種類を変えると、その種類で使う項目だけが表示されます。</li>
+      <li>項目の値を変えると、シーンビューですぐに見た目が変わります。</li>
+    </ol>
+    <p>エフェクトは上から順にかかります。並べ替えは、インスペクターの <b>Effect Stack (個数) エフェクトの名前…</b> という見出しを開いて行います。見出しの中には「Surface の後へ上から順に合成。◆ を長押しして移動できます」と表示され、「Effect 1 / 種類」の行が並びます。◆ をドラッグするか、並べ替えのボタンや右クリックメニューで順番を変えます。値は、行の中ではなく、同じコンポーネントの「Effect 番号 / 種類」の見出しの中で変えます。</p>
+    <p>種類の名前の後ろに <b>[M]</b> が付いているエフェクトは、値を動かさなくても時間で自動的に変化します（ノイズ、揺れ、グリッチなど）。</p>
+
+    <h2 id="effect-items">各エフェクトの共通項目</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>説明</th></tr>
+      <tr><td>有効</td><td><code>effects[番号].enabled</code></td><td>オン・オフ</td><td>オフにすると、このエフェクトだけかかりません</td></tr>
+      <tr><td>範囲へ適用</td><td><code>effects[番号].region_enabled</code></td><td>オン・オフ</td><td><a href="#region">適用範囲</a> の <b>適用対象</b> が「個別に選択」のとき、このエフェクトに範囲を使うかどうか</td></tr>
+      <tr><td>種類</td><td><code>effects[番号].type</code></td><td>選択</td><td>エフェクトの種類（<a href="effect-kinds.html#index">一覧</a>）</td></tr>
+      <tr><td>（種類ごとの項目）</td><td></td><td></td><td><a href="effect-kinds.html#details">エフェクトの種類</a> を見てください</td></tr>
+      <tr><td>カスタムシェーダー</td><td><code>effects[番号].custom_shader</code></td><td>アセット（シェーダー）</td><td>自分で作ったポストプロセス用シェーダーを指定すると、そのシェーダーを実行します。シェーダーの設定項目が「Custom Shader」などの見出しで下に増えます。画像（Texture）の項目には「[DX12 未対応]」と付き、この版では使えません</td></tr>
+    </table>
+    </div>
+    <p>内部名の <code>番号</code> は 0 から数えます（「Effect 1」は <code>effects[0]</code>）。画像の項目以外は Motion で動かせます。</p>
+
+    <h2 id="screen">Screen Effect Stack</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>効果を適用</td><td><code>enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>コンポーネントの見出しの左にある有効のチェックとは別です。両方がオンでないと効果は出ません</td></tr>
+      <tr><td>Preset を使用</td><td><code>use_preset</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、自分のエフェクトの代わりに <b>Effect Preset</b> のエフェクトを使います</td></tr>
+      <tr><td>Effect Preset</td><td><code>effect_preset</code></td><td>アセット（Effect Preset）</td><td>（空）</td><td></td><td>使う Effect Preset</td></tr>
+      <tr><td>Effect 数</td><td><code>effect_count</code></td><td>整数</td><td>0</td><td>0〜16</td><td>自分で並べるエフェクトの数</td></tr>
+      <tr><td>適用位置</td><td><code>apply_stage</code></td><td>選択</td><td>PostProcess 後</td><td></td><td>PostProcess 後、PostProcess 前。<a href="post-process-volume.html">ポスト処理</a>（Bloom など）の後にかけるか前にかけるか。どちらも UI を描く前です</td></tr>
+      <tr><td>適用対象</td><td><code>target_mode</code></td><td>選択</td><td>画面全体</td><td></td><td>画面全体、背景だけ、Rendering Layer、空だけ（下の表）</td></tr>
+      <tr><td>Rendering Layer</td><td><code>target_rendering_layer</code></td><td>整数</td><td>0</td><td>0〜31</td><td>適用対象が Rendering Layer のときに、効果をかけるグループの番号</td></tr>
+    </table>
+    </div>
+    <div class="table-wrap">
+    <table>
+      <tr><th>適用対象</th><th>効果がかかるもの</th></tr>
+      <tr><td>画面全体</td><td>3D の画面全体</td></tr>
+      <tr><td>背景だけ</td><td>物が描かれていない背景の部分</td></tr>
+      <tr><td>Rendering Layer</td><td>メッシュの描画コンポーネントの <b>Rendering Layer</b> が、ここで指定した番号と同じ物だけ（<a href="mesh-renderers.html#properties">メッシュの描画</a>）</td></tr>
+      <tr><td>空だけ</td><td>空。この Screen Effect Stack と同じ GameObject に付いた <a href="sky.html">空</a> が表示中のときだけ効きます。<b>適用位置</b> に関係なく、ポスト処理の前にかかります</td></tr>
+    </table>
+    </div>
+    <p>複数の GameObject に Screen Effect Stack があるときは、すべてかかります。同じ適用位置のものは、シーンの中の順にかかります。</p>
+
+    <h2 id="model">Model Effect Stack</h2>
+    <p>同じ GameObject の Mesh Renderer・Skinned Mesh Renderer などで描かれたモデルにだけ効果をかけます。表示されるモデルが無いときは何も起きません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>効果を適用</td><td><code>enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>Screen Effect Stack と同じ</td></tr>
+      <tr><td>Preset を使用</td><td><code>use_preset</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>Screen Effect Stack と同じ</td></tr>
+      <tr><td>Effect Preset</td><td><code>effect_preset</code></td><td>アセット（Effect Preset）</td><td>（空）</td><td></td><td>Screen Effect Stack と同じ</td></tr>
+      <tr><td>Effect 数</td><td><code>effect_count</code></td><td>整数</td><td>0</td><td>0〜16</td><td>Screen Effect Stack と同じ</td></tr>
+      <tr><td>対象</td><td><code>target_slot_mode</code></td><td>選択</td><td>モデル全体</td><td></td><td>モデル全体、マテリアルスロット</td></tr>
+      <tr><td>マテリアルスロット</td><td><code>target_slot_index</code></td><td>選択</td><td>0 番</td><td></td><td>対象がマテリアルスロットのときに効果をかける部分。メッシュの描画コンポーネントの<a href="mesh-renderers.html#slots">スロット</a>の名前で選びます（名前が無いものは「番号 番」）。「Effect Stack / 対象」の見出しの中にあります</td></tr>
+      <tr><td>深度モード</td><td><code>depth_mode</code></td><td>選択</td><td>Preserve Depth</td><td></td><td>Preserve Depth は手前の物に隠れる、Overlay は手前の物より上に重ねて表示します</td></tr>
+      <tr><td>合成方法</td><td><code>extract_mode</code></td><td>選択</td><td>自動</td><td></td><td>自動、その場、切り抜き（下を見てください）</td></tr>
+      <tr><td>最大はみ出し (px)</td><td><code>max_bleed_pixels</code></td><td>小数</td><td>128</td><td>0〜1024</td><td>ぼかしや発光などで、モデルが画面上で占める四角の外へ効果がはみ出せる上限（ピクセル）。広がる効果が途中で切れるときは大きくします</td></tr>
+    </table>
+    </div>
+    <h3 id="extract">モデルを切り抜いて処理する条件</h3>
+    <p>モデルは、次のどれかに当てはまると、ほかの物から切り抜いて別に処理されます（切り抜き）。当てはまらなければ、描かれた場所でそのまま処理されます（その場）。</p>
+    <ul>
+      <li><b>合成方法</b> が <b>切り抜き</b></li>
+      <li><b>深度モード</b> が <b>Overlay</b></li>
+      <li>対象の部分に半透明のマテリアルがある</li>
+      <li>有効なエフェクトの中に、周りへ広がる種類（ぼかし、発光、揺れ、歪み、輪郭線など）か、カスタムシェーダーを使うものがある</li>
+    </ul>
+    <p>切り抜かれたモデルは陰影の計算用のバッファから外されるため、SSAO や SSR のかかり方が変わります。</p>
+    <div class="note"><strong>「その場」を選んでも切り抜かれることがあります</strong>この版では、<b>合成方法</b> の <b>その場</b> は <b>自動</b> と同じ動きです。上の条件に当てはまると、その場を選んでいても切り抜いて処理されます。</div>
+
+    <h2 id="ui">Effect Stack（UI）</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>有効</td><td><code>enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>効果をかけるかどうか</td></tr>
+      <tr><td>適用対象</td><td><code>target_scope</code></td><td>選択</td><td>自分だけ</td><td></td><td>自分だけ、子階層をまとめる (Precompose)。まとめると、この GameObject と子をすべて 1 枚に描いてから、効果を 1 回だけかけます</td></tr>
+      <tr><td>背景を取り込む</td><td><code>capture_backdrop</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>この要素より前に描かれた画面も効果の材料に含めます。Screen Space Overlay の、回転していない Image と Text でだけ使えます</td></tr>
+      <tr><td>Preset を使用</td><td><code>use_preset</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>Screen Effect Stack と同じ</td></tr>
+      <tr><td>Effect Preset</td><td><code>effect_preset</code></td><td>アセット（Effect Preset）</td><td>（空）</td><td></td><td>Screen Effect Stack と同じ</td></tr>
+      <tr><td>Effect 数</td><td><code>effect_count</code></td><td>整数</td><td>0</td><td>0〜16</td><td>Screen Effect Stack と同じ</td></tr>
+    </table>
+    </div>
+    <p>UI Workspace で Effect Stack の付いた UI を選ぶと、<b>範囲制限</b> がオンのとき、画面上に適用範囲の枠とつまみが表示されます。</p>
+
+    <h2 id="region">適用範囲（3 種類共通）</h2>
+    <p>エフェクトを画面の一部だけにかけるための設定です。「Effect Stack / 適用範囲」の見出しの中にあります。位置と大きさは、効果をかける相手の画面上の四角を 0〜1 とした値で指定します。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>範囲制限</td><td><code>effect_region_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、指定した範囲にだけ効果をかけます</td></tr>
+      <tr><td>範囲形状</td><td><code>effect_region_shape</code></td><td>選択</td><td>矩形</td><td></td><td>矩形、円 / 楕円、画像マスク（投げ縄）、自由形状</td></tr>
+      <tr><td>適用対象</td><td><code>effect_region_scope</code></td><td>選択</td><td>全 Effect へ適用</td><td></td><td>全 Effect へ適用、個別に選択。個別に選択のときは、各エフェクトの <b>範囲へ適用</b> がオンのものだけに範囲を使います</td></tr>
+      <tr><td>範囲外へ適用</td><td><code>effect_region_invert</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、範囲の外側にだけかけます</td></tr>
+      <tr><td>範囲中心</td><td><code>effect_region_center</code></td><td>2 つの小数</td><td>0.5, 0.5</td><td>0〜1</td><td>範囲の中心。0, 0 が左上、1, 1 が右下</td></tr>
+      <tr><td>範囲サイズ / 半径</td><td><code>effect_region_size</code></td><td>2 つの小数</td><td>0.5, 0.5</td><td>0.001〜1</td><td>矩形なら中心から端までの長さ、楕円なら半径</td></tr>
+      <tr><td>範囲回転</td><td><code>effect_region_rotation</code></td><td>小数</td><td>0</td><td>-360〜360</td><td>矩形・楕円を回す角度（度）</td></tr>
+      <tr><td>境界ぼかし</td><td><code>effect_region_feather</code></td><td>小数</td><td>0</td><td>0〜1</td><td>0 なら範囲の境目ではっきり切り替わり、大きいほどなだらかになります</td></tr>
+      <tr><td>範囲強度</td><td><code>effect_region_strength</code></td><td>小数</td><td>1</td><td>0〜1</td><td>範囲の中で効果を混ぜる割合</td></tr>
+      <tr><td>投げ縄マスク</td><td><code>effect_region_mask</code></td><td>アセット（画像）</td><td>（空）</td><td></td><td>範囲形状が画像マスクのときに使う白黒画像。白い所にかかり、黒い所にはかかりません</td></tr>
+      <tr><td>追加範囲数</td><td><code>effect_region_additional_count</code></td><td>整数</td><td>0</td><td>0〜7</td><td>範囲を増やします。どれか 1 つの範囲に入っていればかかります。追加した範囲の位置や大きさはインスペクターには表示されません</td></tr>
+    </table>
+    </div>
+
+    <h2 id="preset">Effect Preset</h2>
+    <p>エフェクトの並びを保存したファイル（拡張子 <code>.replayeffect</code>）です。Screen、Model、UI のどの Effect Stack からも使えます。同じ演出を複数の場所で使うときや、あとでまとめて調整したいときに使います。</p>
+    <h3>作る</h3>
+    <ol class="steps">
+      <li>プロジェクトパネルの何もない場所を右クリックし、<b>Create &gt; UI / Presentation &gt; Effect Preset</b> を選びます（<a href="../editor/project.html#create">プロジェクトパネル</a>）。</li>
+      <li>「Effect Preset を作成しました: （ファイル名）」と表示され、ファイルができます。</li>
+    </ol>
+    <h3>編集する</h3>
+    <ol class="steps">
+      <li>プロジェクトパネルで Effect Preset を選びます。インスペクターに <b>Effect Preset Asset</b> の見出しと、ファイルの場所が表示されます。</li>
+      <li><b>エフェクトを追加</b> を押すとエフェクトが 1 つ増えます（最大 16。16 個あるとボタンは押せません）。<b>Effect 数</b> を直接変えても増減できます。</li>
+      <li>「Effect 番号 / 種類」の行の左の <b>削除</b> で、そのエフェクトを消します。行をドラッグすると順番を変えられます。</li>
+      <li>下に並ぶ項目で、種類や値を決めます。</li>
+    </ol>
+    <p>値を変えると、その場でファイルに保存され、「保存しました。参照中の UI / Model / Screen に反映されます。」と表示されます。<kbd>Ctrl</kbd>+<kbd>Z</kbd> で元に戻せます。<b>再読み込み</b> を押すと、保存されているファイルの内容を読み直します。ゲームの実行中は「Play 中は Effect Preset を編集できません」と表示され、編集できません。</p>
+    <h3>使う</h3>
+    <ol class="steps">
+      <li>Effect Stack の <b>Preset を使用</b> をオンにします。</li>
+      <li><b>Effect Preset</b> に作ったファイルを指定します。</li>
+    </ol>
+    <p>Preset を使っている間、その Effect Stack が自分で並べたエフェクトは使われません（消えずに残ります）。Preset が見つからないか読めないときは、自分のエフェクトが使われます。<b>適用範囲</b> などのエフェクト以外の設定は、Effect Stack 側の値が使われます。</p>
+
+    <h2 id="usage">使い方</h2>
+    <h3>画面全体をセピア調にする</h3>
+    <ol class="steps">
+      <li>空の GameObject に <b>コンポーネントを追加 &gt; Rendering &gt; Screen Effect Stack</b> を付けます。</li>
+      <li><b>Effect 数</b> を 1 にし、「Effect 1」の <b>種類</b> を <b>色調補正</b> にします。</li>
+      <li><b>彩度</b> を 0.3 程度に下げ、<b>色の乗算</b> を薄い茶色にします。</li>
+    </ol>
+    <h3>キャラクターだけを光らせる</h3>
+    <ol class="steps">
+      <li>キャラクターの GameObject に <b>コンポーネントを追加 &gt; Rendering &gt; Model Effect Stack</b> を付けます。</li>
+      <li><b>Effect 数</b> を 1 にし、<b>種類</b> を <b>発光</b> にします。</li>
+      <li>光が途中で四角く切れるときは、<b>最大はみ出し (px)</b> を大きくします。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="effect-kinds.html">エフェクトの種類</a></li>
+      <li><a href="post-process-volume.html">Post Process Volume</a></li>
+      <li><a href="mesh-renderers.html">メッシュの描画</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

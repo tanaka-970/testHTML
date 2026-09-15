@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Workspace - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
+    <h1>Workspace</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>Workspace は、作業の種類ごとの画面の使い分けです。ゲーム内 UI を作るとき、モーションを作るときなどに切り替えると、その作業に必要なパネルが出ます。エディターは、前回終了したときの Workspace で起動します（その情報は <code>Saved/EditorSession/session.ini</code> に残ります）。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>ゲーム内の UI を作る、モーションを作るなど、作業に合わせて必要なパネルだけを出したいとき</li>
+      <li>UI を作ってから、その UI に動きを付ける、というように作業を行き来するとき</li>
+      <li>パネルを閉じたり動かしたりして、並びが分からなくなったとき（Window &gt; レイアウトを初期化）</li>
+    </ul>
+
+    <h2 id="list">Workspace の種類</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>別の呼び方</th><th>内容</th></tr>
+      <tr><td>基本</td><td>Scene Workspace、general</td><td>シーンを組み立てる通常の画面です。</td></tr>
+      <tr><td>配置</td><td>オブジェクト配置Workspace、placement</td><td>プロジェクトパネルのモデルや Prefab をシーンビューに置く作業用です。</td></tr>
+      <tr><td>モデリング</td><td>モデリングWorkspace、modeling</td><td>形の編集用です。ワークスペースパネルに頂点ペイントの画面が出ます（<a href="vertex-paint.html">頂点カラーペイント</a>）。</td></tr>
+      <tr><td>アニメーション</td><td>アニメーションWorkspace、animation</td><td>準備中の枠です（下の注意を見てください）。</td></tr>
+      <tr><td>レンダリング</td><td>レンダリングWorkspace、rendering</td><td>描画設定を開くための枠です（下の注意を見てください）。</td></tr>
+      <tr><td>シェーダー調整</td><td>シェーダー調整Workspace、shader</td><td>インスペクターがデバッグメッシュ・画面効果・描画確認の 3 タブに変わります（<a href="shader-adjustment.html">シェーダー調整 Workspace</a>）。</td></tr>
+      <tr><td>UI</td><td>UI Workspace</td><td>ゲーム内 UI（Canvas、Rect Transform、UI のコンポーネント）を作ります。</td></tr>
+      <tr><td>Motion</td><td>Motion Workspace、motion</td><td>モーション（アニメーション）のキーやプレビューを編集します。</td></tr>
+    </table>
+    </div>
+
+    <h2 id="switch">切り替え方</h2>
+    <p>Workspace は次の 4 か所から切り替えられます。場所によって選べるものが違います。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>切り替える場所</th><th>選べる Workspace</th></tr>
+      <tr><td>インスペクターのいちばん上の <b>編集テーブル</b></td><td>基本、配置、モデリング、アニメーション、レンダリング、シェーダー調整</td></tr>
+      <tr><td><b>Window</b> メニューの「Scene Workspaceへ」「UI Workspaceへ」「Motion Workspaceへ」</td><td>基本、UI、Motion（今いるものに ✓）</td></tr>
+      <tr><td>ツールバーの <b>Search...</b>（機能検索）</td><td>配置、モデリング、アニメーション、レンダリング、UI、Motion、シェーダー調整（「workspace」などで検索）</td></tr>
+      <tr><td><a href="console.html#commands">コンソール</a>の <code>workspace</code> コマンド</td><td>基本、配置、モデリング、アニメーション、レンダリング、シェーダー調整、Motion</td></tr>
+    </table>
+    </div>
+    <p>UI Workspace や Motion Workspace にいるときは、インスペクターの編集テーブルは何も選ばれていない表示になります。基本に戻るには <b>Window &gt; Scene Workspaceへ</b> を使ってください。</p>
+
+    <h2 id="panel">ワークスペースパネル</h2>
+    <p>下段の <b>ワークスペース</b> タブ（<b>Window &gt; Workspace</b>）には、今の Workspace の名前と、その Workspace 用のボタンが表示されます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Workspace</th><th>パネルの表示</th><th>ボタン</th></tr>
+      <tr><td>基本</td><td>「基本Workspace」「シーン編集と実行状態の確認を行います。」</td><td><b>ワールドを選択</b>：インスペクターにワールドの設定を出します。</td></tr>
+      <tr><td>配置</td><td>「オブジェクト配置Workspace」「ProjectのAsset BrowserからModelやPrefabをScene Viewへ配置します。」</td><td>なし</td></tr>
+      <tr><td>モデリング</td><td>「モデリングWorkspace」、頂点ペイントの画面、「形状編集用のテーブルです。配置操作は配置Workspaceへ分離しています。」</td><td><b>選択GameObjectを編集</b>：選択中の GameObject をインスペクターに出します。<b>配置Workspaceへ</b>：配置に切り替えます。</td></tr>
+      <tr><td>アニメーション</td><td>「アニメーションWorkspace」「今後、タイムラインとアニメーション編集をここへ登録します。」「クリップの割り当てと再生は、対象 GameObject の Animator で編集します。」</td><td>なし</td></tr>
+      <tr><td>レンダリング</td><td>「レンダリングWorkspace」「今後、RenderGraph・シェーダー・Profilerをここへ登録します。」「Renderer: Deferred（固定）」</td><td><b>描画設定を開く</b>：インスペクターに描画設定を出します。</td></tr>
+      <tr><td>シェーダー調整</td><td>「シェーダー調整Workspace」「右上の専用テーブルで材質、合成順、プリセット、画面効果を編集します。」「方式: 型付きパラメータ + 順序付き追加パス」</td><td>なし</td></tr>
+      <tr><td>UI</td><td>「UI Workspace」「Canvas、RectTransform、UI Component を編集します。」</td><td><b>UI 階層を開く</b>、<b>Canvas プレビューを開く</b></td></tr>
+      <tr><td>Motion</td><td>「Motion Workspace」「Motion Asset、キー、プレビューを編集します。」</td><td><b>Motion レイヤーを開く</b>、<b>タイムラインを開く</b></td></tr>
+    </table>
+    </div>
+    <div class="warning"><strong>アニメーション・レンダリングは準備中</strong>アニメーション Workspace とレンダリング Workspace は、パネルに「今後、…をここへ登録します。」と書かれているとおり、専用の編集画面はまだありません。アニメーションの割り当てと再生は GameObject の Animator コンポーネントで、モーションの編集は Motion Workspace で行います。</div>
+
+    <h2 id="window-items">Workspace で増える Window メニューの項目</h2>
+    <ul>
+      <li><b>UI Workspace</b>：Window メニューに <b>UI 階層</b>、<b>UI インスペクター</b> が増えます。</li>
+      <li><b>Motion Workspace</b>：Window メニューに <b>Motion レイヤー</b>、<b>Motion プレビュー</b>、<b>Motion インスペクター</b>、<b>タイムライン</b>、<b>グラフエディター</b> が増えます。File &gt; Save はモーションを開いているとき <b>Save Motion</b> になります。</li>
+    </ul>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>UI を作ってから、動きを付ける</h3>
+    <ol>
+      <li><b>Window</b> &gt; <b>UI Workspaceへ</b> で切り替え、UI を作ります（<a href="../windows/ui-workspace.html">UI Workspace</a>）。</li>
+      <li>動かしたい UI を選び、UI インスペクターのいちばん下の <b>Motion を作成</b> を押します。Motion Workspace に切り替わります（<a href="../windows/motion-workspace.html">Motion Workspace</a>）。</li>
+      <li>モーションを作り終えたら、<b>Window</b> &gt; <b>Scene Workspaceへ</b> で、ふだんの画面に戻ります。</li>
+    </ol>
+    <h3>パネルの並びを元に戻す</h3>
+    <ol>
+      <li>今の Workspace のまま、<b>Window</b> &gt; <b>レイアウトを初期化</b> を選びます。</li>
+      <li>その Workspace の決まった並び（階層が左、インスペクターが右、など）に戻ります。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="inspector.html#top">インスペクター：編集テーブル</a></li>
+      <li><a href="shader-adjustment.html">シェーダー調整 Workspace</a></li>
+      <li><a href="menu-bar.html#window">メニューバー：Window</a></li>
+      <li><a href="console.html#commands">コンソール：コマンド</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

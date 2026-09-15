@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Post Process Volume - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+    <h1>Post Process Volume</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>画面全体の仕上げ（光のにじみ、周辺を暗くする効果、明るさ、色味、陰影の強調など）を、シーンごとに決めるコンポーネントです。シーンに置いておくと、そのシーンを表示している間、画面の仕上げがこのコンポーネントの値になります。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>シーンごとに、光のにじみ、明るさ、色味などの画面の仕上げを変えたいとき</li>
+      <li>暗い場面や回想シーンなど、一時的に別の仕上げに切り替えたいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Rendering &gt; Post Process Volume</td></tr>
+      <tr><td>必須・推奨</td><td>なし</td></tr>
+      <tr><td>効く場面</td><td>エディターのシーンビューと、ゲームの実行中の両方</td></tr>
+      <tr><td>効く範囲</td><td>画面全体。GameObject の位置や大きさは関係ありません</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <p>「使われる範囲」は、描画するときに値が収められる範囲です。入力欄ではもっと大きな値を入れられても、この範囲の外は範囲の端の値として扱われます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>入力の範囲</th><th>使われる範囲</th><th>説明</th></tr>
+      <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td>-100〜100</td><td></td><td>複数あるときに、どれを使うかを決めます（<a href="#select">下を見てください</a>）</td></tr>
+      <tr><td>Bloom を使う</td><td><code>bloom_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>明るい部分から光がにじみ出る効果</td></tr>
+      <tr><td>Bloom しきい値</td><td><code>bloom_threshold</code></td><td>小数</td><td>1</td><td>0〜16</td><td>0〜8</td><td>この明るさより明るい部分がにじみます。小さいほど多くの部分がにじみます</td></tr>
+      <tr><td>Bloom 強度</td><td><code>bloom_intensity</code></td><td>小数</td><td>1</td><td>0〜8</td><td>0〜8</td><td>にじみの強さ</td></tr>
+      <tr><td>輝度抽出を使う</td><td><code>luminance_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>Bloom のために明るい部分を取り出す処理</td></tr>
+      <tr><td>最終合成を使う</td><td><code>final_pass_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>仕上げの効果を最後に画面へ合成する処理</td></tr>
+      <tr><td>ビネットを使う</td><td><code>vignette_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td></td><td>画面の四隅を暗くする効果</td></tr>
+      <tr><td>ビネット強度</td><td><code>vignette_intensity</code></td><td>小数</td><td>0</td><td>0〜1</td><td>0〜1</td><td>四隅を暗くする強さ</td></tr>
+      <tr><td>SSAO を使う</td><td><code>ssao_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>物の隙間やくぼみを暗くして立体感を出す効果</td></tr>
+      <tr><td>SSAO 半径</td><td><code>ssao_radius</code></td><td>小数</td><td>0.75</td><td>0.01〜16</td><td>0.05〜4</td><td>暗くする範囲の広さ</td></tr>
+      <tr><td>SSAO 強度</td><td><code>ssao_intensity</code></td><td>小数</td><td>1</td><td>0〜8</td><td>0〜4</td><td>暗くする強さ</td></tr>
+      <tr><td>SSR を使う</td><td><code>ssr_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td></td><td>画面に映っている物を、つるつるした面に映り込ませる効果</td></tr>
+      <tr><td>SSR 強度</td><td><code>ssr_intensity</code></td><td>小数</td><td>1</td><td>0〜8</td><td>0〜4</td><td>映り込みの強さ</td></tr>
+      <tr><td>TAA を使う</td><td><code>taa_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>前のフレームと重ねて、ふちのギザギザやちらつきを減らす効果</td></tr>
+      <tr><td>露出</td><td><code>exposure</code></td><td>小数</td><td>1</td><td>0.01〜8</td><td>0.01〜8</td><td>画面全体の明るさの倍率</td></tr>
+      <tr><td>色フィルタ</td><td><code>color_filter</code></td><td>色</td><td>白</td><td></td><td></td><td>画面全体に掛ける色。白なら色は変わりません</td></tr>
+    </table>
+    </div>
+
+    <h2 id="select">どの Post Process Volume が使われるか</h2>
+    <ul>
+      <li>使われるのは 1 つだけです。複数の値を混ぜることはありません。</li>
+      <li>有効な Post Process Volume のうち、<b>優先度</b> がいちばん大きいものが使われます。</li>
+      <li>優先度が同じなら、シーンの中で先にあるものが使われます。</li>
+      <li>GameObject かコンポーネントが無効（親が無効な場合も含む）のものは数えません。</li>
+    </ul>
+
+    <h2 id="world-settings">階層パネルの「ポスト処理」「描画設定」との関係</h2>
+    <p>階層パネルの <b>ポスト処理</b> と <b>描画設定</b> を選ぶと、インスペクターで画面の仕上げを設定できます。シーンに有効な Post Process Volume が 1 つでもあると、次の値はその Volume の値に置き換わります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>置き換わる値</th><th>元の設定の場所</th></tr>
+      <tr><td>Bloom のオン・オフ、しきい値、強度、輝度抽出、最終合成、ビネットのオン・オフと強度、露出、色フィルタ</td><td>ポスト処理</td></tr>
+      <tr><td>SSAO・SSR・TAA のオン・オフ、SSAO の半径と強度、SSR の強度</td><td>描画設定 の「スクリーン空間パス (SSAO / SSR / TAA)」</td></tr>
+    </table>
+    </div>
+    <p>次の値は Volume があっても変わらず、元の設定が使われます。</p>
+    <ul>
+      <li>FXAA のオン・オフ（ポスト処理）</li>
+      <li>SSAO・SSR・TAA の細かい調整値（描画設定）</li>
+    </ul>
+    <div class="warning"><strong>描画設定で SSAO を切っても消えないとき</strong>Post Process Volume があると、SSAO・SSR・TAA のオン・オフは Volume の値が使われます。描画設定のチェックを外しても効果が消えないときは、シーンの Post Process Volume の <b>SSAO を使う</b> などを確かめてください。Post Process Volume の既定値は、SSAO と TAA がオンです。</div>
+    <p>起動オプションの <code>--screen-space</code> で指定した値は、Volume の値よりさらに後から上書きされます（<a href="../settings/command-line.html">起動オプション</a>）。</p>
+
+    <h2 id="usage">使い方</h2>
+    <h3>シーンの色味を変える</h3>
+    <ol class="steps">
+      <li>階層パネルで空の GameObject を作り、名前を「PostProcess」などにします。</li>
+      <li><b>コンポーネントを追加 &gt; Rendering &gt; Post Process Volume</b> を付けます。</li>
+      <li><b>色フィルタ</b> を少し青っぽい色にすると、画面全体が夜のような色味になります。</li>
+      <li><b>露出</b> を 1 より小さくすると暗く、大きくすると明るくなります。</li>
+    </ol>
+    <h3>一時的に別の仕上げにする</h3>
+    <p>優先度の大きい Post Process Volume を別に置いておき、GameObject を有効・無効にして切り替えます。有効にしている間だけ、そちらの値が使われます。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="camera.html">Camera</a></li>
+      <li><a href="../settings/command-line.html">起動オプション</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

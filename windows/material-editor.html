@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>マテリアルの編集 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターのウィンドウ</div>
+    <h1>マテリアルの編集</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>マテリアル（<code>.replaymaterial</code>）は、物の見た目を決める「シェーダー」と、その値（色、テクスチャ、粗さなど）をまとめたアセットです。プロジェクトパネルでマテリアルを選ぶと、インスペクターで編集できます。作ったマテリアルは <a href="../components/mesh-renderers.html#material">Mesh Renderer などに付けて</a> 使います。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>物に色やテクスチャを付けたいとき（基本色、基本色マップ）</li>
+      <li>金属っぽい、つるつる、ざらざら、といった質感を変えたいとき（PBR の金属度・粗さ）</li>
+      <li>アニメ調の陰影や輪郭線を付けたいとき（Toon、輪郭線のレイヤー）</li>
+      <li>葉っぱや柵のように、画像の透明な所をくり抜きたいとき（Alpha Mode の Mask）</li>
+      <li>ガラスのように半透明にしたいとき（Alpha Mode の Blend）</li>
+      <li><a href="shader-composer.html">Shader Composer</a> で作ったシェーダーを、物に使いたいとき</li>
+    </ul>
+
+    <h2 id="create">作る・開く</h2>
+    <ul>
+      <li>プロジェクトパネルの <b>Create</b> &gt; <b>Data</b> &gt; <b>Material</b> で、いま開いているフォルダーに、名前欄の名前で作ります。同じ名前があると名前が変わります。作ったマテリアルは選ばれた状態になります。</li>
+      <li>作ったばかりのマテリアルは、シェーダーが PBR、Alpha Mode が Opaque です。</li>
+      <li>プロジェクトパネルでマテリアルを選ぶと、インスペクターに <b>Material Asset</b> の見出し（開いた状態）と、ファイルの場所が出ます。ダブルクリックでは別の画面は開きません。</li>
+    </ul>
+
+    <h2 id="shader">Shader</h2>
+    <p>いちばん上の <b>Shader</b> 欄で、使うシェーダーを選びます。一覧には、マテリアル用（Surface）のシェーダーだけが「分類/名前」の形で並びます。下に「ファイル名 | surface | ライティング」が表示されます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>一覧の表示</th><th>見た目</th></tr>
+      <tr><td>BuiltIn/PBR</td><td>光の当たり方を物理的に計算する、ふつうの質感。金属度・粗さ・法線マップなどを使えます</td></tr>
+      <tr><td>BuiltIn/標準</td><td>取り込んだモデルの既定の見た目（PBR の簡易版。基本色とマップだけ）</td></tr>
+      <tr><td>BuiltIn/Toon</td><td>アニメ調の段階的な陰影。影の色、リム、ハイライト、階調数を決めます</td></tr>
+      <tr><td>BuiltIn/GGST Toon</td><td>2 値の陰影と ILM マップを使う、格闘ゲーム風のキャラクター向けトゥーン</td></tr>
+      <tr><td>BuiltIn/Unlit</td><td>光の影響を受けず、基本色と基本色マップをそのまま表示します</td></tr>
+      <tr><td>BuiltIn/Flat Fill</td><td>光の影響を受けない単色</td></tr>
+      <tr><td>BuiltIn/Pixelate</td><td>四角いセルでピクセル化した見た目</td></tr>
+      <tr><td>Sample/Standard Lit（見本）</td><td>自分でシェーダーを書くときの見本</td></tr>
+      <tr><td>Project/Composer/名前 など</td><td><a href="shader-composer.html">Shader Composer</a> や Create &gt; Shader で作った、プロジェクトのシェーダー</td></tr>
+    </table>
+    </div>
+    <p>シェーダーを切り替えても、前のシェーダーで入れた値は消えずにマテリアルに残ります（<a href="#advanced">Advanced</a> の「Retained / unknown properties」に数が出ます）。元のシェーダーに戻すと、その値がまた使われます。</p>
+
+    <h3 id="missing">シェーダーが見つからないとき</h3>
+    <p>シェーダーの一覧にその GUID が無い（シェーダーのファイルを消した、など）ときは、欄が「Missing Shader」になり、赤で「Missing Shader - 保存済み Property は保持されています」と GUID が出ます。</p>
+    <p>次のどれかに当てはまると、物は赤紫（マゼンタ）の Unlit で表示され、コンソールに「Material Shader を解決できないため Unlit/Magenta へフォールバック: …」と理由が出ます。</p>
+    <ul>
+      <li>シェーダーの一覧に、その GUID が無い</li>
+      <li>マテリアル用でないシェーダー（Layer、PostProcess）を指している（欄にはそのシェーダーの名前が出ます）</li>
+      <li>シェーダーのコンパイルに一度も成功していない（欄の下に橙で「Shader Compile に成功していません」と出ます）</li>
+    </ul>
+    <p>前にコンパイルに成功したあと、直近のコンパイルに失敗したときは、橙で「直近の Compile に失敗。最後に成功した bytecode を使用中」と出て、前にうまくいった結果で表示を続けます。</p>
+
+    <h2 id="properties">Shader Properties</h2>
+    <p>選んだシェーダーが公開している値が、分類ごとの見出し（Surface、Emission、Rendering など）の下に並びます。公開している値が無いシェーダーでは「公開 Property はありません」と出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>値の種類</th><th>入れ方</th></tr>
+      <tr><td>数（range）</td><td>範囲のスライダー</td></tr>
+      <tr><td>数（float）、2〜4 個の数</td><td>ドラッグで増減（Ctrl+クリックで数値を入力）</td></tr>
+      <tr><td>色</td><td>色の欄</td></tr>
+      <tr><td>オン・オフ</td><td>チェックボックス</td></tr>
+      <tr><td>選択</td><td>選択欄</td></tr>
+      <tr><td>テクスチャ</td><td>ボタン。何も指定していないときは「None  (default: white)」のように、代わりに使う画像（white / black / gray / bump）が出ます。押すと画像の一覧が開き、<b>None / Shader Default</b> で外せます。プロジェクトパネルの画像をボタンへドロップしても指定できます。画像が見つからないときは「Missing Image  [GUID]」</td></tr>
+    </table>
+    </div>
+
+    <h3 id="pbr">PBR の値</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>既定</th><th>範囲</th><th>働き</th></tr>
+      <tr><td>基本色</td><td>白</td><td></td><td>物の色。基本色マップに掛け合わせます</td></tr>
+      <tr><td>基本色マップ</td><td>white</td><td></td><td>物の色の画像</td></tr>
+      <tr><td>法線マップ</td><td>bump</td><td></td><td>表面の細かい凹凸の画像</td></tr>
+      <tr><td>法線の強さ</td><td>1</td><td>0〜2</td><td>法線マップの凹凸の強さ</td></tr>
+      <tr><td>金属度</td><td>0</td><td>0〜1</td><td>1 に近いほど金属らしくなります</td></tr>
+      <tr><td>金属度マップ</td><td>white</td><td></td><td>場所ごとの金属度</td></tr>
+      <tr><td>粗さ</td><td>0.55</td><td>0〜1</td><td>0 に近いほどつるつる、1 に近いほどざらざら</td></tr>
+      <tr><td>粗さマップ</td><td>white</td><td></td><td>場所ごとの粗さ</td></tr>
+      <tr><td>発光色 / 発光の強さ / 発光マップ</td><td>黒 / 0 / black</td><td>強さ 0〜16</td><td>自分で光る色と強さ</td></tr>
+      <tr><td>遮蔽 / 遮蔽マップ</td><td>1 / white</td><td>0〜1</td><td>小さいほど、まわりからの光で明るくなりにくくなります</td></tr>
+      <tr><td>アルファ閾値</td><td>0.5</td><td>0〜1</td><td>Alpha Mode が Mask のときの、描く・描かないの境目</td></tr>
+      <tr><td>両面を描く</td><td>オフ</td><td></td><td>面の裏側も描きます</td></tr>
+    </table>
+    </div>
+    <div class="warning"><strong>このビルドでは片面になりません</strong><b>両面を描く</b> をオフにしても、面の裏側まで描かれます。ふつうのモデルでは見た目は変わりませんが、黒い外殻で輪郭線を出すモデルは黒く覆われます（<a href="../components/mesh-renderers.html#gltf-limits">glTF モデルの制限</a>）。</div>
+
+    <h3 id="toon">Toon の値</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>既定</th><th>範囲</th><th>働き</th></tr>
+      <tr><td>基本色 / 基本色マップ</td><td>白 / white</td><td></td><td>物の色</td></tr>
+      <tr><td>ランプマップ</td><td>white</td><td></td><td>明るさから色を決める横長の画像</td></tr>
+      <tr><td>影の色</td><td>0.35, 0.38, 0.5</td><td></td><td>影になった所の色</td></tr>
+      <tr><td>リムの色 / リムの強さ</td><td>黒 / 2</td><td>強さ 0〜8</td><td>ふちに付く光の色と、ふちへの寄り方</td></tr>
+      <tr><td>ハイライトの色 / ハイライトの鋭さ</td><td>黒 / 32</td><td>鋭さ 1〜128</td><td>つやの色と、つやの小ささ</td></tr>
+      <tr><td>階調数</td><td>3</td><td>1〜31</td><td>陰影を何段階に分けるか</td></tr>
+      <tr><td>光の強さに依らない階調</td><td>オン</td><td></td><td>ライトの明るさが変わっても、段の位置を変えません</td></tr>
+      <tr><td>アルファ閾値 / 両面を描く</td><td>0.5 / オフ</td><td></td><td>PBR と同じ</td></tr>
+    </table>
+    </div>
+
+    <h3 id="other-shaders">そのほかの組み込みシェーダーの値</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>シェーダー</th><th>値（既定）</th></tr>
+      <tr><td>標準、Unlit</td><td>基本色（白）、基本色マップ（white）、アルファ閾値（0.5）、両面を描く（オフ）</td></tr>
+      <tr><td>Flat Fill</td><td>基本色（白）、アルファ閾値（0.5）、両面を描く（オフ）</td></tr>
+      <tr><td>Pixelate</td><td>基本色マップ（white）、セル幅（6、1〜64）、強さ（1）、不透明度（1）、GBuffer の色を使う（オフ）</td></tr>
+      <tr><td>GGST Toon</td><td>基本色、基本色マップ、影色、明暗の分かれ目（0.5）、しきい値微調整（0.5）、陰影オフセット（0、-1〜1）、ハイライトサイズ（0.2）、ハイライト強度（10、0〜20）、ILM Map、SSS Map、顔専用ライティング（オフ）、顔ボーンID（0）、顔Rightを反転、顔Frontを反転、アルファ閾値、両面を描く。顔専用ライティングの下には <b>顔ボーン名</b> の欄が出ます（名前を入れると顔ボーンIDより優先）。各項目にはマウスを乗せると説明が出ます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="rendering">Rendering（Alpha Mode）</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Alpha Mode</th><th>透明の扱い</th></tr>
+      <tr><td>Opaque（既定）</td><td>透明を使わず、すべて描きます</td></tr>
+      <tr><td>Mask</td><td>アルファ閾値 を境に、描く所と描かない所に分けます。葉っぱや金網のくり抜きに使います</td></tr>
+      <tr><td>Blend</td><td>半透明として、うしろと混ぜて描きます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="advanced">Advanced</h2>
+    <p>開くと、Shader GUID（古い形式のマテリアルでは「(legacy / empty)」）、シェーダーのファイルの場所（Source）、Schema Revision、「Retained / unknown properties  数」が表示されます。今のシェーダーが使わない値も、シェーダーを切り替えたときや見つからないときに消さずに残しておき、その数を表します。</p>
+
+    <h2 id="stack">Shader Stack（レイヤー）</h2>
+    <p><b>Shader Stack</b> の見出し（閉じた状態）を開くと、マテリアルにレイヤーを重ねられます。輪郭線やワイヤーフレームなど、描き足すものに使います。「陰影モデルは最後の有効な1枚、追加パスは上から順に描画します。ドラッグで順番を変更できます」と表示されます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>働き</th></tr>
+      <tr><td><b>詳細表示</b></td><td>オンにすると、レイヤーの Shader GUID と、シェーダーが持つ描画の段（Pass）も表示します</td></tr>
+      <tr><td><b>Layerを追加...</b></td><td>レイヤー用のシェーダーの一覧から選んで足します。最大 64 枚（「数 / 64」）</td></tr>
+      <tr><td>各レイヤーの <b>有効</b></td><td>オフにすると描きません（「この Layer は無効です」）</td></tr>
+      <tr><td>「Layer 番号  名前」の見出し</td><td>ドラッグで並べ替え、右クリックで <b>Layer を削除</b>。開くと値が出ます</td></tr>
+      <tr><td><b>合成方式</b></td><td>輪郭線とワイヤーフレームだけ。アルファ、加算、乗算</td></tr>
+    </table>
+    </div>
+    <div class="table-wrap">
+    <table>
+      <tr><th>組み込みレイヤー（一覧の表示）</th><th>インスペクターでの名前</th><th>描き方</th></tr>
+      <tr><td>BuiltIn/Outline</td><td>輪郭線追加パス</td><td>通常の描画のあとに輪郭を描き足します</td></tr>
+      <tr><td>BuiltIn/Wireframe</td><td>ワイヤーフレーム追加パス</td><td>通常の描画のあとに線を描き足します</td></tr>
+      <tr><td>BuiltIn/Pixelate</td><td>ピクセレーション</td><td>ピクセル化します</td></tr>
+      <tr><td>BuiltIn/PBR Auxiliary、Toon Auxiliary、Unlit Glow</td><td>PBR陰影モデル、Toon陰影モデル、Unlit陰影モデル</td><td>陰影の付け方そのものを変えます（最後の有効な 1 枚が使われます）</td></tr>
+      <tr><td>BuiltIn/Stylized Character</td><td>キャラクター陰影モデル</td><td>Toon の陰影として描きます</td></tr>
+    </table>
+    </div>
+    <div class="warning"><strong>自分で作ったレイヤーは描かれません</strong>組み込み以外のレイヤー（<a href="shader-composer.html">Shader Composer</a> の Layer や Create &gt; Shader &gt; Layer Shader で作ったもの）は、見出しに「[保存済み: カスタム Layer は DX12 描画へ未接続]」と付き、値は保存されますが、このビルドの描画には使われません。</div>
+    <div class="note"><strong>プロジェクトのシェーダーとレイヤーの組み合わせ</strong>PBR陰影モデル・Toon陰影モデル・Unlit陰影モデル・ピクセレーション・キャラクター陰影モデルのどれかのレイヤーが有効だと、Shader 欄で選んだプロジェクトのシェーダー（Shader Composer など）は、そのシェーダー自身の計算では描かれません。プロジェクトのシェーダーを使うときは、これらのレイヤーを外します。</div>
+
+    <h2 id="save">保存と割り当て</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>働き</th></tr>
+      <tr><td><b>Save Material</b></td><td>保存します。保存していない変更があると「Save Material *」になり、右に「未保存」と出ます。成功すると「MaterialをAtomic Saveしました: 場所」</td></tr>
+      <tr><td><b>Assign to Selected Renderer</b></td><td>このマテリアルを、選んでいる GameObject の Renderer に付けます</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li>値を変えると、保存する前からシーンビューの見た目に反映されます。</li>
+      <li>保存していない変更は、別のマテリアルを選んだときと、エディターを終了するときに自動で保存されます。GameObject など、マテリアル以外を選んだだけでは保存されません。</li>
+    </ul>
+    <div class="warning"><strong>値の変更は元に戻せません</strong>マテリアルで元に戻す（Ctrl+Z）の対象になるのは、Shader Stack のレイヤーの並べ替えだけです。色やテクスチャ、シェーダーの切り替えなどは記録されないので、試す前に保存しておき、戻したいときは保存し直す前の値を入れ直してください。</div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>赤いつやのあるプラスチックにする</h3>
+    <ol>
+      <li>プロジェクトパネルの <b>Create</b> &gt; <b>Data</b> &gt; <b>Material</b> でマテリアルを作ります。</li>
+      <li><b>Shader</b> が BuiltIn/PBR になっていることを確かめます。</li>
+      <li><b>基本色</b> を赤、<b>粗さ</b> を 0.25、<b>金属度</b> を 0 にします。</li>
+      <li><b>Save Material</b> を押し、マテリアルを物にドラッグして付けます。</li>
+    </ol>
+    <h3>葉っぱの画像をくり抜いて表示する</h3>
+    <ol>
+      <li>透明な部分のある葉っぱの画像を、<b>基本色マップ</b> のボタンへドロップします。</li>
+      <li><b>Rendering</b> の <b>Alpha Mode</b> を Mask にします。</li>
+      <li>ふちが欠けすぎるときは <b>アルファ閾値</b> を下げます。板の裏からも見えるように <b>両面を描く</b> をオンにします。</li>
+    </ol>
+    <h3>アニメ調の陰影と輪郭線を付ける</h3>
+    <ol>
+      <li><b>Shader</b> を BuiltIn/Toon にし、<b>影の色</b> と <b>階調数</b>（2 や 3）を決めます。</li>
+      <li><b>Shader Stack</b> を開き、<b>Layerを追加...</b> &gt; BuiltIn/Outline を選びます。</li>
+      <li>足した「輪郭線追加パス」の見出しを開き、輪郭の色や太さの値を調整します。</li>
+      <li><b>Save Material</b> を押します。</li>
+    </ol>
+    <h3>Shader Composer で作ったシェーダーを使う</h3>
+    <ol>
+      <li><a href="shader-composer.html">Shader Composer</a> で Surface のシェーダーを作り、Ctrl+S で生成・コンパイルします。</li>
+      <li>マテリアルの <b>Shader</b> で「Project/Composer/名前」を選びます。Material Property のノードで作った値が Shader Properties に並びます。</li>
+      <li>Shader Stack に陰影モデルやピクセレーションのレイヤーが入っていないことを確かめます。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../components/mesh-renderers.html">メッシュの描画（マテリアルを付ける）</a></li>
+      <li><a href="shader-composer.html">Shader Composer</a></li>
+      <li><a href="../editor/project.html">プロジェクトパネル</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

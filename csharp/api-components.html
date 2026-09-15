@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>エンジンのコンポーネントを操作する - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / C# スクリプト / API</div>
+    <h1>エンジンのコンポーネントを操作する</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p><code>MonoBehaviour</code> から、<code>GetComponent&lt;型&gt;()</code> で取り出して使えるエンジンのコンポーネントの一覧です。ここにある名前で読み書きした値は、インスペクターの同じ項目と同じものです。項目の意味は各コンポーネントのページを見てください。</p>
+    <pre><code>var light = GetComponent&lt;PointLight&gt;();
+if (light != null)
+{
+    light.intensity = 5.0f;
+}</code></pre>
+    <p>ここに無いコンポーネントは、<code>MonoBehaviour</code> の <code>GetComponent</code> では取り出せません。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>ライトの明るさや色を、スクリプトから変えたいとき（PointLight）</li>
+      <li>物を押す、跳ねさせる、速度を読むなど、物理を扱いたいとき（Rigidbody）</li>
+      <li>スコアや体力を UI に表示したいとき（UIText、UIImage）</li>
+      <li>キャラクターのアニメーションを切り替えたいとき（Animator）</li>
+      <li>効果音を鳴らしたいとき（AudioSource）</li>
+      <li>キャラクターを歩かせる・跳ばせる処理を、スクリプトから行いたいとき（CharacterMotor）</li>
+    </ul>
+
+    <h2 id="common">共通</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>gameObject</code>、<code>transform</code></td><td>付いている GameObject、その Transform</td></tr>
+      <tr><td><code>ComponentEnabled</code></td><td>コンポーネントの有効・無効（すべての型）</td></tr>
+      <tr><td><code>enabled</code></td><td><code>ComponentEnabled</code> と同じ（Rigidbody、Collider の仲間、Landscape にはありません）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="physics">物理</h2>
+    <p>詳しくは <a href="../components/physics.html">物理（Rigidbody と Collider）</a>。</p>
+    <h3 id="rigidbody">Rigidbody</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>mass</code></td><td>質量</td></tr>
+      <tr><td><code>drag</code>、<code>angularDrag</code></td><td>移動・回転の減衰</td></tr>
+      <tr><td><code>velocity</code>、<code>angularVelocity</code></td><td>速度、回転の速度。書き込むと眠っている剛体を起こします</td></tr>
+      <tr><td><code>isKinematic</code></td><td>true でキネマティック、false でダイナミック</td></tr>
+      <tr><td><code>gravityScale</code></td><td>重力の倍率。0 で無重力</td></tr>
+      <tr><td><code>useGravity</code></td><td>重力の倍率が 0 でないか。true で倍率 1、false で 0 にします</td></tr>
+      <tr><td><code>IsSleeping</code></td><td>眠っているか</td></tr>
+      <tr><td><code>AddForce(力)</code></td><td>力を加えます</td></tr>
+      <tr><td><code>AddImpulse(力積)</code></td><td>一瞬の力（質量に応じた速度の変化）を加えます</td></tr>
+      <tr><td><code>AddTorque(トルク)</code></td><td>回す力を加えます</td></tr>
+      <tr><td><code>ClearForces()</code></td><td>ためた力を捨てます</td></tr>
+      <tr><td><code>MovePosition(位置)</code></td><td>その位置へ移します</td></tr>
+      <tr><td><code>WakeUp()</code></td><td>起こします</td></tr>
+    </table>
+    </div>
+    <p>力や速度を与える操作は、自動で剛体を起こしてから行います。床で止まって眠った剛体にも効きます。</p>
+
+    <h3 id="collider">Collider、BoxCollider、SphereCollider、CapsuleCollider、MeshCollider</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>型</th><th>説明</th></tr>
+      <tr><td><code>isTrigger</code></td><td>すべて</td><td>トリガーにするか</td></tr>
+      <tr><td><code>center</code></td><td>すべて</td><td>中心のずれ</td></tr>
+      <tr><td><code>collisionLayer</code>、<code>collisionMask</code></td><td>すべて</td><td>衝突レイヤー、当たる相手のレイヤー</td></tr>
+      <tr><td><code>size</code></td><td>BoxCollider</td><td>大きさ</td></tr>
+      <tr><td><code>radius</code></td><td>SphereCollider、CapsuleCollider</td><td>半径</td></tr>
+      <tr><td><code>height</code></td><td>CapsuleCollider</td><td>高さ</td></tr>
+    </table>
+    </div>
+    <p><code>GetComponent&lt;Collider&gt;()</code> は形を問わず 1 つ返します。<code>AddComponent</code> では形の型（<code>BoxCollider</code> など）を指定します。</p>
+
+    <h2 id="rendering">描画</h2>
+    <h3 id="camera">Camera</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>fieldOfView</code></td><td>視野角（度）</td></tr>
+      <tr><td><code>nearClipPlane</code>、<code>farClipPlane</code></td><td>描く範囲の手前・奥</td></tr>
+      <tr><td><code>orthographic</code></td><td>true で平行投影、false で透視投影</td></tr>
+      <tr><td><code>orthographicSize</code></td><td>平行投影の大きさ</td></tr>
+      <tr><td><code>depth</code></td><td>優先度（<a href="../components/camera.html">Camera</a>）</td></tr>
+    </table>
+    </div>
+    <h3 id="renderers">MeshRenderer、SkinnedMeshRenderer</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>visible</code></td><td>表示するか</td></tr>
+      <tr><td><code>color</code></td><td>色合い（ティント）</td></tr>
+      <tr><td><code>castShadows</code>、<code>receiveShadows</code></td><td>影を落とすか、影を受けるか</td></tr>
+    </table>
+    </div>
+    <h3 id="pointlight">PointLight</h3>
+    <p><code>color</code>、<code>intensity</code>（強さ）、<code>range</code>（届く距離）。</p>
+    <h3 id="particle">ParticleEmitter</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>emitting</code></td><td>出し続けるか</td></tr>
+      <tr><td><code>startColor</code></td><td>出るときの色</td></tr>
+      <tr><td><code>Play()</code>、<code>Stop()</code>、<code>Clear()</code></td><td>出し始める、止める、出ている粒を消す</td></tr>
+      <tr><td><code>Emit(個数)</code></td><td>その場で指定した数だけ出します</td></tr>
+    </table>
+    </div>
+    <p>注意点は <a href="../components/particle-emitter.html">Particle Emitter</a> を見てください。</p>
+    <h3 id="trail">Trail</h3>
+    <p><code>emitting</code>、<code>lifetime</code>。このビルドでは軌跡は表示されません（<a href="../components/lines.html">ライン</a>）。</p>
+    <h3 id="screen-effect">ScreenEffectStack</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>active</code></td><td>スタック全体を有効にするか</td></tr>
+      <tr><td><code>effectCount</code></td><td>エフェクトの数</td></tr>
+      <tr><td><code>GetIntensity(番号)</code>、<code>SetIntensity(番号, 値)</code></td><td>番号のエフェクトの強さ</td></tr>
+      <tr><td><code>SetRadius</code>、<code>SetAmount</code>、<code>SetProgress</code>、<code>SetSpeed</code>、<code>SetColor</code></td><td>番号のエフェクトの、その名前の項目を変えます。どの項目を持つかは種類で違います（<a href="../components/effect-kinds.html">エフェクトの種類</a>）</td></tr>
+      <tr><td><code>SetEffectEnabled(番号, true / false)</code></td><td>番号のエフェクトの有効・無効</td></tr>
+    </table>
+    </div>
+
+    <h2 id="animation-audio">アニメーションと音</h2>
+    <h3 id="animator">Animator</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>speed</code></td><td>再生速度</td></tr>
+      <tr><td><code>currentState</code></td><td>今のステート名</td></tr>
+      <tr><td><code>Play(ステート名, ブレンド秒)</code></td><td>ステートへ切り替えます</td></tr>
+      <tr><td><code>Pause()</code>、<code>Resume()</code>、<code>Stop()</code></td><td>一時停止、再開、停止</td></tr>
+      <tr><td><code>SetBool</code>、<code>SetFloat</code>、<code>SetTrigger</code>、<code>ResetTrigger</code></td><td>遷移の条件に使うパラメーター。整数のパラメーターはありません</td></tr>
+    </table>
+    </div>
+    <p>詳しくは <a href="../components/animator.html">Animator</a>。</p>
+    <h3 id="audio">AudioSource</h3>
+    <p><code>volume</code>、<code>pitch</code>、<code>loop</code>、<code>isPlaying</code>（再生中か）、<code>Play()</code>、<code>Stop()</code>（<a href="../components/audio-source.html">Audio Source</a>）。</p>
+
+    <h2 id="ui">UI</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>型</th><th>名前</th><th>説明</th></tr>
+      <tr><td>UIText</td><td><code>text</code>、<code>fontSize</code>、<code>color</code></td><td>文字、文字の大きさ、色</td></tr>
+      <tr><td>UIImage</td><td><code>color</code>、<code>fillAmount</code></td><td>色、塗る割合（0〜1。ゲージに使います）</td></tr>
+      <tr><td>UIButton</td><td><code>interactable</code></td><td>押せるか</td></tr>
+    </table>
+    </div>
+    <pre><code>public UIText scoreText;   // インスペクターで UI Text を持つ GameObject を選ぶ
+int score;
+
+public void AddScore(int value)
+{
+    score += value;
+    scoreText.text = "SCORE " + score;
+}</code></pre>
+
+    <h2 id="landscape">Landscape</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>width</code>、<code>height</code>、<code>cellSize</code>、<code>IsReady</code></td><td>格子の列数・行数、1 マスの大きさ、使える状態か</td></tr>
+      <tr><td><code>GetHeight(x, z)</code>、<code>SetHeight(x, z, 高さ)</code></td><td>格子の点の高さ</td></tr>
+      <tr><td><code>SampleHeight(ローカル X, ローカル Z)</code>、<code>SampleWorldHeight(ワールド位置)</code></td><td>その場所の高さ（間は補間）</td></tr>
+      <tr><td><code>Sculpt(ローカル中心, モード, 半径, 強さ, …)</code>、<code>SculptWorld(…)</code></td><td>地形を盛る・削る。モードは <code>SculptMode.Raise</code>、<code>Lower</code>、<code>Smooth</code>、<code>Flatten</code>、<code>Noise</code>、<code>Subdivide</code></td></tr>
+      <tr><td><code>Raycast(…, out LandscapeHit hit)</code>、<code>RaycastWorld(…)</code></td><td>地形にレイを当てます。<code>hit.point</code>、<code>hit.normal</code>、<code>hit.distance</code></td></tr>
+      <tr><td><code>WorldToLocal</code>、<code>LocalToWorld</code></td><td>位置の変換</td></tr>
+    </table>
+    </div>
+    <p>詳しくは <a href="../components/landscape.html">Landscape</a>。</p>
+
+    <h2 id="gameplay">ゲームプレイ用の部品</h2>
+    <h3 id="character-motor">CharacterMotor</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>moveSpeed</code>、<code>jumpPower</code></td><td>移動速度、ジャンプ力</td></tr>
+      <tr><td><code>Move(向き, 倍率)</code></td><td>水平の向きへ歩かせます（Y は使いません）。倍率は 0〜20</td></tr>
+      <tr><td><code>Jump()</code></td><td>次の FixedUpdate で 1 回跳びます</td></tr>
+      <tr><td><code>AddImpulse(力積, 秒)</code></td><td>ふっとばします。指定した秒数のあいだ、水平の速度の制限を止めます（0 だとすぐ移動速度まで落ちます）</td></tr>
+      <tr><td><code>Teleport(位置)</code></td><td>速度を残したまま位置だけ移します</td></tr>
+    </table>
+    </div>
+    <h3 id="player-input">PlayerInput</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>inputEnabled</code></td><td>入力を受け付けるか</td></tr>
+      <tr><td><code>externalDriven</code></td><td>スクリプトから操作する設定にするか。false の間は下の 3 つが効きません</td></tr>
+      <tr><td><code>SetAxes(横, 縦)</code>、<code>SetDash(true / false)</code>、<code>Jump()</code></td><td>スティック、ダッシュの押しっぱなし、ジャンプを、スクリプトから入れます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>体力ゲージを減らす</h3>
+    <pre><code>public UIImage hpGauge;
+public float maxHp = 100.0f;
+float hp = 100.0f;
+
+public void Damage(float amount)
+{
+    hp = Mathf.Clamp(hp - amount, 0.0f, maxHp);
+    if (hpGauge != null) hpGauge.fillAmount = hp / maxHp;
+}</code></pre>
+    <p>ゲージの Image は、<b>塗り方向</b> を水平にしておきます（<a href="../components/ui-image.html#howto">体力ゲージを作る</a>）。インスペクターの <b>Hp Gauge</b> でその Image の GameObject を選びます。</p>
+    <h3>ぶつかったら効果音を鳴らす</h3>
+    <pre><code>void OnCollisionEnter(Collision collision)
+{
+    var sound = GetComponent&lt;AudioSource&gt;();
+    if (sound != null) sound.Play();
+}</code></pre>
+    <h3>ライトを点滅させる</h3>
+    <pre><code>IEnumerator Start()
+{
+    var light = GetComponent&lt;PointLight&gt;();
+    if (light == null) yield break;
+    while (true)
+    {
+        light.intensity = 5.0f;
+        yield return new WaitForSeconds(0.5f);
+        light.intensity = 0.0f;
+        yield return new WaitForSeconds(0.5f);
+    }
+}</code></pre>
+    <p>IEnumerator を使うので、ファイルの先頭に <code>using System.Collections;</code> を書きます。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="api-objects.html">GameObject・Component・Transform</a></li>
+      <li><a href="../components/index.html">コンポーネント一覧</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

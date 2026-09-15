@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>レイキャストとシーンの切り替え - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / C# スクリプト / API</div>
+    <h1>レイキャストとシーンの切り替え</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>当たり判定に線や形を飛ばして調べる <code>Physics</code>、別のシーンへ移る <code>SceneManager</code>、ゲームを終える <code>Application</code> の使い方です。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>足元に地面があるか、前に壁があるかを調べたいとき（Raycast）</li>
+      <li>範囲の中にある物をまとめて探したいとき（OverlapSphere）</li>
+      <li>ゴールに触れたら次のステージへ移りたいとき（SceneManager）</li>
+      <li>ロード中の進み具合を見せたいとき（LoadSceneAsync）</li>
+      <li>タイトル画面に「ゲームをやめる」ボタンを作りたいとき（Application.Quit）</li>
+    </ul>
+
+    <h2 id="physics">Physics</h2>
+    <p>シーンの Collider に対して調べます。最大距離を省くと 1000 です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>Physics.Raycast(始点, 向き, out RaycastHit hit, 最大距離)</code></td><td>線を飛ばし、当たったら true。一番近い当たりが <code>hit</code> に入ります</td></tr>
+      <tr><td><code>Physics.Raycast(始点, 向き, 最大距離)</code></td><td>当たるかどうかだけ</td></tr>
+      <tr><td><code>Physics.Raycast(ray, out hit, 最大距離)</code></td><td><code>Ray</code> で渡す書き方</td></tr>
+      <tr><td><code>Physics.RaycastAll(始点, 向き, 最大距離)</code></td><td>当たったものすべて（<code>PhysicsHit[]</code>）</td></tr>
+      <tr><td><code>Physics.SphereCast(始点, 半径, 向き, out PhysicsHit hit, 最大距離)</code></td><td>球を飛ばします</td></tr>
+      <tr><td><code>Physics.BoxCast(中心, 大きさの半分, 向き, out hit, 最大距離)</code></td><td>箱（回転なし）を飛ばします</td></tr>
+      <tr><td><code>Physics.CapsuleCast(点1, 点2, 半径, 向き, out hit, 最大距離)</code></td><td>カプセルを飛ばします</td></tr>
+      <tr><td><code>Physics.OverlapSphere(中心, 半径)</code></td><td>球に重なる Collider（<code>Collider[]</code>）</td></tr>
+      <tr><td><code>Physics.OverlapBox(中心, 大きさの半分)</code></td><td>箱（回転なし）に重なる Collider</td></tr>
+      <tr><td><code>Physics.OverlapCapsule(点1, 点2, 半径)</code></td><td>カプセルに重なる Collider</td></tr>
+    </table>
+    </div>
+    <h3 id="hit">当たりの情報（RaycastHit / PhysicsHit）</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>point</code></td><td>当たった位置</td></tr>
+      <tr><td><code>normal</code></td><td>当たった面の向き</td></tr>
+      <tr><td><code>distance</code></td><td>始点からの距離</td></tr>
+      <tr><td><code>gameObject</code>、<code>transform</code></td><td>当たった GameObject、その Transform</td></tr>
+      <tr><td><code>collider</code></td><td>当たった GameObject の Collider（複数あるときは最初の 1 つ）</td></tr>
+      <tr><td><code>Fraction</code></td><td>最大距離に対する割合（<code>PhysicsHit</code> だけ）</td></tr>
+    </table>
+    </div>
+    <pre><code>void Update()
+{
+    // 足元に地面があるか
+    if (Physics.Raycast(transform.position, new Vector3(0.0f, -1.0f, 0.0f), out RaycastHit hit, 1.5f))
+    {
+        Debug.Log("地面: " + hit.gameObject.name);
+    }
+}</code></pre>
+    <p><code>Ray</code> は <code>new Ray(始点, 向き)</code> で作ります（向きは長さ 1 に直されます）。<code>ray.GetPoint(距離)</code> で線の上の位置が分かります。</p>
+
+    <h2 id="scene">SceneManager</h2>
+    <p>シーンは名前ではなく、シーンのアセット（GUID）で指定します。インスペクターでシーンを選べる変数を用意して渡します。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>SceneManager.LoadScene(シーン)</code></td><td>そのシーンへ移ります。<code>AssetReference&lt;SceneAsset&gt;</code> か、GUID の文字列を渡します</td></tr>
+      <tr><td><code>SceneManager.LoadSceneAsync(シーン)</code></td><td>移り、その進み具合を返します。コルーチンで <code>yield return</code> すると、移り終わるまで待てます</td></tr>
+      <tr><td><code>SceneManager.ReloadScene()</code></td><td>今のシーンを読み直します</td></tr>
+      <tr><td><code>SceneManager.ReturnToPreviousScene()</code></td><td>1 つ前のシーンへ戻ります</td></tr>
+      <tr><td><code>SceneManager.TriggerFlow(イベント名)</code></td><td>シーンフロー（<code>.replaysceneflow</code>）に書いたイベントで移ります。移り先をスクリプトに書かずに済みます</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li>どれも「移ってほしい」という要求を出すだけで、呼んだその場ではシーンは変わりません。</li>
+      <li>移り先のシーンは、ディスクに保存されているファイルから読みます。保存していない変更は反映されません。</li>
+    </ul>
+    <pre><code>public AssetReference&lt;SceneAsset&gt; nextScene;
+
+void OnTriggerEnter(Collider other)
+{
+    SceneManager.LoadScene(nextScene);
+}</code></pre>
+
+    <h3 id="scene-async"><code>LoadSceneAsync</code> の戻り値</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>IsDone</code></td><td>終わったか（失敗も含む）</td></tr>
+      <tr><td><code>Succeeded</code></td><td>終わって、成功したか</td></tr>
+      <tr><td><code>Progress</code></td><td>進み具合（0〜1）</td></tr>
+      <tr><td><code>Status</code></td><td>結果の状態</td></tr>
+      <tr><td><code>SceneGuid</code></td><td>成功したときの、今のシーンの GUID</td></tr>
+    </table>
+    </div>
+
+    <h2 id="application">Application</h2>
+    <p><code>Application.Quit(理由)</code> でゲームの終了を要求します。理由は省けます。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>ゴールに触れたら次のステージへ移る</h3>
+    <ol>
+      <li>ゴールの GameObject に Collider を付け、<b>Trigger</b> をオンにします。</li>
+      <li>ゴールに、上の SceneManager の例（<code>nextScene</code> と <code>OnTriggerEnter</code>）のスクリプトを付けます。</li>
+      <li>インスペクターの <b>Next Scene</b> で、移り先のシーンを選びます。</li>
+      <li>移り先のシーンを保存してから Play し、ゴールに触れて確かめます（保存していない変更は移り先に反映されません）。</li>
+    </ol>
+    <h3>爆発で周りの物を吹き飛ばす</h3>
+    <pre><code>public float radius = 5.0f;
+public float power = 10.0f;
+
+public void Explode()
+{
+    foreach (var hit in Physics.OverlapSphere(transform.position, radius))
+    {
+        var body = hit.GetComponent&lt;Rigidbody&gt;();
+        if (body == null) continue;
+        var direction = (hit.transform.position - transform.position).Normalized;
+        body.AddImpulse(direction * power);
+    }
+}</code></pre>
+    <h3>読み込みが終わるまで待つ</h3>
+    <pre><code>public AssetReference&lt;SceneAsset&gt; nextScene;
+
+IEnumerator LoadNext()
+{
+    var loading = SceneManager.LoadSceneAsync(nextScene);
+    yield return loading;
+    Debug.Log(loading.Succeeded ? &quot;読み込みました&quot; : &quot;読み込みに失敗しました&quot;);
+}</code></pre>
+    <p><code>StartCoroutine(LoadNext());</code> で始めます。待っている間の進み具合は <code>loading.Progress</code> で読めます。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../components/physics.html">物理（Rigidbody と Collider）</a></li>
+      <li><a href="../components/scene-loader.html">Scene Loader</a></li>
+      <li><a href="lifecycle.html#coroutine">コルーチン</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

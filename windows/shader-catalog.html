@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>シェーダ一覧 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターのウィンドウ</div>
+    <h1>シェーダ一覧</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>プロジェクトのシェーダー（<code>.hlsl</code>）を一覧にし、コンパイルに成功しているか、どんな値（プロパティ）を公開しているかを確かめるウィンドウです。<b>Window</b> &gt; <b>シェーダ一覧</b> で開きます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>物が赤紫（マゼンタ）で表示される、見た目が変わらないなど、シェーダーがうまく動いていないときに、コンパイルのエラーを探したいとき</li>
+      <li>自分で書いた、または <a href="shader-composer.html">Shader Composer</a> で作ったシェーダーが、マテリアルで選べるように登録されているかを確かめたいとき</li>
+      <li>シェーダーの <code>#pragma property</code> に書いた値が、正しく読み取られているか（名前、範囲、既定値）を確かめたいとき</li>
+      <li>.hlsl を書き換えたあと、エディターを起動し直さずにコンパイルし直したいとき</li>
+    </ul>
+
+    <h2 id="top">上部</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>働き</th></tr>
+      <tr><td><b>再走査</b></td><td>シェーダーのフォルダーを探し直して、一覧を作り直し、コンパイルします。<code>#pragma</code> を書き換えたときや、ファイルを足したときに押します。探すのは <code>Shader/Materials</code>、<code>Shader/Layers</code>、<code>Shader/PostProcess</code> の中（下のフォルダーも含む）の .hlsl です。<code>replay_guid</code> が無いファイルには GUID を付けて、<b>ファイルに書き込みます</b>（「GUID を採番しました: …」）。置いたフォルダーと <code>replay_domain</code> が違うときは、フォルダーの方を使って警告を出します。一覧を作り直すので、前回成功した結果は残りません</td></tr>
+      <tr><td><b>全部コンパイル</b></td><td>探し直さずに、今の一覧のシェーダーをすべてコンパイルし直します。コンソールに「コンパイル成功 数 枚 / 失敗 数 枚」と出ます</td></tr>
+      <tr><td><b>保存で自動コンパイル</b></td><td>オンの間は、1 秒ごとに .hlsl の保存を調べ、変わったシェーダーを自動でコンパイルし直します。一覧にまだ無い新しいファイルは拾わないので、足したときは <b>再走査</b> を押します</td></tr>
+      <tr><td>集計の行</td><td>「シェーダ走査: 数 枚見つかり 数 枚を登録 / コンパイル成功 数 / コンパイル失敗 数 / GUID 採番 数 / 書式エラー 数 / GUID 重複 数 / 読み込み失敗 数」（0 の項目は出ません）</td></tr>
+    </table>
+    </div>
+    <p>問題があると、次の文が色付きで出ます。</p>
+    <ul>
+      <li>「コンパイルに失敗したシェーダが 数 枚あります。下の赤い行をクリックすると該当行が開きます。」</li>
+      <li>「GUID が重複しています。コピーしたシェーダの replay_guid を消してください。」（.hlsl をコピーして作ると、同じ GUID になります）</li>
+      <li>「#pragma の書式エラーが 数 件あります。コンソールを見てください。」</li>
+    </ul>
+    <p>シェーダーが 1 枚も見つからないときは、「シェーダが 1 枚も見つかりません。」と、置き場所の一覧（<code>Shader/Materials</code>（surface）、<code>Shader/Layers</code>（layer）、<code>Shader/PostProcess</code>（postprocess））が表示されます。</p>
+
+    <h2 id="list">一覧</h2>
+    <p>シェーダーごとに「分類/名前   [種類]」の見出しが並び、右に状態が色付きで出ます。見出しを閉じたままでも状態が分かります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>状態</th><th>意味</th></tr>
+      <tr><td>OK（緑）</td><td>使うすべての変種でコンパイルに成功しています</td></tr>
+      <tr><td>失敗（前回のを使用中）（橙）</td><td>今回のコンパイルに失敗しましたが、前に成功した結果で表示を続けています。書き換えた内容はまだ反映されていません。<b>再走査</b> のあとに失敗したときは前の結果が無いので、「失敗」になります</td></tr>
+      <tr><td>失敗（赤）</td><td>一度もコンパイルに成功していません。このシェーダーを使うマテリアルは赤紫で表示されます</td></tr>
+    </table>
+    </div>
+
+    <h3 id="entry">見出しを開いたとき</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>内容</th></tr>
+      <tr><td>ファイルの場所、「GUID  …」</td><td>シェーダーのファイルと、見分けるための GUID</td></tr>
+      <tr><td><b>Visual Studio で開く</b></td><td>.hlsl を Visual Studio で開きます</td></tr>
+      <tr><td><b>このシェーダを再コンパイル</b></td><td>このシェーダーだけをコンパイルし直します</td></tr>
+      <tr><td>変種ごとの状態</td><td>Static（動かないメッシュ用）、Skinned（骨で動くメッシュ用）など、使う変種ごとに「OK」か「失敗」。Static は通って Skinned だけ失敗することがあるので、分けて表示します</td></tr>
+      <tr><td>診断の行</td><td>「(行番号) コード: 内容」。エラーは赤、警告は橙です。行をクリックすると、その .hlsl のその行が Visual Studio で開きます（エンジンが足した部分を除いた、元のファイルの行番号です）</td></tr>
+      <tr><td>「定数バッファ 数 バイト / テクスチャ 数 枚」</td><td>公開している値が使う大きさ</td></tr>
+      <tr><td>プロパティの一覧</td><td>「表示名 (名前  種類)」と、テクスチャなら「t番号 / 既定 white」、範囲なら「範囲 最小 〜 最大  既定 値」など。<code>#pragma property</code> が無いときは「#pragma property がありません。」</td></tr>
+      <tr><td><b>自動生成される cbuffer</b></td><td>開くと、公開している値からエンジンが作る HLSL の宣言を表示します。<b>コピー</b> でクリップボードへ写せます</td></tr>
+    </table>
+    </div>
+    <p>ここに並ぶプロパティが、そのままマテリアルのインスペクターの Shader Properties になります（<a href="material-editor.html#properties">マテリアルの編集</a>）。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>赤紫になった物の原因を探す</h3>
+    <ol>
+      <li>物のマテリアルを選び、インスペクターの <b>Shader</b> 欄で使っているシェーダーの名前を確かめます。「Missing Shader」なら、シェーダーのファイルが無くなっています。</li>
+      <li><b>Window</b> &gt; <b>シェーダ一覧</b> を開き、そのシェーダーの見出しの状態を見ます（UI Workspace と Motion Workspace にいる間は出ません。基本などの Workspace で開きます）。</li>
+      <li>「失敗」なら見出しを開き、赤い診断の行をクリックして、Visual Studio でエラーの行を直します。</li>
+      <li>保存し、<b>このシェーダを再コンパイル</b> を押して「OK」になることを確かめます。</li>
+    </ol>
+    <h3>シェーダーに値を足して、マテリアルで変えられるようにする</h3>
+    <ol>
+      <li>.hlsl に <code>#pragma property</code> の行を足して保存します。</li>
+      <li>シェーダ一覧の <b>再走査</b> を押します。</li>
+      <li>見出しを開き、プロパティの一覧に足した値が出ていることを確かめます。</li>
+      <li>そのシェーダーを使うマテリアルを選ぶと、インスペクターに新しい欄が出ます。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="material-editor.html">マテリアルの編集</a></li>
+      <li><a href="shader-composer.html">Shader Composer</a></li>
+      <li><a href="../editor/menu-bar.html">メニューバー</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

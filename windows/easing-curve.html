@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>イージングカーブ ウィンドウ - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターのウィンドウ</div>
+    <h1>イージングカーブ ウィンドウ</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>動きの「速さの変化」を、自分で描いたカーブで決めるためのウィンドウです。作ったカーブはイージングカーブ アセット（<code>.replayeasing</code>）として保存し、モーションのキーの間の変化や、モーション全体の時間の進み方に使います。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>用意されたイージング（EaseOutBack など）では表せない、独自の速さの変化を付けたいとき（2 回弾んでから止まる、途中で一瞬止まる、など）</li>
+      <li>モーション全体をゆっくり始めて速く終わらせるなど、時間の進み方そのものを変えたいとき（時間リマップ）</li>
+      <li>同じ動き方を、いくつものキーやモーションで使い回したいとき。アセットを 1 つ直すと、使っているすべての動きが変わります</li>
+    </ul>
+
+    <h2 id="curve">カーブの考え方</h2>
+    <p>横軸 <b>t</b> は時間の進み具合（0 が始まり、1 が終わり）、縦軸 <b>y</b> は値の進み具合です。左下から右上へのまっすぐな線（点線で表示）が、一定の速さ（Linear）です。</p>
+    <ul>
+      <li>カーブは必ず (0, 0) から始まり (1, 1) で終わります。</li>
+      <li>途中は 0 より小さくても 1 より大きくてもかまいません。行き過ぎて戻る動き（オーバーシュート）になります。</li>
+      <li>カーブは、横に等間隔に並んだ <b>サンプル</b>（16〜256 個）で持ちます。その間はまっすぐにつなぎます。</li>
+      <li><b>制御点</b> は、サンプルをなめらかに作り直すための点です。制御点を動かすと、サンプルが作り直されます。</li>
+    </ul>
+
+    <h2 id="open">作る・開く</h2>
+    <ul>
+      <li><b>プロジェクト</b> パネルで右クリックし、<b>Create</b> &gt; <b>UI / Presentation</b> &gt; <b>イージングカーブ</b> を選びます。できたばかりのカーブは、サンプル 64 個のまっすぐな線で、制御点は両端の 2 つです。</li>
+      <li>プロジェクトパネルで <code>.replayeasing</code> をダブルクリックすると開きます。</li>
+      <li><b>Window</b> &gt; <b>イージングカーブ</b> でウィンドウだけを開けます。何も開いていないときは説明と <b>新規作成</b> ボタンが出ます（「NewEasingCurve」という名前で作ります）。</li>
+    </ul>
+
+    <h2 id="layout">ウィンドウの並び</h2>
+    <p>上から次の順に並びます。保存していない変更があると、タイトルが「イージングカーブ *」になります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>場所</th><th>表示・操作</th></tr>
+      <tr><td>ボタン</td><td><b>保存</b>、<b>制御点を再近似</b>、<b>制御点をクリア</b></td></tr>
+      <tr><td>名前</td><td>アセットの名前</td></tr>
+      <tr><td>サンプル数</td><td>16〜256。変えると、今のカーブの形を保ったまま数を変えます</td></tr>
+      <tr><td>固定プリセット</td><td>決まった形を選び、<b>サンプルへ焼く</b> でカーブをその形にします</td></tr>
+      <tr><td>操作の説明</td><td>「左ドラッグ: フリーハンド / 丸をドラッグ: 編集 / 右クリック: 制御点追加・削除」</td></tr>
+      <tr><td>キャンバス</td><td>カーブ（緑の線）、制御点（白い丸。つかんでいる点は黄色）、点線の Linear。カーソルを乗せると十字線と「t … / y … / カーブ …」が出ます</td></tr>
+      <tr><td>情報</td><td>「サンプル: 数 / 制御点: 数 / Y: 最小 .. 最大」、「オーバーシュート: 最大 … / 最小 …」、「種類:」（プリセット名と式、または「カスタム（サンプル N 点）」）、制御点座標（P0、P1…）</td></tr>
+      <tr><td>速度グラフ</td><td>カーブの傾き（速さ）。「最大速度 / 平均速度」。赤い区間は速さがマイナスで、値が戻っていることを表します</td></tr>
+      <tr><td>挙動プレビュー</td><td>2 本の線の上を丸が動き、「カーブ」と「Linear」の動きを並べて見られます。<b>再生</b> / <b>停止</b>、<b>再生時間</b>（0.2〜5 秒）。止めているときは <b>時間 t</b> のスライダーで位置を選べます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="edit">カーブを編集する</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>操作</th><th>結果</th></tr>
+      <tr><td>キャンバスの何も無いところを左ドラッグ</td><td>描いた線（黄色）で、離したときにサンプルを作り直します。左へ戻る方向には描けません。描き始めの値は 0、終わりの値は 1 に直されます。制御点もカーブに合わせて置き直されます</td></tr>
+      <tr><td>制御点（丸）を左ドラッグ</td><td>点を動かし、サンプルを作り直します。両端の点は動きません。途中の点は、となりの点を越えて左右に動かせません</td></tr>
+      <tr><td>制御点が無いときに、サンプルの小さな点を左ドラッグ</td><td>そのサンプルの値だけを変えます（両端は変えられません）</td></tr>
+      <tr><td>右クリック &gt; <b>制御点を追加</b></td><td>その位置に制御点を足します（丸の上では選べません）</td></tr>
+      <tr><td>制御点の上で右クリック &gt; <b>制御点を削除</b></td><td>その点を消します（両端は消せません）</td></tr>
+      <tr><td><b>制御点を再近似</b></td><td>今のサンプルに合わせて、制御点を置き直します（サンプル数 ÷ 8 + 1 個、4〜17 個）</td></tr>
+      <tr><td><b>制御点をクリア</b></td><td>制御点を消します。そのあとは、サンプルの点を直接ドラッグして編集します</td></tr>
+    </table>
+    </div>
+
+    <h3 id="presets">固定プリセット</h3>
+    <p>Linear、Step、EaseInQuad、EaseOutQuad、EaseInOutQuad、EaseInCubic、EaseOutCubic、EaseInOutCubic、EaseInBack、EaseOutBack、EaseInOutBack、EaseInElastic、EaseOutElastic、EaseInOutElastic。<b>サンプルへ焼く</b> を押すと、情報の欄に選んだ形の式が表示されます。そのあとカーブを手で変えると「カスタム」になります。</p>
+
+    <h2 id="use">モーションで使う</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>使う場所</th><th>設定</th><th>働き</th></tr>
+      <tr><td>キーとキーの間</td><td>キーの <b>イージング</b> を <b>PresetCurve</b> にして、イージングカーブ アセットを選ぶ</td><td>そのキーから次のキーまでの変化を、カーブに合わせます</td></tr>
+      <tr><td>モーション全体</td><td>モーションの <b>時間リマップ</b> でイージングカーブ アセットを選ぶ</td><td>モーションの時間そのものを、カーブに合わせて進めます（時間 = カーブ(今の時間 ÷ モーションの長さ) × モーションの長さ）</td></tr>
+    </table>
+    </div>
+    <p>カーブが選ばれていない、または見つからないときは、キーの間は Linear、時間リマップは一定の速さになり、「PresetCurve のカーブが未設定です。Linear で評価します。」などの注意が出ます。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>弾んで止まるカーブを作り、キーに使う</h3>
+    <ol>
+      <li>プロジェクト パネルで右クリックし、<b>Create</b> &gt; <b>UI / Presentation</b> &gt; <b>イージングカーブ</b> で作ります。</li>
+      <li>キャンバスの真ん中あたりで右クリックし、<b>制御点を追加</b> を選びます。何か所か足します。</li>
+      <li>足した制御点をドラッグして、1 を少し超える山と、1 より少し下の谷を作ります。</li>
+      <li><b>挙動プレビュー</b> の <b>再生</b> で、Linear と比べて動きを確かめます。</li>
+      <li><b>保存</b> を押します。</li>
+      <li><a href="motion-workspace.html">Motion Workspace</a> でキーを選び、Motion インスペクターの <b>イージング</b> を PresetCurve にして、<b>カーブ</b> で作ったアセットを選びます。</li>
+      <li>Motion プレビューの <b>再生</b> で確かめます。</li>
+    </ol>
+    <p>ほかのキーにも同じカーブを使うときは、キーを選んで F9（プリセットを適用）を押すと、最後に選んだカーブがまとめて付きます。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../components/motion-players.html">Motion Player と Composition Player</a></li>
+      <li><a href="../data/index.html">データ形式の一覧</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Audio Source - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Audio</div>
+    <h1>Audio Source</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>音を鳴らすコンポーネントです。WAV ファイルを指定して、BGM や効果音を再生します。1 つの GameObject にいくつでも付けられます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>BGM を流したいとき</li>
+      <li>ボタンを押したとき、ぶつかったときなどに効果音を鳴らしたいとき</li>
+      <li>滝や機械の音のように、決まった場所から聞こえる音（3D の音）を置きたいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Audio &gt; Audio Source</td></tr>
+      <tr><td>1 つの GameObject に</td><td>いくつでも付けられます</td></tr>
+      <tr><td>必須・推奨</td><td>なし</td></tr>
+      <tr><td>鳴る場面</td><td>ゲームの実行中だけ。エディターで編集しているときは鳴りません</td></tr>
+      <tr><td>使える音声ファイル</td><td>無圧縮（PCM）の WAV ファイルだけ</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>Clip Path</td><td><code>clip_path</code></td><td>文字</td><td>（空）</td><td></td><td>鳴らす WAV ファイルの場所。プロジェクトのフォルダからの相対パスで書きます（例：<code>resources/Sounds/jump.wav</code>）</td></tr>
+      <tr><td>Loop</td><td><code>loop</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>最後まで鳴ったら最初から繰り返すかどうか</td></tr>
+      <tr><td>Volume</td><td><code>volume</code></td><td>小数</td><td>1</td><td>0〜4</td><td>音量の倍率</td></tr>
+      <tr><td>Pitch</td><td><code>pitch</code></td><td>小数</td><td>1</td><td>0.25〜4</td><td>再生の速さ（音の高さ）。2 で 2 倍の速さ・1 オクターブ高く、0.5 で半分の速さ・低くなります</td></tr>
+      <tr><td>Play On Start</td><td><code>play_on_start</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>ゲームの実行を始めたとき（またはこのコンポーネントが有効になったとき）に自動で鳴らすかどうか</td></tr>
+      <tr><td>Spatial</td><td><code>spatial</code></td><td>選択</td><td>2D</td><td>2D / 3D</td><td>2D は距離に関係なく同じ音量で鳴ります。3D は <a href="audio-listener.html">Audio Listener</a> との距離と左右の位置で聞こえ方が変わります</td></tr>
+      <tr><td>Min Distance</td><td><code>min_distance</code></td><td>小数</td><td>1</td><td>0〜100000</td><td>3D のとき、この距離までは最大の音量で聞こえます</td></tr>
+      <tr><td>Max Distance</td><td><code>max_distance</code></td><td>小数</td><td>30</td><td>0.001〜100000</td><td>3D のとき、この距離で音が聞こえなくなります</td></tr>
+      <tr><td>再生中</td><td><code>is_playing</code></td><td>オン・オフ（読み取り専用）</td><td></td><td></td><td>今鳴っているかどうか。ゲームの実行中の状態を表示するための項目で、変更できません</td></tr>
+    </table>
+    </div>
+
+    <h2 id="3d">3D の音の聞こえ方</h2>
+    <ul>
+      <li>Audio Listener からの距離が <b>Min Distance</b> 以下なら、<b>Volume</b> どおりの音量です。</li>
+      <li>Min Distance から <b>Max Distance</b> にかけて、距離に比例してまっすぐ小さくなり、Max Distance で 0 になります。</li>
+      <li>Audio Listener から見て右にある音は右から、左にある音は左から聞こえます。左右に振り分けるのはモノラル（1 チャンネル）の WAV だけで、ステレオの WAV は距離による音量だけが変わります。</li>
+      <li>有効な Audio Listener が無いときは、3D にしていても距離や左右の変化は付きません。</li>
+    </ul>
+
+    <div class="note"><strong>最初の自動再生に失敗したとき</strong><b>Play On Start</b> の再生は、成功したかに関係なく 1 回だけ試します。そのときに Clip Path が間違っていた、音声が使えなかったなどで鳴らなかった場合、同じコンポーネントが有効な間は自動では鳴らし直しません。スクリプトから Play を呼ぶか、コンポーネントを一度無効にしてから有効にしてください。</div>
+
+    <h2 id="usage">使い方</h2>
+    <h3>ゲームを始めたら BGM を鳴らす</h3>
+    <ol class="steps">
+      <li>WAV ファイルを <code>resources</code> フォルダの中に置きます。</li>
+      <li>空の GameObject を作り、<b>コンポーネントを追加 &gt; Audio &gt; Audio Source</b> を付けます。</li>
+      <li><b>Clip Path</b> にファイルの場所（例：<code>resources/Sounds/bgm.wav</code>）を入れます。</li>
+      <li><b>Loop</b> と <b>Play On Start</b> をオンにします。</li>
+      <li>ゲームを実行すると鳴り始めます。停止すると止まります。</li>
+    </ol>
+    <h3>モーションに合わせて鳴らす</h3>
+    <p>モーションのイベントで、この GameObject に次の名前のイベントを送ると、Audio Source を操作できます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>イベント名</th><th>働き</th></tr>
+      <tr><td>PlaySound</td><td>鳴らします。イベントに値（parameter）を付けると、Clip Path の代わりにその値のファイルを鳴らします（Clip Path は変わりません）。<b>Loop</b> がオンのときは、その音もくり返します</td></tr>
+      <tr><td>StopSound</td><td>止めます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="notes">注意</h2>
+    <ul>
+      <li>ファイルが開けない、または WAV として読めないときは、音は鳴らず、デバッグ出力に「[Audio] WAV open failed: …」や「[Audio] Unsupported WAV header: …」と 1 回だけ表示されます。</li>
+      <li>MP3 や OGG、圧縮された WAV は鳴りません。</li>
+      <li>Clip Path はアセットの参照ではなく、ただのファイルの場所です。ファイルの名前や場所を変えたときは、Clip Path も書き直してください。</li>
+      <li>コンポーネントを無効にしたり、ゲームを停止したりすると、鳴っている音は止まります。</li>
+    </ul>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="audio-listener.html">Audio Listener</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

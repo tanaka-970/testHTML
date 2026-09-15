@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>3D ラインと軌跡 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+    <h1>3D ラインと軌跡</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>3D 空間に帯状の線を描くコンポーネントは 2 種類あります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>コンポーネント</th><th>線の形の決め方</th></tr>
+      <tr><td>3D ライン</td><td>自分で置いた点をつなぎます。ガイド線、ビーム、道順の表示などに使います</td></tr>
+      <tr><td>軌跡</td><td>GameObject が動いた跡から自動で作ります。剣の軌跡や車の残像などのためのコンポーネントです</td></tr>
+    </table>
+    </div>
+    <div class="warning"><strong>この版で使える項目は限られています</strong>どちらも、多くのプロパティがインスペクターに表示されますが、この版の描画では一部しか使われていません。<a href="#limits">使われない項目</a>を先に確認してください。特に <b>軌跡</b> は、この版では何も表示されません。</div>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>レーザーや道順を示す線など、3D 空間に帯状の線を描きたいとき（3D ライン）</li>
+      <li>動く物の後ろに、通った跡の帯を残したいとき（軌跡。このビルドでの制限はページ内を見てください）</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Rendering &gt; 3D ライン、Rendering &gt; 軌跡</td></tr>
+      <tr><td>1 つの GameObject に</td><td>いくつでも付けられます</td></tr>
+      <tr><td>必須・推奨</td><td>なし</td></tr>
+      <tr><td>光と影</td><td>半透明で両面が見え、影は落とさず受けません</td></tr>
+    </table>
+    </div>
+
+    <h2 id="line">3D ライン</h2>
+    <h3>プロパティ</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>点の数</td><td><code>point_count</code></td><td>整数</td><td>2</td><td>0〜</td><td>点の数。増やすと下に「点 番号」の欄が増えます。2 点未満では何も表示されません</td></tr>
+      <tr><td>曲線の滑らかさ</td><td><code>smoothing</code></td><td>整数</td><td>0</td><td>0〜255</td><td>0 なら点と点をまっすぐつなぎます。1 以上にすると、すべての点を通るなめらかな曲線になり、大きいほど細かく分けて描きます</td></tr>
+      <tr><td>閉じる</td><td><code>closed</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>最後の点と最初の点をつなぎます。<b>曲線の滑らかさ</b> が 1 以上のときだけ効きます</td></tr>
+      <tr><td>点 番号</td><td><code>points[番号]</code></td><td>3 つの小数</td><td>番号, 0, 0</td><td></td><td>点の位置。GameObject から見た位置（ローカル座標）で、GameObject の位置・回転・拡大率に合わせて動きます。番号は 0 から数えます</td></tr>
+    </table>
+    </div>
+    <p>このほかに、<a href="#stroke">線の見た目のプロパティ</a>があります。</p>
+    <p>点の数を増やすと、新しい点は X 方向に 1 ずつ離れた位置（点 2 なら 2, 0, 0）に置かれます。各点は Motion で 1 点ずつ動かせるので、線を波打たせたり伸ばしたりできます。</p>
+
+    <h3>使い方</h3>
+    <ol class="steps">
+      <li>空の GameObject を作り、<b>コンポーネントを追加 &gt; Rendering &gt; 3D ライン</b> を付けます。点 0（0, 0, 0）から点 1（1, 0, 0）まで、白い線が表示されます。</li>
+      <li><b>点の数</b> を増やし、各 <b>点</b> の位置を入力します。</li>
+      <li>曲線にしたいときは <b>曲線の滑らかさ</b> を 8 程度にします。</li>
+      <li><b>始点の太さ</b>・<b>終点の太さ</b> で太さを、<b>色</b> で色と不透明度を決めます。</li>
+    </ol>
+
+    <h2 id="trail">軌跡</h2>
+    <div class="warning"><strong>この版では何も表示されません</strong>軌跡は、GameObject の動いた位置を毎フレーム記録して線にするコンポーネントですが、この版では位置を記録する処理が呼ばれていないため、線ができず、何も表示されません。</div>
+    <h3>プロパティ</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>発生中</td><td><code>emitting</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オフにすると新しい点を足さず、今ある軌跡だけを寿命まで残します</td></tr>
+      <tr><td>寿命（秒）</td><td><code>lifetime</code></td><td>小数</td><td>1</td><td>0〜3600</td><td>記録した点が消えるまでの秒数</td></tr>
+      <tr><td>最小間隔</td><td><code>min_distance</code></td><td>小数</td><td>0.05</td><td>0〜10000</td><td>前の点からこの距離以上動いたときだけ点を足します</td></tr>
+      <tr><td>点数の上限</td><td><code>max_points</code></td><td>整数</td><td>0</td><td>0〜</td><td>残す点の数の上限。0 は上限なし。超えると古い点から消えます</td></tr>
+      <tr><td>ワールド空間に残す</td><td><code>world_space</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オンなら、親が動いても軌跡は通った場所に残ります</td></tr>
+    </table>
+    </div>
+    <p>このほかに、<a href="#stroke">線の見た目のプロパティ</a>があります。</p>
+
+    <h2 id="stroke">線の見た目のプロパティ（共通）</h2>
+    <p>「この版」の列が「使われない」の項目は、値を変えても見た目が変わりません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>この版</th><th>説明</th></tr>
+      <tr><td>始点の太さ</td><td><code>width_start</code></td><td>小数</td><td>0.1</td><td>0〜1000</td><td>使われる</td><td>最初の点での線の幅（ワールドの長さ）</td></tr>
+      <tr><td>終点の太さ</td><td><code>width_end</code></td><td>小数</td><td>0.1</td><td>0〜1000</td><td>使われる</td><td>最後の点での線の幅。途中はまっすぐ変わります</td></tr>
+      <tr><td>カメラへ向ける</td><td><code>billboard</code></td><td>オン・オフ</td><td>オン</td><td></td><td>使われない</td><td>帯の面をカメラへ向けるかどうか。この版では常にカメラへ向きます</td></tr>
+      <tr><td>UV の張り方</td><td><code>uv_mode</code></td><td>選択</td><td>全長へ伸縮</td><td></td><td>使われない</td><td>全長へ伸縮、距離で繰り返し</td></tr>
+      <tr><td>繰り返し</td><td><code>uv_tiling</code></td><td>小数</td><td>1</td><td>0.0001〜10000</td><td>使われない</td><td>距離で繰り返すときの 1 周期の長さ</td></tr>
+      <tr><td>UV スクロール</td><td><code>uv_scroll</code></td><td>小数</td><td>0</td><td></td><td>使われない</td><td>テクスチャを線に沿って流す量</td></tr>
+      <tr><td>テクスチャ</td><td><code>texture</code></td><td>アセット（画像）</td><td>（空）</td><td></td><td>使われない</td><td>帯に貼る画像</td></tr>
+      <tr><td>色</td><td><code>fill_color</code></td><td>色</td><td>白</td><td></td><td>使われる</td><td>線全体の色。不透明度も効きます</td></tr>
+      <tr><td>色 2</td><td><code>fill_color_2</code></td><td>色</td><td>白</td><td></td><td>使われない</td><td>グラデーションの終わりの色</td></tr>
+      <tr><td>塗り方</td><td><code>fill_mode</code></td><td>選択</td><td>単色</td><td></td><td>使われない</td><td>単色、線形（色 から 色 2 へのグラデーション）</td></tr>
+      <tr><td>Trim 開始</td><td><code>trim_start</code></td><td>小数</td><td>0</td><td>0〜1</td><td>使われない</td><td>全長を 0〜1 としたときの描き始めの位置</td></tr>
+      <tr><td>Trim 終了</td><td><code>trim_end</code></td><td>小数</td><td>1</td><td>0〜1</td><td>使われない</td><td>描き終わりの位置</td></tr>
+      <tr><td>Trim オフセット</td><td><code>trim_offset</code></td><td>小数</td><td>0</td><td></td><td>使われない</td><td>描く区間を線に沿ってずらす量</td></tr>
+    </table>
+    </div>
+
+    <h2 id="limits">使われない項目のまとめ</h2>
+    <ul>
+      <li>3D ラインで見た目に効くのは、<b>点の数</b>、<b>点</b>、<b>曲線の滑らかさ</b>、<b>閉じる</b>（滑らかさ 1 以上のとき）、<b>始点の太さ</b>、<b>終点の太さ</b>、<b>色</b> だけです。</li>
+      <li>線を書き出していく演出（Trim）、グラデーション、テクスチャ、UV スクロールは、この版ではできません。</li>
+      <li>軌跡は、プロパティに関係なく何も表示されません。</li>
+    </ul>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="particle-emitter.html">Particle Emitter</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

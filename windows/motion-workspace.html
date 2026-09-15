@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Motion Workspace - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターのウィンドウ</div>
+    <h1>Motion Workspace</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>コンポーネントのプロパティ（位置、色、不透明度など）を時間で変化させる「モーション」を作る画面構成です。作ったモーションは <code>.replaymotion</code> ファイルに保存し、<a href="../components/motion-players.html#motion-player">Motion Player</a> などで再生します。複数のモーションを並べて 1 つにまとめたものが「コンポジション」（<code>.replaycomp</code>）です。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>UI の画像や文字を、ふわっと表示したり消したりしたいとき（不透明度）</li>
+      <li>ボタンを押したときに少し大きくして戻す、揺らす、といった演出を付けたいとき（拡大率、回転）</li>
+      <li>物をずっと回し続ける、上下にゆらゆら動かし続けたいとき（ループ、式、Wiggle）</li>
+      <li>ライトの明るさや色を、時間に合わせて変えたいとき</li>
+      <li>いくつかの動きを時間差で並べて、1 つの演出にまとめたいとき（コンポジション）</li>
+      <li>決まった時刻に、効果音やスクリプトの処理を起こしたいとき（イベントトラック）</li>
+    </ul>
+
+    <h2 id="words">用語</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>用語</th><th>意味</th></tr>
+      <tr><td>モーション（Motion Asset）</td><td>トラックとイベントトラックをまとめたファイル。長さ（秒）を持ちます</td></tr>
+      <tr><td>トラック</td><td>1 つの GameObject の、1 つのコンポーネントの、1 つのプロパティを動かす行</td></tr>
+      <tr><td>キー</td><td>トラック上の「この時刻にこの値」という点。キーとキーの間は補間されます</td></tr>
+      <tr><td>イージング</td><td>キーから次のキーまでの変化の仕方（一定の速さ、ゆっくり始まる、など）。前側のキーが持ちます</td></tr>
+      <tr><td>イベントトラック</td><td>決まった時刻に名前付きのイベントを送る行。値は持ちません</td></tr>
+      <tr><td>再生位置（再生ヘッド）</td><td>いま表示している時刻。キーの追加や貼り付けの基準になります</td></tr>
+    </table>
+    </div>
+
+    <h2 id="open">開く・作る・保存する</h2>
+    <h3 id="open-create">作る</h3>
+    <ul>
+      <li><a href="../editor/project.html">プロジェクト</a> ウィンドウの <b>Create</b> &gt; <b>Animation</b> &gt; <b>Motion Asset</b>：いま開いているフォルダーに、名前欄の名前（空なら「NewMotion」）で長さ 1 秒のモーションを作り、開きます。</li>
+      <li><b>Create</b> &gt; <b>Animation</b> &gt; <b>Motion Composition</b>：同じように長さ 1 秒のコンポジション（空なら「NewComposition」）を作り、開きます。</li>
+      <li><a href="#layers">Motion レイヤー</a> の <b>新規</b>：いまのフォルダーに「NewMotion」を作って開きます。</li>
+      <li><a href="ui-workspace.html#inspector">UI インスペクター</a> の <b>Motion を作成</b>：モーションを開いていなければ「UIMotion」を作り、Motion Workspace に切り替えます。</li>
+    </ul>
+    <h3 id="open-open">開く</h3>
+    <p>プロジェクト ウィンドウで <code>.replaymotion</code> か <code>.replaycomp</code> をダブルクリックするか、右クリック &gt; <b>開く</b> を選ぶと、読み込んで Motion Workspace に切り替わります。<b>Window</b> &gt; <b>Motion Workspaceへ</b> は画面を切り替えるだけで、ファイルは開きません。</p>
+    <p>モーションとコンポジションは同時に 1 つだけ開けます。開き直すと、編集の履歴（元に戻す）は消えます。</p>
+
+    <h3 id="save">保存する</h3>
+    <ul>
+      <li><a href="#layers">Motion レイヤー</a> の <b>保存</b>：開いているモーションまたはコンポジションを保存します。</li>
+      <li>Motion Workspace でモーションを開いているときは、<b>File</b> &gt; <b>Save Motion</b> と Ctrl+S もモーションの保存になります。</li>
+      <li>名前の横の「 *」は、保存していない変更があるしるしです。</li>
+    </ul>
+    <div class="warning"><strong>コンポジションは Ctrl+S で保存されません</strong>コンポジションを開いているときの Ctrl+S と <b>File</b> &gt; <b>Save</b> は、シーンの保存になります。コンポジションは Motion レイヤーの <b>保存</b> ボタンで保存してください。</div>
+    <div class="warning"><strong>ファイルのないモーションは保存できません</strong>何も開いていない状態で <b>選択からトラックを追加</b> を押すと、ファイルのない「UnsavedMotion」ができます。これは保存できず、「Project Browser の Create &gt; Motion Asset から作成してください。」と表示されます。先にモーションを作ってからトラックを足してください。</div>
+
+    <h2 id="layout">画面の並び</h2>
+    <p><b>Window</b> &gt; <b>Motion Workspaceへ</b> で切り替えると、次のウィンドウが表示されます。閉じたウィンドウは、Motion Workspace にいる間だけ <b>Window</b> メニューに出る項目から開き直せます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>場所</th><th>ウィンドウ</th></tr>
+      <tr><td>左（幅の約 16%）</td><td><a href="#layers">Motion レイヤー</a>、階層</td></tr>
+      <tr><td>右（幅の約 26%）</td><td><a href="#inspector">Motion インスペクター</a>、<a href="easing-curve.html">イージングカーブ</a></td></tr>
+      <tr><td>下（高さの約 40%）</td><td><a href="#timeline">タイムライン</a>、<a href="#graph">グラフエディター</a>、<a href="#preview">Motion プレビュー</a>、プロジェクト、コンソール</td></tr>
+      <tr><td>中央</td><td>シーンビュー</td></tr>
+    </table>
+    </div>
+    <p>ほかの Workspace へ切り替えると、再生中のプレビューは止まり、動かしていた値は元に戻ります。</p>
+
+    <h2 id="flow">基本の流れ</h2>
+    <ol>
+      <li>プロジェクト ウィンドウで Motion Asset を作ります。</li>
+      <li>階層 ウィンドウ（UI なら UI Workspace）で、動かしたい GameObject を選びます。</li>
+      <li>Motion レイヤーの <b>選択からトラックを追加</b> を押し、動かすプロパティを選びます。時刻 0 と終わりの 2 つのキーが入ったトラックができます。</li>
+      <li>タイムラインでキーを選び、Motion インスペクターで <b>値</b> と <b>イージング</b> を決めます。</li>
+      <li>Motion プレビューの <b>再生</b> で動きを確かめ、<b>復元</b> で元の値に戻します。</li>
+      <li><b>保存</b> を押します。</li>
+    </ol>
+
+    <h2 id="layers">Motion レイヤー</h2>
+    <h3 id="layers-buttons">上部のボタン</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ボタン</th><th>働き</th></tr>
+      <tr><td><b>新規</b></td><td>「NewMotion」を作って開きます</td></tr>
+      <tr><td><b>保存</b></td><td>開いているモーションまたはコンポジションを保存します</td></tr>
+      <tr><td><b>選択からトラックを追加</b></td><td>選んでいる GameObject の、動かせるプロパティの一覧を開きます（<a href="#add-track">下記</a>）</td></tr>
+      <tr><td><b>不透明度フェードを作成</b></td><td>選んでいる GameObject が UI の Image を持つとき、不透明度を 0 秒で 0、1 秒で 1 にするトラック（「名前.Opacity Fade」、両方のキーが EaseOutCubic）を足します。モーションを開いていなければ「LogoFade」を作ります。モーションの長さは 1 秒より短くなりません</td></tr>
+    </table>
+    </div>
+    <p>ボタンの下に、直前の操作の結果（「Motionを保存しました」など）が表示されます。</p>
+
+    <h3 id="add-track">選択からトラックを追加</h3>
+    <ul>
+      <li>一覧はコンポーネントごとに分かれ、各行は「表示名 (内部名)」です。補間できず、切り替わるだけのプロパティには「［段階］」が付きます（イージングは効きません）。</li>
+      <li><b>絞り込み（例: rough）</b> 欄に文字を入れると、内部名か表示名にその文字を含む行だけになります（大文字・小文字は区別しません）。</li>
+      <li>何も選んでいないときは「ゲームオブジェクトが選択されていません。」、実行中などで編集できないときは「いまは編集できません（実行中などの理由）。」と出ます。</li>
+    </ul>
+    <p>行を選ぶと、次のトラックができます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>値</th></tr>
+      <tr><td>名前</td><td>「GameObject 名.プロパティの表示名」</td></tr>
+      <tr><td>バインド起点</td><td>自分（<a href="#binding">バインド起点</a>）</td></tr>
+      <tr><td>1 つ目のキー</td><td>時刻 0、いまのプロパティの値</td></tr>
+      <tr><td>2 つ目のキー</td><td>時刻 = モーションの長さ（0.1 秒より短くはしません）。値は型で決まります：範囲のある小数・整数は、いまの値が範囲の中央より小さければ最大値、そうでなければ最小値。範囲のない小数・整数は ＋1。オン/オフは反対。色やベクトルなどは 1 つ目と同じ値</td></tr>
+    </table>
+    </div>
+
+    <h3 id="track-list">トラックの一覧</h3>
+    <p>モーションを開いていると「アセット: 名前」と、トラックの一覧（左に型名）が出ます。クリックで選び、ドラッグで並べ替えます。並び順は、同じプロパティを複数のトラックが動かすときの<a href="#blend">合成の順番</a>に関わります。</p>
+
+    <h3 id="composition">コンポジションの編集</h3>
+    <p>コンポジションを開くと、Motion レイヤーは次の内容になります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>働き</th></tr>
+      <tr><td><b>長さ</b></td><td>コンポジション全体の長さ（0〜3600 秒）</td></tr>
+      <tr><td><b>+ モーションレイヤー</b></td><td>「Motion Layer 番号」を足します。入点 0、出点 = 長さ</td></tr>
+      <tr><td><b>+ プリコンポーズレイヤー</b></td><td>「Precomp 番号」を足します。中身は + モーションレイヤーと同じで、名前だけが違います。何を割り当てるかで働きが決まります</td></tr>
+      <tr><td><b>+ マーカー</b></td><td>再生位置に「Marker 番号」を足します</td></tr>
+    </table>
+    </div>
+    <p>レイヤーの見出しを開くと、次の欄が出ます。見出しを右クリックして <b>削除</b> もできます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>働き</th></tr>
+      <tr><td>チェックボックス、名前、<b>削除</b></td><td>オフのレイヤーは再生されません</td></tr>
+      <tr><td>「モーション / コンポジションをここへドロップ」</td><td>プロジェクト ウィンドウから <code>.replaymotion</code> か <code>.replaycomp</code> をドロップして割り当てます。開いているコンポジション自身は割り当てられません。見つからないと「アセットが見つかりません」</td></tr>
+      <tr><td><b>クリア</b></td><td>割り当てを外します</td></tr>
+      <tr><td><b>開始 / 入点 / 出点</b></td><td>開始：割り当てたものの 0 秒を、コンポジションの何秒に置くか。入点・出点：コンポジションのこの範囲だけ再生します。入点は 0 以上、出点は入点以上で、負の値にすると −1（最後まで）になります</td></tr>
+      <tr><td><b>時間倍率 / ウェイト</b></td><td>時間倍率：進む速さ（0 にすると 0.0001）。ウェイト：影響の強さ（0 以上）</td></tr>
+    </table>
+    </div>
+    <p>マーカーは名前、時刻、<b>X</b>（削除）で編集します。</p>
+    <p>コンポジションの時刻 t で、レイヤーは「有効、ウェイトが 0 より大きい、入点 ≤ t ≤ 出点」のときだけ働き、割り当てたモーションを「(t − 開始) × 時間倍率」秒（0〜モーションの長さに収めます）で評価します。入れ子のコンポジションではウェイトが掛け合わされ、16 段より深い入れ子と、自分を含む循環は無視されます。</p>
+    <div class="warning"><strong>コンポジションの多くの編集は元に戻せません</strong>元に戻す（Ctrl+Z）の対象になるのは、レイヤーの追加・削除・並べ替えだけです。長さ、マーカー、レイヤーの名前・有効・割り当て・時間の欄の変更は記録されません。また、レイヤーの有効（チェックボックス）を切り替えただけでは、保存していない印の「 *」が付きません。切り替えたら <b>保存</b> を押してください。</div>
+    <div class="note"><strong>コンポジションは再生ボタンで再生できません</strong>Motion プレビューと Space キーの再生はモーションだけが対象です。コンポジションはタイムラインの <b>← 1F</b> / <b>1F →</b>、PageUp / PageDown、Home / End で再生位置を動かして確かめます。</div>
+
+    <h2 id="inspector">Motion インスペクター</h2>
+    <p>モーションを開いていないとき（コンポジションを開いているときを含む）は「モーションアセットが未選択です。」と出ます。</p>
+    <h3 id="inspector-motion">モーション全体</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>既定</th><th>働き</th></tr>
+      <tr><td><b>モーション名</b></td><td>ファイル名</td><td>モーションの名前</td></tr>
+      <tr><td><b>モーションの長さ</b></td><td>1.00 s</td><td>0〜3600 秒。タイムラインの幅とプレビューの終わりになります</td></tr>
+      <tr><td><b>時間リマップ</b></td><td>未設定</td><td><a href="easing-curve.html">イージングカーブ</a>アセットを選ぶと、時刻を「カーブ(時刻 ÷ 長さ) × 長さ」（0〜長さに収めます）に置き換えてから全トラックを評価します。スローモーションや早回しを 1 本のカーブで付けられます。カーブが見つからないと等速のまま評価し、コンソールに警告を 1 回出します</td></tr>
+      <tr><td><b>イベントトラックを追加</b></td><td>—</td><td>イベントトラックを足します。GameObject を選んでいればそれが送信先、なければブロードキャスト</td></tr>
+    </table>
+    </div>
+
+    <h3 id="inspector-track">トラック</h3>
+    <p>タイムラインかトラックの一覧でトラックを選ぶと表示されます。どちらも選んでいないときは「トラックまたはイベントトラックを選択してください。」と出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>既定</th><th>働き</th></tr>
+      <tr><td><b>トラック名</b></td><td>—</td><td>表示用の名前。動かす対象には関係しません</td></tr>
+      <tr><td><b>有効</b></td><td>オン</td><td>オフのトラックは評価されず、値を変えません。このビルドでは、この切り替えは元に戻す（Ctrl+Z）に記録されません</td></tr>
+      <tr><td><b>ブレンドモード</b></td><td>Override</td><td>同じプロパティをほかのトラックも動かすときの合成方法（<a href="#blend">合成</a>）</td></tr>
+      <tr><td><b>バインド起点</b></td><td>自分</td><td>動かす GameObject の探し方（<a href="#binding">下記</a>）</td></tr>
+      <tr><td><b>子への相対パス</b></td><td>空</td><td>バインド起点が「名前で子を探す」のときだけ出ます</td></tr>
+      <tr><td>オブジェクトID / プロパティ</td><td>—</td><td>記録している GameObject の ID と内部プロパティ名（表示のみ）。いまのシーンで対象が見つからないと、オレンジ色で「バインド未解決」と出ます</td></tr>
+      <tr><td><b>キーを追加</b>（S）</td><td>—</td><td>再生位置に、対象のいまの値でキーを足します（<a href="#add-key">キーの足し方の違い</a>）</td></tr>
+      <tr><td><b>トラックを削除</b></td><td>—</td><td>選んでいるトラックを消します</td></tr>
+    </table>
+    </div>
+
+    <h3 id="binding">バインド起点</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>選択肢</th><th>動かす GameObject</th></tr>
+      <tr><td>絶対</td><td>記録した ID の GameObject そのもの</td></tr>
+      <tr><td>自分</td><td>起点の GameObject。Motion Player で再生するときはプレイヤーを持つ GameObject が起点です。エディターのプレビューでは、記録した ID の GameObject を起点にします</td></tr>
+      <tr><td>親</td><td>起点の親</td></tr>
+      <tr><td>名前で子を探す</td><td>起点から <b>子への相対パス</b> をたどった子。<code>Panel/Icon</code> のように <code>/</code> で区切り、名前が完全に一致する最初の子を選びます。パスが空だと解決しません</td></tr>
+    </table>
+    </div>
+    <p>見つけた GameObject の中で、同じ種類のコンポーネントが複数あるときは、トラックを作ったときと同じ順番（何個目か）のものを動かします。</p>
+
+    <h3 id="wiggle">Wiggle（揺れ） / ループ</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>既定</th><th>働き</th></tr>
+      <tr><td><b>有効</b></td><td>オフ</td><td>キーで決まった値に、なめらかなノイズを足します。小数、ベクトル、色だけに効きます（ほかの型では「この型には Wiggle は適用されません。」）</td></tr>
+      <tr><td><b>振幅</b></td><td>0</td><td>揺れの大きさ（0 以上）。オクターブ 1 のとき、足される量は −振幅〜＋振幅です。0 だと揺れません</td></tr>
+      <tr><td><b>周波数 (Hz)</b></td><td>2</td><td>1 秒あたりに値が変わる回数の目安（0 以上）</td></tr>
+      <tr><td><b>シード</b></td><td>0</td><td>ノイズの種類。変えると揺れ方が変わります。ベクトルや色の成分ごとには別々に揺れます</td></tr>
+      <tr><td><b>オクターブ</b></td><td>1</td><td>1〜4。増やすと、周波数を 2 倍・強さを半分にしたノイズを重ね、細かく揺れます</td></tr>
+      <tr><td><b>ループ</b></td><td>なし</td><td>最後のキーより後ろの時刻の扱い（<a href="#loop">下記</a>）</td></tr>
+    </table>
+    </div>
+    <p>揺れには時間リマップを通す前の時刻を使います。</p>
+
+    <h3 id="loop">ループ</h3>
+    <p>ループは「最初のキーから最後のキーまで」を 1 回分として、最後のキーより後ろの時刻に効きます。キーが 2 つ未満なら効きません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>選択肢</th><th>最後のキーより後ろ</th></tr>
+      <tr><td>なし</td><td>最後のキーの値のまま</td></tr>
+      <tr><td>繰り返し</td><td>最初のキーに戻って、同じ動きを繰り返します</td></tr>
+      <tr><td>往復</td><td>最後まで行ったら逆向きに戻り、これを繰り返します</td></tr>
+      <tr><td>オフセット継続</td><td>繰り返すたびに「最後のキーの値 − 最初のキーの値」を足していきます。回転し続ける、横に進み続けるといった動きに使います</td></tr>
+    </table>
+    </div>
+
+    <h3 id="expression">式 / エクスプレッション</h3>
+    <p><b>有効</b> をオンにして <b>式</b> 欄に計算式を書くと、キーで決まった値を式の結果に置き換えます。小数、ベクトル、色だけに効き、ベクトルと色は成分ごとに 1 回ずつ計算します。書き間違いは「式エラー: …」と赤で表示されます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>変数</th><th>意味</th></tr>
+      <tr><td><code>v</code></td><td>キーで決まった値（ベクトルと色ではその成分）</td></tr>
+      <tr><td><code>t</code></td><td>評価に使う時刻（時間リマップとループを通したあと）</td></tr>
+      <tr><td><code>rt</code></td><td>時間リマップを通す前の時刻</td></tr>
+      <tr><td><code>d</code></td><td>モーションの長さ</td></tr>
+      <tr><td><code>i</code></td><td>成分の番号。X（R）が 0、Y（G）が 1 …。小数では 0</td></tr>
+      <tr><td><code>n</code></td><td>成分の数。小数 1、Vector2 は 2、Vector3 は 3、Vector4 と色は 4</td></tr>
+    </table>
+    </div>
+    <p>使える記号は <code>+ - * / %</code>、比較 <code>&lt; &lt;= &gt; &gt;= == !=</code>、<code>&amp;&amp;</code>、<code>||</code>、<code>条件 ? A : B</code>、かっこです。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>関数</th><th>結果</th></tr>
+      <tr><td><code>abs(x)</code> <code>sign(x)</code> <code>floor(x)</code> <code>ceil(x)</code> <code>round(x)</code> <code>sqrt(x)</code> <code>exp(x)</code> <code>log(x)</code></td><td>ふつうの数学関数（log は自然対数）</td></tr>
+      <tr><td><code>sin(x)</code> <code>cos(x)</code> <code>tan(x)</code> <code>asin(x)</code> <code>acos(x)</code> <code>atan(x)</code> <code>atan2(y, x)</code></td><td>三角関数。角度はラジアン</td></tr>
+      <tr><td><code>min(a, b)</code> <code>max(a, b)</code> <code>pow(a, b)</code> <code>mod(a, b)</code></td><td>小さい方、大きい方、a の b 乗、a を b で割った余り</td></tr>
+      <tr><td><code>clamp(x, 最小, 最大)</code></td><td>x を範囲に収めた値</td></tr>
+      <tr><td><code>lerp(a, b, t)</code></td><td>a + (b − a) × t</td></tr>
+      <tr><td><code>step(しきい値, x)</code></td><td>x がしきい値より小さければ 0、そうでなければ 1</td></tr>
+      <tr><td><code>smoothstep(a, b, x)</code></td><td>x が a から b へ進むにつれ、なめらかに 0 から 1 へ</td></tr>
+      <tr><td><code>noise(x)</code></td><td>x に応じてなめらかに変わる −1〜1 の値（成分ごとに違う値）</td></tr>
+      <tr><td><code>wiggle(周波数, 振幅)</code></td><td>rt に応じて揺れる −振幅〜＋振幅 の値</td></tr>
+    </table>
+    </div>
+    <p>例：<code>v + sin(rt * 6.28) * 10</code>（1 秒周期で ±10 揺らす）、<code>i == 3 ? v : v * 0.5</code>（色の RGB だけ半分にする）。</p>
+    <p>計算結果が無限大や非数になった成分は、元の値のまま使い、コンソールに警告を出します。かっこや関数の入れ子は 32 段までです。</p>
+
+    <h3 id="inspector-key">キー</h3>
+    <p>キーを 1 つ選ぶと表示されます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>既定</th><th>働き</th></tr>
+      <tr><td><b>時刻</b></td><td>—</td><td>キーの時刻（0〜長さ）。変えるとキーが並べ直され、選択が外れます</td></tr>
+      <tr><td><b>値</b></td><td>—</td><td>型に合った入力欄。列挙型は番号で入れます</td></tr>
+      <tr><td><b>イージング</b></td><td>Linear</td><td>このキーから次のキーまでの変化の仕方（<a href="#easing">イージング一覧</a>）。PresetCurve を選ぶと <b>カーブ</b> 欄が出て、イージングカーブアセットを選べます</td></tr>
+      <tr><td><b>指数</b></td><td>2</td><td>イージングが EaseInPower のときだけ出ます（0.01〜50）</td></tr>
+    </table>
+    </div>
+
+    <h3 id="inspector-event">イベントトラックとイベント</h3>
+    <p>タイムラインでイベントトラックかイベントを選ぶと表示されます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>働き</th></tr>
+      <tr><td>送信先オブジェクトID</td><td>イベントを送る GameObject。なければ「(なし / ブロードキャスト)」</td></tr>
+      <tr><td><b>選択中オブジェクトを送信先にする</b> / <b>送信先なし</b></td><td>送信先を変える / 外す</td></tr>
+      <tr><td><b>イベントを追加</b></td><td>再生位置に「PlaySound」という名前のイベントを足します</td></tr>
+      <tr><td><b>イベントトラックを削除</b></td><td>このイベントトラックを消します</td></tr>
+      <tr><td><b>イベント時刻</b> / <b>イベント名</b> / <b>パラメータ</b></td><td>選んだイベントの時刻（0〜長さ）、名前、付けて送る文字列</td></tr>
+      <tr><td><b>イベントを削除</b></td><td>選んだイベントを消します</td></tr>
+    </table>
+    </div>
+    <p>イベントは、ゲームの実行中に Motion Player が再生して、その時刻を通り過ぎたときに送られます。1 フレームで時刻をまたいだときや、ループで何周もしたときも、通り過ぎた回数だけ送られます。<b>イベント名</b> が空のイベントは送られません。送信先を決めていて、その GameObject が見つからないときも送られません。</p>
+    <p>受け取る方法は <a href="../components/motion-players.html">Motion Player</a> と <a href="../csharp/script-behaviour.html">ScriptBehaviour</a>（OnAnimationEvent）を見てください。</p>
+
+    <h2 id="timeline">タイムライン</h2>
+    <h3 id="timeline-bar">上部の欄</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>既定</th><th>働き</th></tr>
+      <tr><td><b>コマンドガイド</b></td><td>閉じている</td><td>開くと、<a href="#shortcuts">ショートカット</a>の一覧を表示します</td></tr>
+      <tr><td><b>FPS</b></td><td>30</td><td>1〜240。1 フレームの長さと目盛りに使います。ファイルには保存されません</td></tr>
+      <tr><td><b>フレーム表示</b></td><td>オン</td><td>再生位置と目盛りを「12F」のようにフレームで表示します。オフでは秒</td></tr>
+      <tr><td><b>フレーム吸着</b></td><td>オン</td><td>キーのドラッグ、ダブルクリックでの追加、貼り付けで、時刻をフレームの区切りに丸めます</td></tr>
+      <tr><td><b>拡大</b></td><td>1.0x</td><td>1〜12 倍。1 秒を 100 ピクセル × 倍率で表示します（ウィンドウの幅より狭くはなりません）。3 倍以上で目盛りが細かくなり、6 倍以上で 1 フレームごとになります</td></tr>
+      <tr><td><b>範囲選択</b></td><td>オフ</td><td>オンの間は、トラックの行をドラッグした範囲のキーをまとめて選びます（キーのクリックとドラッグ移動は効きません）</td></tr>
+      <tr><td><b>← 1F</b> / <b>1F →</b></td><td>—</td><td>再生位置を 1 フレーム戻す / 進める</td></tr>
+      <tr><td>再生位置</td><td>—</td><td>いまの時刻（表示のみ）</td></tr>
+    </table>
+    </div>
+    <p>トラックを選んでいるときは、さらに次の欄が出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>働き</th></tr>
+      <tr><td><b>再生位置にキーを追加</b></td><td>選んでいるトラックを再生位置で評価した値でキーを足します</td></tr>
+      <tr><td><b>コピー</b> / <b>貼り付け</b> / <b>複製</b> / <b>削除</b></td><td>選んでいるキーの操作（<a href="#key-ops">下記</a>）</td></tr>
+      <tr><td><b>倍率</b>、<b>基準点</b>、<b>時間スケール適用</b></td><td>選んでいるキーの時刻の間隔を倍率（0.01〜100、既定 1）で伸び縮みさせます。基準点は「選択の先頭」「再生ヘッド」「モーション先頭（0 秒）」から選び、その時刻は動きません。結果は常にフレームの区切りに丸めます。0 秒より前にはなりませんが、モーションの長さより後ろに出ることはあります（そのキーはタイムラインの右端の外になります）</td></tr>
+    </table>
+    </div>
+
+    <h3 id="timeline-rows">トラックの行</h3>
+    <ul>
+      <li><b>トラック順</b> の一覧は、ドラッグでトラックを並べ替えます。</li>
+      <li>その下が時間の目盛りと行です。黄色の縦線が再生位置です。</li>
+      <li>左の名前をクリックすると、そのトラックを選びます。</li>
+      <li>キーは ◇、選んでいるキーは ◆ で表示されます。クリックで選び、Ctrl+クリックで選択に足したり外したりします。</li>
+      <li>キーをドラッグすると、選んでいるキーがまとめて動きます（0〜長さの範囲）。離すとキーが並べ直され、選択は外れます。</li>
+      <li>行の空いているところをダブルクリックすると、その時刻に、トラックをその時刻で評価した値のキーを足します。</li>
+      <li>イベントトラックは茶色の線の行で、「イベント: ID」（送信先がなければ「イベント: ブロードキャスト」）と表示されます。イベントは ○（選択中は ●）で、クリックで選び、ドラッグで時刻を動かします。イベントトラックもドラッグで並べ替えられます。</li>
+    </ul>
+    <p>目盛りをクリックしても再生位置は動きません。再生位置は Motion プレビューの <b>時間</b>、<b>← 1F</b> / <b>1F →</b>、ショートカットで動かします。</p>
+
+    <h3 id="add-key">キーの足し方の違い</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>方法</th><th>時刻</th><th>値</th><th>イージング</th></tr>
+      <tr><td>S キー、Motion インスペクターの <b>キーを追加</b></td><td>再生位置そのまま（丸めません）</td><td>シーンにある対象のいまの値。対象が見つからなければ型の既定値（0、白など）</td><td>Linear</td></tr>
+      <tr><td>タイムラインの <b>再生位置にキーを追加</b></td><td>再生位置（フレーム吸着がオンなら丸めます）</td><td>トラックをその時刻で評価した値</td><td>Linear</td></tr>
+      <tr><td>行の空きをダブルクリック</td><td>クリックした位置（フレーム吸着がオンなら丸めます）</td><td>トラックをその時刻で評価した値</td><td>Linear</td></tr>
+    </table>
+    </div>
+    <p>シーンビューやインスペクターで対象の値を変えてから S を押すと、その値がキーになります。</p>
+
+    <h3 id="key-ops">キーのコピー・貼り付け・複製・削除</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>操作</th><th>結果</th></tr>
+      <tr><td>コピー（Ctrl+C）</td><td>選んでいるキーを、エディター内の専用の置き場に写します。OS のクリップボードは使いません</td></tr>
+      <tr><td>貼り付け（Ctrl+V）</td><td>選んでいるトラックに、いちばん早いキーが再生位置に来るように並べて足します（時刻は 0〜長さに収め、フレーム吸着がオンなら丸めます）。貼り付け先のトラックの型は確かめないので、同じ型のトラックに貼り付けてください</td></tr>
+      <tr><td>複製（Ctrl+D）</td><td>選んでいるキーを 1 フレーム後ろに複製します</td></tr>
+      <tr><td>削除（Delete）</td><td>選んでいるキーを消します</td></tr>
+    </table>
+    </div>
+
+    <h2 id="graph">グラフエディター</h2>
+    <p>選んでいるトラックの値の変化をグラフで表示し、キーのイージングを編集します。トラックを選んでいないときは「トラック / キーを選択してください。」と出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>既定</th><th>働き</th></tr>
+      <tr><td><b>速度グラフ</b></td><td>オフ</td><td>値の代わりに、1 秒あたりの変化量（値/秒）を表示します</td></tr>
+      <tr><td><b>他トラックを重ねる</b></td><td>オフ</td><td>ほかのトラックの線を薄い色で重ねます（選んでいるチャンネルを持つトラックだけ）</td></tr>
+      <tr><td><b>チャンネル</b></td><td>X / R</td><td>ベクトルや色のとき、表示する成分（X Y Z W、または R G B A）を選びます</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li>縦軸は表示している線の最小〜最大に 10% の余白を足した範囲で、下に「範囲 最小 .. 最大」と出ます。横軸はモーションの 0 秒〜長さです。</li>
+      <li>白い点がキー（選んでいるキーは黄色で大きい点）、黄色の縦線が再生位置、その上の点と数字が再生位置での値です。</li>
+      <li>値のグラフは、キーとイージングだけから描きます。式か時間リマップを使っているトラックは、実際の評価結果を 256 か所で計算して描きます。</li>
+    </ul>
+    <div class="note"><strong>値のグラフに出ないもの</strong>式も時間リマップも使っていないトラックでは、Wiggle とループの効果は線に描かれません。再生位置の点は実際の評価結果なので、線から外れて表示されることがあります。</div>
+
+    <h3 id="graph-key">キーのイージング</h3>
+    <p>キーを選ぶと、グラフの下にイージングの欄が出ます。キーを選んでいないときは「キーを選ぶと補間ハンドルを編集できます。」と出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>働き</th></tr>
+      <tr><td><b>イージング</b>、<b>指数</b></td><td>Motion インスペクターと同じです</td></tr>
+      <tr><td><b>自動スムーズ</b></td><td>前後のキーの値から、なめらかにつながる CustomBezier のハンドルを計算します（表示中のチャンネルで計算）。次のキーがない、値が変わらないなどで計算できないときは EaseInOutCubic にします</td></tr>
+      <tr><td><b>線形</b></td><td>Linear</td></tr>
+      <tr><td><b>イーズイン</b></td><td>CustomBezier、出力ハンドル (0.42, 0)、入力ハンドル (1, 1)</td></tr>
+      <tr><td><b>イーズアウト</b></td><td>CustomBezier、出力ハンドル (0, 0)、入力ハンドル (0.58, 1)</td></tr>
+      <tr><td><b>イーズインアウト</b></td><td>CustomBezier、出力ハンドル (0.42, 0)、入力ハンドル (0.58, 1)</td></tr>
+      <tr><td><b>保持</b></td><td>Step（次のキーまで値を変えません）</td></tr>
+    </table>
+    </div>
+    <p>イージングが CustomBezier のときは、<b>出力ハンドル</b> と <b>入力ハンドル</b> の数値欄（−2〜2）と、ハンドルの図が出ます。図の横軸は区間内の時間の割合、縦軸は値の割合（0 が今のキー、1 が次のキー）です。オレンジの点が出力ハンドル、赤みのある点が入力ハンドルで、点の近く（10 ピクセル以内）をドラッグして動かします。縦に 0〜1 の外へ出すと、行き過ぎてから戻る動きや、反対へ少し動いてから進む動きになります。</p>
+
+    <h2 id="preview">Motion プレビュー</h2>
+    <p>開いているモーションを、エディターのシーンにそのまま当てて確かめます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>既定</th><th>働き</th></tr>
+      <tr><td><b>再生</b> / <b>停止</b></td><td>—</td><td>再生を始めます。再生中は <b>停止</b> になり、押すと止めて、動かした値を元に戻します</td></tr>
+      <tr><td><b>復元</b></td><td>—</td><td>動かした値を、プレビューを始める前の値に戻します</td></tr>
+      <tr><td><b>ループ</b></td><td>オフ</td><td>オンなら長さの終わりで 0 に戻って続けます。オフなら終わりで止まります（再生中のまま）</td></tr>
+      <tr><td><b>速度</b></td><td>1</td><td>−8〜8。負の値で逆再生します</td></tr>
+      <tr><td><b>時間</b></td><td>0</td><td>スライダーで再生位置を動かし、その時刻の値をシーンに当てます</td></tr>
+      <tr><td>トラック数</td><td>—</td><td>表示のみ</td></tr>
+    </table>
+    </div>
+    <div class="warning"><strong>シーンの値は復元するまで変わったままです</strong>再生や <b>時間</b> のスライダー、1 フレーム移動などでシーンに当てた値は、<b>復元</b>、<b>停止</b>、元に戻す・やり直し、ほかの Workspace への切り替え、トラックの追加・削除のどれかをするまで、そのままです。シーンを保存する前に <b>復元</b> を押してください。</div>
+
+    <h2 id="shortcuts">ショートカット</h2>
+    <p>Motion Workspace にいて、文字を入力していないときに効きます。<a href="../editor/shortcuts.html">キー割り当て</a> の Motion の項目で変えられます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>キー</th><th>操作</th></tr>
+      <tr><td>S、Shift+S</td><td>キーを追加</td></tr>
+      <tr><td>Delete</td><td>選んでいるキーを削除</td></tr>
+      <tr><td>Ctrl+D</td><td>キーを複製</td></tr>
+      <tr><td>Ctrl+C / Ctrl+V</td><td>キーをコピー / 貼り付け</td></tr>
+      <tr><td>Ctrl+A</td><td>選んでいるトラックのキーをすべて選択</td></tr>
+      <tr><td>Space</td><td>再生 / 停止</td></tr>
+      <tr><td>Home / End</td><td>先頭 / 末尾へ移動</td></tr>
+      <tr><td>PageUp / PageDown</td><td>1 フレーム戻る / 進む</td></tr>
+      <tr><td>Shift+PageUp / Shift+PageDown</td><td>前 / 次のキーへ移動。トラックを選んでいればそのトラックのキー、いなければ有効な全トラックのキーとイベントが対象</td></tr>
+      <tr><td>F9</td><td>プリセットを適用：選んでいるキーのイージングを、最後に選んだ PresetCurve のカーブにします。カーブを選んだことがなければ EaseInOutCubic にします</td></tr>
+      <tr><td>Ctrl+Z / Ctrl+Y</td><td>モーション（またはコンポジション）の編集を元に戻す / やり直す。プレビューは止まり、値は元に戻ります</td></tr>
+    </table>
+    </div>
+    <p>Motion Workspace では、Delete、Ctrl+C、Ctrl+V、Ctrl+D で GameObject が消えたり複製されたりしません。</p>
+
+    <h2 id="evaluation">値の決まり方</h2>
+    <h3 id="evaluation-order">1 つのトラック</h3>
+    <ol>
+      <li>時間リマップがあれば時刻を置き換えます。</li>
+      <li>ループの設定で、最後のキーより後ろの時刻を置き換えます。</li>
+      <li>最初のキーより前は最初のキーの値、最後のキーより後ろは最後のキーの値です。キーが 1 つならその値です。</li>
+      <li>キーとキーの間は、前のキーのイージングで補間します。Step なら前のキーの値のままです。</li>
+      <li>ループがオフセット継続なら、繰り返した回数ぶんの差を足します。</li>
+      <li>式が有効なら、式で置き換えます。</li>
+      <li>Wiggle が有効なら、揺れを足します。</li>
+    </ol>
+
+    <h3 id="blend">合成（ブレンドモード）</h3>
+    <p>同じコンポーネントの同じプロパティを、複数のトラック（コンポジションでは複数のレイヤー）が動かすとき、次の順に合成します。「元の値」は、そのフレームにモーションを当てる前のプロパティの値です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>順番</th><th>モード</th><th>計算</th></tr>
+      <tr><td>1</td><td>Override</td><td>Override のトラックの値を、ウェイトで重み付けした平均にします。1 本もなければ元の値から始めます</td></tr>
+      <tr><td>2</td><td>Blend</td><td>ここまでの結果から、トラックの値へウェイト（0〜1）の割合だけ近づけます。ウェイト 1 なら置き換えです</td></tr>
+      <tr><td>3</td><td>Additive</td><td>結果 ＋ (トラックの値 − 元の値) × ウェイト</td></tr>
+      <tr><td>3</td><td>Multiply</td><td>結果 × (トラックの値 ÷ 元の値) をウェイトの割合で効かせます。元の値がほぼ 0 のときは、トラックの値へ近づけます</td></tr>
+    </table>
+    </div>
+    <p>Additive と Multiply は、トラックの並び順に 1 つずつ効きます。「［段階］」のプロパティ（切り替わるだけのもの）は常に Override として扱い、いちばんウェイトが大きいトラックの値になります（同じなら後のトラック）。</p>
+    <div class="note"><strong>Override が 2 本あると平均になります</strong>1 つのモーションの中で、同じプロパティを Override のトラック 2 本で動かすと、両方の値の平均になります。後のトラックで上書きしたいときは、後のトラックを Blend にします。</div>
+
+    <h3 id="easing">イージング一覧</h3>
+    <p>「進み具合」は、区間の中の時間の割合（0〜1）から、値の割合を決める関数です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>動き</th></tr>
+      <tr><td>Linear</td><td>一定の速さ</td></tr>
+      <tr><td>Step</td><td>次のキーまで前のキーの値のまま、次のキーで切り替わります</td></tr>
+      <tr><td>EaseInQuad / EaseInCubic</td><td>ゆっくり始まり、速く終わります（2 乗 / 3 乗）</td></tr>
+      <tr><td>EaseOutQuad / EaseOutCubic</td><td>速く始まり、ゆっくり終わります</td></tr>
+      <tr><td>EaseInOutQuad / EaseInOutCubic</td><td>ゆっくり始まり、ゆっくり終わります</td></tr>
+      <tr><td>EaseInBack</td><td>いったん反対へ少し戻ってから進みます</td></tr>
+      <tr><td>EaseOutBack</td><td>行き過ぎてから戻って止まります</td></tr>
+      <tr><td>EaseInOutBack</td><td>始めに少し戻り、終わりに少し行き過ぎます</td></tr>
+      <tr><td>EaseInElastic / EaseOutElastic / EaseInOutElastic</td><td>ばねのように揺れながら始まる / 終わる / 両方</td></tr>
+      <tr><td>CustomBezier</td><td>2 つのハンドルで決める曲線（<a href="#graph-key">グラフエディター</a>で編集）。既定は出力 (0.25, 0)、入力 (0.75, 1)</td></tr>
+      <tr><td>PresetCurve</td><td><a href="easing-curve.html">イージングカーブ</a>アセットの形。カーブが未設定か見つからないと Linear で評価し、コンソールに警告を 1 回出します</td></tr>
+      <tr><td>EaseInPower</td><td>時間の割合の「指数」乗。指数が大きいほど始まりがゆっくりです</td></tr>
+    </table>
+    </div>
+
+    <h2 id="rig">Motion リグ</h2>
+    <p>骨を持つモデルの骨を選んで、移動・回転・拡縮のポーズを付け、<code>.replayrig</code> に保存・読み込みするウィンドウです。レイアウトでは左の Motion レイヤーと同じ場所に置かれます。</p>
+    <div class="warning"><strong>このビルドでは開けません</strong>Motion リグ ウィンドウを表示する項目がメニューにもボタンにもなく、エディターの操作では開けません。</div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>ロゴをフェードインさせ、ゲーム開始時に再生する</h3>
+    <ol>
+      <li>プロジェクト パネルの <b>Create</b> &gt; <b>Animation</b> &gt; <b>Motion Asset</b> でモーションを作ります。作ると開いて Motion Workspace に切り替わります。</li>
+      <li>左の 階層 ウィンドウでロゴの GameObject（UI の Image を持つもの）を選びます。</li>
+      <li>Motion レイヤーの <b>不透明度フェードを作成</b> を押します。</li>
+      <li>Motion プレビューの <b>再生</b> で確かめ、<b>復元</b> で元に戻します。</li>
+      <li>Motion レイヤーの <b>保存</b> を押します。</li>
+      <li>ロゴの GameObject に <b>コンポーネントを追加</b> &gt; <b>Motion</b> &gt; <b>Motion Player</b> を付け、<b>Motion Asset</b> に作ったモーションを指定します。<b>きっかけ</b> は既定の「開始時」のままにします。</li>
+      <li>ゲームを実行すると、ロゴがフェードインします。</li>
+    </ol>
+    <h3>物をずっと回し続ける</h3>
+    <ol>
+      <li>Motion Asset を作って開きます。</li>
+      <li>回したい GameObject を選び、<b>選択からトラックを追加</b> で Transform の <b>回転 (度)</b> を選びます。</li>
+      <li>タイムラインで 2 つ目のキー（終わりのキー）をクリックし、Motion インスペクターの <b>値</b> の 2 つ目（Y）を、1 つ目のキーの Y ＋ 360 にします。</li>
+      <li>イージングは両方のキーとも Linear（既定）のままにします。</li>
+      <li>保存し、GameObject に Motion Player を付けて、<b>終了処理</b> を「ループ」にします。</li>
+    </ol>
+    <p>1 周の長さは <b>モーションの長さ</b> で決まります。長さを変えたら、終わりのキーの <b>時刻</b> も同じ値にそろえます。</p>
+    <h3>上下にゆらゆら動かし続ける（式を使う）</h3>
+    <ol>
+      <li>Motion Asset を作って開き、<b>モーションの長さ</b> を 2 にします。</li>
+      <li>動かしたい GameObject を選び、<b>選択からトラックを追加</b> で Transform の <b>位置</b> を選びます。</li>
+      <li>Motion インスペクターの <b>式 / エクスプレッション</b> を開き、<b>有効</b> をオンにして、<code>i == 1 ? v + sin(rt * 3.14159) * 0.2 : v</code> と書きます。Y（成分 1）だけを、2 秒で 1 往復、±0.2 動かす式です。</li>
+      <li>Motion プレビューで <b>ループ</b> をオンにして再生し、確かめます。</li>
+      <li>保存し、Motion Player の <b>終了処理</b> を「ループ」にします。</li>
+    </ol>
+    <p>X と Z も不規則に揺らしてよいなら、式の代わりに <b>Wiggle（揺れ）</b> の <b>有効</b> をオンにして <b>振幅</b> を入れるだけで済みます。</p>
+    <h3>ボタンを押したら少し大きくなる</h3>
+    <p>手順は <a href="../components/motion-players.html#usage">Motion Player の使い方</a> を見てください。モーションは、ボタンの Rect Transform の <b>拡大率</b> のトラックに、キーを 3 つ（元の大きさ → 1.2 倍 → 元の大きさ）置いて作ります。</p>
+    <h3>2 つの動きを時間差で並べる（コンポジション）</h3>
+    <ol>
+      <li>先に、並べたいモーションを 2 つ作って保存しておきます。</li>
+      <li><b>Create</b> &gt; <b>Animation</b> &gt; <b>Motion Composition</b> でコンポジションを作ります。</li>
+      <li>Motion レイヤーの <b>+ モーションレイヤー</b> を 2 回押します。</li>
+      <li>それぞれのレイヤーを開き、プロジェクト パネルからモーションを「モーション / コンポジションをここへドロップ」の欄へドロップします。</li>
+      <li>2 つ目のレイヤーの <b>開始 / 入点 / 出点</b> の開始を 0.5 にすると、2 つ目の動きが 0.5 秒遅れて始まります。</li>
+      <li>タイムラインの <b>1F →</b> や PageDown で再生位置を動かして確かめます。</li>
+      <li>Motion レイヤーの <b>保存</b> ボタンで保存し（Ctrl+S では保存されません）、<a href="../components/motion-players.html#composition-player">Composition Player</a> に指定します。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../components/motion-players.html">Motion Player と Composition Player</a></li>
+      <li><a href="easing-curve.html">イージングカーブ ウィンドウ</a></li>
+      <li><a href="ui-workspace.html">UI Workspace</a></li>
+      <li><a href="../data/index.html">データ形式</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

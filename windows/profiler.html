@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Profiler と DX12 Debug - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターのウィンドウ</div>
+    <h1>Profiler と DX12 Debug</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p><b>Profiler / 描画統計</b> は、1 フレームにかかった時間（CPU と GPU）、描いた三角形の数、処理ごとの時間の内訳などを表示するウィンドウです。F4 で表示・非表示を切り替えます。<b>DX12 Debug</b> は、DirectX 12 の描画の内部の状態を数字で見るウィンドウです。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>ゲームが重い（FPS が低い）ときに、CPU と GPU のどちらが原因か、どの処理に時間がかかっているかを調べたいとき</li>
+      <li>物を増やしたときに、描く三角形や描画の回数がどれだけ増えたかを確かめたいとき</li>
+      <li>計測の結果をファイルに残して、あとで比べたり、ほかの人に見せたりしたいとき</li>
+      <li>画面の更新に合わせた待ち（垂直同期）を外して、どこまで速く動くかを見たいとき</li>
+    </ul>
+
+    <h2 id="profiler">Profiler / 描画統計 (F4)</h2>
+    <p>最初は画面の左下あたり（階層パネルの右）に、少し透けたウィンドウとして開きます。</p>
+    <h3 id="profiler-top">上部</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>内容</th></tr>
+      <tr><td><b>計測する</b>（オン）、<b>Pause</b></td><td>計測をするか、表示を止めるか。「OFF時はScope/Queryを発行しません」（計測を切ると、計測のための処理そのものを止めます）</td></tr>
+      <tr><td><b>垂直同期 (VSync)</b></td><td>オンなら画面の更新周期に合わせて待ちます。オフにすると FPS の上限が無くなります（消費電力が増えることがあります）</td></tr>
+      <tr><td><b>Frame Budget ms</b></td><td>1 フレームの目標の時間（既定 16.6 ms ＝ 60 FPS）。CPU や GPU の時間がこれを超えると赤く表示します。0 にすると赤くしません。GPU の時間が取れないフレームは判定しません</td></tr>
+      <tr><td>「FPS / UI dt」</td><td>今の FPS と、前のフレームからの時間</td></tr>
+      <tr><td>「三角形 / 頂点 / 描画 回」</td><td>描いた三角形・頂点の数と、描画の命令の回数</td></tr>
+      <tr><td>「カメラ内 三角形 / 頂点 / 描画 回」</td><td>そのうちカメラに映る範囲に入っている量。下の「画面外を捨てれば全体の 数% まで落とせる見込み」は目安で、実際にはまだ捨てていません</td></tr>
+      <tr><td>「待ち除外の推定 FPS（CPU実仕事 / GPU待ち）」</td><td>画面の更新待ちなどを除いたときの、FPS の目安</td></tr>
+      <tr><td>「CPU ms」「GPU ms」</td><td>1 フレームにかかった時間。Frame Budget を超えると赤。GPU の時間が取れないときは「GPU --」</td></tr>
+    </table>
+    </div>
+    <p>計測がうまくいかなかったフレームには、橙の注意（「GPU: disjoint frame…」「GPU Scope上限 数 に到達…」など）が出ます。そのフレームの数値の一部は使われていません。</p>
+
+    <h3 id="history">Frame履歴</h3>
+    <p>CPU ms と GPU ms の折れ線グラフと、最近のフレームの「min / avg / median / p95 / max」（最小、平均、中央値、遅い方から 5% の値、最大）が出ます。履歴はメモリーにだけ置き、300 フレームを超えると古いものから消えます（「履歴はRAMリングのみ（上限 300 frames）。ディスクへ常時追記しません」と出ます）。GPU の時間が取れなかったフレームは、統計からは除かれますが、グラフには 0 として描かれます。</p>
+
+    <h3 id="scopes">Scope Tree / Hotspots</h3>
+    <ul>
+      <li><b>表示</b> で「階層」「CPU重い順」「GPU重い順」を選びます。</li>
+      <li>各行は「処理の名前、CPU の時間と親に対する割合、GPU の時間と割合、呼ばれた回数（x数）」です。</li>
+      <li>行をクリックすると下に「Budget: 処理の名前」が出ます。<b>CPU ms</b> と <b>GPU ms</b> を入れて <b>Budget適用</b> を押すと、その処理がその時間を超えたときに赤く表示されます。<b>解除</b> で戻します。</li>
+    </ul>
+
+    <h3 id="export">出力 / ログ</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>働き</th></tr>
+      <tr><td><b>名前</b>、<b>計測ログを保存 (CSV + Trace)</b></td><td>今までの履歴を <code>Saved/Profile/</code> に、名前を付けた CSV（表計算ソフトで開ける）と Trace（時系列を見るツール用）で書き出します。書き出した場所が下に出ます</td></tr>
+      <tr><td><b>自動ログ</b>（オフ）</td><td>オンにすると、決まった間隔で自動で書き出します。ディスクへ書き続けるのではなく、間隔ごとにまとめて書きます。環境変数 <code>REPLAY_AUTO_PROFILE</code> が空でも 0 でもないときは、ここがオフでも自動ログがオンになり、間隔は 120 フレームになります</td></tr>
+      <tr><td><b>間隔(frames)</b>（1800、60 以上）、<b>最大世代</b>（12）、<b>自動ログ合計上限MiB</b>（128）</td><td>自動ログの間隔と、残す数・合計の大きさの上限。古い自動ログ（profile_ で始まるもの）から消します。手動で保存したログは消しません。ただし、手動で保存するときの名前を <code>profile_</code> で始めると、自動ログと同じ扱いになり、消されることがあります</td></tr>
+    </table>
+    </div>
+
+    <h3 id="details">描画量 / State / Memory</h3>
+    <p>見出し（閉じた状態）を開くと、描画の命令・三角形・インスタンスの数、エフェクトの処理の数、ゲーム内 UI の描画の数、GPU で動いたシェーダーの回数、Overdraw（1 ピクセルを平均何回塗ったか）、描画の状態を切り替えた回数、VRAM の使用量と上限、プロセスのメモリー、エンジンが持っているテクスチャ・バッファの大きさ、重複した GUID の数、シーンの GameObject とコンポーネントの数などが出ます。</p>
+
+    <h3 id="optimization">最適化 (カリング / LOD / プリパス)</h3>
+    <p>視錐台カリング（<b>有効</b>、除外した数）、自動LOD（<b>有効</b>、<b>切替の画面高さ(px)</b> 40〜1200、<b>強制LOD</b>：自動 / LOD0固定〜LOD3固定、LOD ごとの描画数）、<b>深度プリパス</b>（切り替えるとプロジェクト設定へ保存）の欄があります。</p>
+    <div class="warning"><strong>このビルドでは効果がありません</strong>視錐台カリング・自動LOD・深度プリパスの欄は、今の DirectX 12 の描画では使われていません。切り替えても描画の量や時間は変わりません。</div>
+
+    <h2 id="dx12-debug">DX12 Debug</h2>
+    <p><b>Window</b> &gt; <b>DX12 Debug</b> で開きます（DirectX 12 で動いているときだけ表示されます）。どれも表示のみです。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>見出し</th><th>内容</th></tr>
+      <tr><td>Frame</td><td>フレームの番号</td></tr>
+      <tr><td>Descriptor Heaps</td><td>テクスチャなどを GPU に渡すための枠（CBV/SRV/UAV、Sampler）の使用数 / 上限、最大、断片化の割合、確保に失敗した回数</td></tr>
+      <tr><td>Upload / Fence</td><td>そのフレームで GPU へ送ったデータの量と上限、送信待ち・GPU の完了待ちの回数と時間</td></tr>
+      <tr><td>Caches / DXC</td><td>読み込み済みのメッシュ・テクスチャ・描画設定（PSO）の数、PSO を使い回せた回数と作り直した回数、シェーダーのコンパイル回数・失敗回数・合計時間</td></tr>
+      <tr><td>GPU Passes</td><td>描画の段階ごとの GPU の時間、描画の回数、インスタンス数、インデックス数、リソースの状態の遷移（barrier）の回数。描画パイプラインの状態の切り替え回数ではありません。時間が取れない段階は「--」。段階の名前は ShadowDirectional、ShadowLocal、GBuffer、Lighting、Forward、PostProcess、RuntimeUI、UIEffect、UIPreview、ImGui、Present、ModelEffect、ScreenEffect、Unknown です</td></tr>
+    </table>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>重い原因を探す</h3>
+    <ol>
+      <li>重い場面を表示した状態で F4 を押し、Profiler を開きます。</li>
+      <li>「CPU ms」と「GPU ms」を見て、Frame Budget（16.6 ms）を超えて赤くなっているのがどちらか確かめます。</li>
+      <li><b>Scope Tree / Hotspots</b> の <b>表示</b> を、CPU が重ければ「CPU重い順」、GPU が重ければ「GPU重い順」にし、上に来た処理の名前を見ます。</li>
+      <li>物の数が原因に見えるときは、「三角形 / 描画 回」の数を、物を減らす前と後で比べます。</li>
+    </ol>
+    <h3>計測の結果を残して比べる</h3>
+    <ol>
+      <li>比べたい場面を表示し、しばらく動かして履歴をためます。</li>
+      <li><b>出力 / ログ</b> の <b>名前</b> を「before」にして <b>計測ログを保存 (CSV + Trace)</b> を押します。</li>
+      <li>直したあとに同じ場面で「after」として保存し、<code>Saved/Profile/</code> の 2 つの CSV を表計算ソフトで比べます。</li>
+    </ol>
+    <p>決まった条件で繰り返し測るときは、起動オプションの <code>--profile-scene</code> を使うと、エディターを操作せずに同じ手順で測れます（<a href="../settings/command-line.html">起動オプション</a>）。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../settings/command-line.html">起動オプション（性能を計測する）</a></li>
+      <li><a href="../editor/shortcuts.html">ショートカット一覧</a></li>
+      <li><a href="validation.html">Validation と Diagnostics</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

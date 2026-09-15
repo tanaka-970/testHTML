@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Particle Emitter - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+    <h1>Particle Emitter</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>小さな粒（パーティクル）をたくさん出すコンポーネントです。火花、煙、光の粒などに使います。粒は常にカメラの方を向いた四角で、画像を貼れます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>火花、煙、光の粒などを出したいとき</li>
+      <li>爆発の瞬間など、決まったタイミングで粒をまとめて出したいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Rendering &gt; Particle Emitter</td></tr>
+      <tr><td>必須・推奨</td><td>なし</td></tr>
+      <tr><td>1 つの GameObject に</td><td>いくつでも付けられますが、動くのは有効なもののうち上の 1 つだけです（<a href="#limits">制限</a>）</td></tr>
+      <tr><td>光と影</td><td>ライトの影響を受けず、影も落としません</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>発生する</td><td><code>emitting</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オンの間、粒を出し続けます</td></tr>
+      <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td>-100〜100</td><td>この版では使われていません</td></tr>
+      <tr><td>発生量/秒</td><td><code>spawn_rate</code></td><td>小数</td><td>200</td><td>0〜20000</td><td>1 秒あたりに出す粒の数</td></tr>
+      <tr><td>寿命</td><td><code>lifetime</code></td><td>小数</td><td>1.5</td><td>0.01〜60</td><td>粒が消えるまでの秒数。粒ごとに 0.75〜1.25 倍のばらつきが付きます</td></tr>
+      <tr><td>初速</td><td><code>start_speed</code></td><td>小数</td><td>2</td><td>0〜200</td><td>出たときの速さ。粒ごとに 0.75〜1.25 倍のばらつきが付きます</td></tr>
+      <tr><td>重力</td><td><code>gravity</code></td><td>小数</td><td>1.8</td><td>-100〜100</td><td>下向きに引っぱる強さ。マイナスにすると上へ昇ります</td></tr>
+      <tr><td>抵抗</td><td><code>drag</code></td><td>小数</td><td>0.5</td><td>0〜20</td><td>大きいほど早く減速します</td></tr>
+      <tr><td>開始サイズ</td><td><code>start_size</code></td><td>小数</td><td>0.1</td><td>0.001〜100</td><td>出たときの粒の大きさ</td></tr>
+      <tr><td>終了サイズ</td><td><code>end_size</code></td><td>小数</td><td>0.02</td><td>0.001〜100</td><td>消える直前の大きさ。寿命に合わせてだんだん変わります</td></tr>
+      <tr><td>開始色</td><td><code>start_color</code></td><td>色</td><td>橙</td><td></td><td>出たときの色</td></tr>
+      <tr><td>終了色</td><td><code>end_color</code></td><td>色</td><td>赤（不透明度 0）</td><td></td><td>消える直前の色。不透明度を 0 にすると、消えるときにだんだん透明になります</td></tr>
+      <tr><td>発生方向</td><td><code>direction</code></td><td>3 つの小数</td><td>0, 1, 0</td><td></td><td>粒が飛ぶ中心の向き。GameObject の回転に合わせて向きが変わります</td></tr>
+      <tr><td>拡散角</td><td><code>cone_angle</code></td><td>小数</td><td>0.4</td><td>0〜3.14159</td><td>発生方向からどれだけ広がって飛ぶか（ラジアン）。0 でまっすぐ、1.57 で半球、3.14 で全方向</td></tr>
+      <tr><td>画像</td><td><code>sprite</code></td><td>アセット（画像）</td><td>（空）</td><td></td><td>粒に貼る画像。空なら白い四角です</td></tr>
+      <tr><td>合成</td><td><code>blend_mode</code></td><td>選択</td><td>加算</td><td></td><td>通常、加算、乗算、スクリーン。この版では使われておらず、常に通常の半透明で描かれます</td></tr>
+      <tr><td>最大数</td><td><code>max_particles</code></td><td>整数</td><td>10000</td><td>1〜10000</td><td>同時に存在できる粒の数。超える分は出ません</td></tr>
+    </table>
+    </div>
+
+    <h2 id="how">粒の動き方</h2>
+    <ul>
+      <li>粒は GameObject の位置から出ます。出たあとは GameObject が動いても付いてきません。</li>
+      <li>重力はワールドの真下向きにかかります。GameObject を傾けても重力の向きは変わりません。</li>
+      <li>大きさは寿命に合わせて <b>開始サイズ</b> から <b>終了サイズ</b> へ、色は <b>開始色</b> から <b>終了色</b> へ変わります。色は寿命を 8 段階に分けて変わります。</li>
+    </ul>
+
+    <h2 id="csharp">C# スクリプトから操作する</h2>
+    <p>C# では <code>ParticleEmitterComponent</code> 型で操作します。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>メンバー</th><th>働き</th></tr>
+      <tr><td><code>Play()</code></td><td><b>発生する</b> をオンにします</td></tr>
+      <tr><td><code>Stop()</code></td><td><b>発生する</b> をオフにします</td></tr>
+      <tr><td><code>Emit(count)</code></td><td>次のフレームに <code>count</code> 個の粒をまとめて出します（最大数まで）。爆発の瞬間などに使います</td></tr>
+      <tr><td><code>Clear()</code></td><td>出ている粒をすべて消します</td></tr>
+    </table>
+    </div>
+    <p>プロパティは Motion でも動かせます。発生量や寿命を時間で変えると、勢いの強弱が付けられます。</p>
+
+    <h2 id="limits">制限</h2>
+    <ul>
+      <li>1 つの GameObject に複数の Particle Emitter を付けても、動くのは有効なもののうち一番上の 1 つだけです。いくつも出したいときは、GameObject を分けてください。</li>
+      <li><b>優先度</b> と <b>合成</b> は、この版では効きません。</li>
+      <li><b>発生する</b> をオフにすると、新しい粒が出なくなるだけでなく、出ていた粒も表示されなくなります。もう一度オンにすると、止まっていた粒が続きから動きます。</li>
+      <li>そのため、<b>発生する</b> がオフのまま <code>Emit(count)</code> を呼ぶと、粒は出たフレームだけ表示され、すぐに見えなくなります。まとめて出すときは <b>発生量/秒</b> を 0 にし、<b>発生する</b> はオンのままにします。</li>
+    </ul>
+
+    <h2 id="usage">使い方</h2>
+    <h3>爆発の瞬間に火花を出す</h3>
+    <ol class="steps">
+      <li>空の GameObject を作り、<b>コンポーネントを追加 &gt; Rendering &gt; Particle Emitter</b> を付けます。</li>
+      <li><b>発生量/秒</b> を 0 にします（<b>発生する</b> はオンのまま）。</li>
+      <li><b>拡散角</b> を 3.14、<b>初速</b> を 5 にすると、全方向に飛び散ります。</li>
+      <li>C# スクリプトで、爆発したときに <code>Emit(100)</code> を呼びます。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="lines.html">3D ラインと軌跡</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

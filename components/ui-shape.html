@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Shape・Puppet Deform - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / UI</div>
+    <h1>Shape・Puppet Deform</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p><b>Shape</b> は、画像を使わずに四角・円・多角形・線などの図形を UI に描くコンポーネントです。塗り、線、グラデーション、線の一部だけを描く Trim、破線に対応しています。<b>Puppet Deform</b> は、Image の画像を格子に分けて、Pin を動かしたところだけ曲げるコンポーネントです。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>画像を用意せずに、四角・円・星などの図形や線を UI に描きたいとき（Shape）</li>
+      <li>輪郭線が少しずつ描かれていく演出や、流れる破線を作りたいとき（Trim、破線）</li>
+      <li>花や歯車のような形を、モーションでなめらかに変形させたいとき（極座標式）</li>
+      <li>吹き出しや矢印など、自由な形を描きたいとき（自由ベジェ Path）</li>
+      <li>1 枚の絵の髪や腕などを、部分的に曲げて揺らしたいとき（Puppet Deform）</li>
+    </ul>
+
+    <h2 id="shape">Shape</h2>
+    <p>コンポーネントを追加での場所は <b>UI &gt; Shape</b> です。付けると Rect Transform も付きます。図形は Rect Transform の範囲に合わせて描かれ、範囲の縦横比に合わせて伸びます（範囲が横長なら円は楕円になります）。</p>
+
+    <h3 id="shape-create">UI Workspace で作る</h3>
+    <p><b>UI 階層</b> の <b>図形</b> ボタン（または <b>＋ UIを追加</b> &gt; <b>図形を追加</b>）から選ぶと、塗り色が水色、線色が紺の Shape を持つ GameObject が作られます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>メニュー</th><th>形</th><th>大きさ</th><th>設定される値</th></tr>
+      <tr><td>矩形</td><td>矩形</td><td>160 × 80</td><td></td></tr>
+      <tr><td>角丸矩形</td><td>矩形</td><td>160 × 80</td><td>角丸 18</td></tr>
+      <tr><td>円</td><td>円</td><td>128 × 128</td><td></td></tr>
+      <tr><td>三角形</td><td>多角形</td><td>128 × 128</td><td>角数 3（頂点が下を向いた三角形）</td></tr>
+      <tr><td>六角形</td><td>多角形</td><td>128 × 128</td><td>角数 6</td></tr>
+      <tr><td>星形</td><td>極座標式</td><td>128 × 128</td><td>基本半径 0.62、振幅 0.38、花弁 5</td></tr>
+      <tr><td>線</td><td>線</td><td>220 × 16</td><td>線幅 4</td></tr>
+      <tr><td>自由図形を追加</td><td>自由ベジェ Path</td><td>160 × 100</td><td>頂点 4 つの四角（範囲の 12%〜88%）</td></tr>
+    </table>
+    </div>
+
+    <!--PROPS:UIShapeComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>形</td><td><code>shape</code></td><td>選択</td><td>矩形</td><td></td><td>図形の種類を指定します。 形ごとに使う項目が違います（ページの「形の種類」の表）。 選択肢：矩形、円、線、多角形、ベジェ、スーパー楕円、極座標式、自由ベジェ Path</td></tr>
+<tr><td>塗り色</td><td><code>fill_color</code></td><td>色</td><td>1, 1, 1, 1</td><td></td><td>図形の始点側の塗り色を指定します。 塗りの色。塗りの種類が 線形・放射 のときは始まり側の色です。A が 0 なら塗りを描きません。不透明度（Canvas）が掛かります。</td></tr>
+<tr><td>塗りの終端色</td><td><code>fill_color_2</code></td><td>色</td><td>1, 1, 1, 1</td><td></td><td>図形の終点側の塗り色を指定します。 線形・放射のとき、色 2 の位置 での色。Canvas の不透明度は掛かりません。</td></tr>
+<tr><td>塗り色 3</td><td><code>fill_color_3</code></td><td>色</td><td>1, 1, 1, 1</td><td></td><td>色 3 の位置が 0 以上のときだけ使う。 色 3 の位置 が 0 以上のとき、その位置での色。</td></tr>
+<tr><td>塗り色 4</td><td><code>fill_color_4</code></td><td>色</td><td>1, 1, 1, 1</td><td></td><td>色 4 の位置が 0 以上のときだけ使う。 色 4 の位置 が 0 以上のとき、その位置での色。</td></tr>
+<tr><td>色 2 の位置</td><td><code>fill_stop_2</code></td><td>小数</td><td>1</td><td>0〜1</td><td>既存の 2 色グラデーションでは 1 のまま使う。 グラデーションの 0〜1 のうち、塗りの終端色になる位置。</td></tr>
+<tr><td>色 3 の位置</td><td><code>fill_stop_3</code></td><td>小数</td><td>-1</td><td>-1〜1</td><td>-1 は未設定。0 以上にすると色 3 を有効にする。 色 2 の位置より後ろにしてください（前にすると色 2 の位置のすぐ後ろとして扱います）。</td></tr>
+<tr><td>色 4 の位置</td><td><code>fill_stop_4</code></td><td>小数</td><td>-1</td><td>-1〜1</td><td>-1 は未設定。0 以上にすると色 4 を有効にする。 色 3（使っていなければ色 2）の位置より後ろにしてください。</td></tr>
+<tr><td>塗りの種類</td><td><code>fill_mode</code></td><td>選択</td><td>単色</td><td></td><td>図形の塗り方を単色・線形・放射から指定します。 線形は 塗りの向き の方向、放射は 塗りの中心 からの距離で色が変わります。 選択肢：単色、線形、放射</td></tr>
+<tr><td>塗りの向き</td><td><code>fill_angle</code></td><td>小数</td><td>0</td><td>-360〜360</td><td>グラデーションの向きを度単位で指定します。 線形のときの向き（度）。0 で左から右、90 で下から上（Image とは上下が逆）です。</td></tr>
+<tr><td>塗りの中心</td><td><code>fill_center</code></td><td>2 つの小数</td><td>0.5, 0.5</td><td></td><td>グラデーションの中心を正規化座標で指定します。 範囲の左下を 0,0、右上を 1,1 とした位置（Image とは上下が逆）。</td></tr>
+<tr><td>線色</td><td><code>stroke_color</code></td><td>色</td><td>1, 1, 1, 1</td><td></td><td>図形の輪郭線色を指定します。 線の色。A が 0 なら線を描きません。線 の形で線幅が 0 のときは、塗り色で幅 1 の線を描きます。</td></tr>
+<tr><td>線の終端色</td><td><code>stroke_color_2</code></td><td>色</td><td>1, 1, 1, 1</td><td></td><td>図形の輪郭線の終端色を指定します。 線の色の種類 が 長さに沿う のとき、線の終わりの色。Canvas の不透明度は掛かりません。</td></tr>
+<tr><td>線の色の種類</td><td><code>stroke_mode</code></td><td>選択</td><td>単色</td><td></td><td>輪郭線の色の変化方法を指定します。 長さに沿う にすると、線の始まりから終わりへ 線色 から 線の終端色 へ変わります（Trim で切ったときも全長に対する位置で決まります）。 選択肢：単色、長さに沿う</td></tr>
+<tr><td>線幅</td><td><code>stroke_width</code></td><td>小数</td><td>0</td><td>0〜512</td><td>図形の輪郭線幅を指定します。 Canvas 座標の太さ。輪郭の線の上に、内側と外側へ半分ずつ広がります。0 なら線を描きません。</td></tr>
+<tr><td>角丸</td><td><code>corner_radius</code></td><td>小数</td><td>0</td><td>0〜512</td><td>角を丸める量を指定します。 矩形 の角の丸さ（Canvas 座標）。範囲の短い辺の半分までです。</td></tr>
+<tr><td>弧の曲がり</td><td><code>arc_curvature</code></td><td>小数</td><td>1</td><td>0〜1</td><td>弧の曲がり具合を指定します。 円 の形で使います。1 で範囲いっぱいの楕円、小さくすると左右の端を結ぶ 2 本の弧のレンズ形に平たくなり、0 で横の直線になります。</td></tr>
+<tr><td>角数</td><td><code>sides</code></td><td>整数</td><td>5</td><td>3〜64</td><td>多角形の角数を指定します。 多角形 の角の数（3〜64）。最初の角は範囲の下の中央です。</td></tr>
+<tr><td>スーパー楕円の指数</td><td><code>superellipse_exponent</code></td><td>小数</td><td>2</td><td>0.25〜16</td><td>2 で楕円。大きいほど四角、小さいほど星形へ連続変形する。 スーパー楕円 で使います。</td></tr>
+<tr><td>極座標の基本半径</td><td><code>polar_base_radius</code></td><td>小数</td><td>1</td><td>0.05〜1.5</td><td>r(θ) = a + b cos(kθ) の a。 極座標式 で使います。1 で範囲の半分の大きさです。</td></tr>
+<tr><td>極座標の振幅</td><td><code>polar_amplitude</code></td><td>小数</td><td>0</td><td>-1〜1</td><td>r(θ) = a + b cos(kθ) の b。0 なら円。 極座標式 で使います。</td></tr>
+<tr><td>花弁 / 歯数</td><td><code>polar_lobes</code></td><td>小数</td><td>5</td><td>1〜32</td><td>r(θ) = a + b cos(kθ) の k。Motion で連続変形できる。 極座標式 で使います。小数も使えます。</td></tr>
+<tr><td>極座標の回転</td><td><code>polar_rotation</code></td><td>小数</td><td>0</td><td>-360〜360</td><td>極座標形状の回転角度を度単位で指定します。 極座標式 で使います。プラスで反時計回りです。</td></tr>
+<tr><td>Trim 開始</td><td><code>trim_start</code></td><td>小数</td><td>0</td><td>0〜1</td><td>線形状を切り始める位置を 0〜1 で指定します。 線を描く区間の始まり（輪郭の全長を 1 とした割合）。塗りには効きません。</td></tr>
+<tr><td>Trim 終了</td><td><code>trim_end</code></td><td>小数</td><td>1</td><td>0〜1</td><td>線形状を切り終える位置を 0〜1 で指定します。 線を描く区間の終わり。開始以下にすると線を描きません。</td></tr>
+<tr><td>Trim オフセット</td><td><code>trim_offset</code></td><td>小数</td><td>0</td><td></td><td>線形状の切り出し位置をずらします。 描く区間を丸ごとずらします。1 を超えた分は先頭へ回り込みます。モーションで動かすと線が輪郭を回ります。</td></tr>
+<tr><td>破線の長さ</td><td><code>dash_length</code></td><td>小数</td><td>0</td><td>0〜4096</td><td>破線 1 本の長さを指定します。 破線 1 本の長さ（Canvas 座標）。破線の間隔 も 0 より大きいときだけ破線になります。</td></tr>
+<tr><td>破線の間隔</td><td><code>dash_gap</code></td><td>小数</td><td>0</td><td>0〜4096</td><td>破線同士の間隔を指定します。 破線どうしのすき間（Canvas 座標）。</td></tr>
+<tr><td>破線オフセット</td><td><code>dash_offset</code></td><td>小数</td><td>0</td><td></td><td>破線パターンの開始位置をずらします。 破線の模様をずらす長さ。モーションで動かすと破線が流れます。</td></tr>
+<tr><td>Path を閉じる</td><td><code>path_closed</code></td><td>オン・オフ</td><td>オン</td><td></td><td>自由ベジェ Path の末尾と先頭を接続します。 自由ベジェ Path で、頂点が 3 つ以上のとき最後と最初をつなぎます。閉じていないと塗りは描かれません。</td></tr>
+<tr><td>Path Anchor</td><td><code>path_points</code></td><td>一覧</td><td>（空）</td><td></td><td>正規化 0..1 の Anchor 配列。配列追加/削除は既存 Inspector を使います。 範囲の左下を 0,0、右上を 1,1 とした頂点の位置。最大 64 個。頂点ごとに point[番号].position としてモーションで動かせます。</td></tr>
+<tr><td>Path 入力 Handle</td><td><code>path_in_handles</code></td><td>一覧</td><td>（空）</td><td></td><td>自由形状の各頂点へ入る Bezier ハンドルを指定します。 頂点からのずれで、前の頂点から来る曲線の曲がり方を決めます（point[番号].in_handle）。 （詳細設定）</td></tr>
+<tr><td>Path 出力 Handle</td><td><code>path_out_handles</code></td><td>一覧</td><td>（空）</td><td></td><td>自由形状の各頂点から出る Bezier ハンドルを指定します。 頂点からのずれで、次の頂点へ向かう曲線の曲がり方を決めます（point[番号].out_handle）。 （詳細設定）</td></tr>
+</table></div>
+<!--/PROPS:UIShapeComponent-->
+
+    <h3 id="shape-kinds">形の種類</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>形</th><th>描かれる形</th><th>使う項目</th><th>塗り</th></tr>
+      <tr><td>矩形</td><td>範囲いっぱいの四角。角丸が 0 より大きいと角を丸めます</td><td>角丸</td><td>あり</td></tr>
+      <tr><td>円</td><td>弧の曲がり 1 で範囲いっぱいの楕円。小さくすると、範囲の左右の端を結ぶ上下 2 本の弧のレンズ形に平たくなり、0 で横の直線になります</td><td>弧の曲がり</td><td>あり（0 のときはなし）</td></tr>
+      <tr><td>線</td><td>範囲の高さの真ん中を、左端から右端へ引く直線。線幅が 0 のときは、塗り色で幅 1 の線を描きます</td><td></td><td>なし</td></tr>
+      <tr><td>多角形</td><td>範囲に内接する正多角形。最初の角は範囲の下の中央です</td><td>角数</td><td>あり</td></tr>
+      <tr><td>ベジェ</td><td>左の真ん中から右の真ん中へ、S 字に曲がる決まった曲線（開いた線）</td><td></td><td>なし</td></tr>
+      <tr><td>スーパー楕円</td><td>指数 2 で楕円、大きくすると角の丸い四角、2 より小さくすると辺がへこんだ星のような形</td><td>スーパー楕円の指数</td><td>あり</td></tr>
+      <tr><td>極座標式</td><td>中心からの距離が「基本半径 ＋ 振幅 × cos(花弁 × 角度)」になる形。振幅 0 で円、花弁の数だけ出っ張りのある花や星の形になります</td><td>極座標の基本半径、極座標の振幅、花弁 / 歯数、極座標の回転</td><td>あり</td></tr>
+      <tr><td>自由ベジェ Path</td><td>頂点とハンドルで作る自由な形。頂点が 2 つ以上で描かれ、3 つ以上で Path を閉じる がオンなら閉じた形になります</td><td>Path を閉じる、Path Anchor、Path 入力 Handle、Path 出力 Handle</td><td>閉じているときだけ</td></tr>
+    </table>
+    </div>
+
+    <h3 id="shape-fill">塗り</h3>
+    <ul>
+      <li>閉じた形のときだけ、<b>塗り色</b> で内側を塗ります。塗り色の A が 0 なら塗りません。</li>
+      <li><b>塗りの種類</b> が <b>線形</b> なら <b>塗りの向き</b> の方向に、<b>放射</b> なら <b>塗りの中心</b> からの距離で、色が変わります。0〜1 の途中の位置を <b>色 2 の位置</b>・<b>色 3 の位置</b>・<b>色 4 の位置</b> で決め、最大 4 色のグラデーションにできます。</li>
+      <li>Shape の塗りの向きと中心は、範囲の <b>左下が 0,0</b> です。そのため向き 90 度は下から上へ変わります（<a href="ui-image.html#gradient">Image のグラデーション</a> とは上下が逆です）。</li>
+      <li>自分自身と交差する輪郭は、正しく塗れないことがあります。</li>
+    </ul>
+
+    <h3 id="shape-stroke">線（輪郭線）</h3>
+    <ul>
+      <li><b>線幅</b> が 0 より大きいとき、輪郭に沿って線を描きます。線は輪郭の上に内側と外側へ半分ずつ広がります。</li>
+      <li>線は辺ごとの細長い四角でできているので、線幅を太くすると角にすき間や重なりが見えることがあります。</li>
+      <li><b>線の色の種類</b> を <b>長さに沿う</b> にすると、輪郭の始まりから終わりへ <b>線色</b> から <b>線の終端色</b> へ変わります。</li>
+    </ul>
+
+    <h3 id="shape-trim">Trim と破線</h3>
+    <p>線だけに効き、塗りには効きません。輪郭の全長を 0〜1 として考えます。</p>
+    <ul>
+      <li><b>Trim 開始</b> から <b>Trim 終了</b> までの区間だけ線を描きます。区間の長さはそのままに、<b>Trim オフセット</b> で始まりをずらせます。1 を超えた部分は輪郭の最初へ回り込みます。</li>
+      <li><b>破線の長さ</b> と <b>破線の間隔</b> の両方が 0 より大きいと、線を破線にします。長さは Canvas 座標です。<b>破線オフセット</b> で模様をずらせます。</li>
+    </ul>
+    <div class="note"><strong>線が描かれていく演出</strong>Trim 開始を 0、Trim 終了をモーションで 0 から 1 へ動かすと、輪郭が少しずつ描かれていきます。Trim オフセットを動かすと、決まった長さの線が輪郭の上を回ります。</div>
+
+    <h3 id="shape-path">自由ベジェ Path の編集</h3>
+    <p>自由ベジェ Path の Shape を選ぶと、<b>UI インスペクター</b> に <b>自由図形コントローラー</b> が出ます（Shape Image では <b>自由図形Image コントローラー</b>）。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>働き</th></tr>
+      <tr><td>Points: 数</td><td>頂点の数</td></tr>
+      <tr><td><b>Point を追加</b></td><td>最後の頂点の少し右（0.1 右）に頂点を足します。頂点が無いときは中央に足します</td></tr>
+      <tr><td><b>選択の後へ挿入</b></td><td>選択中の頂点と次の頂点の真ん中に頂点を足します（ハンドルは 0）</td></tr>
+      <tr><td><b>選択 Point を削除</b></td><td>選択中の頂点を消します</td></tr>
+      <tr><td><b>選択 Point</b></td><td>選ぶ頂点の番号</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li>頂点は最大 64 個です。頂点から次の頂点までは、前の頂点の出力ハンドルと次の頂点の入力ハンドルを使った 3 次ベジェ曲線で、1 区間を 16 に分けて描きます。ハンドルが 0 のときはまっすぐな辺になります。</li>
+      <li>インスペクターの「Path Point 番号」の <b>位置</b>、<b>入力ハンドル</b>、<b>出力ハンドル</b>（内部名 <code>point[番号].position</code>、<code>point[番号].in_handle</code>、<code>point[番号].out_handle</code>）は、モーションで動かせます。</li>
+    </ul>
+
+    <h2 id="puppet">Puppet Deform</h2>
+    <p>同じ GameObject の Image の画像を、格子に分けて曲げます。髪や腕、服などを部分的に揺らすのに使います。コンポーネントを追加での場所は <b>UI &gt; Puppet Deform</b> です。</p>
+    <!--PROPS:UIPuppetDeformComponent-->
+<div class="table-wrap"><table>
+<tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+<tr><td>変形を有効</td><td><code>enabled_deform</code></td><td>オン・オフ</td><td>オン</td><td></td><td>Puppet 変形を有効にするか指定します。 オフにすると変形せず、ふつうの四角として描きます。</td></tr>
+<tr><td>Mesh 列数</td><td><code>grid_columns</code></td><td>整数</td><td>6</td><td>1〜32</td><td>Puppet メッシュの列数を指定します。 画像を横に何分割して曲げるか（1〜32）。多いほどなめらかに曲がります。</td></tr>
+<tr><td>Mesh 行数</td><td><code>grid_rows</code></td><td>整数</td><td>6</td><td>1〜32</td><td>Puppet メッシュの行数を指定します。 画像を縦に何分割して曲げるか（1〜32）。</td></tr>
+<tr><td>全体強度</td><td><code>global_strength</code></td><td>小数</td><td>1</td><td>-4〜4</td><td>Puppet 変形全体へ掛ける強さを指定します。 全部の Pin の動きに掛ける倍率。マイナスにすると逆向きに曲がります。</td></tr>
+<tr><td>Pin 基準位置</td><td><code>pin_bind_positions</code></td><td>一覧</td><td>（空）</td><td></td><td>Puppet Pin の基準姿勢を保持する位置配列です。 Pin の元の位置。この位置からどれだけ動いたかで変形します。 （詳細設定）</td></tr>
+<tr><td>Pin 位置</td><td><code>pin_positions</code></td><td>一覧</td><td>（空）</td><td></td><td>配列要素を増やすと Pin が増えます。各 Pin は Dynamic Property として Motion に露出します。 Pin の今の位置（画像の範囲の左下を 0,0、右上を 1,1）。最大 64 個。pin[番号].position としてモーションで動かせます。</td></tr>
+<tr><td>Pin 影響半径</td><td><code>pin_radii</code></td><td>一覧</td><td>（空）</td><td></td><td>Puppet Pin の影響半径を指定します。 Pin が影響する距離（範囲の幅・高さを 1 とした長さ）。追加したときは 0.35。pin[番号].radius としてモーションで動かせます。 （詳細設定）</td></tr>
+</table></div>
+<!--/PROPS:UIPuppetDeformComponent-->
+
+    <h3 id="puppet-how">曲がり方</h3>
+    <ol>
+      <li>画像を <b>Mesh 列数</b> × <b>Mesh 行数</b> の格子に分け、格子の点ごとに動かす量を計算します。</li>
+      <li>各 Pin は、<b>Pin 基準位置</b> から <b>Pin 位置</b> へ動いた分だけ、基準位置から <b>Pin 影響半径</b> 以内の点を引っぱります。近い点ほど強く、半径の端で 0 になるよう、なめらかに弱まります。</li>
+      <li>複数の Pin が同じ点に効くときは動きを足し合わせます。効き目の合計が 1 を超えるときは平均します。</li>
+      <li>最後に <b>全体強度</b> を掛けます。</li>
+    </ol>
+    <ul>
+      <li>位置と半径は、画像の範囲の左下を 0,0、右上を 1,1 とした値です。範囲が横長でも、半径は横と縦で同じ割合として計算します。</li>
+      <li>Pin 位置を基準位置と同じにしておくと、画像は元のままです。</li>
+      <li>Image に <b>9 スライス</b>、<b>円形 360</b> の塗り、Shape Image、自由形状のアトラス Region があるときは、そちらが優先され、Puppet Deform は使われません（<a href="ui-image.html#priority">描き方が重なるとき</a>）。</li>
+    </ul>
+
+    <h3 id="puppet-edit">Pin の編集</h3>
+    <p>Puppet Deform を持つ GameObject を選ぶと、<b>UI インスペクター</b> に <b>Puppet Deform 編集</b> が出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>働き</th></tr>
+      <tr><td>Pins: 数</td><td>Pin の数</td></tr>
+      <tr><td><b>Pin を追加</b></td><td>中央付近（追加するたびに少しずつ右上へずれた位置）に Pin を足します。基準位置も同じ位置になります</td></tr>
+      <tr><td><b>選択 Pin を削除</b></td><td>選択中の Pin を消します</td></tr>
+      <tr><td><b>選択 Pin</b></td><td>選ぶ Pin の番号</td></tr>
+      <tr><td><b>選択 Pin 半径</b></td><td>選択中の Pin の影響半径（0.001〜4）</td></tr>
+      <tr><td><b>現在形状を Bind Pose にする</b></td><td>今の Pin 位置を、全部の基準位置として保存します（今の曲がった形が「元の形」になります）</td></tr>
+      <tr><td><b>Bind Pose に戻す</b></td><td>全部の Pin 位置を基準位置に戻します（曲がりが無くなります）</td></tr>
+    </table>
+    </div>
+    <p>インスペクターの「Puppet Pin 番号」の <b>位置</b> と <b>影響半径</b>（内部名 <code>pin[番号].position</code>、<code>pin[番号].radius</code>）は、モーションで動かせます。Pin は最大 64 個です。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>円が描かれていく読み込み表示を作る</h3>
+    <ol>
+      <li><a href="../windows/ui-workspace.html">UI Workspace</a> の UI 階層で <b>図形</b> &gt; <b>円</b> を選びます。</li>
+      <li><b>塗り色</b> の A を 0 にして塗りを消し、<b>線幅</b> を 8、<b>線色</b> を好きな色にします。</li>
+      <li><b>Trim 終了</b> を 0.3 にすると、円の 3 割だけが線で描かれます。</li>
+      <li><a href="../windows/motion-workspace.html">モーション</a>で <b>Trim オフセット</b> を 0 から 1 へ動かし、ループさせると、線が円の上を回り続けます。</li>
+    </ol>
+    <h3>下から上へ色が変わる角丸の板を作る</h3>
+    <ol>
+      <li>UI 階層の <b>図形</b> &gt; <b>角丸矩形</b> を選びます。</li>
+      <li><b>塗りの種類</b> を 線形、<b>塗りの向き</b> を 90 にします。Shape では 90 度で下から上へ変わります。</li>
+      <li><b>塗り色</b> を下の色、<b>塗りの終端色</b> を上の色にします。</li>
+      <li><b>線幅</b> を 0 にすると枠線が消えます。</li>
+    </ol>
+    <h3>絵の一部を揺らす（Puppet Deform）</h3>
+    <ol>
+      <li>揺らしたい絵を <b>画像</b> に指定した Image を用意し、同じ GameObject に <b>コンポーネントを追加</b> &gt; <b>UI</b> &gt; <b>Puppet Deform</b> を付けます。</li>
+      <li>UI インスペクターの Puppet Deform 編集で <b>Pin を追加</b> を 2 回押し、1 つを動かさない根元、もう 1 つを揺らす先の位置に、シーンビューで橙の丸をドラッグして置きます。</li>
+      <li><b>現在形状を Bind Pose にする</b> を押し、今の置き方を「元の形」にします。</li>
+      <li>先の Pin をシーンビューでドラッグすると、その周りの絵が曲がります。<b>選択 Pin 半径</b> で曲がる範囲を調整します。</li>
+      <li>モーションで、先の Pin の <b>位置</b>（<code>pin[1].position</code>）を左右に動かすと、揺れ続ける絵になります。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="ui-image.html">Image・Shape Image・Sprite Animator</a></li>
+      <li><a href="ui-controls.html#mask">Mask</a></li>
+      <li><a href="motion-players.html">Motion Player</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

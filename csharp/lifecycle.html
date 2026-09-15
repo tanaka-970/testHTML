@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>呼ばれる順番（ライフサイクル） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / C# スクリプト</div>
+    <h1>呼ばれる順番（ライフサイクル）</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p><code>MonoBehaviour</code> を継承したクラスに、決まった名前のメソッドを書くと、エンジンが決まったタイミングで呼び出します。このページでは、その名前と呼ばれる順番を説明します。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>最初に 1 回だけ準備する処理（Start）と、毎フレーム動かす処理（Update）を、どこに書けばよいか決めるとき</li>
+      <li>何秒か待ってから続きを動かしたいとき（コルーチン）</li>
+      <li>ぶつかったとき、トリガーに入ったときに処理を起こしたいとき（OnCollisionEnter、OnTriggerEnter）</li>
+      <li>ほかのスクリプトより先に、または後に動かしたいとき（Execution Order）</li>
+      <li>Update が呼ばれない、Start が 2 回目に呼ばれない、といった理由を調べるとき</li>
+    </ul>
+
+    <h2 id="methods">メソッドの一覧</h2>
+    <p><code>override</code> は書きません。<code>private</code>・<code>protected</code>・<code>public</code> のどれでも呼ばれます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>書き方</th><th>呼ばれるとき</th></tr>
+      <tr><td><code>void Awake()</code></td><td>最初に 1 回。GameObject が有効になるまで待ちます。コンポーネント自体が無効でも呼ばれます</td></tr>
+      <tr><td><code>void OnEnable()</code></td><td>コンポーネントが有効になるたび</td></tr>
+      <tr><td><code>void Start()</code><br><code>IEnumerator Start()</code></td><td>初めて有効になったときに 1 回だけ。無効にしてからまた有効にしても、もう呼ばれません。<code>IEnumerator</code> で書くとコルーチンとして動きます</td></tr>
+      <tr><td><code>void Update()</code></td><td>毎フレーム 1 回</td></tr>
+      <tr><td><code>void FixedUpdate()</code></td><td>物理の 1 刻み（1/60 秒）ごと。1 フレームに 0 回のことも、複数回のこともあります</td></tr>
+      <tr><td><code>void LateUpdate()</code></td><td>毎フレーム、全員の Update と物理が終わったあと</td></tr>
+      <tr><td><code>void OnDisable()</code></td><td>コンポーネントが無効になるたび</td></tr>
+      <tr><td><code>void OnDestroy()</code></td><td>コンポーネントが消えるとき</td></tr>
+      <tr><td><code>void OnCollisionEnter(Collision collision)</code><br><code>OnCollisionStay</code>、<code>OnCollisionExit</code></td><td>ぶつかり始めた・ぶつかっている間・離れたとき（<a href="#collision">下を参照</a>）</td></tr>
+      <tr><td><code>void OnTriggerEnter(Collider other)</code><br><code>OnTriggerStay</code>、<code>OnTriggerExit</code></td><td>トリガーに入った・入っている間・出たとき</td></tr>
+    </table>
+    </div>
+    <div class="note"><strong>形が違うと呼ばれません</strong>名前が合っていても、引数や戻り値の形が表と違うと呼ばれません。そのときは Play を始めたときにコンソールへ「（クラス名）.Update は呼び出されません。見つかった形: …」という警告が出ます。</div>
+
+    <h2 id="play-only">動くのは Play 中だけ</h2>
+    <p>エディターで編集している間は、スクリプトのインスタンスは作られません。GameObject に付けただけでは Awake も Update も動きません。Play を押すと動き始め、止めると終わります（<a href="../editor/play-mode.html">再生と停止</a>）。</p>
+
+    <h2 id="start">開始の順番</h2>
+    <p>Play を始めたとき、シーンのすべてのスクリプトについて、次の順で進めます。1 つのスクリプトの Awake から Start まで一気に進めるのではなく、全員の Awake が終わってから全員の Start に進みます。</p>
+    <ol>
+      <li>全員のインスタンスを作る</li>
+      <li>全員のフィールドに、インスペクターで設定した値を入れる</li>
+      <li>全員の <code>Awake</code> と <code>OnEnable</code></li>
+      <li>全員の <code>Start</code></li>
+    </ol>
+    <p>そのため、<code>Awake</code> の中から、ほかのスクリプトのフィールドの値を読めます。途中で追加された GameObject やコンポーネントは、次のフレームの初めに同じ順で開始します。</p>
+
+    <h2 id="frame">1 フレームの順番</h2>
+    <ol>
+      <li>全員の <code>Update</code></li>
+      <li>物理：たまった時間ぶん、「全員の <code>FixedUpdate</code> → 物理の計算」を繰り返す（最大 5 回）</li>
+      <li>全員の <code>LateUpdate</code></li>
+      <li>トリガーと衝突の判定、ほかのコンポーネントのイベントの配送</li>
+      <li>スクリプトへ衝突・トリガーのメソッドを呼び、コルーチンを進める</li>
+      <li>カメラの追従、音の更新</li>
+    </ol>
+    <p>入力は <code>Update</code> で読み、力を加えるなど物理に関わる処理は <code>FixedUpdate</code> に書くと、この順番に合います。</p>
+
+    <h3 id="order">スクリプトどうしの順番</h3>
+    <p>各段階の中の順番は、ふつうはヒエラルキーの上から、同じ GameObject の中ではコンポーネントの上から順です。順番を決めたいときは、Script コンポーネントの <b>Execution Order</b> に整数を入れます。</p>
+    <ul>
+      <li>小さい数ほど先に呼ばれます。既定は 0 です。マイナスも使えます。</li>
+      <li>同じ数どうしは、ヒエラルキーとコンポーネントの順です。</li>
+      <li>並べ替わるのは Update・FixedUpdate・LateUpdate のそれぞれの中だけです。モーション、プロパティ接続、UI のレイアウトなど、そのあとに動く処理の順番は変わりません。</li>
+    </ul>
+
+    <h2 id="enable">有効・無効にしたとき</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>操作</th><th>呼ばれるもの</th><th>コルーチン</th></tr>
+      <tr><td>コンポーネントを無効にする（<code>enabled = false</code>）</td><td><code>OnDisable</code>。Update などは呼ばれなくなります</td><td>止まらずに続きます</td></tr>
+      <tr><td>GameObject を非アクティブにする（親を非アクティブにした場合も同じ）</td><td><code>OnDisable</code></td><td>止まります。また有効にしても途中から再開はしません</td></tr>
+      <tr><td>もう一度有効にする</td><td><code>OnEnable</code>（Start は呼ばれません）</td><td></td></tr>
+    </table>
+    </div>
+
+    <h2 id="collision">衝突とトリガー</h2>
+    <p>衝突やトリガーの起き方は <a href="../components/physics.html">物理（Rigidbody と Collider）</a> を見てください。スクリプトでは、メソッドを書いたものだけに届きます。</p>
+    <h3><code>Collision</code> で分かること</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>内容</th></tr>
+      <tr><td><code>gameObject</code></td><td>相手の GameObject。相手がもう消えているときは <code>null</code></td></tr>
+      <tr><td><code>transform</code></td><td>相手の Transform</td></tr>
+      <tr><td><code>collider</code></td><td>当たった相手の Collider</td></tr>
+      <tr><td><code>relativeVelocity</code></td><td>ぶつかったときの相対速度</td></tr>
+      <tr><td><code>contactPoint</code></td><td>接触した位置</td></tr>
+      <tr><td><code>contactNormal</code></td><td>接触面の向き</td></tr>
+      <tr><td><code>penetrationDepth</code></td><td>めり込んだ深さ</td></tr>
+    </table>
+    </div>
+    <p><code>OnTriggerEnter</code> などには、相手の <code>Collider</code> が渡されます。相手が分からないトリガーの通知は届きません。</p>
+
+    <h2 id="coroutine">コルーチン</h2>
+    <p>何フレームかにわたって少しずつ進める処理は、<code>IEnumerator</code> を返すメソッドに書いて <code>StartCoroutine</code> で始めます。</p>
+    <pre><code>IEnumerator Blink()
+{
+    for (int i = 0; i &lt; 3; ++i)
+    {
+        Debug.Log("点灯");
+        yield return new WaitForSeconds(0.5f);
+    }
+}
+
+void Start()
+{
+    StartCoroutine(Blink());
+}</code></pre>
+    <div class="table-wrap">
+    <table>
+      <tr><th>書き方</th><th>意味</th></tr>
+      <tr><td><code>StartCoroutine(処理)</code></td><td>始めます。呼んだその場で最初の <code>yield</code> まで進みます。戻り値の <code>Coroutine</code> で止められます</td></tr>
+      <tr><td><code>StopCoroutine(coroutine)</code></td><td>1 つ止めます</td></tr>
+      <tr><td><code>StopAllCoroutines()</code></td><td>このスクリプトのものをすべて止めます</td></tr>
+      <tr><td><code>yield return null;</code></td><td>次のフレームまで待ちます</td></tr>
+      <tr><td><code>yield return new WaitForSeconds(秒);</code></td><td>指定した秒数だけ待ちます。時間の倍率（<code>Time.timeScale</code>）の影響を受けます</td></tr>
+      <tr><td><code>yield return new WaitUntil(() =&gt; 条件);</code></td><td>条件が true になるまで待ちます</td></tr>
+      <tr><td><code>yield return new WaitWhile(() =&gt; 条件);</code></td><td>条件が true の間、待ちます</td></tr>
+    </table>
+    </div>
+    <p>2 回目以降の続きは、1 フレームの順番の 5 番目（LateUpdate と衝突の配送のあと）で進みます。</p>
+
+    <h2 id="exceptions">例外が起きたとき</h2>
+    <ul>
+      <li>例外はエンジンが受け止め、コンソールに「[クラス名] Update で例外: メッセージ」と、GameObject 名、スタックトレースを出します。</li>
+      <li><code>Awake</code> で例外が起きたスクリプトは、そのコンポーネントが無効になり、<code>OnEnable</code> や <code>Start</code> へ進みません。</li>
+      <li>それ以外のメソッドで例外が起きても、ほかのスクリプトは止まらず、次のフレームも同じメソッドが呼ばれます。</li>
+    </ul>
+
+    <h2 id="time">時間とログ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>内容</th></tr>
+      <tr><td><code>Time.deltaTime</code></td><td>前のフレームからの秒数。時間の倍率を掛けたあとの値です</td></tr>
+      <tr><td><code>Time.fixedDeltaTime</code></td><td>物理の 1 刻みの秒数</td></tr>
+      <tr><td><code>Time.frameCount</code></td><td>フレームの番号</td></tr>
+      <tr><td><code>Time.timeScale</code></td><td>時間の倍率。スクリプトからは読むだけで、変えられません</td></tr>
+      <tr><td><code>Debug.Log(内容)</code>、<code>Debug.LogWarning</code>、<code>Debug.LogError</code></td><td>コンソールに出します。2 つ目の引数に GameObject やコンポーネントを渡すと、どの GameObject のログかが付きます</td></tr>
+      <tr><td><code>Debug.LogException(例外)</code></td><td>例外をエラーとして出します</td></tr>
+      <tr><td><code>Debug.Assert(条件, 内容)</code></td><td>条件が false のときだけエラーを出します</td></tr>
+      <tr><td><code>Log</code>、<code>LogWarning</code>、<code>LogError</code></td><td>MonoBehaviour の中で使える短い書き方。自分の GameObject が自動で付きます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>3 秒後に自分を消す</h3>
+    <pre><code>using System.Collections;
+using ReplayEngine;
+
+namespace Game;
+
+[ReplayGuid(&quot;（作ったときの値のまま）&quot;)]
+public class AutoDestroy : MonoBehaviour
+{
+    public float seconds = 3.0f;
+
+    IEnumerator Start()
+    {
+        yield return new WaitForSeconds(seconds);
+        Object.Destroy(gameObject);
+    }
+}</code></pre>
+    <p>弾やエフェクトに付けておくと、出てから決まった秒数で消えます。Start を IEnumerator で書くと、そのままコルーチンになります。</p>
+    <h3>触れたアイテムを消す</h3>
+    <pre><code>void OnTriggerEnter(Collider other)
+{
+    Debug.Log(other.name + &quot; が触れました&quot;);
+    Object.Destroy(gameObject);
+}</code></pre>
+    <p>アイテムの GameObject に付け、アイテムの Collider の <b>Trigger</b> をオンにします。トリガーが起きる条件は <a href="../components/physics.html">物理（Rigidbody と Collider）</a> を見てください。</p>
+    <h3>ほかのスクリプトより先に準備する</h3>
+    <ol>
+      <li>先に動かしたいスクリプトの Script コンポーネントを選びます。</li>
+      <li><b>Execution Order</b> を -10 などのマイナスにします。既定の 0 のスクリプトより先に、Update などが呼ばれます。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="index.html">はじめてのスクリプト</a></li>
+      <li><a href="build.html">ビルドと、動かないとき</a></li>
+      <li><a href="../components/physics.html">物理（Rigidbody と Collider）</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

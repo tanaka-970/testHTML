@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>地形（Landscape） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Landscape</div>
+    <h1>地形（Landscape）</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>シーンビューでブラシを使って盛り上げたり削ったりできる地面を作るコンポーネントです。3 つのコンポーネントを組み合わせて使います。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>コンポーネント</th><th>役割</th><th>コンポーネントを追加での場所</th><th>必須・推奨</th></tr>
+      <tr><td>Landscape</td><td>地形の形（頂点と三角形）を持ちます</td><td>Landscape &gt; Landscape</td><td>推奨：Landscape Renderer、Landscape Collider</td></tr>
+      <tr><td>Landscape Renderer</td><td>地形を表示します</td><td>Landscape &gt; Landscape Renderer</td><td>必須：Landscape</td></tr>
+      <tr><td>Landscape Collider</td><td>地形を当たり判定にします</td><td>Landscape &gt; Landscape Collider</td><td>必須：Landscape</td></tr>
+    </table>
+    </div>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>丘、谷、平原など、起伏のある地面をシーンビューで描くように作りたいとき</li>
+      <li>段差、穴、洞窟の入口やトンネルなど、地面の形を加工したいとき（トポロジー）</li>
+      <li>キャラクターが歩ける地面の当たり判定がほしいとき（Landscape Collider）</li>
+      <li>地面に芝や土の画像を貼りたいとき（Landscape Renderer）</li>
+    </ul>
+
+    <h2 id="create">地面を作る</h2>
+    <ol class="steps">
+      <li>階層パネルの <b>+ 作成 &gt; Landscape Ground</b> を選びます（ゲームを実行していないとき）。</li>
+      <li>「Ground」という GameObject が作られ、選択されます。3 つのコンポーネントがすべて付き、縦横 33 × 33 個の頂点、頂点の間隔 2 の平らな地面になります。地面の中心が GameObject の位置です。</li>
+      <li>「Landscape Ground を作成しました」と表示されます。</li>
+    </ol>
+    <p>普通の GameObject に <b>コンポーネントを追加</b> で Landscape を付けても地形にできます。</p>
+
+    <h2 id="editing">シーンビューで形を変える</h2>
+    <p>Landscape の付いた GameObject を選ぶと、シーンビューの上部（表示の切り替えの行の下）に地形の編集用の行が現れます。ゲームの実行中は表示されません。</p>
+
+    <h3 id="toolbar">編集用の行</h3>
+    <p>足りないコンポーネントがあると、次の注意とボタンが出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>ボタン</th><th>押したとき</th></tr>
+      <tr><td>地形の描画機能が無いため表示されません。</td><td>描画機能を追加</td><td>Landscape Renderer を付けます</td></tr>
+      <tr><td>地形の衝突判定機能が無いため当たり判定はありません。</td><td>衝突判定を追加</td><td>Landscape Collider を付けます</td></tr>
+      <tr><td>基本形状と地形が同時表示されています。見た目が重なる可能性があります。</td><td>基本形状を非表示</td><td>同じ GameObject の Primitive Mesh Renderer の <b>表示</b> をオフにします</td></tr>
+    </table>
+    </div>
+    <p>その下に <b>地形を編集</b> のチェックボックスがあります。チェックが無い間は「地形を通常のオブジェクトとして選択中」と表示され、普通の GameObject と同じように選択やギズモの操作ができます。チェックを付けると、右に <b>スカルプト</b> と <b>トポロジー</b> を選ぶ欄と、「頂点:数 面:数」が表示されます。</p>
+
+    <h3 id="sculpt">スカルプト（ブラシで形を変える）</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>ブラシ</td><td>盛り上げる</td><td></td><td>盛り上げる、掘り下げる、なめらかにする、平らにする、でこぼこにする、細かくする（<a href="#brushes">下の表</a>）</td></tr>
+      <tr><td>ブラシの半径</td><td>4</td><td>0.1〜256</td><td>ブラシの届く半径（地形の中の長さ）</td></tr>
+      <tr><td>強さ</td><td>2</td><td>0〜100</td><td>1 回に変える量</td></tr>
+      <tr><td>減衰（ふちのなだらかさ）</td><td>0.5</td><td>0〜1</td><td>ブラシの外側へ向けて効果を弱める割合。大きいほど、ふちがなだらかになります</td></tr>
+      <tr><td>ブラシの見え方</td><td>外周のみ</td><td></td><td>外周のみ、減衰も表示、格子、等高線、格子と等高線</td></tr>
+      <tr><td>方向</td><td>真上へ（ローカル Y）</td><td></td><td>盛り上げ・掘り下げの向き。真上へ（ローカル Y）、面の向きへ（法線）</td></tr>
+      <tr><td>平らにする高さ</td><td>0</td><td></td><td>ブラシが <b>平らにする</b> のときだけ表示されます。そろえる高さ</td></tr>
+      <tr><td>でこぼこの細かさ</td><td>0.35</td><td>0.001〜100</td><td>ブラシが <b>でこぼこにする</b> のときだけ表示されます</td></tr>
+      <tr><td>目標の細かさ</td><td>1</td><td>0.01〜256</td><td>ブラシが <b>細かくする</b> のときだけ表示されます。三角形の辺をこの長さくらいまで細かく分けます</td></tr>
+    </table>
+    </div>
+    <div class="table-wrap" id="brushes">
+    <table>
+      <tr><th>ブラシ</th><th>働き</th></tr>
+      <tr><td>盛り上げる</td><td>地面を持ち上げます</td></tr>
+      <tr><td>掘り下げる</td><td>地面を下げます</td></tr>
+      <tr><td>なめらかにする</td><td>でこぼこをならします</td></tr>
+      <tr><td>平らにする</td><td><b>平らにする高さ</b> にそろえます</td></tr>
+      <tr><td>でこぼこにする</td><td>ランダムな凹凸を付けます</td></tr>
+      <tr><td>細かくする</td><td>なぞった場所の三角形を細かく分け、細かい形を作れるようにします</td></tr>
+    </table>
+    </div>
+    <p>操作は次のとおりです。行の下にも「左ドラッグ: 編集 | Ctrl/Alt+左クリック: 通常選択 | Esc: 地形編集を終了 | 値は地形内の座標」と表示されます。</p>
+    <ul>
+      <li>地形の上にマウスを乗せると、ブラシの範囲が橙色の円で表示され、中心に「R 半径 local」と表示されます。</li>
+      <li>左ボタンを押したままなぞると形が変わります。ボタンを離すまでが 1 回の操作で、<kbd>Ctrl</kbd>+<kbd>Z</kbd> でまとめて戻せます。当たり判定は、ボタンを離したときに作り直されます。</li>
+      <li><kbd>Ctrl</kbd> か <kbd>Alt</kbd> を押しながらクリックすると、編集せずに普通の選択ができます。</li>
+      <li><kbd>Esc</kbd> を押すと地形の編集を終わります（「Landscape 編集を終了しました」）。地形の GameObject の選択が外れたときも終わります。</li>
+    </ul>
+
+    <h3 id="topology">トポロジー（面を加工する）</h3>
+    <p><b>選択</b> で <b>面</b> か <b>辺をつなぐ</b> を選びます。</p>
+    <h4>面</h4>
+    <ol class="steps">
+      <li>シーンビューで地形の三角形をクリックします。マウスを乗せた三角形は水色、選んだ三角形は黄色の枠で表示され、「Landscape Face を選択しました」と表示されます。</li>
+      <li>行のボタンで加工します。三角形を選んでいないときは、ボタンは押せません。</li>
+    </ol>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ボタン</th><th>左の数値</th><th>働き</th></tr>
+      <tr><td>面を分割</td><td></td><td>選んだ三角形を小さな三角形に分けます</td></tr>
+      <tr><td>面を押し出す</td><td>押し出す距離（-100〜100）</td><td>選んだ三角形を押し出して段差を作ります</td></tr>
+      <tr><td>面の内側を分ける</td><td>内側の割合（0.01〜0.95）</td><td>選んだ三角形の内側に一回り小さな三角形を作ります</td></tr>
+      <tr><td>面を消して穴を開ける</td><td></td><td>選んだ三角形を消して、地形に穴を開けます</td></tr>
+      <tr><td>洞窟・トンネルを作る</td><td>トンネルの深さ（0.1〜500）、分割（1〜64）、奥の広さ（0.05〜4）</td><td>選んだ三角形から奥へ続くトンネルを作ります。<b>奥の広さ</b> は入口に対する奥の大きさの倍率です</td></tr>
+    </table>
+    </div>
+    <p>「穴開け・押し出し・トンネルでは、張り出しや同じ位置の床と天井も作れます」と表示されます。どの操作も <kbd>Ctrl</kbd>+<kbd>Z</kbd> で戻せます。うまくいかなかったときは「（操作名） に失敗しました」と表示されます。</p>
+    <h4>辺をつなぐ</h4>
+    <ol class="steps">
+      <li>地形にマウスを乗せると、いちばん近い辺が水色で表示されます。クリックすると 1 本目の辺として選ばれ、黄色になります。</li>
+      <li>離れた場所の辺をクリックすると 2 本目になり、赤っぽい橙色になります。</li>
+      <li><b>2本の辺をつなぐ</b> を押すと、2 本の辺の間を 2 枚の三角形でつなぎます。洞窟の入口、アーチ、継ぎ目を作るときに使います。</li>
+    </ol>
+    <p>2 本とも選んだあとにクリックすると、1 本目から選び直しになります。<b>辺の選択を消す</b> で選択を消せます。頂点を共有している 2 本の辺はつなげず、「辺をつなげませんでした。頂点を共有しない2本の辺を選んでください」と表示されます。</p>
+
+    <h2 id="landscape">Landscape</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>新規解像度</td><td><code>default_resolution</code></td><td>整数</td><td>33</td><td>2〜513</td><td>平面を作り直すときの、1 辺の頂点の数。今の地形は変わりません</td></tr>
+      <tr><td>作成元モデル</td><td><code>source_model_asset</code></td><td>アセット（モデル）</td><td>（空）</td><td></td><td>地形の形のもとにするモデル</td></tr>
+      <tr><td>新規セルサイズ</td><td><code>default_cell_size</code></td><td>小数</td><td>2</td><td>0.05〜100</td><td>平面を作り直すときの頂点の間隔</td></tr>
+    </table>
+    </div>
+    <p>インスペクターのプロパティの下には、次の表示とボタンがあります。</p>
+    <ul>
+      <li>「新規平面: 33 x 33 / セル 2.00」のように、作り直すときの大きさが表示されます。</li>
+      <li><b>設定値で平面を再生成</b>：「現在の Landscape geometry を新しい平面で置き換えます。Undo できます。」と確認が出ます。<b>再生成</b> を押すと、今の形を捨てて、上の値の平らな地面に作り直します（「Landscape を中央原点の平面として再生成しました」）。ゲームの実行中は「実行中は再生成できません」と表示されます。</li>
+      <li><b>作成元モデル</b> が空のときは「作成元モデルを選ぶと、その形で地形を作り直せます。」と表示されます。モデルを選ぶと <b>このモデルで地形を作り直す</b> ボタンが現れ、押すとモデルの形の地形になります。横に「今の形は消えます。骨付きモデルは使えません。」と表示されます。</li>
+      <li>同じ GameObject に Primitive Mesh Renderer があると、「注意: Primitive Mesh Renderer と Landscape が同じ GameObject にあります。」と表示されます。</li>
+      <li>シーンファイルから地形の形を読めなかったときは、赤で「Landscape データ読み込みエラー」と理由が表示されます。</li>
+    </ul>
+    <p>地形の形はシーンファイルの中に保存されます。</p>
+
+    <h2 id="renderer">Landscape Renderer</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>色</td><td><code>tint</code></td><td>色</td><td></td><td>地形の色。Landscape Ground で作ったときは緑色です</td></tr>
+      <tr><td>ベースカラーテクスチャ</td><td><code>base_color_texture</code></td><td>アセット（画像）</td><td></td><td>地形に貼る画像。空なら色だけで表示します</td></tr>
+      <tr><td>タイリング</td><td><code>uv_tiling</code></td><td>小数</td><td>0.0001〜10000</td><td>画像を繰り返す倍率</td></tr>
+      <tr><td>ロード範囲</td><td><code>load_range</code></td><td>小数</td><td>0〜1000000</td><td>カメラからこの距離より遠い部分を表示しません。0 なら距離に関係なく全部表示します（<a href="#chunks">下を見てください</a>）</td></tr>
+      <tr><td>表示</td><td><code>visible</code></td><td>オン・オフ</td><td></td><td>オフにすると表示しません</td></tr>
+      <tr><td>影を落とす</td><td><code>cast_shadow</code></td><td>オン・オフ</td><td></td><td>ほかの物に影を落とします</td></tr>
+      <tr><td>影を受ける</td><td><code>receive_shadow</code></td><td>オン・オフ</td><td></td><td>ほかの物の影を受けます</td></tr>
+      <tr><td>両面描画</td><td><code>double_sided</code></td><td>オン・オフ</td><td></td><td>面の裏側も表示します</td></tr>
+    </table>
+    </div>
+    <h3 id="chunks">ロード範囲と区画</h3>
+    <p>地形は、頂点がおよそ 2048 個ずつになるように、縦横の区画（最大 32 × 32）に分けて表示されます。<b>ロード範囲</b> は区画ごとに判定し、区画の端がカメラから範囲より遠いと、その区画を表示しません。一度表示した区画は、範囲より少し遠くなるまで表示を続けます。</p>
+    <div class="note"><strong>小さな地形は 1 区画です</strong>Landscape Ground で作った 33 × 33 の地面は頂点が 1089 個なので、全体で 1 区画です。この大きさでは、<b>ロード範囲</b> を設定すると、地面全体が一度に表示されたり消えたりします。</div>
+
+    <h2 id="collider">Landscape Collider</h2>
+    <p><a href="physics.html#collider-common">Collider の共通項目</a>（中心オフセット、レイヤー、衝突する相手、トリガー、形状を表示）に加えて、次の項目があります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>両面に当たる</td><td><code>double_sided</code></td><td>オン・オフ</td><td>オン</td><td></td><td>面の裏側にも当たるかどうか</td></tr>
+      <tr><td>衝突セルサイズ</td><td><code>collision_cell_size</code></td><td>小数</td><td>4</td><td>0.05〜128</td><td>当たりを速く調べるための区切りの大きさ</td></tr>
+      <tr><td>三角形を表示</td><td><code>debug_draw_wireframe</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>当たり判定の三角形を線で表示します（「衝突の診断」ウィンドウの <b>Mesh の三角形を描く</b> もオンにします）</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li>地形の形を変えると、当たり判定も自動で作り直されます。ブラシでなぞっている間は元の形のままで、ボタンを離したときに作り直されます。</li>
+      <li>Rigidbody を付けて動的にすると、キネマティックとして扱われます（<a href="physics.html#shape">Rigidbody の形</a>）。</li>
+      <li>トリガーにしたときは、三角形ではなく、地形を囲む箱で判定します（<a href="physics.html#mesh">Mesh Collider</a> と同じ）。</li>
+    </ul>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>丘のある地面を作る</h3>
+    <ol>
+      <li>階層パネルの <b>+ 作成</b> &gt; <b>Landscape Ground</b> を選びます。「Ground」ができて選ばれます。</li>
+      <li>シーンビュー上部の編集用の行で <b>地形を編集</b> にチェックを付けます。</li>
+      <li><b>ブラシ</b> を 盛り上げる、<b>ブラシの半径</b> を 10、<b>強さ</b> を 2 にして、地形の上を左ドラッグでなぞります。</li>
+      <li>でこぼこが強すぎたら、<b>ブラシ</b> を なめらかにする にしてなぞります。</li>
+      <li>終わったら Esc で地形の編集をやめます。ボタンを離すごとに Ctrl+Z で戻せます。</li>
+    </ol>
+    <h3>地面に画像を貼る</h3>
+    <ol>
+      <li>Ground の Landscape Renderer の <b>ベースカラーテクスチャ</b> に、芝などの画像を指定します。</li>
+      <li>模様が大きすぎるときは、<b>タイリング</b> を 8 などにして、画像を細かく繰り返します。</li>
+    </ol>
+    <h3>地面にトンネルを掘る</h3>
+    <ol>
+      <li>編集用の行の <b>選択</b> で <b>面</b> を選びます。</li>
+      <li>トンネルの入口にしたい三角形をクリックします（黄色の枠になります）。</li>
+      <li><b>洞窟・トンネルを作る</b> の左の数値で深さを決め、ボタンを押します。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="physics.html">物理（Rigidbody と Collider）</a></li>
+      <li><a href="../editor/scene-view.html">シーンビューとカメラ操作</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

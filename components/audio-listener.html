@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Audio Listener - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Audio</div>
+    <h1>Audio Listener</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>音を聞く位置（耳）を決めるコンポーネントです。付けた GameObject の位置と向きが、3D の音の聞こえ方の基準になります。ふつうはカメラかプレイヤーの GameObject に付けます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>3D の音を、プレイヤーやカメラの位置で聞いているように鳴らしたいとき</li>
+      <li>音の左右や遠近の聞こえ方がおかしいときに、耳の位置を確かめたいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Audio &gt; Audio Listener</td></tr>
+      <tr><td>必須・推奨</td><td>なし</td></tr>
+      <tr><td>使う Transform</td><td>位置と向き（Z 軸が前、Y 軸が上）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td>-100〜100</td><td>Audio Listener が複数あるときに使います</td></tr>
+    </table>
+    </div>
+
+    <h2 id="select">Audio Listener が複数あるとき</h2>
+    <p>シーンの有効な Audio Listener のうち、<b>優先度</b> がいちばん大きい 1 つだけが使われます。優先度が同じなら、シーンの中で先にあるものです。</p>
+
+    <h2 id="effect">無いとき・あるときの違い</h2>
+    <ul>
+      <li>有効な Audio Listener が 1 つも無いと、<a href="audio-source.html">Audio Source</a> の <b>Spatial</b> を 3D にしていても、距離や左右による聞こえ方の変化が付きません。</li>
+      <li>ある場合は、3D の Audio Source の音量が距離に応じて小さくなり、Audio Listener から見て右にある音は右から、左にある音は左から聞こえます（左右に振り分けるのはモノラルの WAV だけです）。</li>
+    </ul>
+
+    <h2 id="usage">使い方</h2>
+    <ol class="steps">
+      <li>ゲーム中のカメラ（またはプレイヤー）の GameObject を選びます。</li>
+      <li><b>コンポーネントを追加 &gt; Audio &gt; Audio Listener</b> を付けます。</li>
+      <li>音を鳴らす GameObject の <a href="audio-source.html">Audio Source</a> の <b>Spatial</b> を 3D にすると、この位置から聞いた音になります。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="audio-source.html">Audio Source</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

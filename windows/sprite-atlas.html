@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Sprite Atlas Editor - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターのウィンドウ</div>
+    <h1>Sprite Atlas Editor</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>1 枚の画像の中に並んだ部品（アイコン、ボタンの絵、キャラクターのパーツなど）に、名前付きの範囲（<b>Region</b>）を付けるウィンドウです。UI Image は Region の名前を指定して、その部分だけを表示できます。</p>
+    <p>内容はスプライトアトラス アセット（<code>.replayatlas</code>）に保存されます。保存するときに画像が圧縮されてアセットの中に入るので、元の画像ファイルが無くなってもアトラスは表示できます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>1 枚の画像にまとめて描いたアイコンやボタンの絵を、部品ごとに UI Image で表示したいとき</li>
+      <li>数字や表情のように、同じ場所に出す絵を切り替えたいとき（モーションで Atlas Region を差し替えます）</li>
+      <li>四角ではない輪郭で、絵を切り抜いて表示したいとき（自由形状）</li>
+    </ul>
+
+    <h2 id="open">作る・開く</h2>
+    <ol>
+      <li><b>プロジェクト</b> パネルで右クリックし、<b>Create</b> &gt; <b>UI / Presentation</b> &gt; <b>Sprite Atlas</b> を選びます。</li>
+      <li>できた <code>.replayatlas</code> をダブルクリックすると、<b>Sprite Atlas Editor</b> が開きます。</li>
+      <li>画像を設定します。次のどちらかです。
+        <ul>
+          <li>プロジェクトパネルで画像を選ぶと、ウィンドウ上部に <b>選択画像をAtlasに設定</b> ボタンが出るので押す。</li>
+          <li>プロジェクトパネルから画像を、ウィンドウの「Image GUID: …」の行へドラッグ＆ドロップする。</li>
+        </ul>
+      </li>
+    </ol>
+    <p>アセットを開いていないときは「Sprite Atlas を Project Browser から開いてください。」、画像が無いときは「Atlas画像を設定してください。」と表示されます。</p>
+
+    <h2 id="layout">ウィンドウの並び</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>場所</th><th>表示・操作</th></tr>
+      <tr><td>上部の 1 行</td><td><b>保存</b>、アセット名（未保存の変更があると「 *」）、<b>Zoom</b>（0.1〜4 倍）、<b>矩形作成: ON / OFF</b>、<b>Pixel Snap</b>、<b>選択画像をAtlasに設定</b>（画像を選んでいるときだけ）</td></tr>
+      <tr><td>その下</td><td>「Image GUID: 32 文字」（未設定なら「&lt;未指定&gt;」）。ここへ画像をドロップできます</td></tr>
+      <tr><td>左の大きな欄</td><td>画像と Region の枠。カーソルを乗せると「Pixel: x, y / UV: u, v」と操作の説明が出ます</td></tr>
+      <tr><td>右の欄（幅 300）</td><td>「Regions: 数」、<b>+ Region</b>、<b>削除</b>、Region の一覧、選んだ Region の項目、状態の文</td></tr>
+    </table>
+    </div>
+    <h3 id="colors">枠の色</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>色</th><th>意味</th></tr>
+      <tr><td>水色</td><td>選んでいない Region</td></tr>
+      <tr><td>黄色</td><td>選んでいる Region。四角の Region は 8 つの白いハンドル、自由形状は頂点の点が出ます</td></tr>
+      <tr><td>赤</td><td>選んでいる Region が、ほかの Region の範囲と重なっている</td></tr>
+    </table>
+    </div>
+    <p>各枠の左上に名前、中に十字で Pivot の位置が表示されます。</p>
+
+    <h2 id="operations">操作</h2>
+    <h3 id="view">画像の見方</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>操作</th><th>結果</th></tr>
+      <tr><td>マウスホイール</td><td>拡大・縮小（0.1〜8 倍）</td></tr>
+      <tr><td>中ボタンでドラッグ、または Space を押しながら左ドラッグ</td><td>表示位置を動かす</td></tr>
+    </table>
+    </div>
+
+    <h3 id="rect">四角の Region</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>操作</th><th>結果</th></tr>
+      <tr><td><b>矩形作成: ON</b> にして、画像の上を左ドラッグ</td><td>その範囲に Region を作ります（画面上のドラッグの幅か高さが 2 ピクセルより小さいと作りません。拡大表示しているときは、画像の 2 ピクセルより小さい範囲も作れます）。名前は「Region番号」</td></tr>
+      <tr><td><b>+ Region</b></td><td>画像の左上寄り（左から 10%、上から 10%、幅と高さ 25%）に Region を作ります</td></tr>
+      <tr><td>Region の中をクリック</td><td>選びます（重なっているときは、あとから作ったもの）。そのままドラッグすると動かします</td></tr>
+      <tr><td>白いハンドルをドラッグ</td><td>大きさを変えます。Shift を押しながらだと縦横の比を保ちます</td></tr>
+      <tr><td>Ctrl を押しながら Region の中をクリック</td><td>その位置を Pivot にします</td></tr>
+      <tr><td>Delete または Backspace（ウィンドウを選んでいるとき）、<b>削除</b></td><td>選んでいる Region を消します</td></tr>
+    </table>
+    </div>
+    <p><b>Pixel Snap</b> をオンにすると、作る・動かす・大きさを変えるときに、画像のピクセルの境目にそろえます。Region は画像の外へは出ません。</p>
+
+    <h3 id="freeform">自由形状の Region</h3>
+    <p>右の欄で <b>自由形状</b> にチェックを入れると、四角の 4 つの角が頂点になり、形を自由に変えられます。UI Image で表示すると、この形の外側は切り取られます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>操作</th><th>結果</th></tr>
+      <tr><td>頂点をドラッグ</td><td>頂点を動かします</td></tr>
+      <tr><td>辺の近くをクリック</td><td>そこに頂点を足し、そのままドラッグできます</td></tr>
+      <tr><td>形の内側をドラッグ</td><td>形ごと動かします</td></tr>
+      <tr><td>頂点を選んで Delete または Backspace</td><td>頂点を消します。3 つより少なくはできません（「自由形状は3頂点未満にできません」）</td></tr>
+      <tr><td><b>自由形状</b> のチェックを外す</td><td>四角に戻します（範囲は形を囲む四角）</td></tr>
+    </table>
+    </div>
+
+    <h3 id="undo">元に戻す</h3>
+    <p>ウィンドウを選んでいるときの元に戻す・やり直す（Ctrl+Z など）は、アトラスの編集に対して働きます。128 回まで戻せます。</p>
+
+    <h2 id="region-items">Region の項目</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内容</th><th>UI での表示に使われるか</th></tr>
+      <tr><td>Name</td><td>名前。UI Image から指定するときに使います</td><td>使われる</td></tr>
+      <tr><td>自由形状</td><td>自由な形にするか</td><td>使われる（形の外を切り取る）</td></tr>
+      <tr><td>UV Rect</td><td>範囲。左、上、幅、高さを、画像全体を 1 とした割合で表します。自由形状のときは形を囲む四角で、直接は変えられません（「頂点: 数」を表示）</td><td>使われる</td></tr>
+      <tr><td>Pivot</td><td>基準点。Region の左上を (0, 0)、右下を (1, 1) とした位置。既定は (0.5, 0.5)</td><td>このビルドでは使われません</td></tr>
+      <tr><td>Original Size</td><td>元の大きさ（ピクセル）。キャンバスで範囲を作ったり動かしたりしたときは自動で更新されます。<b>UV Rect</b> の欄を直接変えたときは更新されません</td><td>このビルドでは使われません</td></tr>
+      <tr><td>Trim Offset</td><td>切り詰めたときのずれ（ピクセル）</td><td>このビルドでは使われません</td></tr>
+      <tr><td>Rotated</td><td>画像の中で 90 度回して置いてあるか</td><td>使われる</td></tr>
+    </table>
+    </div>
+
+    <h2 id="save">保存</h2>
+    <p><b>保存</b> を押すと、設定した画像を圧縮（DDS）して、アセットの中に入れてから保存します。</p>
+    <ul>
+      <li>元の画像が <code>.dds</code> のときは、圧縮せずにそのまま入れます。元の PNG などが無くても、同じ名前の <code>.dds</code> が隣にあればそれを使います。</li>
+      <li>元の画像が見つからなくても、すでに入っている画像があれば、それを使い続けます。</li>
+      <li>どちらも無いと保存できず、「Atlas画像またはDDSが見つかりません」と表示されます。圧縮に失敗すると「DDS埋め込み作成失敗: 理由」と表示されます。</li>
+      <li>画像を設定していないアトラスは、画像なしで保存されます。</li>
+    </ul>
+
+    <h2 id="use">UI Image で使う</h2>
+    <p>UI Image の <code>atlas</code>（内部名）にこのアセットを、<code>atlas_region</code> に Region の名前を設定すると、その Region の部分が表示されます。UI Image の <code>uv_offset</code> と <code>uv_scale</code> は、Region の範囲の中でさらにずらす・拡大する値として働きます。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>アイコンを 1 つずつ表示する</h3>
+    <ol>
+      <li>プロジェクト パネルで右クリックし、<b>Create</b> &gt; <b>UI / Presentation</b> &gt; <b>Sprite Atlas</b> で作ります。</li>
+      <li>できたアセットをダブルクリックして開きます。</li>
+      <li>プロジェクト パネルでアイコンをまとめた画像を選び、<b>選択画像をAtlasに設定</b> を押します。</li>
+      <li><b>Pixel Snap</b> と <b>矩形作成: ON</b> にし、1 つ目のアイコンの範囲をドラッグで囲みます。</li>
+      <li>右の欄の <b>Name</b> を「Heart」のような分かりやすい名前にします。ほかのアイコンも同じように囲みます。</li>
+      <li><b>保存</b> を押します。</li>
+      <li>アイコンを出したい UI Image を選び、インスペクターの <b>Sprite Atlas</b> にこのアトラス、<b>Atlas Region</b> に「Heart」を入れます。</li>
+    </ol>
+    <h3>表示する絵を時間で切り替える</h3>
+    <ol>
+      <li>上の手順で、切り替えたい絵ごとに Region を作っておきます（「Face_Normal」「Face_Smile」など）。</li>
+      <li><a href="motion-workspace.html">Motion Workspace</a> で UI Image を選び、<b>選択からトラックを追加</b> で <b>Atlas Region</b> を選びます（「［段階］」の項目です）。</li>
+      <li>キーごとに <b>値</b> へ Region の名前を入れます。キーの時刻で絵が切り替わります。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../data/index.html">データ形式の一覧</a></li>
+      <li><a href="../editor/project.html">プロジェクトパネル</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

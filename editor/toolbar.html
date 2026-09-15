@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>ツールバーと実行状態の表示 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
+    <h1>ツールバーと実行状態の表示</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>メニューバーと同じいちばん上の行の、メニューの右側に並ぶボタン群です。オブジェクトを動かす道具（ギズモ）の切り替えと、ゲームの実行・停止を行います。右端には、今エディターが編集中なのか実行中なのかを示す文字が出ます。</p>
+
+    <figure>
+      <img src="../images/editor/toolbar.png" alt="エディター最上段。メニューの右に Move、Rotate、Scale、Snap、World、Pivot、補助View、緑の実行ボタン、Search 欄、編集中の表示が並ぶ">
+      <figcaption>最上段（編集中）。左端の File〜Help はメニューバーです。</figcaption>
+    </figure>
+
+    <div class="note"><strong>画像について</strong>画像は見た目プリセットを変えた状態で撮影しています。色や大きさは <b>Window &gt; UI の見た目</b> によって変わります。また、この画像では実行ボタンの「▶」がフォントに無いため「?」と表示されています。</div>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>選んだ物を、動かす・回す・大きさを変える道具を切り替えたいとき（Move / Rotate / Scale）</li>
+      <li>決まった刻みで、きっちり動かしたり回したりしたいとき（Snap）</li>
+      <li>傾いた物を、その物の向きに沿って動かしたいとき（Local）</li>
+      <li>ゲームを実行・一時停止・停止したいとき</li>
+      <li>メニューのどこにあるか分からない機能を、名前で探したいとき（Search...）</li>
+    </ul>
+
+    <h2>並び順</h2>
+    <p>左から次の順に並びます。項目 7〜9 は条件を満たしたときだけ表示されます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>順</th><th>表示</th><th>種類</th><th>表示される条件</th></tr>
+      <tr><td>1</td><td>Move</td><td>ボタン</td><td>常に</td></tr>
+      <tr><td>2</td><td>Rotate</td><td>ボタン</td><td>常に</td></tr>
+      <tr><td>3</td><td>Scale</td><td>ボタン</td><td>常に</td></tr>
+      <tr><td>4</td><td>□ Snap</td><td>チェックボックス</td><td>常に</td></tr>
+      <tr><td>5</td><td>World または Local</td><td>ボタン</td><td>常に</td></tr>
+      <tr><td>6</td><td>Pivot または Pivot:ON</td><td>ボタン</td><td>常に</td></tr>
+      <tr><td>7〜9</td><td>面Snap、頂点Snap、辺Snap</td><td>ボタン</td><td>Pivot:ON で、選択中の GameObject に Pivot コンポーネントがあるとき</td></tr>
+      <tr><td>10</td><td>□ 補助View</td><td>チェックボックス</td><td>常に</td></tr>
+      <tr><td>11</td><td>▶ 実行 (F5)</td><td>緑のボタン</td><td>実行していないとき</td></tr>
+      <tr><td>11</td><td>… 読み込み中</td><td>緑のボタン（押しても何も起きない）</td><td>実行の準備をしている間</td></tr>
+      <tr><td>11〜12</td><td>❚❚ 一時停止（または ▶ 再開）と ■ 停止</td><td>黄色と赤のボタン</td><td>実行中</td></tr>
+      <tr><td>13</td><td>Search...</td><td>入力欄</td><td>この行の残りの幅が 280 ピクセルより広いとき</td></tr>
+    </table>
+    </div>
+    <p>チェックボックスは、四角が左、名前が右です。画像で「Snap」や「補助View」の左にある空の四角がチェックボックスで、クリックするとチェックが付きます。</p>
+
+    <h2 id="gizmo">Move・Rotate・Scale（ギズモの切り替え）</h2>
+    <p>シーンビューで選択したオブジェクトに表示される操作用の取っ手（ギズモ）の種類を切り替えます。今選ばれているボタンは、押したときの色のままになります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ボタン</th><th>既定のショートカット</th><th>ギズモの形</th><th>操作</th></tr>
+      <tr><td>Move</td><td><kbd>Shift</kbd>+<kbd>W</kbd></td><td>軸の線の先端が三角の矢印。軸の間に半透明の四角（平面）、中心に丸</td><td>軸をドラッグすると、その方向へ動きます。半透明の四角をドラッグすると、その平面の中で動きます。</td></tr>
+      <tr><td>Rotate</td><td><kbd>Shift</kbd>+<kbd>E</kbd></td><td>軸のまわりの円と、画面に向いた外側の円</td><td>円周をつかんで、円に沿って引くと回ります。</td></tr>
+      <tr><td>Scale</td><td><kbd>Shift</kbd>+<kbd>R</kbd></td><td>軸の線の先端が丸。中心にも丸</td><td>軸をドラッグすると、その軸の方向だけ伸び縮みします。</td></tr>
+    </table>
+    </div>
+    <p>軸の色は X が赤、Y が緑、Z が青です。マウスを乗せている部分はオレンジになります。ボタンにマウスを乗せたときの説明には「先端が丸」（Move）「先端が四角」（Scale）と出ますが、実際に描かれる形は上の表のとおりです。</p>
+    <p>どのギズモも、ドラッグしている途中で <kbd>Esc</kbd> を押すと取り消せます。</p>
+
+    <h2 id="snap">Snap</h2>
+    <p>チェックを付けると、ギズモでドラッグした量が一定の刻みに丸められます。移動・回転・拡縮のどれにも効きます。</p>
+    <p>回転の刻みは、シーンビュー上部の <b>回転刻み</b>（1度、5度、10度、15度、30度、45度、90度）で選びます。Snap にチェックが無いときは、この選択欄は薄く表示され、選べません。詳しくは<a href="scene-view.html#header">シーンビュー</a>を見てください。</p>
+
+    <h2 id="space">World と Local</h2>
+    <p>ギズモの軸の向きを切り替えるボタンです。押すたびに表示が <b>World</b> と <b>Local</b> で入れ替わります。表示されている名前が、今の状態です。</p>
+    <ul>
+      <li><b>World</b>：ワールド座標の軸に固定します。オブジェクトが傾いていても、軸は常にシーン全体の上下・左右・前後を向きます。</li>
+      <li><b>Local</b>：選択しているオブジェクトの回転に合わせて軸も傾きます。傾いたオブジェクトを「そのオブジェクトにとっての前」へ動かしたいときに使います。</li>
+    </ul>
+
+    <h2 id="pivot">Pivot</h2>
+    <p>回転や拡縮の中心になる基準点（Pivot）を編集するためのボタンです。</p>
+    <div class="warning"><strong>Pivot コンポーネントが必要です</strong>選択中の GameObject に <b>Pivot</b> コンポーネントが付いていないと、押しても Pivot:ON になりません。このときマウスを乗せると「選択オブジェクトへ Pivot Component を追加すると使える。」と表示されます。</div>
+    <p>Pivot コンポーネントがある状態で押すと、表示が <b>Pivot:ON</b> になり、右に次の 3 つのボタンが増えます。Pivot:ON の間は、Transform（位置・回転・拡大率）を動かさずに、基準点だけを動かせます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ボタン</th><th>働き</th></tr>
+      <tr><td>面Snap</td><td>基準点を、選択しているメッシュの面に吸着させます。</td></tr>
+      <tr><td>頂点Snap</td><td>基準点を、選択しているメッシュの頂点に吸着させます。</td></tr>
+      <tr><td>辺Snap</td><td>基準点を、メッシュの当たり判定用の三角形の辺に正確に吸着させます。</td></tr>
+    </table>
+    </div>
+    <p>もう一度押すと <b>Pivot</b> に戻り、3 つのボタンは消えます。</p>
+
+    <h2 id="aux-view">補助View</h2>
+    <p>マウスを乗せると「Scene View の右側へ Front / Side / Top を重ねて表示する。」と説明が出るチェックボックスです。</p>
+    <div class="warning"><strong>この版では表示は変わりません</strong>チェックの状態は記録されますが、それを使って画面を描く処理がまだ無いため、チェックを付けてもシーンビューには何も増えません。正面・側面・上面から見たいときは、<a href="scene-view.html#camera">テンキーでの向きそろえ</a>を使います。</div>
+
+    <h2 id="play">実行ボタン</h2>
+    <p>ほかのボタンと区別しやすいように、区切りの右に色付きで置かれています。状態によって次のように変わります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>状態</th><th>表示</th><th>押したとき</th></tr>
+      <tr><td>編集中</td><td>緑の <b>▶ 実行 (F5)</b></td><td>ゲームを実行します。実行用のコピーが動くので、編集中のシーンは変わりません。C# スクリプトの Update は、実行してから初めて動きます。</td></tr>
+      <tr><td>実行の準備中</td><td>緑の <b>… 読み込み中</b></td><td>何も起きません。準備の進み具合は画面中央に表示されます。</td></tr>
+      <tr><td>実行中</td><td>黄色の <b>❚❚ 一時停止</b></td><td>ゲームを一時停止します。編集の状態には戻りません。</td></tr>
+      <tr><td>一時停止中</td><td>黄色の <b>▶ 再開</b></td><td>一時停止したところから続けます。</td></tr>
+      <tr><td>実行中・一時停止中</td><td>赤の <b>■ 停止</b></td><td>編集の状態に戻ります。実行中に動いた位置や、実行中に生まれた物はすべて捨てられます。</td></tr>
+    </table>
+    </div>
+    <p>ボタンの (F5) の部分は、<b>Window &gt; キー割り当て</b> で「実行」に割り当てたキーが表示されます。割り当てを消すと (F5) の部分も消えます。</p>
+
+    <h2 id="search">Search...（機能検索）</h2>
+    <p>エディターの機能を名前で探して呼び出す入力欄です。文字を入れると、欄の下に <b>機能検索結果</b> の一覧が出ます。項目をクリックすると、その機能が実行され、入力欄は空に戻ります。</p>
+    <p>探せる項目と、ヒットするキーワードの例は次のとおりです。英字の大文字と小文字は区別しません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示される項目</th><th>キーワードの例</th><th>選んだとき</th></tr>
+      <tr><td>ワールドを編集</td><td>world、ワールド、背景</td><td>インスペクターにワールドの設定を出します。</td></tr>
+      <tr><td>カメラを編集</td><td>camera、カメラ、視点</td><td>インスペクターにカメラの設定を出します。</td></tr>
+      <tr><td>操作対象 GameObject を選択</td><td>player、プレイヤー、操作、キャラクター</td><td>操作対象の GameObject を選択します。設定されていないときは「操作対象 GameObject が設定されていません」と表示されます。</td></tr>
+      <tr><td>描画設定を開く</td><td>render、描画、shader</td><td>インスペクターに描画設定を出します。</td></tr>
+      <tr><td>ポスト処理を開く</td><td>post、ポスト、bloom、fxaa</td><td>インスペクターにポスト処理の設定を出します。</td></tr>
+      <tr><td>Editor入力キャプチャを切り替える</td><td>input、入力、キャプチャ</td><td>エディターの入力キャプチャを切り替えます。</td></tr>
+      <tr><td>配置Workspaceへ、モデリングWorkspaceへ、アニメーションWorkspaceへ、レンダリングWorkspaceへ、UI Workspaceへ、Motion Workspaceへ</td><td>workspace、配置、モデリング、アニメーション、レンダリング、ui、motion、タイムライン</td><td>その Workspace に切り替えます。</td></tr>
+      <tr><td>シェーダー調整テーブルへ</td><td>shader、material、シェーダー、材質</td><td>シェーダー調整の Workspace に切り替えます。</td></tr>
+      <tr><td>全画面表示を切り替える</td><td>fullscreen、全画面</td><td>ウィンドウの全画面表示を切り替えます。</td></tr>
+    </table>
+    </div>
+    <p>エディターのウィンドウが狭く、この行に余裕が無いときは Search... 欄そのものが表示されません。</p>
+
+    <h2 id="banner">実行状態の表示</h2>
+    <p>ツールバーの右に、今の状態が色付きの文字で表示されます。1 行目が状態、続く薄い文字が説明です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>状態</th><th>表示（色）</th><th>続く説明</th></tr>
+      <tr><td>編集中</td><td>■ 編集中（停止）（黄）</td><td>「物理・入力・C# スクリプトはすべて停止中」「動かすには上の緑の「▶ 実行」ボタン、または F5」</td></tr>
+      <tr><td>実行中</td><td>▶ 実行中（緑）</td><td>「実行シーンで動作中 / 入力有効 / C# の Update が回っています」</td></tr>
+      <tr><td>一時停止中</td><td>❚❚ 一時停止中（黄）</td><td>「実行シーンを一時停止中」</td></tr>
+      <tr><td>編集シーンをそのまま実行しているとき</td><td>▶ 実行中（編集シーン）（水色）</td><td>「編集シーンをそのまま実行中 / 入力有効」</td></tr>
+    </table>
+    </div>
+    <p>「編集中」の説明に出る「F5」は、「実行」に割り当てたキーです。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>物を 90 度ずつ回す</h3>
+    <ol>
+      <li>回したい物を選び、<b>Rotate</b>（Shift+E）を押します。</li>
+      <li><b>Snap</b> にチェックを付け、シーンビュー上部の <b>回転刻み</b> を 90度 にします。</li>
+      <li>回したい軸の円をドラッグします。90 度ごとに止まります。</li>
+    </ol>
+    <h3>傾いた板の上に沿って物を動かす</h3>
+    <ol>
+      <li>板と同じ向きに傾けた物を選びます。</li>
+      <li><b>World</b> のボタンを押して <b>Local</b> に切り替え、<b>Move</b>（Shift+W）にします。</li>
+      <li>軸が物の傾きに合わせて表示されるので、その軸をドラッグして動かします。</li>
+    </ol>
+    <h3>ワールドの設定を名前で探して開く</h3>
+    <ol>
+      <li><b>Search...</b> に <code>world</code> と入れます。</li>
+      <li>一覧の <b>ワールドを編集</b> を選ぶと、インスペクターにワールドの設定が出ます。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="menu-bar.html">メニューバー</a></li>
+      <li><a href="scene-view.html">シーンビューとカメラ操作</a></li>
+      <li><a href="shortcuts.html">ショートカット一覧</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

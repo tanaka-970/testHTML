@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Pivot - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Core</div>
+    <h1>Pivot</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>エディターのギズモで回転・拡縮するときの中心（基準点）を決めるコンポーネントです。基準点を変えても、GameObject の位置（Transform）や見た目は変わりません。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>扉を蝶番の位置で回すときのように、ギズモで回す・拡縮する中心を物の端にしたいとき</li>
+      <li>基準点を、メッシュの頂点・辺・面にぴったり合わせたいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Core &gt; Pivot</td></tr>
+      <tr><td>必須・推奨</td><td>なし</td></tr>
+      <tr><td>働く場面</td><td>エディターのギズモ操作だけ。ゲームの実行中には使われません</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>基準点の決め方</td><td><code>mode</code></td><td>選択</td><td>自分の原点</td><td>基準点をどう決めるか。次の表を見てください。</td></tr>
+      <tr><td>基準点</td><td><code>local_point</code></td><td>X Y Z</td><td>0, 0, 0</td><td>「ローカル座標」「ワールド座標」では基準点の座標、「境界の面」ではどの面を選ぶかの向きとして使います。</td></tr>
+      <tr><td>対象オブジェクト</td><td><code>target</code></td><td>GameObject の参照</td><td>（未設定）</td><td>「別オブジェクト」のときに基準点にする GameObject。</td></tr>
+    </table>
+    </div>
+
+    <h3 id="modes">基準点の決め方</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>選択肢</th><th>基準点</th></tr>
+      <tr><td>自分の原点</td><td>GameObject の位置そのもの（Pivot が無いときと同じ）。</td></tr>
+      <tr><td>境界の中心</td><td>形の外枠（境界の箱）の中心。</td></tr>
+      <tr><td>境界の面</td><td>形の外枠の、ある面の中心。<b>基準点</b> の X・Y・Z のうち、数値の大きさ（符号を除く）がいちばん大きい軸の方向の面を使います。たとえば基準点が 0, -1, 0 なら底の面、0, 1, 0 なら上の面になります。</td></tr>
+      <tr><td>ローカル座標</td><td><b>基準点</b> を GameObject から見た座標として使います。GameObject を動かすと基準点も一緒に動きます。</td></tr>
+      <tr><td>ワールド座標</td><td><b>基準点</b> をシーン全体の座標として使います。GameObject を動かしても基準点は動きません。</td></tr>
+      <tr><td>別オブジェクト</td><td><b>対象オブジェクト</b> の位置。対象が未設定、または見つからないときは自分の原点になります。</td></tr>
+    </table>
+    </div>
+    <div class="warning"><strong>「境界の中心」「境界の面」には当たり判定が必要です</strong>形の外枠は、同じ GameObject の <b>Mesh Collider</b> または <b>Landscape Collider</b> から求めます。どちらも無い（または当たり判定のデータがまだできていない）ときは、自分の原点が基準点になります。</div>
+
+    <h2 id="usage">使い方</h2>
+    <h3>決め方を選んで使う</h3>
+    <ol class="steps">
+      <li>基準点を変えたい GameObject を選び、<b>コンポーネントを追加 &gt; Core &gt; Pivot</b> で付けます。</li>
+      <li><b>基準点の決め方</b> を選び、必要なら <b>基準点</b> や <b>対象オブジェクト</b> を設定します。</li>
+      <li>ツールバーの <b>Rotate</b> か <b>Scale</b> でギズモを動かすと、選んだ基準点を中心に回転・拡縮します。</li>
+    </ol>
+
+    <h3>メッシュの頂点・辺・面に吸着させる</h3>
+    <ol class="steps">
+      <li>Pivot と Mesh Collider（または Landscape Collider）が付いた GameObject を選びます。</li>
+      <li>ツールバーの <b>Pivot</b> を押して <b>Pivot:ON</b> にします。右に <b>面Snap</b>、<b>頂点Snap</b>、<b>辺Snap</b> が出ます。</li>
+      <li>吸着させたいボタンを押します。探し始める点にいちばん近い面・頂点・辺の上に基準点が移り、「Pivotを面へSnapしました」などと表示されます。探し始める点は、決め方が「ワールド座標」「ローカル座標」「境界の面」なら <b>基準点</b> の値、「自分の原点」「境界の中心」「別オブジェクト」なら形の外枠の中心です。</li>
+    </ol>
+    <p>吸着させると、決め方が「ワールド座標」のときはそのまま、それ以外のときは「ローカル座標」に切り替わり、吸着した点が <b>基準点</b> に入ります。この操作は <kbd>Ctrl</kbd>+<kbd>Z</kbd> で戻せます。</p>
+    <p>Pivot:ON の間は、Transform を動かさずに基準点だけを編集できます。</p>
+
+    <h2 id="limits">注意</h2>
+    <ul>
+      <li>移動（Move）のギズモには基準点は関係しません。</li>
+      <li>ゲームの実行中の回転や拡縮、モーション、スクリプトからの回転には使われません。</li>
+    </ul>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../editor/toolbar.html#pivot">ツールバー：Pivot</a></li>
+      <li><a href="index.html">コンポーネント一覧</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

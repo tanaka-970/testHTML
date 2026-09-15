@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Camera Target - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Camera</div>
+    <h1>Camera Target</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>カメラに追いかけてもらう目印です。プレイヤーキャラクターなど、カメラで映し続けたい GameObject に付けます。このコンポーネント自身はカメラを動かしません。カメラを動かすのは <a href="follow-target.html">Follow Target</a> です。</p>
+
+    <div class="note"><strong>Camera コンポーネントが無いシーンでは</strong>シーンに有効な <a href="camera.html">Camera</a> が 1 つも無い古いシーンでは、Camera Target がゲーム用の古いカメラを直接動かします。このときの距離（6.5）・高さ（2.25）・追いかける速さなどは固定で、<a href="follow-target.html">Follow Target</a> の設定は使われません。</div>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>カメラにプレイヤーを追いかけて映させたいとき（Follow Target と組み合わせます）</li>
+      <li>追いかける相手を、キャラクターからほかの物へ切り替えたいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Camera &gt; Camera Target</td></tr>
+      <tr><td>必須・推奨</td><td>なし</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>追従基準のオフセット</td><td><code>target_offset</code></td><td>X Y Z</td><td>0, 0, 0</td><td></td><td>追いかける点そのものをずらします。モデルの原点が足元にあるときなどに使います</td></tr>
+      <tr><td>注視点オフセット</td><td><code>look_at_offset</code></td><td>X Y Z</td><td>0, 1, 0</td><td></td><td>追いかける点はそのままで、カメラが見る点だけをずらします。既定では 1 だけ上を見ます</td></tr>
+      <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td>-100〜100</td><td>Camera Target が複数あるときに使います</td></tr>
+    </table>
+    </div>
+
+    <h2 id="select">どの Camera Target が追いかけられるか</h2>
+    <ol>
+      <li>ゲームの<b>操作対象</b>（階層パネルで [Controlled] と表示される GameObject）に有効な Camera Target が付いていれば、それが使われます。</li>
+      <li>そうでなければ、シーンの有効な Camera Target のうち <b>優先度</b> がいちばん大きいものが使われます。同じなら、シーンの中で先にあるものです。</li>
+    </ol>
+
+    <h2 id="usage">使い方</h2>
+    <p><a href="follow-target.html#usage">Follow Target の使い方</a>を見てください。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="follow-target.html">Follow Target</a></li>
+      <li><a href="camera.html">Camera</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

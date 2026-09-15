@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>シェーダー調整 Workspace - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
+    <h1>シェーダー調整 Workspace</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>シェーダー調整 Workspace は、<a href="workspaces.html">Workspace</a> のひとつです。切り替えると、インスペクターが <b>デバッグメッシュ</b>、<b>画面効果</b>、<b>描画確認</b> の 3 つのタブだけの画面に変わります。名前は「シェーダー調整」ですが、<b>マテリアル（材質）の編集はここではできません</b>。マテリアルは <a href="../windows/material-editor.html">マテリアルの編集</a> で行います。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>インスペクターを広く使って、画面全体にかける効果（Bloom、ビネット、FXAA など）を調整したいとき（画面効果タブ）</li>
+      <li>今のレンダラーが何か（Deferred 固定）を確かめたいとき（描画確認タブ）</li>
+    </ul>
+    <p>ほとんどの作業は、ほかの場所のほうが向いています。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>やりたいこと</th><th>使う場所</th></tr>
+      <tr><td>物の色や絵柄（PBR、トゥーンなど）を変える</td><td><a href="../windows/material-editor.html">マテリアルの編集</a></td></tr>
+      <tr><td>自分でシェーダーを作る</td><td><a href="../windows/shader-composer.html">Shader Composer</a></td></tr>
+      <tr><td>画面効果を調整する（同じ内容）</td><td>階層パネルの「ゲームシーン」&gt; <a href="game-scene-settings.html#post-process">ポスト処理</a></td></tr>
+    </table>
+    </div>
+
+    <h2 id="open">開きかた</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>場所</th><th>操作</th></tr>
+      <tr><td>インスペクターのいちばん上の <b>編集テーブル</b></td><td>「シェーダー調整」を選ぶ</td></tr>
+      <tr><td>インスペクターの <b>描画設定</b></td><td><b>シェーダー調整テーブルを開く</b> を押す</td></tr>
+      <tr><td>ツールバーの <b>Search...</b></td><td>「shader」「シェーダー」「材質」「プリセット」などで検索し、「シェーダー調整テーブルへ」を選ぶ（ツールバーの幅が狭いと Search... 欄は出ません）</td></tr>
+      <tr><td><a href="console.html#commands">コンソール</a></td><td><code>workspace shader</code>（<code>help</code> の使い方の表示には shader が載っていませんが、使えます）</td></tr>
+    </table>
+    </div>
+    <p>切り替えると、編集対象は「描画設定」になります。Workspace を切り替えたときと、<b>Window</b> &gt; <b>レイアウトを初期化</b> を選んだときに、パネルの並びが作り直され、インスペクターが画面の右 40% と広めに取られます。</p>
+    <div class="warning"><strong>GameObject を選んでもインスペクターに出ません</strong>この Workspace にいる間、インスペクターは、いちばん上の編集テーブルと 3 つのタブだけを表示します。階層パネルで GameObject を選んでも、そのコンポーネントは表示されません。GameObject を編集するときは、編集テーブルで「基本」に戻します。</div>
+
+    <h2 id="inspector-top">インスペクターの上部</h2>
+    <p>タブの上に「シェーダー調整」と、灰色の説明「Sceneの材質はGameObjectのMesh/Skinned Mesh RendererまたはMaterial Assetで編集します。」が出ます。</p>
+
+    <h2 id="debug-mesh">デバッグメッシュ タブ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>既定</th><th>働き</th></tr>
+      <tr><td><b>デバッグ静的メッシュを表示</b></td><td>オフ</td><td>デバッグ用の静的メッシュを表示するかのスイッチです。描画設定の <b>静的メッシュ</b> と同じ値です</td></tr>
+    </table>
+    </div>
+    <p>その下に「マテリアルの編集はここではありません。」「Hierarchy で GameObject を選び、Inspector の Mesh Renderer / Material から編集してください。」「オブジェクトごとに別のシェーダを設定できます。」と案内が出ます。</p>
+    <div class="warning"><strong>このビルドでは効果がありません</strong><b>デバッグ静的メッシュを表示</b> の値は、今の描画では読まれていません。切り替えても画面は変わりません。</div>
+
+    <h2 id="screen-effects">画面効果 タブ</h2>
+    <p>階層パネルの「ゲームシーン」&gt; <b>ポスト処理</b> を選んだときと、まったく同じ欄が出ます。どちらで変えても同じ値が変わります。欄の意味、自動でオンになる決まり、プロジェクト設定に保存される値は <a href="game-scene-settings.html#post-process">ゲームシーンの設定：ポスト処理</a> を見てください。</p>
+
+    <h2 id="render-check">描画確認 タブ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示・欄</th><th>内容</th></tr>
+      <tr><td>「レンダラー: Deferred（固定）」</td><td>描画方式は Deferred だけで、切り替えはできません</td></tr>
+      <tr><td>「輪郭線と半透明表現はDeferred照明後に追加パスで合成します。」</td><td>輪郭線と半透明の物は、ライトの計算のあとに重ねて描く、という説明です</td></tr>
+      <tr><td>「絵柄はマテリアルごとに設定します。」「プロジェクト → Material を選ぶと編集できます。」</td><td>PBR やトゥーンの選択はマテリアルで行う、という案内です</td></tr>
+      <tr><td><b>輪郭線パス</b>（オン）</td><td>輪郭線の追加パスのスイッチです。マテリアルの編集で、輪郭線が要るレイヤーのあるマテリアルを表示すると、自動でオンに戻ります</td></tr>
+      <tr><td><b>PBR影パス</b>（オン）</td><td>PBR の影の追加パスのスイッチです</td></tr>
+    </table>
+    </div>
+    <div class="warning"><strong>このビルドでは効果がありません</strong><b>輪郭線パス</b> と <b>PBR影パス</b> の値は、今の描画では読まれていません。オフにしても輪郭線や影は消えません。輪郭線の有無はマテリアルで決めます（<a href="../windows/material-editor.html">マテリアルの編集</a>）。</div>
+
+    <div class="note"><strong>ワークスペースパネルの説明文について</strong>下段の <b>ワークスペース</b> タブには「右上の専用テーブルで材質、合成順、プリセット、画面効果を編集します。」と出ますが、今のビルドで編集できるのは画面効果だけです。材質・合成順（Shader Stack）はマテリアルの編集で扱います。プリセットを選ぶ画面は、今のビルドではどこからも開けません。</div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>広いインスペクターで Bloom を調整する</h3>
+    <ol>
+      <li>インスペクターのいちばん上の <b>編集テーブル</b> で「シェーダー調整」を選びます。</li>
+      <li>パネルの並びが作り直され、インスペクターが右 40% に広がります。あとで幅を変えてしまったときは、<b>Window</b> &gt; <b>レイアウトを初期化</b> で戻せます。</li>
+      <li><b>画面効果</b> タブを開き、<b>2. Bloom</b> をオンにして、値を少しずつ変えながらシーンビューを見ます。</li>
+      <li>終わったら、<b>編集テーブル</b> で「基本」に戻します。変えた値はそのまま残ります。</li>
+    </ol>
+    <h3>物の絵柄を変えたくて開いてしまったとき</h3>
+    <ol>
+      <li><b>編集テーブル</b> で「基本」に戻します。</li>
+      <li>プロジェクトパネルでマテリアル（<code>.replaymaterial</code>）を選ぶか、<b>Create</b> &gt; <b>Data</b> &gt; <b>Material</b> で作ります。</li>
+      <li>インスペクターの <b>Shader</b> で絵柄を選びます（<a href="../windows/material-editor.html">マテリアルの編集</a>）。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="workspaces.html">Workspace</a></li>
+      <li><a href="game-scene-settings.html">ゲームシーンの設定</a></li>
+      <li><a href="../windows/material-editor.html">マテリアルの編集</a></li>
+      <li><a href="../windows/shader-composer.html">Shader Composer</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

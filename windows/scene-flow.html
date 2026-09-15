@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Scene Flow ウィンドウ - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターのウィンドウ</div>
+    <h1>Scene Flow ウィンドウ</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>シーンからシーンへの移り方を、表にまとめて決めるウィンドウです。「タイトルで Start が起きたらステージ 1 へ」「ステージ 1 で Clear が起きたら、フラグ次第でステージ 2 かエンディングへ」のように書いておくと、スクリプトはイベント名を送るだけで済み、移り先のシーンをコードに書かなくて済みます。</p>
+    <p>内容は Scene Flow アセット（<code>.replaysceneflow</code>）に保存されます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>タイトル → ステージ → リザルトのように、シーンの移り先を 1 か所にまとめて管理したいとき</li>
+      <li>クリアしたかどうかや、フラグの値によって、移る先のシーンを変えたいとき（鍵を持っていれば別のエンディングへ、など）</li>
+      <li>スクリプトにシーンの名前を書かず、「Clear」のようなイベント名だけを送るようにしたいとき。シーンの順番を入れ替えても、スクリプトを直さずに済みます</li>
+    </ul>
+
+    <h2 id="setup">使い始める</h2>
+    <ol>
+      <li><b>プロジェクト</b> パネルで右クリックし、<b>Create</b> &gt; <b>Data</b> &gt; <b>Scene Flow</b> を選びます（メニュー上の <b>名前</b> 欄に入れた名前で作られます）。</li>
+      <li>できた <code>.replaysceneflow</code> をダブルクリックすると、<b>Scene Flow</b> ウィンドウが開きます。<b>Window</b> &gt; <b>Scene Flow</b> でも開けます（UI Workspace と Motion Workspace にいる間は出ません。基本などの Workspace で開きます）。</li>
+      <li>ウィンドウ上の <b>Set Active</b> を押します。プロジェクトで使う Scene Flow がこのアセットになり、ボタンの場所に緑の「ACTIVE」が出ます。</li>
+    </ol>
+    <p>使う Scene Flow は、<a href="../settings/project-settings.html#scene-flow">プロジェクト設定</a>の <b>Active Scene Flow</b> でも選べます。「（未設定）」に戻すか <b>解除</b> を押すと、イベントを送ってもシーンは移りません（シーンを直接指定する読み込みはそのまま使えます）。設定中のアセットが見つからないときは「[ Missing Scene Flow ]」と赤く表示され、設定は残ります。</p>
+
+    <h2 id="window">ウィンドウの見た目</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>場所</th><th>表示・操作</th></tr>
+      <tr><td>いちばん上</td><td>アセットの名前。保存していない変更があると「 *」が付きます。右に <b>Save</b>、<b>Set Active</b>（または ACTIVE）</td></tr>
+      <tr><td>その下</td><td><b>+ Transition</b>：遷移を 1 つ足します</td></tr>
+      <tr><td>一覧</td><td>「Transition #番号  イベント名」の見出しが並びます。見出しを開くと中身を編集できます。見出しをドラッグすると順番を変えられ、右クリックで <b>Delete</b> が出ます</td></tr>
+      <tr><td>いちばん下</td><td>状態の文（「保存しました: …」など）</td></tr>
+    </table>
+    </div>
+    <p>ウィンドウを閉じたときや、別の Scene Flow アセットを開いたときは、変更が自動で保存されます。ACTIVE のアセットを保存すると、ゲームの実行に使われる内容もその場で新しくなります。</p>
+    <p>アセットを開いていないときは「Project で .replaysceneflow を作成/開いてください」と表示されます。</p>
+
+    <div class="warning"><strong>元に戻せる操作は一部だけです</strong>Scene Flow ウィンドウで元に戻す（Ctrl+Z）・やり直す（Ctrl+Y）ができるのは、Transition の追加（<b>+ Transition</b>）、削除、並べ替えだけです。Enabled、Event、Priority、From、To、条件の変更は元に戻せません。大きく変える前に <b>Save</b> しておくか、ファイルを複製しておいてください。</div>
+
+    <h2 id="transition">遷移（Transition）の項目</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>Enabled</td><td>オン</td><td>オフにすると、この遷移は使われません</td></tr>
+      <tr><td>Delete</td><td></td><td>この遷移を消します</td></tr>
+      <tr><td>Event</td><td>Next</td><td>この遷移を起こすイベント名。大文字・小文字も区別して、完全に一致したときだけ使われます</td></tr>
+      <tr><td>Priority</td><td>0</td><td>同じイベントで使える遷移が複数あるときの優先度。大きい方が選ばれます。同じ値なら、一覧で上にある方が選ばれます</td></tr>
+      <tr><td>From</td><td>Any Scene</td><td>どのシーンにいるときに使うか。Any Scene はどのシーンでも</td></tr>
+      <tr><td>To</td><td>（未選択。「Select Scene」）</td><td>移り先のシーン。選んでいない遷移は使われません</td></tr>
+      <tr><td>Conditions (AND)</td><td>なし</td><td>条件。すべて満たしたときだけ使われます。条件が無ければイベントだけで使われます</td></tr>
+    </table>
+    </div>
+    <p>From と To にはプロジェクトのシーンアセットが並びます。消えたシーンを指している場合は「[Missing] GUID」と表示されます。</p>
+
+    <h3 id="conditions">条件（Condition）</h3>
+    <p><b>+ Condition</b> で 1 行足し、行の右の <b>X</b> で消します。1 行は左から次の順に並びます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>内容</th></tr>
+      <tr><td>種類</td><td>Bool、Int、Float</td></tr>
+      <tr><td>キー</td><td>フラグの名前（足したときは「Flag」）</td></tr>
+      <tr><td>比べ方</td><td><code>==</code>、<code>!=</code>、<code>&lt;</code>、<code>&lt;=</code>、<code>&gt;</code>、<code>&gt;=</code></td></tr>
+      <tr><td>値</td><td>Bool はチェック、Int は整数、Float は小数。足したときは Bool のオン</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li>Float の <code>==</code> と <code>!=</code> は、差が 0.000001 以下なら等しいとみなします。</li>
+      <li>一度も値を入れていないフラグを使う条件は、どの比べ方でも満たしません（<code>!=</code> でも満たしません）。</li>
+      <li>フラグの値は、ゲームを動かしている間ずっと残ります。シーンを移っても消えません。</li>
+    </ul>
+
+    <h2 id="runtime">イベントを送る</h2>
+    <p>イベントを送ると、次のすべてに当てはまる遷移の中から 1 つが選ばれ、そのシーンへの移動が始まります。</p>
+    <ul>
+      <li>Enabled がオン</li>
+      <li>Event がイベント名と一致</li>
+      <li>To が選ばれている</li>
+      <li>From が Any Scene か、今のシーン</li>
+      <li>条件をすべて満たす</li>
+    </ul>
+    <p>当てはまる遷移が無いとき、Active Scene Flow が無いとき、すでにシーンを移っている最中のときは、何も起きません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>送り方</th><th>書き方</th></tr>
+      <tr><td>C#（MonoBehaviour）</td><td><code>SceneManager.TriggerFlow("Clear");</code>（<a href="../csharp/api-physics-scene.html#scene">SceneManager</a>）</td></tr>
+      <tr><td>C#（ScriptBehaviour）</td><td><code>Runtime.TriggerSceneFlow("Clear");</code></td></tr>
+    </table>
+    </div>
+    <p>フラグの値は <code>ScriptBehaviour</code> の <code>Runtime.SetSceneFlowBool(キー, 値)</code>、<code>SetSceneFlowInt</code>、<code>SetSceneFlowFloat</code> で入れます（<a href="../csharp/script-behaviour.html">ScriptBehaviour</a>）。</p>
+    <pre><code>// ScriptBehaviour の中
+Runtime.SetSceneFlowBool("HasKey", true);
+Runtime.TriggerSceneFlow("Clear");</code></pre>
+
+    <h2 id="example">例</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>Event</th><th>From</th><th>To</th><th>Priority</th><th>Conditions</th></tr>
+      <tr><td>Start</td><td>Title</td><td>Stage1</td><td>0</td><td></td></tr>
+      <tr><td>Clear</td><td>Stage1</td><td>TrueEnding</td><td>10</td><td>Bool HasKey == オン</td></tr>
+      <tr><td>Clear</td><td>Stage1</td><td>Ending</td><td>0</td><td></td></tr>
+    </table>
+    </div>
+    <p>Stage1 で Clear を送ると、HasKey がオンなら優先度の高い TrueEnding へ、そうでなければ Ending へ移ります。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>タイトル画面からステージ 1 へ移る</h3>
+    <ol>
+      <li>プロジェクト パネルで右クリックし、<b>Create</b> &gt; <b>Data</b> &gt; <b>Scene Flow</b> で作ります。</li>
+      <li>できたアセットをダブルクリックして開き、<b>Set Active</b> を押します。</li>
+      <li><b>+ Transition</b> を押し、できた見出しを開きます。</li>
+      <li><b>Event</b> に <code>Start</code>、<b>From</b> にタイトルのシーン、<b>To</b> にステージ 1 のシーンを選びます。</li>
+      <li><b>Save</b> を押します。</li>
+      <li>タイトルのボタンが押されたときに動くスクリプトで、<code>Runtime.TriggerSceneFlow("Start");</code>（ScriptBehaviour）または <code>SceneManager.TriggerFlow("Start");</code>（MonoBehaviour）を呼びます。</li>
+      <li>ゲームを実行してボタンを押し、ステージ 1 に移ることを確かめます。</li>
+    </ol>
+    <p>あとでタイトルとステージ 1 の間に説明画面を挟みたくなったら、この表の <b>To</b> を変えて、説明画面から先へ移る遷移を足すだけで済みます。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../csharp/api-physics-scene.html#scene">SceneManager</a></li>
+      <li><a href="../components/scene-loader.html">Scene Loader</a></li>
+      <li><a href="../data/index.html">データ形式の一覧</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

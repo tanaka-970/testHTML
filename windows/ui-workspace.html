@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>UI Workspace - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターのウィンドウ</div>
+    <h1>UI Workspace</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>ゲーム内の UI（メニュー、HP ゲージなど）を作るための画面構成です。シーンビューに Canvas を選んだ解像度で表示し、UI 部品を直接つかんで動かしたり、大きさや角度を変えたりできます。UI のコンポーネントそのものの説明は <a href="../components/ui-layout.html">Canvas と Rect Transform</a> から始まる UI の章を見てください。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>タイトル画面のメニュー、体力ゲージ、スコアの表示など、ゲームの画面に重ねて出す UI を並べるとき</li>
+      <li>画面の大きさや縦横比が変わったときに、UI がどう見えるかを確かめるとき（上部の解像度を切り替えます）</li>
+      <li>ボタンや画像の手前・奥の順番を整えるとき</li>
+      <li>画像を円や星の形、自由な輪郭で切り抜いて表示したいとき</li>
+      <li>UI にフェードや拡大の動きを付ける前に、対象の部品を選んで準備するとき</li>
+    </ul>
+
+    <h2 id="open">切り替える</h2>
+    <ul>
+      <li><b>Window</b> &gt; <b>UI Workspaceへ</b> で切り替えます。元に戻すには <b>Window</b> &gt; <b>Scene Workspaceへ</b> です（<a href="../editor/workspaces.html">Workspace</a>）。</li>
+      <li>UI Workspace にいる間、<b>Window</b> メニューに <b>UI 階層</b> と <b>UI インスペクター</b> が出ます。閉じたウィンドウはここから開き直します。</li>
+    </ul>
+
+    <h2 id="layout">画面の並び</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>場所</th><th>ウィンドウ</th></tr>
+      <tr><td>左（幅の約 18%）</td><td><a href="#hierarchy">UI 階層</a></td></tr>
+      <tr><td>右（幅の約 30%）</td><td><a href="#inspector">UI インスペクター</a></td></tr>
+      <tr><td>下（高さの約 20%）</td><td>プロジェクト、コンソール</td></tr>
+      <tr><td>中央</td><td><a href="#scene-view">シーンビュー</a>（UI の表示と操作）</td></tr>
+    </table>
+    </div>
+    <p>この並びは、レイアウトを作り直したとき（<b>Window</b> &gt; <b>レイアウトを初期化</b> など）の配置です。</p>
+
+    <h2 id="scene-view">シーンビュー</h2>
+    <p><b>シーン</b> タブを表示しているとき、中央に Canvas の範囲が白い枠で表示され、その中に UI が描かれます。3D のカメラ操作やギズモの代わりに、UI 用の操作になります。</p>
+
+    <h3 id="scene-toolbar">上部の欄</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>既定</th><th>働き</th></tr>
+      <tr><td>解像度（選択欄）</td><td>1920 x 1080</td><td>UI を並べる画面の大きさ。1920 x 1080、1280 x 720、1080 x 1920、カスタム から選びます。カスタムでは右に <b>W</b> と <b>H</b> の欄が出ます（初期値 1920 × 1080、1 以上）</td></tr>
+      <tr><td>拡大</td><td>0.50</td><td>表示の倍率（0.10〜2.00）</td></tr>
+      <tr><td>グリッド</td><td>オン</td><td>Canvas 座標の 100 ごとに線を表示します</td></tr>
+    </table>
+    </div>
+    <p>ここで選んだ解像度で Canvas の <b>スケール方式</b> などが計算されるので、画面の大きさが違うときの見え方を確かめられます。</p>
+
+    <h3 id="scene-camera">表示を動かす</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>操作</th><th>結果</th></tr>
+      <tr><td>マウスホイール</td><td>カーソルの下の位置を中心に拡大・縮小（1 目盛りで 0.05）</td></tr>
+      <tr><td>中ボタンでドラッグ、または Shift を押しながら左ドラッグ</td><td>表示位置を動かす（Canvas の外をつかんでもよい）</td></tr>
+    </table>
+    </div>
+
+    <h3 id="scene-select">選ぶ・動かす</h3>
+    <ul>
+      <li>クリックすると、カーソルの下にある UI 部品を選びます。手前の Canvas、後から描かれる子ほど先に選ばれます。非アクティブの部品と、Image・Text・Button・Mask を持たない Canvas は選ばれません。</li>
+      <li>選んだ部品をそのままドラッグすると、Rect Transform の <b>位置</b> が変わります（2 ピクセル以上動かしたときから）。</li>
+      <li>選んでいる部品は黄色の枠で表示されます。</li>
+    </ul>
+
+    <h3 id="scene-resize">大きさを変える</h3>
+    <ul>
+      <li>黄色の枠の四隅と各辺の真ん中に白い丸（ハンドル）が出ます。ハンドル、または枠線の近くをドラッグすると大きさが変わります。つかめる距離はハンドルが 14 ピクセル、辺が 9 ピクセルで、小さい部品では内側をつかめるよう短くなります。</li>
+      <li>四隅のハンドルを <b>Shift</b> を押しながらドラッグすると、縦横比を保ちます。</li>
+      <li><b>Alt</b> を押しながらドラッグすると、反対側も同じだけ動き、中心を保ったまま大きさが変わります。</li>
+      <li>1 より小さくはなりません。結果は、今のアンカーのまま <b>位置</b> と <b>サイズ差分</b> に書き直されます。</li>
+      <li>図形マスク（Mask の方式が形状）の枠を変えると、中の子の位置と大きさも同じ割合で変わります。</li>
+    </ul>
+
+    <h3 id="scene-rotate">回す</h3>
+    <ul>
+      <li>枠の上辺の 30 ピクセル外に、丸矢印の回転ハンドルが出ます。ドラッグするとピボットを中心に回ります。</li>
+      <li>回している間は、ピボットに十字、カーソルの横に「加算値（保存される回転の値）」と「向き（0〜360 度）」が表示されます。</li>
+      <li><b>Shift</b> を押している間は 15 度刻みになります。</li>
+    </ul>
+
+    <h3 id="scene-path">自由図形の頂点を動かす</h3>
+    <p>自由ベジェ Path の <a href="../components/ui-shape.html">Shape</a> か、<a href="../components/ui-image.html#shape-image">Shape Image</a> を選ぶと、大きさ・回転のハンドルの代わりに輪郭の編集ができます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>操作</th></tr>
+      <tr><td>ピンクの線</td><td>輪郭。線の上をクリックすると、その位置に頂点を足し（形は変わりません）、そのままドラッグできます（最大 64 個）</td></tr>
+      <tr><td>黄色の丸</td><td>頂点（選択中は大きい丸）。ドラッグで動かします</td></tr>
+      <tr><td>青い小さな丸</td><td>入力ハンドル。ドラッグで前から来る曲線の曲がりを変えます</td></tr>
+      <tr><td>ピンクの小さな丸</td><td>出力ハンドル。次へ向かう曲線の曲がりを変えます</td></tr>
+    </table>
+    </div>
+    <p>Shape の選んだ頂点は、UI インスペクターにフォーカスがあるときに Backspace で消せます。Shape Image の頂点は Backspace では消えないので、UI インスペクターの 自由図形Image コントローラー にある <b>選択 Point を削除</b> を使います。</p>
+
+    <h3 id="scene-puppet">Puppet Deform の Pin を動かす</h3>
+    <p><a href="../components/ui-shape.html#puppet">Puppet Deform</a> を持つ部品を選ぶと、変形した格子が水色の線で表示されます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>操作</th></tr>
+      <tr><td>橙の丸</td><td>Pin の今の位置（選択中は黄色）。ドラッグで動かすと画像が曲がります</td></tr>
+      <tr><td>灰色の小さな円</td><td>Pin の基準位置。橙の丸との間に線が引かれます</td></tr>
+      <tr><td>基準位置のまわりの円と、その右の小さな丸</td><td>影響半径。右の小さな丸をドラッグすると半径が変わります</td></tr>
+    </table>
+    </div>
+
+    <h3 id="scene-effect-region">Effect の適用範囲</h3>
+    <p><a href="../components/effect-stacks.html">UI の Effect Stack</a> を持つ部品を選ぶと、有効な適用範囲がピンク（画像マスクは水色）の枠で表示され、「EFFECT 1 / RECT」のように、番号と形（RECT、ELLIPSE、MASK、FREEFORM）が表示されます。</p>
+    <ul>
+      <li>矩形・楕円・画像マスクの範囲は、8 つのハンドルで大きさを、上に突き出たハンドルで回転を変えます。</li>
+      <li>自由形状の範囲は、頂点をドラッグで動かし、線の上をクリックで頂点を足します。選んだ頂点は、シーンビューにフォーカスがあるときに Delete または Backspace で消せます（閉じた形は 3 つ、開いた形は 2 つより少なくできません。消せないときの表示は、どちらも「閉じた適用範囲は3頂点未満にできません」です）。</li>
+    </ul>
+
+    <h3 id="scene-matte">Track Matte のつながり</h3>
+    <p>Mask の方式が Object Alpha / Object Luma の部品を選ぶと、Matte に使う GameObject へ線が引かれ、PRIMARY（1 つ目）、ADD、SUB、INTERSECT（演算）の名前が表示されます。</p>
+
+    <h2 id="hierarchy">UI 階層</h2>
+    <p>シーンの中の UI だけを木の形で表示し、UI を追加・並べ替えするウィンドウです。</p>
+
+    <h3 id="hierarchy-create">追加のボタン</h3>
+    <p>上部に次のボタンが並びます。作られる内容は <a href="../components/ui-layout.html#create">Canvas と Rect Transform</a> と <a href="../components/ui-shape.html#shape-create">Shape</a> も見てください。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ボタン</th><th>働き</th></tr>
+      <tr><td><b>Canvas</b>、<b>Text</b>、<b>Button</b>、<b>Mask</b></td><td>その部品をすぐ作ります</td></tr>
+      <tr><td><b>Image</b></td><td>メニューを開きます（下の表）</td></tr>
+      <tr><td><b>図形</b></td><td>矩形、角丸矩形、円、三角形、六角形、星形、線 から選んで Shape を作ります</td></tr>
+      <tr><td><b>図形イメージ</b></td><td>Image を選んでいるときだけ押せます。選んでいる Image を形で切り抜くメニューを開きます（下の表）</td></tr>
+      <tr><td><b>自由図形</b></td><td>自由ベジェ Path の Shape を作ります</td></tr>
+      <tr><td><b>自由図形イメージ</b></td><td>「自由図形 Image」（Image と Shape Image を持つ GameObject）を作ります</td></tr>
+    </table>
+    </div>
+    <p>ウィンドウの幅が 250 ピクセルより狭いときは、<b>＋ UIを追加</b>（すべての追加をまとめたメニュー）、<b>図形イメージ</b>、<b>自由図形イメージ</b> の 3 つに変わります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>メニュー</th><th>作られる内容</th></tr>
+      <tr><td><b>Image</b> &gt; <b>通常のImageを追加</b></td><td>Image を持つ GameObject</td></tr>
+      <tr><td><b>Image</b> &gt; <b>図形で切り抜いたImageを追加</b> &gt; <b>矩形で切り抜く</b> など</td><td>「Rectangle Image Mask」などの親（形状方式の Mask、<b>自身を表示</b> はオフ）と、その子の「Masked Image」（Image）。作ったあと選ばれるのは親の Mask です。矩形、角丸矩形、円、三角形、六角形、星形 から選べます</td></tr>
+      <tr><td><b>Image</b> &gt; <b>図形で切り抜いたImageを追加</b> &gt; <b>自由図形で切り抜く</b>、<b>Image</b> &gt; <b>自由図形Imageを追加</b></td><td>どちらも <b>自由図形イメージ</b> ボタンと同じです</td></tr>
+      <tr><td><b>図形イメージ</b> &gt; <b>矩形で切り抜く</b> など</td><td>選んでいる Image と同じ場所に「UI図形イメージ」（形状方式の Mask）を作り、Image をその子に移します。画像、UV、色はそのままです</td></tr>
+      <tr><td><b>図形イメージ</b> &gt; <b>自由図形で切り抜く</b></td><td>選んでいる Image に Shape Image を付けます（新しい GameObject は作りません）</td></tr>
+    </table>
+    </div>
+
+    <h3 id="hierarchy-order">選択中の順番</h3>
+    <p>UI を選んでいると、次の欄が出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>働き</th></tr>
+      <tr><td><b>↑ 階層</b> / <b>↓ 階層</b></td><td>同じ親の中で 1 つ上 / 下へ移します（階層の並び順）</td></tr>
+      <tr><td><b>描画順</b>（数値欄）</td><td>Canvas なら Canvas の描画順、それ以外は Rect Transform の描画順を直接入れます</td></tr>
+      <tr><td><b>最背面</b> / <b>背面</b> / <b>前面</b> / <b>最前面</b></td><td>比べる相手（Canvas はシーンのすべての Canvas、それ以外は同じ親の兄弟）の描画順をもとに値を決めます。最前面は「一番大きい値 ＋ 1」、前面は「すぐ上の値 ＋ 1」です</td></tr>
+    </table>
+    </div>
+    <p>「階層の順番と描画順は別々に保存されます。描画順は値が大きいほど手前です。」と表示されます。</p>
+
+    <h3 id="hierarchy-tree">木の表示と並べ替え</h3>
+    <ul>
+      <li><b>フォルダ / フィルター</b> の <b>名前で検索...</b> と、種類の選択欄（全て、Canvas、Image、Text、Button、図形、Mask）で表示を絞り込めます。</li>
+      <li>各行は「[描画順] 名前」です。クリックで選びます。</li>
+      <li>行をドラッグして、ほかの行の上半分で離すとその前、下半分で離すとその後ろへ移します。<b>Ctrl</b> を押しながら離すと、その行の子にします。</li>
+      <li>一番下の「ここへドロップ: シーン直下へ移動」に離すと、親をなくします。</li>
+      <li>行を右クリックすると、その行を選んだうえで <b>Image を追加</b>、<b>Text を追加</b>、<b>Button を追加</b>、<b>Mask を追加</b>、<b>図形を追加</b>、描画順（<b>最背面へ</b>、<b>背面へ</b>、<b>前面へ</b>、<b>最前面へ</b>）、<b>シーン直下へ移動</b> が出ます。</li>
+    </ul>
+
+    <h3 id="shape-image-frame">UI図形イメージ の枠</h3>
+    <p>次のどれかを選ぶと、UI 階層の中に「UI図形イメージ」の枠が出ます。中身は選んだものに合う見出しだけが出ます。</p>
+    <ul>
+      <li>形状方式の Mask を持つ部品</li>
+      <li>Image を持ち、一番近い親の Mask が形状方式の部品</li>
+      <li>UI の Effect Stack を持つ部品</li>
+    </ul>
+    <div class="table-wrap">
+    <table>
+      <tr><th>見出し</th><th>項目</th></tr>
+      <tr><td>Effect適用範囲（複数可）</td><td><b>範囲制限を有効</b>、<b>追加範囲数</b>。追加範囲ごとに <b>有効</b>、<b>形状</b>（矩形、円 / 楕円、画像マスク（投げ縄）、自由形状）、<b>中心</b>、<b>サイズ / 半径</b>、<b>回転</b></td></tr>
+      <tr><td>マスク枠の配置（形状方式の Mask があるとき）</td><td><b>マスク枠の位置</b>、<b>マスク枠のサイズ</b>（枠だけ変わり、中の画像は変わりません）、<b>全体の拡大率</b>（枠と中の子をまとめて拡大・縮小）、<b>子Imageをマスク枠に合わせる</b>（子の Image を枠の中央・同じ大きさにそろえます）</td></tr>
+      <tr><td>図形マスク（UI編集）（形状方式の Mask そのものを選んでいるとき）</td><td><b>形状</b>（矩形、円、多角形、星形、角丸矩形）、<b>頂点数</b>（多角形・星形）、<b>星形の内側</b>、<b>角丸量</b>、<b>形状の回転</b>、<b>境界の柔らかさ</b>、<b>切り抜きを反転</b></td></tr>
+      <tr><td>切り抜き Image（UI編集）</td><td>子の Image を選んでいるとき。<b>映す位置</b>、<b>映すサイズ</b>、<b>画像のUV位置</b>、<b>画像のUV範囲</b></td></tr>
+    </table>
+    </div>
+    <div class="warning"><strong>全体の拡大率 は切り抜きの形に 2 回掛かります</strong>このビルドでは、全体の拡大率を変えると、枠の大きさと Mask の「図形イメージの拡大率」の両方が同じ割合で変わります。描画では図形の大きさが「枠 × 図形イメージの拡大率」になるため、切り抜く形は枠より大きく（または小さく）なります。大きさを変えるときは、シーンビューで枠のハンドルを使ってください。</div>
+
+    <h2 id="inspector">UI インスペクター</h2>
+    <p>選んでいる UI 部品を編集するウィンドウです。UI 部品を選んでいないときは「UI 要素を選択してください」と <b>Canvas を作成</b> ボタンが表示されます。上から次の順に並びます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>内容</th></tr>
+      <tr><td>アンカー</td><td><b>左上</b>（アンカーとピボットを左上に）、<b>中央</b>（中央に）、<b>全体</b>（アンカーを 0,0〜1,1、ピボットを中央に）</td></tr>
+      <tr><td>Puppet Deform 編集</td><td>Puppet Deform があるとき（<a href="../components/ui-shape.html#puppet-edit">Pin の編集</a>）</td></tr>
+      <tr><td>自由図形コントローラー / 自由図形Image コントローラー</td><td>自由ベジェ Path の Shape、または Shape Image があるとき（<a href="../components/ui-shape.html#shape-path">自由ベジェ Path の編集</a>）</td></tr>
+      <tr><td>Track Matte 編集</td><td>Mask が Object Alpha / Object Luma のとき。「Primary + Extra: 数」、<b>Matte を追加</b>、<b>選択 Extra Matte を削除</b>、<b>選択 Extra Matte</b></td></tr>
+      <tr><td>コンポーネント</td><td>ふつうの <a href="../editor/inspector.html">インスペクター</a> と同じ、コンポーネントとプロパティの一覧</td></tr>
+      <tr><td><b>Motion を作成</b></td><td>モーションを開いていなければ「UIMotion」を作り、Motion Workspace に切り替えます</td></tr>
+    </table>
+    </div>
+    <p>UI インスペクターにフォーカスがあるとき（文字の入力中を除く）、Backspace で、選択中の Pin、なければ Shape（自由ベジェ Path）の選択中の頂点を消します。Shape Image の頂点は消えません。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>画面の上のほうの中央にタイトルを出す</h3>
+    <ol>
+      <li><b>Window</b> &gt; <b>UI Workspaceへ</b> で切り替えます。</li>
+      <li>UI 階層で Canvas を選び、<b>Text</b> ボタンを押します。Canvas が 1 つもないときは、<b>Text</b> を押すと Canvas も作られます。</li>
+      <li>できた Text を選んだまま、UI インスペクターの <b>アンカー</b> で <b>中央</b> を押します。</li>
+      <li>インスペクターの Text の <b>テキスト</b> にタイトルを入れ、Rect Transform の <b>位置</b> を (0, 300) にします。Canvas の中では上が ＋ です。</li>
+      <li>シーンビュー上部の解像度を 1280 x 720 や 1080 x 1920 に切り替え、どの大きさでも中央の上に出ることを確かめます。</li>
+    </ol>
+    <h3>アイコン画像を円形に切り抜く</h3>
+    <ol>
+      <li>UI 階層の <b>Image</b> &gt; <b>図形で切り抜いたImageを追加</b> &gt; <b>円で切り抜く</b> を選びます。「Circle Image Mask」と、その子の「Masked Image」ができます。</li>
+      <li>Masked Image を選び、インスペクターの Image の <b>画像</b> にアイコンの画像を指定します。</li>
+      <li>UI 階層に出る「UI図形イメージ」の枠の <b>映す位置</b> と <b>映すサイズ</b> で、円の中に見せる部分を合わせます。</li>
+      <li>円の大きさを変えるときは、Circle Image Mask を選び、シーンビューのハンドルをドラッグします。中の画像も同じ割合で大きさが変わります。</li>
+    </ol>
+    <h3>ボタンをほかの UI より手前に出す</h3>
+    <ol>
+      <li>ボタンを選びます。</li>
+      <li>UI 階層の「選択中の順番」で <b>最前面</b> を押します。同じ親の中で、いちばん手前に描かれます。</li>
+      <li>別の Canvas の UI よりも手前にしたいときは、ボタンの入っている Canvas を選んで <b>最前面</b> を押します。</li>
+    </ol>
+    <h3>画像にフェードインを付ける</h3>
+    <ol>
+      <li>フェードさせたい Image を選びます。</li>
+      <li>UI インスペクターのいちばん下の <b>Motion を作成</b> を押します。Motion Workspace に切り替わります。</li>
+      <li>Motion レイヤーの <b>不透明度フェードを作成</b> を押すと、1 秒で見えてくるトラックができます。続きは <a href="motion-workspace.html#howto">Motion Workspace の使い方の例</a> を見てください。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../components/ui-layout.html">Canvas と Rect Transform</a></li>
+      <li><a href="../components/ui-controls.html#mask">Mask</a></li>
+      <li><a href="../editor/workspaces.html">Workspace</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>カメラ操作プリセット ウィンドウ - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターのウィンドウ</div>
+    <h1>カメラ操作プリセット ウィンドウ</h1>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+
+    <p>シーンビューのカメラを、どのキーとマウス操作で動かすかをまとめた「カメラ操作プリセット」を、選んだり自分用に作り変えたりするウィンドウです。組み込みプリセットの違いは <a href="../editor/scene-view.html#presets">シーンビューとカメラ操作</a> を見てください。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>シーンビューのカメラを、慣れた操作（右ボタンで見回す、中ボタンで平行移動、など）に合わせたいとき</li>
+      <li>カメラの移動が速すぎる・遅すぎるとき（移動速度、高速倍率、低速倍率）</li>
+      <li>遠くの物が消える、近くの物が途中で切れるとき（表示設定の Near Clip / Far Clip）</li>
+      <li>チームで同じカメラ操作をそろえたいとき（チーム共有コピーを作る）</li>
+    </ul>
+
+    <h2 id="open">開く</h2>
+    <ul>
+      <li><b>カメラ</b> &gt; <b>プリセット管理...</b></li>
+      <li><b>Window</b> &gt; <b>カメラ操作プリセット</b>（UI Workspace と Motion Workspace にいる間は出ません。基本などの Workspace で開きます）</li>
+    </ul>
+
+    <h2 id="scope">共有と自分用</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>種類</th><th>一覧での表示</th><th>置き場所</th><th>編集</th></tr>
+      <tr><td>共有（Shared）</td><td>「名前  [Shared]」</td><td><code>Editor/CameraPresets/</code>（チームで共有するフォルダー）</td><td>できません。選ぶだけです</td></tr>
+      <tr><td>自分用（Personal）</td><td>「名前  [Personal]」</td><td><code>Saved/Editor/CameraPresets/</code></td><td>できます。変えるとすぐ保存されます</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li>ファイルは 1 プリセット 1 つで、拡張子は <code>.replaycamerapreset</code> です。ファイル名は中の ID で、表示名を変えてもファイル名は変わりません。</li>
+      <li>一覧は自分用が先、その中で名前順に並びます。</li>
+      <li>今どのプリセットを使っているかは、自分だけの設定として <code>Saved/Editor/CameraUserSettings.replaycamerauser</code> に保存されます。</li>
+    </ul>
+
+    <h2 id="buttons">上部のボタン</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>働き</th></tr>
+      <tr><td>Active preset（選択欄）</td><td>使うプリセットを選びます</td></tr>
+      <tr><td><b>複製して自分用にする</b></td><td>今のプリセットをコピーして自分用を作り、それに切り替えます</td></tr>
+      <tr><td><b>新規プリセット</b></td><td>今のプリセットをもとに「My Camera」という自分用を作り、それに切り替えます</td></tr>
+      <tr><td><b>チーム共有コピーを作る</b></td><td>今の自分用プリセットを「名前 Shared」として共有フォルダーに書き出します（自分用を選んでいるときだけ表示）</td></tr>
+      <tr><td><b>削除</b></td><td>今の自分用プリセットのファイルを消し、一覧の先頭のプリセットに切り替えます（自分用を選んでいるときだけ表示）</td></tr>
+    </table>
+    </div>
+    <p>共有プリセットを選んでいるときは、「Shared preset は読み取り専用。『複製して自分用にする』で自由編集できます。」と表示され、名前、Look、Orbit、Pan、Dolly、ギズモの切り替えキーだけが表示されます。</p>
+
+    <h2 id="items">自分用プリセットの項目</h2>
+    <p>いちばん上に <b>プリセット名</b> があります。名前は Enter を押したときか、欄から離れたときに決まります（空にはできません）。</p>
+
+    <h3>移動・速度</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>移動速度（上限なし）</td><td>0 より大きい値</td><td>カメラが進む速さ</td></tr>
+      <tr><td>高速倍率</td><td>0.01〜100</td><td>高速移動のときに速さに掛ける倍率</td></tr>
+      <tr><td>低速倍率</td><td>0.001〜1</td><td>低速移動のときに掛ける倍率</td></tr>
+      <tr><td>高速移動 modifier、低速移動 modifier</td><td>None、Shift、Control、Alt</td><td>押している間、高速・低速になるキー</td></tr>
+      <tr><td>Look中でなくてもキーボード移動</td><td>オン・オフ</td><td>見回す操作をしていなくても、移動キーで動けるか</td></tr>
+      <tr><td>Q/E はワールド上下へ移動</td><td>オン・オフ</td><td>上下移動を、カメラの向きではなくワールドの真上・真下にするか</td></tr>
+      <tr><td>Look中 Wheel = 移動速度変更</td><td>オン・オフ</td><td>見回している間のホイールで、移動速度を変えるか</td></tr>
+      <tr><td>前へ、後ろへ、左へ、右へ、上へ、下へ</td><td>キーと Shift / Ctrl / Alt</td><td>移動キー</td></tr>
+    </table>
+    </div>
+
+    <h3>マウスナビゲーション</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>設定できる値</th><th>説明</th></tr>
+      <tr><td>Look / 視点回転</td><td rowspan="4">ボタン（None、Left、Middle、Right）と Shift / Ctrl / Alt</td><td>その場で見回す</td></tr>
+      <tr><td>Orbit / 注視点回転</td><td>注目している点のまわりを回る</td></tr>
+      <tr><td>Pan / 平行移動</td><td>上下左右に平行に動く</td></tr>
+      <tr><td>Dolly / ドラッグズーム</td><td>ドラッグで前後に寄る</td></tr>
+      <tr><td>回転感度</td><td>0.001〜5</td><td>見回す・回る速さ</td></tr>
+      <tr><td>Pan感度</td><td>0.001〜20</td><td>平行移動の速さ</td></tr>
+      <tr><td>Zoom/Dolly感度</td><td>0.001〜20</td><td>寄る速さ</td></tr>
+      <tr><td>Look X反転、Look Y反転、Orbit X反転、Orbit Y反転、Pan X反転、Pan Y反転、Dolly反転</td><td>オン・オフ</td><td>向きを逆にする</td></tr>
+    </table>
+    </div>
+
+    <h3>キーボード回転・View Snap</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>説明</th></tr>
+      <tr><td>キーボード回転速度 deg/s</td><td>キーで向きを変える速さ（1〜1440 度/秒）</td></tr>
+      <tr><td>Yaw 左 / 右、Pitch 上 / 下、Roll 左 / 右</td><td>キーで左右を向く、上下を向く、傾ける</td></tr>
+      <tr><td>Front View、Back View、Right View、Left View、Top View、Bottom View</td><td>正面・背面・右・左・上・下から見る向きにそろえるキー</td></tr>
+      <tr><td>Focus Selection</td><td>選択中のものに寄るキー</td></tr>
+    </table>
+    </div>
+
+    <h3>Gizmo ショートカット</h3>
+    <p>「Window &gt; キー割り当て &gt; Editor で変更します。」と表示されます。ギズモの切り替えキーは、このウィンドウでは変えません。</p>
+
+    <h3>表示設定（最初は閉じています）</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>FOV</td><td>5〜170</td><td>シーンビューの視野角（度）</td></tr>
+      <tr><td>Near Clip</td><td>0.001〜10</td><td>これより近いものは描きません</td></tr>
+      <tr><td>Far Clip</td><td>10〜1000000</td><td>これより遠いものは描きません</td></tr>
+    </table>
+    </div>
+    <p>おかしな値が入ったときは、移動速度 5、高速倍率 4、低速倍率 0.25、回転感度 0.15、Pan・Zoom感度 1、キーボード回転 90、FOV 60、Near Clip 0.05、Far Clip 10000 に直されます。</p>
+
+    <h2 id="menu">カメラ メニューでの速さの変更</h2>
+    <p><b>カメラ</b> メニューには、今のプリセットの <b>移動速度</b> を変える項目があります。</p>
+    <ul>
+      <li>「現在: 値」の下に、0.5、1、2.5、5、10、25、50、100、250、500、1000 が並び、選ぶとその速さになります。</li>
+      <li>「自由入力（上限なし）」の欄で、好きな値を入れられます。</li>
+      <li>共有プリセットを使っているときに速さを変えると、自動で自分用のコピーが作られ、そちらに保存されます（「他人の Shared preset は選択だけ。編集時は My copy を作ります」）。</li>
+    </ul>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>自分用のプリセットを作って操作を変える</h3>
+    <ol>
+      <li><b>カメラ</b> &gt; <b>プリセット管理...</b> を開きます。</li>
+      <li>近い操作のプリセットを <b>Active preset</b> で選び、<b>複製して自分用にする</b> を押します。</li>
+      <li><b>プリセット名</b> に名前を入れて Enter を押します。</li>
+      <li><b>マウスナビゲーション</b> の <b>Look / 視点回転</b> や <b>Pan / 平行移動</b> を、使いたいボタンに変えます。変えた内容はすぐ保存されます。</li>
+      <li>シーンビューで動かして確かめます。</li>
+    </ol>
+    <h3>チームに配る</h3>
+    <ol>
+      <li>配りたい自分用プリセットを選び、<b>チーム共有コピーを作る</b> を押します。</li>
+      <li><code>Editor/CameraPresets/</code> にできたファイルを、プロジェクトと一緒にほかの人へ渡します。</li>
+      <li>受け取った人は <b>Active preset</b> で「名前 Shared  [Shared]」を選びます。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../editor/scene-view.html#camera">シーンビューとカメラ操作</a></li>
+      <li><a href="../editor/menu-bar.html#camera">メニューバー：カメラ</a></li>
+      <li><a href="../editor/shortcuts.html">ショートカット</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>
