@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>破壊（Sliceable / Destructible） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / 破壊</div>
+    <h1>破壊（Sliceable / Destructible）</h1>
+    <p class="meta">対象：RePlayEngine ソース 08fb8f40（2026-09-24 に実装を確認）</p>
+
+    <p>RePlayEngine には、実行中のメッシュを平面で二分する <b>Sliceable</b> と、事前に分けた破片を爆発ダメージで離す <b>Destructible</b> があります。どちらも破片メッシュの生成と PhysX の凸形状作成をバックグラウンドで行い、完了した結果をゲーム中のシーンへ反映します。</p>
+
+    <div class="warning"><strong>試験段階の機能です</strong>インスペクターから部品と設定は追加できますが、エディターに切断・破砕アセットを作る画面や実行ボタンはありません。また、このビルドでは C# から呼び出す API も登録されていません。実際に起動するには、ゲーム側の C++ コードからコンポーネントの API を呼び出す必要があります。以下の手順は C++ でゲームロジックを組み込める開発者向けです。</div>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>剣やレーザーが通った位置で、モデルを切り分けたいとき（Sliceable）</li>
+      <li>爆発の中心と強さに応じて、建物や小道具の破片を順に離したいとき（Destructible）</li>
+      <li>切断面の色、破片の重さ、分離の勢い、破片数を調整したいとき</li>
+      <li>現在のビルドでどこまで使えるか、エディター操作や C# 連携を始める前に確かめたいとき</li>
+    </ul>
+
+    <h2 id="difference">2 つの方式</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>部品</th><th>切り分け方</th><th>向いている使い方</th><th>入力 API</th></tr>
+      <tr><td>Sliceable</td><td>実行時に 1 枚の平面を与え、元のメッシュを 2 つに切る</td><td>剣・レーザー・切断可能な小道具</td><td><code>Slice(plane, cutting_energy)</code></td></tr>
+      <tr><td>Destructible</td><td>用意済みの Chunk と Bond のつながりを Damage でほどく</td><td>爆発で壊れる壁・柱・大きな破片</td><td><code>ApplyRadialDamage(center, radius, damage, inner_radius)</code></td></tr>
+    </table>
+    </div>
+    <p>Sliceable は呼び出すたびにその時点の破片をもう一度切れます。Destructible は実行前に Destruction Asset に入れておいた破片と接続情報を使います。実行時に任意の新しい破砕パターンを作る機能ではありません。</p>
+
+    <h2 id="sliceable">Sliceable</h2>
+    <p>Static Mesh または Skinned Mesh を平面で切り、切断面をふさいだ 2 つのメッシュにします。切断に成功すると、元の GameObject と新しい GameObject に形状が分かれます。Skinned Mesh は切断時の表示姿勢を静的メッシュとして取り込みます。</p>
+
+    <h3>インスペクターの項目</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>切断可能</td><td>オン</td><td>オフにすると <code>CanSlice()</code> は false を返し、切断要求を受け付けません。</td></tr>
+      <tr><td>破壊材質</td><td>未設定</td><td><code>.replaydestructionmaterial</code> を割り当てます。設定すると材質側の密度、切断抵抗、切断面マテリアル、効果音・VFX の参照を使います。</td></tr>
+      <tr><td>最小破片体積</td><td>0.0005</td><td>できた破片がこの値より小さく、かつ「破片の物理化しきい値」より大きい場合、その切断結果は適用されません。物理化しきい値以下の小片は物理なしで残せます。</td></tr>
+      <tr><td>最大破片数</td><td>32</td><td>最初のメッシュを含めた破片数の上限です。範囲は 1〜4096。切断で作られる子の部品も同じ上限を共有します。</td></tr>
+      <tr><td>切断面マテリアル</td><td>未設定</td><td>新しくできる切断面のマテリアルです。破壊材質側にも設定がある場合はそちらが使われます。</td></tr>
+      <tr><td>密度</td><td>500</td><td>破片の体積から Rigidbody の質量を求める値です。破壊材質を割り当てた場合は、そちらの密度が優先されます。</td></tr>
+      <tr><td>切断抵抗</td><td>0</td><td><code>cutting_energy</code> がこの値に届かない切断を拒否します。破壊材質を割り当てた場合は材質側の値が優先されます。</td></tr>
+      <tr><td>破片の物理化しきい値</td><td>0.0001</td><td>これ以下の体積の破片には動的 Collider と Rigidbody を付けず、細かな破片が物理計算を増やしすぎるのを防ぎます。</td></tr>
+      <tr><td>切断 Cooldown</td><td>0.15 秒</td><td>同じ破片を続けて切るまでの待ち時間です。</td></tr>
+      <tr><td>破片の分離 Impulse</td><td>0.5</td><td>切断面の法線方向へ、2 つの破片を分ける初速を与えます。</td></tr>
+    </table>
+    </div>
+
+    <h3>準備と呼び出し</h3>
+    <ol class="steps">
+      <li>Hierarchy で対象を選び、Inspector の <b>コンポーネントを追加</b>から <b>Sliceable</b> を検索して追加します。</li>
+      <li>対象には <b>Mesh Renderer または Skinned Mesh Renderer のどちらか 1 つ</b>を付けます。Skinned Mesh の場合は Renderer を表示状態にします。</li>
+      <li>切断面マテリアル、密度、上限を設定します。必要なら破壊材質を割り当て、切断抵抗と効果音などをまとめて管理します。</li>
+      <li>ゲーム側の C++ コードから、ワールド座標で切断平面を作って <code>Slice()</code> を呼びます。成功の戻り値は「処理を受け付けた」ことを示し、メッシュ更新完了は後のフレームになります。</li>
+    </ol>
+    <pre><code>#include "RePlayEngine/Components/Destruction/SliceableComponent.h"
+#include "RePlayEngine/Destruction/DestructionTypes.h"
+
+// object は Sliceable を追加した対象の GameObject。
+auto* sliceable = object.GetComponent&lt;ReplayEngine::Components::SliceableComponent&gt;();
+ReplayEngine::Destruction::SlicePlane plane;
+plane.normal = { 0.0f, 1.0f, 0.0f }; // 平面の向き（法線）
+plane.distance = 0.0f;              // n・位置 = distance の平面
+
+if (sliceable != nullptr &amp;&amp; sliceable-&gt;Slice(plane, 100.0f))
+{
+    // 処理を受け付けた。完了後にシーンへ 2 つの破片が反映される。
+}
+else if (sliceable != nullptr)
+{
+    // StatusMessage() で失敗理由を確認する。
+}</code></pre>
+    <p>切断中の状態は <code>StatusMessage()</code> で調べられます。<code>CanSlice()</code> は有効状態、クールダウン、破片上限、メッシュ読み込み、物理バックエンドなどをまとめて確認します。</p>
+
+    <h2 id="destructible">Destructible</h2>
+    <p>Destruction Asset に保存された Chunk（破片形状）と Bond（破片同士の接続・耐久値）を読み込み、半径 Damage または Stress Force で接続を切ります。分離後は、破片グループごとに凸 Collider を作って Rigidbody を付けます。</p>
+
+    <h3>インスペクターの項目</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>Damage を受ける</td><td>オン</td><td>オフにすると Damage 呼び出しを受け付けません。</td></tr>
+      <tr><td>Destruction Asset</td><td>未設定</td><td><code>.replaydestruction</code> を割り当てます。Chunk のメッシュ、体積、Bond の接続、耐久値を持ちます。</td></tr>
+      <tr><td>破壊材質</td><td>未設定</td><td>密度、爆発倍率、破壊靭性、衝撃抵抗、音・VFX の参照を共有します。</td></tr>
+      <tr><td>密度</td><td>500</td><td>破片グループの体積から動的 Rigidbody の質量を求めます。破壊材質の密度がある場合はそちらが優先されます。</td></tr>
+      <tr><td>爆発 Damage 倍率</td><td>1</td><td>受け取った Damage に掛けます。さらに破壊材質の爆発倍率と破壊靭性で補正されます。</td></tr>
+      <tr><td>動的破片の最小体積</td><td>0.001</td><td>これ未満のグループは動的 Actor にしません。</td></tr>
+      <tr><td>動的 Actor 上限</td><td>64</td><td>一度の破砕で動的物理にするグループ数の上限です。上限を超えたグループは静的な形状として残ります。</td></tr>
+    </table>
+    </div>
+
+    <div class="note"><strong>破壊材質アセットの作成</strong>破壊材質もエディターの作成メニューにはありません。C++ の <code>DestructionMaterialAsset::SaveToFile()</code> で作成・保存します。音・VFX・マテリアルの参照は Asset GUID で指定します。</div>
+    <pre><code>#include "RePlayEngine/Destruction/DestructionMaterialAsset.h"
+
+ReplayEngine::Destruction::DestructionMaterialAsset material;
+material.name = "Wood";
+material.density = 500.0f;
+material.fracture_toughness = 1.0f;
+material.cut_resistance = 10.0f;
+material.blast_damage_multiplier = 1.0f;
+std::string error;
+material.SaveToFile(asset_path, error); // .replaydestructionmaterial で保存</code></pre>
+
+    <h3>準備と呼び出し</h3>
+    <ol class="steps">
+      <li>Destruction Asset を用意します。現行ソースには <code>PrefracturedDestructionAsset::FromPlaneCut()</code> で 1 回の平面カットから 2 Chunk と 1 Bond を作る C++ API があります。Asset 用のエディター画面はありません。</li>
+      <li>対象の元メッシュに <b>Mesh Renderer</b> と <b>Destructible</b> を付け、Inspector の <b>Destruction Asset</b> にファイルを割り当てます。</li>
+      <li>ゲームを実行し、爆発のワールド位置・半径・Damage を指定して <code>ApplyRadialDamage()</code> を呼びます。</li>
+      <li>呼び出しが true でも破片の物理化は非同期です。分離した結果は後続フレームで反映されます。</li>
+    </ol>
+    <pre><code>#include "RePlayEngine/Destruction/RuntimeMeshSlicer.h"
+#include "RePlayEngine/Destruction/Blast/PrefracturedDestructionAsset.h"
+
+// intact は閉じた元メッシュ。plane は RuntimeMeshSlicer へ渡す切断面。
+auto cut = ReplayEngine::Destruction::RuntimeMeshSlicer::Slice(intact, plane);
+ReplayEngine::Destruction::PrefracturedDestructionAsset asset;
+std::string error;
+if (cut.success &amp;&amp; cut.warning.empty() &amp;&amp;
+    ReplayEngine::Destruction::PrefracturedDestructionAsset::FromPlaneCut(
+        intact, cut.negative, cut.positive, plane.normal, cut.cap_material_slot,
+        "Wall", 1.0f, asset, error))
+{
+    asset.SaveToFile(asset_path, error); // .replaydestruction で保存
+}</code></pre>
+    <p>保存したアセットをプロジェクトのリソースフォルダーに置き、Project パネルの <b>Refresh Assets</b> で再読込してから Inspector の <b>Destruction Asset</b> へ割り当てます。生成関数が受け付けるのは閉じた破片メッシュです。</p>
+    <pre><code>// object は Destructible を追加した対象の GameObject。
+auto* destructible = object.GetComponent&lt;ReplayEngine::Components::DestructibleComponent&gt;();
+const DirectX::XMFLOAT3 blast_center{ 0.0f, 1.0f, 0.0f }; // ワールド座標
+if (destructible != nullptr &amp;&amp;
+    destructible-&gt;ApplyRadialDamage(blast_center, 3.0f, 25.0f, 0.5f))
+{
+    // Damage は適用済み。Bond が切れた場合、物理化は後続フレームで完了する。
+}</code></pre>
+    <p><code>radius</code> は最大距離、<code>inner_radius</code> は最大 Damage が維持される中心側の距離です。単位はシーンのワールド単位です。Stress Force API の位置・力は Destructible のローカル座標で指定します。</p>
+
+    <h2 id="limits">制限と、うまくいかないとき</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>症状・条件</th><th>確認すること</th></tr>
+      <tr><td>実行できない、または処理が始まらない</td><td>PhysX の Runtime Convex Cooking を使える Scene で、ゲーム実行中に呼び出してください。編集モードでは動作しません。</td></tr>
+      <tr><td>Sliceable が切れない</td><td>有効な GameObject に Mesh Renderer / Skinned Mesh Renderer の片方だけがあるか、メッシュの読込が完了しているか、Cooldown と最大破片数を確認します。Static Mesh は CPU 側の三角形データが必要です。</td></tr>
+      <tr><td>Skinned Mesh の切断が失敗する</td><td>Renderer を表示し、実行中の姿勢取得が完了するまで待ちます。取得は最大 10 秒で打ち切られます。</td></tr>
+      <tr><td>Sliceable の切断抵抗が足りない</td><td><code>cutting_energy</code> がコンポーネントまたは破壊材質の「切断抵抗」以上か確認します。</td></tr>
+      <tr><td>Destructible の Damage が効かない</td><td>Destruction Asset が読み込めているか、Bond が有効な Chunk 同士をつないでいるか、<b>Damage を受ける</b>がオンかを確認します。</td></tr>
+      <tr><td>破片が落ちない</td><td>「動的破片の最小体積」と「動的 Actor 上限」を確認します。上限を超えた破片は静的形状で残ります。</td></tr>
+      <tr><td>極端に重い</td><td>Sliceable の「最大破片数」を下げます。切断入力は 1 回 2,000,000 三角形までです。破片ごとにメッシュ処理と Convex Cooking が発生します。</td></tr>
+    </table>
+    </div>
+    <div class="warning"><strong>C# からの利用について</strong>ソースにある C++ の <code>Slice()</code>、<code>ApplyRadialDamage()</code> は C# Script API に公開されていません。Script Component を付けても呼び出し可能にはなりません。C# 連携やエディター上の破壊ツールが必要なプロジェクトでは、先にバインディングと作成画面を実装してください。</div>
+
+    <h2 id="related">関連項目</h2>
+    <ul>
+      <li><a href="physics.html">物理（Rigidbody と Collider）</a></li>
+      <li><a href="mesh-renderers.html">メッシュの描画（Mesh Renderer / Skinned Mesh Renderer）</a></li>
+      <li><a href="../data/index.html#engine-assets">データ形式：破壊アセット</a></li>
+      <li><a href="../editor/inspector.html">インスペクター</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

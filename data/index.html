@@ -30,7 +30,7 @@
     </ul>
 
     <h2 id="engine-assets">エンジン専用のアセット</h2>
-    <p>エディターで作るファイルです。<code>.replayvcolor</code> と <code>.replayrig</code> 以外は、プロジェクトパネルに表示されます（この 2 つはモデルの隣や専用の画面で扱います）。どれも <code>resources/</code> の下など、プロジェクトの中に置きます。</p>
+    <p>エディターまたは C++ API で作るファイルです。<code>.replayvcolor</code> と <code>.replayrig</code> 以外は、プロジェクトパネルに表示されます（この 2 つはモデルの隣や専用の画面で扱います）。どれも <code>resources/</code> の下など、プロジェクトの中に置きます。</p>
     <div class="table-wrap">
     <table>
       <tr><th>拡張子</th><th>中身</th><th>版</th></tr>
@@ -46,6 +46,8 @@
       <tr><td><code>.replayeffect</code></td><td>エフェクトプリセット（<a href="../components/effect-stacks.html#preset">Effect Preset</a>）</td><td>1</td></tr>
       <tr><td><code>.replayinput</code></td><td>入力アクション（Action と Binding）</td><td></td></tr>
       <tr><td><code>.replayshadergraph</code></td><td>シェーダーコンポーザー。プロジェクトパネルではシェーダーとして表示されます</td><td>1</td></tr>
+      <tr><td><code>.replaydestruction</code></td><td>破壊用の元形状・Chunk・Bond（<a href="../components/destruction.html#destructible">説明</a>）。C++ API で生成・保存します</td><td>1</td></tr>
+      <tr><td><code>.replaydestructionmaterial</code></td><td>Sliceable / Destructible で共有する密度・抵抗・音・VFX 設定（<a href="../components/destruction.html">説明</a>）。C++ API で生成・保存します</td><td>1</td></tr>
       <tr><td><code>.replayrig</code></td><td>リグクリップ</td><td>1</td></tr>
       <tr><td><code>（モデル名）.replayvcolor</code></td><td>頂点カラー。モデリング Workspace の頂点ペイントで塗った色を、モデルと同じフォルダーに「<code>model.glb.replayvcolor</code>」のようにモデルの名前のうしろへ付けて保存します。モデルの頂点の数などが変わると、塗った色は使われません</td><td>1</td></tr>
     </table>

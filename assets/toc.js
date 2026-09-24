@@ -41,6 +41,9 @@ window.DOCS_TOC = [
     { title: "Physics", children: [
       { title: "物理（Rigidbody と Collider）", href: "components/physics.html", summary: "剛体、球・箱・カプセル・メッシュの当たり判定、レイヤー、トリガー、衝突イベント", keywords: "物理 Rigidbody リジッドボディ 剛体 Collider コライダー 当たり判定 Sphere Box Capsule Mesh 静的 キネマティック 動的 質量 重力 摩擦 反発 固定 停止 CCD レイヤー マスク トリガー TriggerEnter CollisionEnter AddForce Teleport" }
     ]},
+    { title: "Destruction", children: [
+      { title: "破壊（Sliceable / Destructible）", href: "components/destruction.html", summary: "実行時のメッシュ切断と、事前破砕 Asset を爆発で分離する C++ API", keywords: "破壊 destruction Sliceable Destructible Slice 切断 平面 切断面 破片 Chunk Bond 爆発 Blast Damage ApplyRadialDamage PhysX Runtime Convex Cooking replaydestruction replaydestructionmaterial 試験機能 C++ C# 未対応" }
+    ]},
     { title: "Landscape", children: [
       { title: "地形（Landscape）", href: "components/landscape.html", summary: "地面の作成、スカルプト、面の加工、描画と当たり判定", keywords: "地形 ランドスケープ Landscape Ground Renderer Collider スカルプト ブラシ 盛り上げる 掘り下げる なめらか 平ら でこぼこ 細かく トポロジー 押し出し 穴 トンネル 洞窟 辺をつなぐ 再生成 ロード範囲 区画" }
     ]},
