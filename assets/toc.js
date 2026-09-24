@@ -18,6 +18,8 @@ window.DOCS_TOC = [
     { title: "項目の説明（ツールチップ）", href: "editor/help-tooltips.html", summary: "マウスを乗せると出る説明と、右クリックでの書き換え", keywords: "ツールチップ 説明 ヘルプ 説明を編集 説明が未記入 既定文へ戻す 書いた内容を消す EditorHelp replayhelp 右クリック" },
     { title: "頂点カラーペイント", href: "editor/vertex-paint.html", summary: "モデリング Workspace で頂点に 0〜1 の値を塗る", keywords: "頂点カラー 頂点カラーペイント 頂点ペイント vertex color paint replayvcolor モデリング チャンネル 加算 減算 置換 ならし 半径 強さ 減衰 GGST 影 保存 再読込 指紋" },
     { title: "シェーダー調整 Workspace", href: "editor/shader-adjustment.html", summary: "デバッグメッシュ・画面効果・描画確認の 3 タブ", keywords: "シェーダー調整 Workspace シェーダー調整テーブル デバッグメッシュ デバッグ静的メッシュ 画面効果 描画確認 輪郭線パス PBR影パス Deferred workspace shader" },
+    { title: "Prefab（プレハブ）", href: "editor/prefab.html", summary: "GameObject を保存して何度も置く。Overrides、Apply、Revert、Unpack", keywords: "プレハブ Prefab replayprefab プレハブにする プレハブを置く Overrides Override Details Apply Revert Unpack Prefab Root Prefab Instance Missing Prefab Nested" },
+    { title: "Input Action Asset（キー割り当て）", href: "editor/input-action-asset.html", summary: "ゲームの操作とキー・ゲームパッドの割り当てを書き換える", keywords: "Input Action Asset 入力 キー割り当て Action Map Keyboard Primary Secondary VK 仮想キー Gamepad Button Axis Dead Zone デッドゾーン Positive Negative XInput DefaultInput" },
     { title: "ショートカット一覧", href: "editor/shortcuts.html", summary: "既定のキー割り当てと変更方法", keywords: "キー 割り当て Ctrl F5 F2 Shift ギズモ 複製 コピー 貼り付け" }
   ]},
   { title: "コンポーネント", children: [
@@ -39,7 +41,14 @@ window.DOCS_TOC = [
       { title: "Normal Adjust", href: "components/normal-adjust.html", summary: "陰影に使う法線を球の向きへ寄せる", keywords: "ノーマルアジャスト 法線 陰影 トゥーン 球 Blend Radius Falloff Bone スロット" }
     ]},
     { title: "Physics", children: [
-      { title: "物理（Rigidbody と Collider）", href: "components/physics.html", summary: "剛体、球・箱・カプセル・メッシュの当たり判定、レイヤー、トリガー、衝突イベント", keywords: "物理 Rigidbody リジッドボディ 剛体 Collider コライダー 当たり判定 Sphere Box Capsule Mesh 静的 キネマティック 動的 質量 重力 摩擦 反発 固定 停止 CCD レイヤー マスク トリガー TriggerEnter CollisionEnter AddForce Teleport" }
+      { title: "物理（Rigidbody と Collider）", href: "components/physics.html", summary: "剛体、球・箱・カプセル・メッシュの当たり判定、レイヤー、トリガー、衝突イベント", keywords: "物理 Rigidbody リジッドボディ 剛体 Collider コライダー 当たり判定 Sphere Box Capsule Mesh Convex 凸包 Buoyancy 浮力 静的 キネマティック 動的 質量 重力 摩擦 反発 固定 停止 CCD レイヤー マスク トリガー TriggerEnter CollisionEnter AddForce Teleport" }
+    ]},
+    { title: "水・環境", children: [
+      { title: "Water Body（水域）", href: "components/water-body.html", summary: "海・湖の水面。波、反射、屈折、泡、水中の表現、浮力との連携", keywords: "水 海 湖 Ocean Lake Water Body 波 Gerstner 泡 Foam 屈折 反射 水中 Underwater 浮力 Gameplay Query Allow Buoyancy" },
+      { title: "局所霧・Reflection Probe・Probe GI", href: "components/environment-volumes.html", summary: "範囲の中だけに効く霧、反射、間接光", keywords: "Local Fog Volume 局所霧 霧 Reflection Probe 反射 SSR Box Projection 再キャプチャ Probe GI Volume 間接光 GI Bake Baked Realtime DDGI バウンス" }
+    ]},
+    { title: "Gameplay", children: [
+      { title: "Gameplay 部品（テンプレート用）", href: "components/gameplay.html", summary: "Character Motor、Health、Checkpoint、Goal、Kill Volume、Jump Pad、Damage Area、Enemy Behaviour など", keywords: "Gameplay テンプレート Character Motor Character Input Player Controller Rotator Health 体力 Spawn Point Checkpoint チェックポイント Goal ゴール Kill Volume Jump Pad ジャンプ台 Damage Area ダメージ Enemy Behaviour 敵 AI 巡回 索敵 追跡 プレイヤー 移動 ジャンプ" }
     ]},
     { title: "Destruction", children: [
       { title: "破壊（Sliceable / Destructible）", href: "components/destruction.html", summary: "実行時のメッシュ切断と、事前破砕 Asset を爆発で分離する C++ API", keywords: "破壊 destruction Sliceable Destructible Slice 切断 平面 切断面 破片 Chunk Bond 爆発 Blast Damage ApplyRadialDamage PhysX Runtime Convex Cooking replaydestruction replaydestructionmaterial 試験機能 C++ C# 未対応" }

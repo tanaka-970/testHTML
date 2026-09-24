@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Water Body（水域） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Water Body</div>
+    <h1>Water Body（水域）</h1>
+    <p class="meta">対象：RePlayEngine ソース 08fb8f40（2026-09-24 に実装を確認）</p>
+
+    <p>海（Ocean）や湖（Lake）の水面を作る部品です。波の動き、光の反射、水を通した屈折、泡、水中に入ったときの画面の色までをこの 1 つで持ちます。水面の高さや流れを物理の側から調べる用途にも使われ、<a href="physics.html#buoyancy">Buoyancy</a> を付けた物体はこの水面に浮きます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>海岸や港の海、池や湖を置きたいとき</li>
+      <li>箱・ボート・流木などを水に浮かべたいとき（Buoyancy と組み合わせる）</li>
+      <li>水に入ったときに、画面を青緑に染めたい・ゆがませたいとき</li>
+      <li>波の大きさや向き、色、泡の量を自分で調整したいとき</li>
+    </ul>
+
+    <h2 id="create">水を作る</h2>
+    <p>階層パネルの <b>＋ 作成</b> を押すと、<b>Water</b> の項目があります。その右に <b>Ocean</b> と <b>Lake</b> が出て、選ぶと Water Body が付いた GameObject が 1 つ作られます。</p>
+    <figure>
+      <img src="../images/components/hierarchy-create-water.png" alt="＋ 作成の Water メニュー">
+      <figcaption>＋ 作成 &gt; Water &gt; Ocean / Lake。空の GameObject に Water Body を足す手間が要りません。</figcaption>
+    </figure>
+    <p>Lake を選んで作ると、種類は Lake、Lake Shape は Box、Lake Extent は 50, 1, 50 の設定で作られます（Ocean Extent の欄には 128 が入ります）。</p>
+    <figure>
+      <img src="../images/components/water-body-scene.png" alt="水面の見た目">
+      <figcaption>Lake を作って、空を設定したシーンに置いた状態。空の設定は<a href="sky.html">空</a>のページを見てください。空が無いと水面に映る物が無く、暗く見えます。</figcaption>
+    </figure>
+
+    <h2 id="kind">海と湖の違い</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>種類</th><th>範囲の決まり方</th><th>向いている場所</th></tr>
+      <tr><td>Ocean</td><td><b>Ocean Extent</b>（既定 750）の広さの水面が広がります</td><td>水平線まで続く海</td></tr>
+      <tr><td>Lake</td><td><b>Lake Shape</b>（Box / Sphere）と <b>Lake Extent</b> で決めた範囲だけに水が入ります</td><td>池・湖・プール・水路</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <p>項目が多いので、働きごとに分けて書きます。数値の右の範囲は、インスペクターで入力できる範囲です。</p>
+
+    <h3 id="prop-shape">種類と範囲</h3>
+    <figure>
+      <img src="../images/components/water-body-inspector-1.png" alt="Water Body 種類と範囲">
+      <figcaption>Water Body の上部。種類、Lake Shape、Lake Extent、Ocean Extent、Grid Resolution、Wave Source など。</figcaption>
+    </figure>
+
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>種類</td><td><code>kind</code></td><td>選択</td><td>Ocean</td><td></td><td>Ocean か Lake を選びます</td></tr>
+      <tr><td>Lake Shape</td><td><code>shape</code></td><td>選択</td><td>Box</td><td></td><td>Lake のときの水の形です。Box（箱形）か Sphere（球形）</td></tr>
+      <tr><td>Lake Extent</td><td><code>extent</code></td><td>3 つの数</td><td>100, 1, 100</td><td></td><td>Lake の大きさです。X・Y・Z（横・深さ・奥行き）の順に入れます</td></tr>
+      <tr><td>Ocean Extent</td><td><code>ocean_extent</code></td><td>小数</td><td>750</td><td>16〜100000</td><td>Ocean の水面の広がりです</td></tr>
+      <tr><td>Grid Resolution</td><td><code>grid_resolution</code></td><td>整数</td><td>96</td><td>8〜256</td><td>水面の細かさ（網目の数）です。大きいと波が滑らかになり、重くなります</td></tr>
+    </table>
+    </div>
+
+    <h3 id="prop-wave">波</h3>
+    <figure>
+      <img src="../images/components/water-body-inspector-2.png" alt="Water Body 波">
+      <figcaption>Wave 1〜8 の Amplitude（高さ）と Wavelength（波長）が続きます。</figcaption>
+    </figure>
+
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>Wave Source</td><td><code>wave_source</code></td><td>選択</td><td>Gerstner</td><td></td><td>波の作り方です。<b>None</b> は波なし（平らな水面）、<b>Gerstner</b> は計算で波を作ります。<b>Texture (reserved)</b> は将来用に予約されていて、今は使えません</td></tr>
+      <tr><td>Wave Count</td><td><code>wave_count</code></td><td>整数</td><td>4</td><td>0〜8</td><td>重ねる波の数です。下の Wave 1〜8 のうち、この数だけが使われます</td></tr>
+      <tr><td>Wave Scale</td><td><code>wave_scale</code></td><td>小数</td><td>1</td><td>0〜8</td><td>波全体の高さの倍率です</td></tr>
+      <tr><td>Time Scale</td><td><code>time_scale</code></td><td>小数</td><td>1</td><td>−4〜4</td><td>波の進む速さです。マイナスにすると逆向きに進みます</td></tr>
+      <tr><td>Wave 1〜8 Amplitude</td><td><code>wave0_amplitude</code> 〜 <code>wave7_amplitude</code></td><td>小数</td><td>0.32 / 0.18 / 0.10 / 0.06 / 0.035 / 0.025 / 0.018 / 0.012</td><td>0〜20</td><td>各波の高さ（振れ幅）です。番号が大きいほど細かく小さな波が既定です</td></tr>
+      <tr><td>Wave 1〜8 Wavelength</td><td><code>wave0_wavelength</code> 〜 <code>wave7_wavelength</code></td><td>小数</td><td>12 / 6.5 / 3.2 / 1.7 / 0.95 / 0.62 / 0.41 / 0.28</td><td>0.1〜500</td><td>各波の波長（山から山までの長さ）です。大きいとゆったりした波になります</td></tr>
+    </table>
+    </div>
+
+    <h3 id="prop-look">見た目</h3>
+    <figure>
+      <img src="../images/components/water-body-inspector-3.png" alt="Water Body 見た目">
+      <figcaption>色は R・G・B・A を 0〜255 の整数で入れます。</figcaption>
+    </figure>
+
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>Shallow Color</td><td><code>shallow_color</code></td><td>色</td><td>R 13, G 107, B 133</td><td></td><td>浅いところの水の色</td></tr>
+      <tr><td>Deep Color</td><td><code>deep_color</code></td><td>色</td><td>R 1, G 14, B 28</td><td></td><td>深いところの水の色</td></tr>
+      <tr><td>Foam Color</td><td><code>foam_color</code></td><td>色</td><td>R 235, G 250, B 255</td><td></td><td>波頭や岸辺にできる泡の色</td></tr>
+      <tr><td>Roughness</td><td><code>roughness</code></td><td>小数</td><td>0.08</td><td>0〜1</td><td>水面のざらつきです。小さいほど鏡のように映り、大きいとぼやけます</td></tr>
+      <tr><td>Refraction</td><td><code>refraction_strength</code></td><td>小数</td><td>0.055</td><td>0〜0.5</td><td>水の中の物が曲がって見える強さです</td></tr>
+      <tr><td>Absorption</td><td><code>absorption</code></td><td>小数</td><td>0.18</td><td>0〜5</td><td>深くなるほど光が吸われて暗くなる強さです</td></tr>
+      <tr><td>Foam Strength</td><td><code>foam_strength</code></td><td>小数</td><td>0.65</td><td>0〜4</td><td>泡の量です。0 で泡が出ません</td></tr>
+      <tr><td>Reflection Strength</td><td><code>reflection_strength</code></td><td>小数</td><td>1</td><td>0〜4</td><td>周りの景色が水面に映る強さです</td></tr>
+      <tr><td>Shallow Depth</td><td><code>shallow_depth</code></td><td>小数</td><td>4</td><td>0.01〜100</td><td>この深さまでを「浅い」として、Shallow Color から Deep Color へ変えていきます</td></tr>
+      <tr><td>Receive Shadow</td><td><code>receive_shadow</code></td><td>オン・オフ</td><td>オン</td><td></td><td>水面に影を落とすかどうか</td></tr>
+      <tr><td>RT Reflection</td><td><code>rt_reflection</code></td><td>オン・オフ</td><td>オン</td><td></td><td>レイトレーシングを使った正確な反射を使うかどうか。オフだと画面の映り込みなど別の方式に頼ります</td></tr>
+      <tr><td>Visible</td><td><code>visible</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オフにすると水面を描きません</td></tr>
+      <tr><td>Material</td><td><code>material_asset</code></td><td>アセット（Material）</td><td>（空）</td><td></td><td>水面のマテリアルです。空なら標準の水を使います。自作するときは、標準の Water か、<code>#pragma replay_water</code> を持つ Shader Composer / HLSL のマテリアルを指定します</td></tr>
+    </table>
+    </div>
+
+    <h3 id="prop-gameplay">ゲームとの連携</h3>
+    <figure>
+      <img src="../images/components/water-body-inspector-gameplay.png" alt="Water Body ゲームとの連携">
+      <figcaption>RT Reflection、Gameplay Query、Allow Buoyancy、Underwater のチェック。</figcaption>
+    </figure>
+
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>Gameplay Query</td><td><code>query_enabled</code></td><td>オン・オフ</td><td>オン</td><td>物理などが「この位置の水面の高さ・流れ」を調べられるようにします</td></tr>
+      <tr><td>Allow Buoyancy</td><td><code>allow_buoyancy</code></td><td>オン・オフ</td><td>オン</td><td>Buoyancy を付けた物体をこの水で浮かせるかどうか。Gameplay Query もオンである必要があります</td></tr>
+    </table>
+    </div>
+
+    <h3 id="prop-under">水中の表現</h3>
+    <figure>
+      <img src="../images/components/water-body-inspector-4.png" alt="Water Body 水中">
+      <figcaption>いちばん下は Visible と Material。</figcaption>
+    </figure>
+
+    <p>カメラが水面より下に入ったときの画面の表現です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>Underwater</td><td><code>underwater_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>水中の表現を使うかどうか</td></tr>
+      <tr><td>Underwater Color</td><td><code>underwater_color</code></td><td>色</td><td>R 4, G 23, B 33</td><td></td><td>水中の霧の色</td></tr>
+      <tr><td>Underwater Density</td><td><code>underwater_density</code></td><td>小数</td><td>0.08</td><td>0〜5</td><td>水中の霧の濃さ。大きいと遠くが見えなくなります</td></tr>
+      <tr><td>Underwater Distortion</td><td><code>underwater_distortion</code></td><td>小数</td><td>0.012</td><td>0〜1</td><td>水中の画面のゆらぎの強さ</td></tr>
+      <tr><td>Underwater TAA Reactive</td><td><code>underwater_reactive</code></td><td>小数</td><td>0.35</td><td>0〜1</td><td>水中で残像（TAA）を抑える強さ。ぶれや残像が気になるときに上げます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="usage">使い方の例</h2>
+    <h3>湖を置く</h3>
+    <ol class="steps">
+      <li>階層パネルの <b>＋ 作成 &gt; Water &gt; Lake</b> を選びます。「Lake」という GameObject ができます。</li>
+      <li>（自分で組み立てるなら、<b>＋ 作成 &gt; 空の GameObject</b> を作り、インスペクターの <b>コンポーネントを追加 &gt; Rendering &gt; Water Body</b> を選び、<b>種類</b> を <b>Lake</b> にします。）</li>
+      <li><b>Lake Extent</b> を、たとえば 20, 2, 20 にします（横 20・深さ 2・奥行き 20）。</li>
+      <li>Transform の位置を動かして、水面の高さを地面のくぼみに合わせます。</li>
+      <li>波を弱くしたいときは <b>Wave Scale</b> を 0.3 くらいに下げます。</li>
+    </ol>
+
+    <h3>物を浮かべる</h3>
+    <ol class="steps">
+      <li>階層パネルで <b>＋ 作成 &gt; 3D Object &gt; Cube</b> を作り、水面の少し上に置きます。</li>
+      <li>Cube に <b>Rigidbody</b> を追加します（種別は Dynamic のまま）。</li>
+      <li>続けて <b>Buoyancy</b> を追加します。</li>
+      <li>Water Body の <b>Gameplay Query</b> と <b>Allow Buoyancy</b> がオンなことを確かめます。</li>
+      <li>ゲームを実行（F5）します。Cube が水に落ちて浮きます。Buoyancy の <b>In Water</b> が「オン」になったら水に入っています。</li>
+    </ol>
+
+    <h3>海全体を作って泡を増やす</h3>
+    <ol class="steps">
+      <li>Water Body を追加し、<b>種類</b> を <b>Ocean</b> にします。</li>
+      <li><b>Ocean Extent</b> で見渡せる広さを決めます。広いほど<b>Grid Resolution</b> が足りなくなって波が粗く見えるので、その場合は Grid Resolution を上げます。</li>
+      <li><b>Foam Strength</b> を 1.2 くらいに上げると、波頭の泡が増えます。</li>
+    </ol>
+
+    <div class="note"><strong>ヒント</strong>波が重いときは、Wave Count を減らすか Grid Resolution を下げます。反射が映らない・暗いときは、<a href="environment-volumes.html#reflection-probe">Reflection Probe</a> で反射を補えます。</div>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="physics.html#buoyancy">Buoyancy（浮力）</a></li>
+      <li><a href="environment-volumes.html">局所霧・Reflection Probe・Probe GI</a></li>
+      <li><a href="sky.html">空</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

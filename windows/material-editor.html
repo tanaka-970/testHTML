@@ -139,6 +139,200 @@
     <h2 id="advanced">Advanced</h2>
     <p>開くと、Shader GUID（古い形式のマテリアルでは「(legacy / empty)」）、シェーダーのファイルの場所（Source）、Schema Revision、「Retained / unknown properties  数」が表示されます。今のシェーダーが使わない値も、シェーダーを切り替えたときや見つからないときに消さずに残しておき、その数を表します。</p>
 
+    <h2 id="preset-tab">「プリセット・キャラ材質」タブ</h2>
+    <p>プロジェクトパネルでマテリアルを選ぶと、マテリアルの編集画面（インスペクター）の中に、<b>プリセット・キャラ材質</b> という名前のタブがあります。マテリアルの見た目を、<b>プリセット</b>（出来合いの設定）から始めて、トゥーンの<b>キャラクター材質</b>（肌・顔・髪・目・輪郭など）を細かく調整するための画面です。</p>
+
+    <h3 id="preset-buttons">プリセット</h3>
+    <p>タブのいちばん上に、プリセットのボタンが並びます。押すと、<b>基本シェーダー・輪郭・レイヤー・キャラクター材質・ピクセル化</b> の設定が、そのプリセットの値にまとめて置き換わります（押したあとに、値を手直しできます）。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ボタン</th><th>働き</th></tr>
+      <tr><td>新規プリセット（空）</td><td>基本シェーダーを FBX 標準に戻し、レイヤーを空にして、キャラクター材質を初期値にします。「追加パスなし」の状態から、必要な表現だけを積み上げたいときに使います</td></tr>
+      <tr><td>鳴潮風</td><td>内蔵プリセット。「鳴潮風 Stylized PBR」</td></tr>
+      <tr><td>エンドフィールド風</td><td>内蔵プリセット。「エンドフィールド風 Layered PBR」</td></tr>
+      <tr><td>Crystal Toon</td><td>内蔵プリセット。結晶のようなトゥーン</td></tr>
+      <tr><td>柔光アニメ</td><td>内蔵プリセット。やわらかい光のアニメ調</td></tr>
+      <tr><td>硬質グラフィックセル</td><td>内蔵プリセット。くっきりした影のセル調</td></tr>
+      <tr><td>月光クリスタル</td><td>内蔵プリセット。月明かりのような結晶調</td></tr>
+      <tr><td>プリセットを保存...</td><td>いまの設定を、<code>.replayshader</code> のファイルに保存します。保存先の既定は <code>resources\Shaders\Presets</code> です</td></tr>
+      <tr><td>既存プリセットから開始...</td><td>保存した <code>.replayshader</code> を選んで、その設定を読み込みます</td></tr>
+    </table>
+    </div>
+    <p>押したあとの結果は、ボタンの下に「内蔵プリセット: 鳴潮風Stylized PBR」「保存しました: …」のように表示されます。</p>
+
+    <h3 id="stack-basics">基本シェーダーとレイヤー</h3>
+    <p>プリセットの下は、<a href="#stack">Shader Stack</a> と同じ画面です。<b>基本シェーダー</b>（FBX 標準・PBR・トゥーン・アンリット・ピクセル化）と、レイヤーの追加・並べ替えができます。「PBR + 輪郭」「Toon + Pixel + 輪郭」「Surfaceのみ」のボタンは、よく使う組み合わせを一度に入れる近道です。ピクセル化を選ぶと、<b>四角ピクセルサイズ</b>（1〜24 px）と <b>効果の強さ</b> を調整できます。</p>
+
+    <h3 id="character-material">キャラクター材質</h3>
+    <p>いちばん下が、キャラクター材質です。<b>基本シェーダーがトゥーンのときだけ</b>、下に設定が出ます。ほかの基本シェーダーでは、「トゥーンを選ぶと、この下に肌・影・リムの設定が出ます。」とだけ表示されます（効かない欄をいじって「変わらない」と悩まないためです）。</p>
+    <p>色は R・G・B を 0〜255 の整数で入れます。範囲の列が空の項目は、オン・オフと色です。</p>
+
+    <h4>全体</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>プロファイル名</td><td>文字</td><td>カスタム</td><td></td><td>このキャラ材質の名前。プリセットを保存するときの名前になります</td></tr>
+      <tr><td>陰影しきい値</td><td>小数</td><td>0.46</td><td>0〜1</td><td>光が当たる所と、影になる所の境目の位置。大きいほど、影の面積が増えます</td></tr>
+      <tr><td>陰影の柔らかさ</td><td>小数</td><td>0.10</td><td>0.001〜0.5</td><td>境目のぼかし。小さいほどくっきりした影になります</td></tr>
+      <tr><td>影の強さ</td><td>小数</td><td>0.52</td><td>0〜1</td><td>影の暗さ</td></tr>
+      <tr><td>彩度</td><td>小数</td><td>1</td><td>0〜2</td><td>色のあざやかさ。1 が元のまま</td></tr>
+    </table>
+    </div>
+
+    <h4>表現調整</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>陰影段階数</td><td>小数</td><td>3</td><td>1〜8</td><td>陰影を何段階に分けるか</td></tr>
+      <tr><td>コントラスト</td><td>小数</td><td>1</td><td>0.25〜2.5</td><td>明暗の差</td></tr>
+      <tr><td>色相</td><td>小数</td><td>0</td><td>-0.5〜0.5</td><td>色味を回します</td></tr>
+      <tr><td>上下グラデーション</td><td>小数</td><td>0</td><td>0〜1</td><td>上側の色と下側の色を、モデルの高さに沿って重ねる強さ。0 なら重ねません</td></tr>
+      <tr><td>上側の色</td><td>色</td><td>R 255, G 255, B 255</td><td></td><td>上のほうに重ねる色</td></tr>
+      <tr><td>下側の色</td><td>色</td><td>R 209, G 224, B 255</td><td></td><td>下のほうに重ねる色</td></tr>
+      <tr><td>グラデーション倍率</td><td>小数</td><td>0.10</td><td>-4〜4</td><td>高さに対して、色が切り替わる速さ</td></tr>
+      <tr><td>グラデーション位置</td><td>小数</td><td>0.50</td><td>-4〜4</td><td>グラデーションの中心の位置</td></tr>
+    </table>
+    </div>
+
+    <h4>肌・疑似SSS</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>既存の肌補正</td><td>オン・オフ</td><td>オン</td><td></td><td>肌向けの補正（肌色・影の色・光の回り込み）を使うか</td></tr>
+      <tr><td>R5肌シェーディング</td><td>オン・オフ</td><td>オフ</td><td></td><td>疑似 SSS、曲率の影響などを使う新しい肌の表現を有効にします</td></tr>
+      <tr><td>肌色補正</td><td>色</td><td>R 255, G 250, B 245</td><td></td><td>肌の色に掛ける色</td></tr>
+      <tr><td>肌の影色</td><td>色</td><td>R 184, G 128, B 140</td><td></td><td>影になった肌の色</td></tr>
+      <tr><td>光の回り込み</td><td>小数</td><td>0.32</td><td>0〜1</td><td>光が影側へ回り込む量。大きいと、影が柔らかくなります</td></tr>
+      <tr><td>散乱光</td><td>小数</td><td>0.12</td><td>0〜1</td><td>影のふちに足す、肌の内側で散った光の量</td></tr>
+      <tr><td>境界ぼかし</td><td>小数</td><td>0.10</td><td>0〜0.5</td><td>明暗の境目のぼかし</td></tr>
+      <tr><td>疑似SSS強度</td><td>小数</td><td>0</td><td>0〜1</td><td>光が肌の内側を通ったように見せる効果の強さ（R5 肌シェーディング用）</td></tr>
+      <tr><td>曲率影響</td><td>小数</td><td>0</td><td>0〜2</td><td>形の曲がりの強さに応じて、効果を変える量</td></tr>
+      <tr><td>スペキュラ分離</td><td>小数</td><td>0</td><td>0〜1</td><td>つやの部分を、肌の色から分けて扱う割合</td></tr>
+      <tr><td>固有色保持</td><td>小数</td><td>0</td><td>0〜1</td><td>元の肌の色を、どれだけ保つか</td></tr>
+    </table>
+    </div>
+
+    <h4>顔影補正</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>既存の顔影補正</td><td>オン・オフ</td><td>オン</td><td></td><td>顔向けの影の補正を使うか</td></tr>
+      <tr><td>Face SDFを有効化</td><td>オン・オフ</td><td>オフ</td><td></td><td>顔の影を、SDF の画像で決めます。画像は、下の Shader Property で選びます</td></tr>
+      <tr><td>顔の影色</td><td>色</td><td>R 184, G 122, B 133</td><td></td><td>顔の影の色</td></tr>
+      <tr><td>ライト方向補正</td><td>小数</td><td>0.12</td><td>-0.5〜0.5</td><td>光の向きが顔に当たる角度を、ずらします</td></tr>
+      <tr><td>顔影の柔らかさ</td><td>小数</td><td>0.12</td><td>0〜0.5</td><td>顔の影のふちのぼかし</td></tr>
+      <tr><td>正面補助光</td><td>小数</td><td>0.18</td><td>0〜1</td><td>正面から足す、影を弱める補助の光の量</td></tr>
+      <tr><td>顔の補助光色</td><td>色</td><td>R 255, G 224, B 209</td><td></td><td>補助光の色</td></tr>
+      <tr><td>SDFしきい値</td><td>小数</td><td>0.5</td><td>0〜1</td><td>SDF で影と光を分ける境目</td></tr>
+      <tr><td>SDFぼかし</td><td>小数</td><td>0.08</td><td>0.001〜0.5</td><td>SDF の境目のぼかし</td></tr>
+      <tr><td>SDF強度</td><td>小数</td><td>0</td><td>0〜1</td><td>SDF の影を効かせる強さ</td></tr>
+      <tr><td>鼻影マスク</td><td>小数</td><td>0</td><td>0〜1</td><td>鼻の影の強さ（マスク画像で決めます）</td></tr>
+      <tr><td>目の影応答</td><td>小数</td><td>0</td><td>0〜1</td><td>目のまわりが、影にどれだけ反応するか</td></tr>
+      <tr><td>前髪影</td><td>小数</td><td>0</td><td>0〜1</td><td>前髪が顔に落とす影の強さ</td></tr>
+      <tr><td>顔ボーンID</td><td>整数</td><td>0</td><td>0〜1023</td><td>顔の向きを決める骨の番号</td></tr>
+      <tr><td>顔Rightを反転</td><td>オン・オフ</td><td>オフ</td><td></td><td>顔の右向きの軸を反転します（向きが逆のとき）</td></tr>
+      <tr><td>顔Frontを反転</td><td>オン・オフ</td><td>オフ</td><td></td><td>顔の前向きの軸を反転します</td></tr>
+    </table>
+    </div>
+    <p>「Face SDF / Mask は下のShader PropertyでAssetを選択できます」と表示されます。SDF の画像とマスクの画像は、シェーダーの値の欄で選びます。</p>
+
+    <h4>髪・異方性反射</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>髪ハイライトを有効化</td><td>オン・オフ</td><td>オン</td><td></td><td>髪の、細長く伸びた光（天使の輪のようなつや）を使うか</td></tr>
+      <tr><td>髪ハイライト色</td><td>色</td><td>R 191, G 219, B 255</td><td></td><td>つやの色</td></tr>
+      <tr><td>ハイライト硬度</td><td>小数</td><td>48</td><td>1〜128</td><td>大きいほど、つやが細くなります</td></tr>
+      <tr><td>ハイライト強度</td><td>小数</td><td>0.32</td><td>0〜2</td><td>つやの強さ</td></tr>
+      <tr><td>異方性</td><td>小数</td><td>0.75</td><td>0〜1</td><td>髪の流れに沿って、つやが伸びる度合い</td></tr>
+      <tr><td>二重異方性</td><td>オン・オフ</td><td>オフ</td><td></td><td>2 本目のつやを足します</td></tr>
+      <tr><td>副ハイライト色</td><td>色</td><td>R 115, G 166, B 255</td><td></td><td>2 本目のつやの色</td></tr>
+      <tr><td>主シフト</td><td>小数</td><td>0</td><td>-1〜1</td><td>1 本目のつやの位置を、髪の流れに沿ってずらします</td></tr>
+      <tr><td>副シフト</td><td>小数</td><td>0.18</td><td>-1〜1</td><td>2 本目のつやの位置をずらします</td></tr>
+      <tr><td>副ハイライト硬度</td><td>小数</td><td>28</td><td>1〜128</td><td>2 本目のつやの細さ</td></tr>
+      <tr><td>副ハイライト強度</td><td>小数</td><td>0</td><td>0〜4</td><td>2 本目のつやの強さ</td></tr>
+      <tr><td>Tangent Source</td><td>選択</td><td>Bitangent</td><td>Vertex Tangent / Flow Map / Bitangent</td><td>髪の流れの向きを、どこから取るか</td></tr>
+      <tr><td>Flow強度</td><td>小数</td><td>1</td><td>0〜2</td><td>Flow Map を使うときの、流れの効き</td></tr>
+    </table>
+    </div>
+
+    <h4>目・角膜</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>Eye Shaderを有効化</td><td>オン・オフ</td><td>オフ</td><td></td><td>目専用の描き方を使うか</td></tr>
+      <tr><td>角膜ハイライト色</td><td>色</td><td>R 255, G 255, B 255</td><td></td><td>角膜（目の表面）のつやの色</td></tr>
+      <tr><td>角膜硬度</td><td>小数</td><td>96</td><td>1〜256</td><td>大きいほど、つやが小さくなります</td></tr>
+      <tr><td>角膜強度</td><td>小数</td><td>0</td><td>0〜4</td><td>つやの強さ</td></tr>
+      <tr><td>虹彩奥行き</td><td>小数</td><td>0</td><td>0〜0.1</td><td>黒目の奥行き感</td></tr>
+      <tr><td>目の影応答</td><td>小数</td><td>0.5</td><td>0〜1</td><td>目が、影にどれだけ反応するか</td></tr>
+      <tr><td>固定ハイライト</td><td>小数</td><td>0</td><td>0〜4</td><td>目に固定で入れる、白い光の強さ</td></tr>
+      <tr><td>ハイライト位置</td><td>2 つの小数</td><td>0, 0</td><td>-0.5〜0.5</td><td>固定ハイライトの位置</td></tr>
+      <tr><td>ハイライト視差</td><td>小数</td><td>0</td><td>0〜0.1</td><td>見る角度で、ハイライトが動く量</td></tr>
+    </table>
+    </div>
+
+    <h4>キャラクター輪郭</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>輪郭方式</td><td>選択</td><td>Geometry</td><td>Geometry / Screen / Both</td><td>Geometry は、輪郭線のレイヤー（Outline）で描く方式。Screen は、深度・法線・Material ID の境目で描く方式。Both は両方</td></tr>
+      <tr><td>Screen輪郭色</td><td>色</td><td>R 5, G 5, B 8</td><td></td><td>Screen 方式の輪郭の色</td></tr>
+      <tr><td>Screen輪郭幅</td><td>小数</td><td>1</td><td>0.5〜8</td><td>Screen 方式の輪郭の太さ</td></tr>
+      <tr><td>距離フェード</td><td>小数</td><td>0</td><td>0〜1</td><td>遠くで輪郭を薄くする量</td></tr>
+      <tr><td>Material ID</td><td>整数</td><td>1</td><td>0〜255</td><td>Screen 方式で、材質の境目を見分けるための番号</td></tr>
+    </table>
+    </div>
+    <p>「Geometryは既存Outline Layer、ScreenはDepth/Normal/Material ID境界です」と表示されます。</p>
+
+    <h4>鏡面反射</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>鏡面反射を有効化</td><td>オン・オフ</td><td>オン</td><td></td><td>つやを使うか</td></tr>
+      <tr><td>鏡面色</td><td>色</td><td>R 255, G 245, B 230</td><td></td><td>つやの色</td></tr>
+      <tr><td>鏡面硬度</td><td>小数</td><td>48</td><td>1〜256</td><td>大きいほど、つやが小さくなります</td></tr>
+      <tr><td>鏡面しきい値</td><td>小数</td><td>0.72</td><td>0〜1</td><td>つやが出る境目</td></tr>
+      <tr><td>鏡面強度</td><td>小数</td><td>0.24</td><td>0〜4</td><td>つやの強さ</td></tr>
+    </table>
+    </div>
+
+    <h4>リムライト</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>リムライトを有効化</td><td>オン・オフ</td><td>オン</td><td></td><td>輪郭のふちの光（リムライト）を使うか</td></tr>
+      <tr><td>リム色</td><td>色</td><td>R 158, G 199, B 255</td><td></td><td>ふちの光の色</td></tr>
+      <tr><td>リム範囲</td><td>小数</td><td>3.5</td><td>0.1〜12</td><td>大きいほど、光が細いふちに絞られます</td></tr>
+      <tr><td>リムしきい値</td><td>小数</td><td>0.35</td><td>0〜1</td><td>リムライトが出る境目</td></tr>
+      <tr><td>リム強度</td><td>小数</td><td>0.30</td><td>0〜4</td><td>ふちの光の強さ</td></tr>
+    </table>
+    </div>
+
+    <h4>透明・結晶</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>結晶表現を有効化</td><td>オン・オフ</td><td>オフ</td><td></td><td>結晶のような見た目を使うか</td></tr>
+      <tr><td>結晶色</td><td>色</td><td>R 107, G 209, B 255</td><td></td><td>結晶の色</td></tr>
+      <tr><td>透明度</td><td>小数</td><td>0</td><td>0〜1</td><td>透け具合</td></tr>
+      <tr><td>フレネル</td><td>小数</td><td>4</td><td>0.1〜12</td><td>ふちで、光や色が強くなる度合い</td></tr>
+      <tr><td>色分散</td><td>小数</td><td>0</td><td>0〜1</td><td>色がずれて見える量</td></tr>
+      <tr><td>内部発光</td><td>小数</td><td>0</td><td>0〜4</td><td>内側から光る強さ</td></tr>
+    </table>
+    </div>
+    <p>「背景屈折とOITは透明専用RenderPassで追加予定です」と表示されます。背景の屈折は、まだありません。</p>
+
+    <h3 id="preset-howto">使い方の例：プリセットから始めて、髪のつやだけ変える</h3>
+    <ol class="steps">
+      <li>プロジェクトパネルで、キャラのマテリアルを選び、<b>プリセット・キャラ材質</b> タブを開きます。</li>
+      <li>基本シェーダーが <b>トゥーン</b> になっていることを確かめます。</li>
+      <li>プリセット（たとえば <b>柔光アニメ</b>）のボタンを押します。</li>
+      <li>下の <b>髪・異方性反射</b> を開き、<b>ハイライト強度</b> を上げ、<b>髪ハイライト色</b> を変えます。</li>
+      <li>気に入ったら <b>プリセットを保存...</b> で、ファイルに残します。ほかのマテリアルでは <b>既存プリセットから開始...</b> で読み込みます。</li>
+    </ol>
+    <div class="warning"><strong>元に戻せません</strong>このタブの操作は、マテリアルの編集の Undo の対象ではありません。試す前に、マテリアルの保存や、<b>プリセットを保存...</b> で今の設定を残しておくと安全です。</div>
+
     <h2 id="stack">Shader Stack（レイヤー）</h2>
     <p><b>Shader Stack</b> の見出し（閉じた状態）を開くと、マテリアルにレイヤーを重ねられます。輪郭線やワイヤーフレームなど、描き足すものに使います。「陰影モデルは最後の有効な1枚、追加パスは上から順に描画します。ドラッグで順番を変更できます」と表示されます。</p>
     <div class="table-wrap">

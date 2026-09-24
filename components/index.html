@@ -30,6 +30,11 @@
       <li>Transform は全ての GameObject が必ず持っていて、外せません。</li>
     </ul>
 
+    <figure>
+      <img src="../images/components/add-component-categories.png" alt="コンポーネントを追加の分類一覧">
+      <figcaption>コンポーネントを追加を開いたところ。分類ごとに折りたたまれ、件数が付きます（Core 4、Rendering 16、Physics 7、Gameplay 12 など）。</figcaption>
+    </figure>
+
     <h2 id="core">Core</h2>
     <div class="table-wrap">
     <table>
@@ -50,6 +55,10 @@
       <tr><td><a href="mesh-renderers.html">Skinned Mesh Renderer</a></td><td>骨で動くモデルを表示する</td></tr>
       <tr><td><a href="animator.html">Animator</a></td><td>アニメーションの状態と切り替えを管理する</td></tr>
       <tr><td><a href="post-process-volume.html">Post Process Volume</a></td><td>ブルームや色補正など、画面全体の仕上げの設定</td></tr>
+      <tr><td><a href="water-body.html">Water Body</a></td><td>海・湖の水面（波、反射、屈折、泡、水中の表現）</td></tr>
+      <tr><td><a href="environment-volumes.html#local-fog">Local Fog Volume</a></td><td>範囲の中だけに霧を足す</td></tr>
+      <tr><td><a href="environment-volumes.html#reflection-probe">Reflection Probe</a></td><td>範囲の中に、周りの景色の映り込みを足す</td></tr>
+      <tr><td><a href="environment-volumes.html#probe-gi">Probe GI Volume</a></td><td>範囲の中の間接光（回り込む光）を計算する</td></tr>
       <tr><td><a href="sky.html">空</a></td><td>空・雲・星・月の背景</td></tr>
       <tr><td><a href="effect-stacks.html#screen">Screen Effect Stack</a></td><td>3D の画面全体にエフェクトを重ねる</td></tr>
       <tr><td><a href="effect-stacks.html#model">Model Effect Stack</a></td><td>モデルの見た目にエフェクトを重ねる</td></tr>
@@ -98,6 +107,8 @@
       <tr><td><a href="physics.html#box">Box Collider</a></td><td>箱の当たり判定</td></tr>
       <tr><td><a href="physics.html#capsule">Capsule Collider</a></td><td>カプセルの当たり判定（人型に向く）</td></tr>
       <tr><td><a href="physics.html#mesh">Mesh Collider</a></td><td>モデルの形そのままの当たり判定</td></tr>
+      <tr><td><a href="physics.html#convex">Convex Collider</a></td><td>点の集まりから作る凸包の当たり判定。動く物にも使える（点はコードから渡す）</td></tr>
+      <tr><td><a href="physics.html#buoyancy">Buoyancy</a></td><td>水に入った Rigidbody に浮力・水の抵抗・水流の力を加える</td></tr>
     </table>
     </div>
 
@@ -197,7 +208,25 @@
     </table>
     </div>
 
-    <div class="note"><strong>このドキュメントで扱わないもの</strong>コンポーネントを追加の <b>Gameplay</b> 分類（Character Motor、Character Input、Player Controller、Rotator、Health、Spawn Point、Checkpoint、Goal、Kill Volume、Jump Pad、Damage Area、Enemy Behaviour）は、アクションゲームのテンプレート用の部品なので、このドキュメントでは説明しません。これらは「テンプレート部品も表示する」をオフにすると一覧から隠れます（検索欄に名前を入れている間は表示されます）。</div>
+    <h2 id="gameplay">Gameplay（テンプレート用）</h2>
+    <p>アクション・プラットフォーマーのテンプレート用の部品です。詳しくは <a href="gameplay.html">Gameplay 部品</a> にまとめています。「テンプレート部品も表示する」をオフにすると一覧から隠れます（検索欄に名前を入れている間は表示されます）。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>役割</th></tr>
+      <tr><td><a href="gameplay.html#character-motor">Character Motor</a></td><td>移動・加速減速・重力・ジャンプ・接地</td></tr>
+      <tr><td><a href="gameplay.html#character-input">Character Input</a></td><td>操作（デバイスや AI からの入力）を保持する</td></tr>
+      <tr><td><a href="gameplay.html#player-controller">Player Controller</a></td><td>入力を Character Motor へ渡し、カメラ基準の移動や振り向きを行う</td></tr>
+      <tr><td><a href="gameplay.html#rotator">Rotator</a></td><td>一定の速さで回し続ける（動作確認用）</td></tr>
+      <tr><td><a href="gameplay.html#health">Health</a></td><td>最大体力・現在体力・無敵</td></tr>
+      <tr><td><a href="gameplay.html#spawn-point">Spawn Point</a></td><td>開始・復帰の地点</td></tr>
+      <tr><td><a href="gameplay.html#checkpoint">Checkpoint</a></td><td>通ると復帰地点が更新される</td></tr>
+      <tr><td><a href="gameplay.html#goal">Goal</a></td><td>ゴール到達のイベントを出す</td></tr>
+      <tr><td><a href="gameplay.html#kill-volume">Kill Volume</a></td><td>落下・即死の領域。復帰も行う</td></tr>
+      <tr><td><a href="gameplay.html#jump-pad">Jump Pad</a></td><td>触れた Character Motor を指定方向へ飛ばす</td></tr>
+      <tr><td><a href="gameplay.html#damage-area">Damage Area</a></td><td>中にいる Health へ一定間隔でダメージ</td></tr>
+      <tr><td><a href="gameplay.html#enemy">Enemy Behaviour</a></td><td>巡回・索敵・追跡・攻撃・帰還を行う敵</td></tr>
+    </table>
+    </div>
   </main>
 </div>
 <footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>

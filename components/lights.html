@@ -49,6 +49,7 @@
       <tr><td>深度バイアス (m)</td><td><code>shadow_depth_bias</code></td><td>小数</td><td>0.02</td><td>0〜0.5</td><td>影の縞模様（影のちらつき）を抑えるためのずらし量</td></tr>
       <tr><td>法線バイアス</td><td><code>shadow_normal_bias</code></td><td>小数</td><td>1.4</td><td>0〜6</td><td>面の向きに沿って影をずらす量。縞模様が出るときに上げます</td></tr>
       <tr><td>影の最遠距離</td><td><code>shadow_distance</code></td><td>小数</td><td>120</td><td>1〜2000</td><td>影を描く最大の距離</td></tr>
+      <tr><td>Volumetric 強度</td><td><code>volumetric_intensity</code></td><td>小数</td><td>0</td><td>0〜16</td><td>光が空気中の霧・もやに当たって見える「光の筋」の強さ。0 なら出ません（既定）。<a href="environment-volumes.html#local-fog">Local Fog Volume</a> などの霧と組み合わせると、光の筋が見えます</td></tr>
     </table>
     </div>
     <div class="warning"><strong>Directional Light は 1 つだけ使われます</strong>有効な Directional Light がシーンに 2 つ以上あっても、ゲームで使われるのはシーンの中で先にある 1 つだけです。2 つ以上あると、インスペクターに「Directional Light が N 個有効です。Runtime は先頭の 1 個だけを使用します。」と橙で表示されます。</div>
@@ -65,6 +66,7 @@
       <tr><td>深度バイアス (m)</td><td><code>shadow_depth_bias</code></td><td>小数</td><td>0.02</td><td>0〜0.5</td><td>影のちらつきを抑えるずらし量。影の計算では 0.05 より大きい値は 0.05 として扱うので、0.05 を超えても効き方は変わりません</td></tr>
       <tr><td>法線バイアス</td><td><code>shadow_normal_bias</code></td><td>小数</td><td>1.5</td><td>0〜6</td><td>面の向きに沿って影をずらす量</td></tr>
       <tr><td>影のニア</td><td><code>shadow_near_plane</code></td><td>小数</td><td>0.15</td><td>0.01〜10</td><td>ライトからこれより近い物は影を作りません</td></tr>
+      <tr><td>Volumetric 強度</td><td><code>volumetric_intensity</code></td><td>小数</td><td>0</td><td>0〜16</td><td>光が空気中の霧・もやに当たって見える「光の筋」の強さ。0 なら出ません（既定）。<a href="environment-volumes.html#local-fog">Local Fog Volume</a> などの霧と組み合わせると、光の筋が見えます</td></tr>
     </table>
     </div>
 
@@ -82,6 +84,7 @@
       <tr><td>深度バイアス (m)</td><td><code>shadow_depth_bias</code></td><td>小数</td><td>0.02</td><td>0〜0.5</td><td>影のちらつきを抑えるずらし量。影の計算では 0.05 より大きい値は 0.05 として扱うので、0.05 を超えても効き方は変わりません</td></tr>
       <tr><td>法線バイアス</td><td><code>shadow_normal_bias</code></td><td>小数</td><td>1.5</td><td>0〜6</td><td>面の向きに沿って影をずらす量</td></tr>
       <tr><td>影のニア</td><td><code>shadow_near_plane</code></td><td>小数</td><td>0.15</td><td>0.01〜10</td><td>ライトからこれより近い物は影を作りません</td></tr>
+      <tr><td>Volumetric 強度</td><td><code>volumetric_intensity</code></td><td>小数</td><td>0</td><td>0〜16</td><td>光が空気中の霧・もやに当たって見える「光の筋」の強さ。0 なら出ません（既定）。<a href="environment-volumes.html#local-fog">Local Fog Volume</a> などの霧と組み合わせると、光の筋が見えます</td></tr>
     </table>
     </div>
 

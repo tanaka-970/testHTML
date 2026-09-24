@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>局所霧・Reflection Probe・Probe GI - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / 局所霧・Reflection Probe・Probe GI</div>
+    <h1>局所霧・Reflection Probe・Probe GI</h1>
+    <p class="meta">対象：RePlayEngine ソース 08fb8f40（2026-09-24 に実装を確認）</p>
+
+    <p>シーンの一部の範囲だけに効かせる、環境の見た目の部品が 3 つあります。どれも GameObject の位置を中心にした箱（または球）の範囲を持ちます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>部品</th><th>役割</th></tr>
+      <tr><td><a href="#local-fog">Local Fog Volume</a></td><td>範囲の中だけに霧を足す</td></tr>
+      <tr><td><a href="#reflection-probe">Reflection Probe</a></td><td>範囲の中の物に、周りの景色の映り込みを足す</td></tr>
+      <tr><td><a href="#probe-gi">Probe GI Volume</a></td><td>範囲の中の間接光（壁で跳ね返って回り込む光）を計算する</td></tr>
+    </table>
+    </div>
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>洞窟の入口や谷間など、<b>ここだけ</b>霧を濃くしたいとき（Local Fog Volume）</li>
+      <li>屋内の金属や光沢のある床に、周りの景色の映り込みを足したいとき（Reflection Probe）</li>
+      <li>日が当たらない室内の隅を、壁から跳ね返る光でほんのり明るくしたいとき（Probe GI Volume）</li>
+      <li>画面全体の設定では、場所ごとの違いを出せないとき</li>
+    </ul>
+
+    <p>追加のしかたはどれも共通です。GameObject を選び、インスペクターの <b>コンポーネントを追加</b> の検索欄に部品名を入れて選びます。範囲の大きさは Transform の拡大率ではなく、各部品の「範囲」の欄で決めます。</p>
+
+    <p>3 つとも、<b>コンポーネントを追加 &gt; Rendering</b> の中にあります。</p>
+    <figure>
+      <img src="../images/components/add-component-rendering-list.png" alt="Rendering の一覧">
+      <figcaption>コンポーネントを追加 &gt; Rendering (16) を開いたところ。Local Fog Volume、Reflection Probe、Probe GI Volume、Water Body が並びます。</figcaption>
+    </figure>
+
+    <div class="warning"><strong>先に、全体のスイッチを確かめてください</strong>この 3 つの部品は、次の設定がオンのときだけ働きます。既定は<b>オフ</b>のものがあります。
+      <ul>
+        <li><b>Local Fog Volume</b>：<b>ボリューメトリック &gt; 有効</b> がオンのとき。オフだと、置いても霧は出ません。</li>
+        <li><b>Reflection Probe</b>：<b>反射プローブ &gt; 使う</b> がオン（既定でオン）のとき。</li>
+        <li><b>Probe GI Volume</b>：<b>Probe GI &gt; 有効</b> がオンで、さらに Volume 側の <b>GI 有効</b> もオンのとき。</li>
+      </ul>
+      これらは、プロジェクト設定の「環境描画のプロジェクト既定値」にあります（<a href="../settings/project-settings.html#environment-defaults">プロジェクト設定</a>）。シーンごとに変えたいときは、階層パネルの <b>描画設定</b> で「このシーンでプロジェクト既定値を上書き」します。</div>
+
+    <h2 id="local-fog">Local Fog Volume（局所霧）</h2>
+    <p>Box または Sphere の範囲に、霧を足します。洞窟の入口、煙が立ちこめる場所、谷間の朝もやなど、シーン全体ではなく<b>ここだけ</b>に霧を置きたいときに使います。</p>
+
+    <h3>プロパティ</h3>
+    <figure>
+      <img src="../images/components/local-fog-inspector.png" alt="Local Fog Volume のインスペクター">
+      <figcaption>Local Fog Volume。形状、Box 半径、Sphere 半径、密度、散乱色、境界フェード。</figcaption>
+    </figure>
+
+    <figure>
+      <img src="../images/components/local-fog-inspector-2.png" alt="Local Fog Volume 下半分">
+      <figcaption>ノイズ、ノイズスケール、ノイズ強度、優先度。</figcaption>
+    </figure>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>形状</td><td><code>shape</code></td><td>選択</td><td>Box</td><td></td><td>霧の形です。Box か Sphere</td></tr>
+      <tr><td>Box 半径</td><td><code>half_extents</code></td><td>3 つの数</td><td>5, 5, 5</td><td></td><td>Box のとき、中心から各面までの距離（X・Y・Z）です。全体の大きさは 2 倍になります</td></tr>
+      <tr><td>Sphere 半径</td><td><code>radius</code></td><td>小数</td><td>5</td><td>0.01〜10000</td><td>Sphere のときの半径です</td></tr>
+      <tr><td>密度</td><td><code>density</code></td><td>小数</td><td>0.35</td><td>0〜16</td><td>霧の濃さです。大きいほど向こうが見えなくなります</td></tr>
+      <tr><td>散乱色</td><td><code>color</code></td><td>色</td><td>R 217, G 230, B 255（色は 0〜255 の整数で入れます）</td><td></td><td>霧の色です</td></tr>
+      <tr><td>境界フェード</td><td><code>falloff</code></td><td>小数</td><td>1</td><td>0〜32</td><td>範囲のふちで霧がだんだん薄れる幅です。0 だとふちがくっきり出ます</td></tr>
+      <tr><td>ノイズ</td><td><code>noise_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、霧に濃い所・薄い所のむらが付きます</td></tr>
+      <tr><td>ノイズスケール</td><td><code>noise_scale</code></td><td>小数</td><td>0.25</td><td>0.001〜64</td><td>むらの細かさです</td></tr>
+      <tr><td>ノイズ強度</td><td><code>noise_strength</code></td><td>小数</td><td>0.25</td><td>0〜1</td><td>むらの目立ち方です</td></tr>
+      <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td></td><td>霧が重なる場所で、どちらを優先するかを決める数です</td></tr>
+    </table>
+    </div>
+    <p>Box 半径は Box のときだけ、Sphere 半径は Sphere のときだけ効きます。霧は、体積のある空間（ボリューム）に密度を足す方式です。</p>
+
+    <h3>使い方の例：洞窟の入口に霧を置く</h3>
+    <ol class="steps">
+      <li>階層パネルで <b>＋ 作成 &gt; 空の GameObject</b> を作り、洞窟の入口の位置へ動かします。</li>
+      <li><b>コンポーネントを追加</b> から <b>Local Fog Volume</b> を追加します。</li>
+      <li><b>形状</b> は Box のまま、<b>Box 半径</b> を洞窟の入口が入る大きさ（たとえば 4, 3, 4）にします。</li>
+      <li><b>密度</b> を 0.5 くらいに上げ、<b>散乱色</b> を少し暗い色にします。</li>
+      <li>ふちが目立つときは <b>境界フェード</b> を大きくします。むらが欲しいときは <b>ノイズ</b> をオンにします。</li>
+    </ol>
+
+    <h2 id="reflection-probe">Reflection Probe（局所反射）</h2>
+    <p>範囲の中の物へ、周りの景色の映り込み（反射）を足す部品です。Screen Space Reflection（SSR）は画面に映っているものしか反射できないので、画面の外にある景色や、裏側の景色は映せません。Reflection Probe は、置いた場所から周囲を撮影しておき、それを反射として使うので、そこを補えます。室内の金属、光沢のある床、水面（<a href="water-body.html">Water Body</a>）の周りなどで使います。</p>
+
+    <h3>プロパティ</h3>
+    <figure>
+      <img src="../images/components/reflection-probe-inspector.png" alt="Reflection Probe のインスペクター">
+      <figcaption>Reflection Probe の下半分。いちばん下に「Reflection Probe を再キャプチャ」と「Reflection Cache を消す」の 2 つのボタンがあります。</figcaption>
+    </figure>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>範囲</td><td><code>half_extents</code></td><td>3 つの数</td><td>5, 5, 5</td><td></td><td>反射を効かせる箱の、中心から各面までの距離です。部屋なら部屋の大きさに合わせます</td></tr>
+      <tr><td>ブレンド距離</td><td><code>blend_distance</code></td><td>小数</td><td>1</td><td>0〜1000</td><td>範囲のふちで、反射が周りとなじむ幅です</td></tr>
+      <tr><td>強さ</td><td><code>intensity</code></td><td>小数</td><td>1</td><td>0〜8</td><td>反射の強さです</td></tr>
+      <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td></td><td>Probe の範囲が重なる場所で、どちらを優先するかを決める数です</td></tr>
+      <tr><td>Box Projection</td><td><code>box_projection</code></td><td>オン・オフ</td><td>オン</td><td></td><td>反射を、範囲の箱の壁に貼り付けたように補正します。四角い部屋の中では、映り込みの位置が現実に近くなります</td></tr>
+      <tr><td>Capture 解像度</td><td><code>capture_resolution</code></td><td>整数</td><td>128</td><td>32〜1024（32 刻み）</td><td>撮影する画像の大きさです。大きいほど細かい映り込みになり、重く、メモリも使います</td></tr>
+      <tr><td>Realtime 更新</td><td><code>realtime</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オフ（Bake）では、撮影した結果を保存して使い回します。オンでは、毎フレーム 1 面ずつ撮り直すので、動く物も映りますが重くなります</td></tr>
+      <tr><td>Capture Revision</td><td><code>capture_revision</code></td><td>整数</td><td>0</td><td></td><td>再撮影の世代番号です。下の「再キャプチャ」ボタンで増えます。手で書き換える必要はありません</td></tr>
+      <tr><td>Cache Clear Revision</td><td><code>cache_clear_revision</code></td><td>整数</td><td>0</td><td></td><td>保存済みキャッシュを消した世代の番号です（詳細項目）。ボタンで増えます</td></tr>
+    </table>
+    </div>
+
+    <h3>インスペクターのボタン</h3>
+    <ul>
+      <li><b>Reflection Probe を再キャプチャ</b>：シーンを変えたあと、撮影し直します（Realtime がオフのとき）。</li>
+      <li><b>Reflection Cache を消す</b>：保存してあった撮影結果を消します。映り込みが古いままのときに押します。</li>
+      <li>Bake（Realtime 更新がオフ）の結果は、シーンファイルの隣にキャッシュとして保存されます。</li>
+    </ul>
+
+    <h3>使い方の例：室内の床に部屋の映り込みを付ける</h3>
+    <ol class="steps">
+      <li>部屋の中央に空の GameObject を置き、<b>Reflection Probe</b> を追加します。</li>
+      <li><b>範囲</b> を部屋の半分の大きさ（幅 10 m の部屋なら X を 5）に合わせます。</li>
+      <li><b>Box Projection</b> がオンなことを確かめます。</li>
+      <li>家具や壁を動かしたあとは、<b>Reflection Probe を再キャプチャ</b> を押します。</li>
+      <li>映り込みが強すぎるときは <b>強さ</b> を下げます。隣の部屋との境目が目立つときは <b>ブレンド距離</b> を大きくします。</li>
+    </ol>
+
+    <h2 id="probe-gi">Probe GI Volume（Probe による間接光）</h2>
+    <p>範囲の中に Probe（光を測る点）を格子状に並べ、壁や床で跳ね返って回り込んだ光（間接光）を作ります。日が当たらない室内の隅がほんのり明るくなる、赤い壁の近くの床がうっすら赤くなる、といった表現です。DXR（ハードウェアのレイトレーシング）は使わない方式です。</p>
+    <div class="warning"><strong>既定ではオフです</strong>追加した直後は <b>GI 有効</b> がオフです。何も変わらないときは、まずここをオンにします。</div>
+
+    <h3>プロパティ</h3>
+    <figure>
+      <img src="../images/components/probe-gi-inspector-1.png" alt="Probe GI Volume のインスペクター">
+      <figcaption>Probe GI Volume の上半分。「GI 有効」のチェックは初期状態でオフです。</figcaption>
+    </figure>
+
+    <figure>
+      <img src="../images/components/probe-gi-inspector-2.png" alt="Probe GI Volume の下半分">
+      <figcaption>いちばん下に「Probe GI 更新をリセット」と「Probe GI Cache を消す」のボタン。更新方式が 1（Baked）だと、左のボタンが「Probe GI を焼く / 焼き直す」に変わります。</figcaption>
+    </figure>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>GI 有効</td><td><code>enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>この Volume の間接光を使うかどうか</td></tr>
+      <tr><td>範囲</td><td><code>half_extents</code></td><td>3 つの数</td><td>10, 5, 10</td><td></td><td>Probe を並べる箱の、中心から各面までの距離です</td></tr>
+      <tr><td>Probe 間隔</td><td><code>spacing</code></td><td>3 つの数</td><td>1, 1, 1</td><td></td><td>Probe と Probe の間の距離（X・Y・Z）です。小さいほど細かい光になりますが、Probe の数と負荷が増えます。プロジェクト側の Probe 数の上限を超える場合は、実行時に間隔を自動で広げ、インスペクターに橙色で知らせます</td></tr>
+      <tr><td>1フレーム更新数</td><td><code>probes_per_frame</code></td><td>整数</td><td>8</td><td>1〜128</td><td>Realtime のとき、1 フレームで更新する Probe の数です。大きいと早く反映されますが、そのぶん重くなります</td></tr>
+      <tr><td>GI 強さ</td><td><code>intensity</code></td><td>小数</td><td>1</td><td>0〜8</td><td>間接光の明るさです</td></tr>
+      <tr><td>履歴保持</td><td><code>hysteresis</code></td><td>小数</td><td>0.96</td><td>0〜0.999</td><td>前の結果をどれだけ残すかです。大きいと光の変化がゆっくりで安定し、小さいと変化に素早く追従しますがちらつきやすくなります</td></tr>
+      <tr><td>Normal Bias</td><td><code>normal_bias</code></td><td>小数</td><td>0.15</td><td>0〜2</td><td>面の向きに沿って測る位置をずらす量です。壁際で光が漏れるときに上げます</td></tr>
+      <tr><td>View Bias</td><td><code>view_bias</code></td><td>小数</td><td>0.05</td><td>0〜2</td><td>カメラの方向に測る位置をずらす量です</td></tr>
+      <tr><td>壁内 Probe の自動再配置</td><td><code>relocate_probes</code></td><td>オン・オフ</td><td>オン</td><td></td><td>壁の中に入ってしまった Probe を、壁の外へ押し戻します</td></tr>
+      <tr><td>更新方式</td><td><code>update_mode</code></td><td>数（0 か 1 を入力）</td><td>0</td><td>0〜1</td><td>数字を直接入れる欄です（選択肢の一覧ではありません）。0 は Realtime（少しずつ更新し続ける）、1 は Baked（全部の更新が終わったら固定し、更新し直すまで変わらない）</td></tr>
+      <tr><td>バウンス回数</td><td><code>bounce_count</code></td><td>整数</td><td>1</td><td>1〜2</td><td>光が跳ね返る回数です。2 にするとより明るく自然になりますが、重くなります</td></tr>
+      <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td></td><td>Volume が重なる場所で、どちらを優先するかを決める数です</td></tr>
+      <tr><td>Bake Revision</td><td><code>bake_revision</code></td><td>整数</td><td>0</td><td></td><td>焼き直し・更新リセットの世代番号です。ボタンで増えます</td></tr>
+      <tr><td>Cache Clear Revision</td><td><code>cache_clear_revision</code></td><td>整数</td><td>0</td><td></td><td>保存済みキャッシュを消した世代の番号です（詳細項目）</td></tr>
+    </table>
+    </div>
+
+    <h3>インスペクターのボタン</h3>
+    <ul>
+      <li><b>Probe GI を焼く / 焼き直す</b>（更新方式が Baked のとき）／ <b>Probe GI 更新をリセット</b>（Realtime のとき）：更新を最初からやり直します。シーンの形や明かりを変えたあとに押します。</li>
+      <li><b>Probe GI Cache を消す</b>：シーンの隣に保存された結果を消します。</li>
+      <li>更新中は「GI 更新 ○○%（○ / ○ Probe）」と進み具合が出ます。Baked は全 Probe の更新が終わると固定され、結果がキャッシュとして保存されます。</li>
+    </ul>
+
+    <h3>使い方の例：室内に間接光を入れる</h3>
+    <ol class="steps">
+      <li>部屋の中央に空の GameObject を置き、<b>Probe GI Volume</b> を追加します。</li>
+      <li><b>GI 有効</b> をオンにします。</li>
+      <li><b>範囲</b> を部屋がすっぽり入る大きさにします。</li>
+      <li>最初は <b>Probe 間隔</b> を 2, 2, 2 くらいにして、進み具合が 100% になるまで待ちます。</li>
+      <li>暗い隅の光がまだ粗いときだけ、間隔を 1 に近づけます。</li>
+      <li>動かない部屋なら、<b>更新方式</b> を 1（Baked）にして、<b>Probe GI を焼く / 焼き直す</b> を押します。以降は負荷がかかりません。</li>
+    </ol>
+
+    <div class="note"><strong>ヒント</strong>Reflection Probe は「映り込み（つやのある光）」、Probe GI は「回り込む光（ぼんやりした明るさ）」を担当します。室内では両方を同じ範囲に置くと自然になります。</div>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="post-process-volume.html">Post Process Volume</a>（画面全体の SSR・SSAO など）</li>
+      <li><a href="water-body.html">Water Body</a></li>
+      <li><a href="lights.html">ライト</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

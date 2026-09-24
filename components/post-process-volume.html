@@ -17,14 +17,17 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
     <h1>Post Process Volume</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：RePlayEngine ソース 08fb8f40（2026-09-24 に実装を確認）</p>
 
-    <p>画面全体の仕上げ（光のにじみ、周辺を暗くする効果、明るさ、色味、陰影の強調など）を、シーンごとに決めるコンポーネントです。シーンに置いておくと、そのシーンを表示している間、画面の仕上げがこのコンポーネントの値になります。</p>
+    <p>画面の仕上げ（光のにじみ、周辺を暗くする効果、明るさ、色味、陰影の強調など）を決めるコンポーネントです。<b>シーン全体</b>に効かせることも、<b>箱の範囲の中にカメラが入ったときだけ</b>効かせることもできます。複数置くと、優先度の順に重ねて、重み（ブレンド強度）に応じて混ぜます。</p>
 
     <h2 id="when">こんなときに使う</h2>
     <ul>
       <li>シーンごとに、光のにじみ、明るさ、色味などの画面の仕上げを変えたいとき</li>
       <li>暗い場面や回想シーンなど、一時的に別の仕上げに切り替えたいとき</li>
+      <li>洞窟や建物の中に入ったときだけ、暗くする・色味を変えるなど、<b>場所ごと</b>に仕上げを変えたいとき</li>
+      <li>入口で少しずつ切り替わるよう、なめらかに混ぜたいとき（ブレンド距離）</li>
+      <li>明るさが変わる場所で、自動で露出を合わせたいとき（露出モード）</li>
     </ul>
 
     <h2 id="info">基本情報</h2>
@@ -34,7 +37,7 @@
       <tr><td>コンポーネントを追加での場所</td><td>Rendering &gt; Post Process Volume</td></tr>
       <tr><td>必須・推奨</td><td>なし</td></tr>
       <tr><td>効く場面</td><td>エディターのシーンビューと、ゲームの実行中の両方</td></tr>
-      <tr><td>効く範囲</td><td>画面全体。GameObject の位置や大きさは関係ありません</td></tr>
+      <tr><td>効く範囲</td><td><b>シーン全体に適用</b> がオン（既定）なら画面全体。オフなら、この GameObject の位置・回転・拡大率と <b>範囲の半幅</b> で決まる箱の中にカメラがあるときだけ効き、箱の外へ向かって <b>ブレンド距離</b> だけかけてなだらかに弱まります</td></tr>
     </table>
     </div>
 
@@ -43,10 +46,30 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>入力の範囲</th><th>使われる範囲</th><th>説明</th></tr>
-      <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td>-100〜100</td><td></td><td>複数あるときに、どれを使うかを決めます（<a href="#select">下を見てください</a>）</td></tr>
+      <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td>-100〜100</td><td></td><td>複数あるときの重ねる順番です。大きいほど後から重なり、上書きします（<a href="#select">下を見てください</a>）</td></tr>
+      <tr><td>シーン全体に適用</td><td><code>global</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>オフにすると、位置・回転・拡大率と範囲で決めた箱の中にカメラが入ったときだけ効きます</td></tr>
+      <tr><td>範囲の半幅</td><td><code>half_extents</code></td><td>3 つの数</td><td>5, 5, 5</td><td></td><td></td><td>「シーン全体に適用」がオフのとき、箱の中心から各面までの距離（ローカル座標）。全体の大きさは 2 倍になります</td></tr>
+      <tr><td>ブレンド距離</td><td><code>blend_distance</code></td><td>小数</td><td>1</td><td>0〜100</td><td></td><td>箱の外側で効果がなだらかに弱まる距離。0 だと、箱に入った瞬間に切り替わります。Volume が多いと CPU 負荷が増えます</td></tr>
+      <tr><td>ブレンド強度</td><td><code>blend_weight</code></td><td>小数</td><td>1</td><td>0〜1</td><td></td><td>この Volume をどれだけ効かせるか。0 は効かず、1 は範囲内で完全に効きます</td></tr>
+      <tr><td>Bloom を上書き</td><td><code>override_bloom</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>オンのグループだけ、この Volume の値が使われます（<a href="#override">上書き</a>）。Bloom に関する値すべてが対象です</td></tr>
+      <tr><td>露出を上書き</td><td><code>override_exposure</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>露出、露出モード、Auto の EV・順応速度が対象です</td></tr>
+      <tr><td>露出補正を上書き</td><td><code>override_exposure_compensation</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>露出モードや順応速度は変えずに、自動露出の補正だけを上書きします</td></tr>
+      <tr><td>ビネットを上書き</td><td><code>override_vignette</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>ビネットのオン・オフと強度</td></tr>
+      <tr><td>SSAO を上書き</td><td><code>override_ssao</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>SSAO のオン・オフ、半径、強度</td></tr>
+      <tr><td>SSR を上書き</td><td><code>override_ssr</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>SSR のオン・オフと強度</td></tr>
+      <tr><td>TAA を上書き</td><td><code>override_taa</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>TAA のオン・オフ</td></tr>
+      <tr><td>色フィルタを上書き</td><td><code>override_color_filter</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>色フィルタ</td></tr>
+      <tr><td>最終合成を上書き</td><td><code>override_final_pass</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>最終合成のオン・オフ</td></tr>
+      <tr><td>FXAA を上書き</td><td><code>override_fxaa</code></td><td>オン・オフ</td><td><b>オフ</b></td><td></td><td></td><td>TAA が無効なカメラだけに、FXAA の設定を上書きします</td></tr>
+      <tr><td>FXAA を使う</td><td><code>fxaa_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>輪郭のギザギザを軽く平らにする方式。TAA が有効なときは自動で無効になります</td></tr>
+      <tr><td>FXAA 強度</td><td><code>fxaa_strength</code></td><td>小数</td><td>1</td><td>0〜1</td><td></td><td>輪郭の平滑化の強さ。TAA が有効なときは使われません</td></tr>
       <tr><td>Bloom を使う</td><td><code>bloom_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>明るい部分から光がにじみ出る効果</td></tr>
       <tr><td>Bloom しきい値</td><td><code>bloom_threshold</code></td><td>小数</td><td>1</td><td>0〜16</td><td>0〜8</td><td>この明るさより明るい部分がにじみます。小さいほど多くの部分がにじみます</td></tr>
       <tr><td>Bloom 強度</td><td><code>bloom_intensity</code></td><td>小数</td><td>1</td><td>0〜8</td><td>0〜8</td><td>にじみの強さ</td></tr>
+      <tr><td>Bloom ソフトニー</td><td><code>bloom_soft_knee</code></td><td>小数</td><td>0.5</td><td>0〜1</td><td>0〜1</td><td>しきい値の前後をなだらかにつなぐ幅。大きいと、にじみの始まりがやわらかくなります</td></tr>
+      <tr><td>Bloom クランプ</td><td><code>bloom_clamp</code></td><td>小数</td><td>32</td><td>1〜128</td><td>1〜128</td><td>極端に明るい点がにじみを強くしすぎないよう、明るさの上限を決めます</td></tr>
+      <tr><td>Bloom 拡散</td><td><code>bloom_scatter</code></td><td>小数</td><td>0.7</td><td>0〜1</td><td>0〜1</td><td>にじみが広がる度合い。大きいほど遠くまで広がります</td></tr>
+      <tr><td>Bloom アナモルフィック</td><td><code>bloom_anamorphic_ratio</code></td><td>小数</td><td>0</td><td>-1〜1</td><td>-1〜1</td><td>にじみを横長・縦長にゆがめます。0 なら円形</td></tr>
       <tr><td>輝度抽出を使う</td><td><code>luminance_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>Bloom のために明るい部分を取り出す処理</td></tr>
       <tr><td>最終合成を使う</td><td><code>final_pass_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>仕上げの効果を最後に画面へ合成する処理</td></tr>
       <tr><td>ビネットを使う</td><td><code>vignette_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td></td><td>画面の四隅を暗くする効果</td></tr>
@@ -58,33 +81,40 @@
       <tr><td>SSR 強度</td><td><code>ssr_intensity</code></td><td>小数</td><td>1</td><td>0〜8</td><td>0〜4</td><td>映り込みの強さ</td></tr>
       <tr><td>TAA を使う</td><td><code>taa_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td><td>前のフレームと重ねて、ふちのギザギザやちらつきを減らす効果</td></tr>
       <tr><td>露出</td><td><code>exposure</code></td><td>小数</td><td>1</td><td>0.01〜8</td><td>0.01〜8</td><td>画面全体の明るさの倍率</td></tr>
+      <tr><td>露出モード</td><td><code>exposure_mode</code></td><td>整数（0 か 1）</td><td>0</td><td>0〜1</td><td></td><td>0 は上の <b>露出</b> の値で固定、1 は明るさに合わせて自動で露出を変える「自動露出」です</td></tr>
+      <tr><td>Auto 最小 EV</td><td><code>auto_exposure_min_ev</code></td><td>小数</td><td>-8</td><td>-16〜16</td><td>-16〜16</td><td>自動露出で、いちばん暗く補正してよい下限（EV 値）</td></tr>
+      <tr><td>Auto 最大 EV</td><td><code>auto_exposure_max_ev</code></td><td>小数</td><td>8</td><td>-16〜16</td><td>最小 EV〜16</td><td>自動露出で、いちばん明るく補正してよい上限</td></tr>
+      <tr><td>Auto 露出補正</td><td><code>auto_exposure_compensation</code></td><td>小数</td><td>0</td><td>-8〜8</td><td>-8〜8</td><td>自動露出の結果に足す補正。プラスで明るく、マイナスで暗くします</td></tr>
+      <tr><td>明順応速度</td><td><code>auto_exposure_speed_up</code></td><td>小数</td><td>3</td><td>0.01〜10</td><td>0.01〜10</td><td>暗い場所から明るい場所へ出たとき、露出が合う速さ</td></tr>
+      <tr><td>暗順応速度</td><td><code>auto_exposure_speed_down</code></td><td>小数</td><td>1</td><td>0.01〜10</td><td>0.01〜10</td><td>明るい場所から暗い場所へ入ったとき、露出が合う速さ</td></tr>
       <tr><td>色フィルタ</td><td><code>color_filter</code></td><td>色</td><td>白</td><td></td><td></td><td>画面全体に掛ける色。白なら色は変わりません</td></tr>
     </table>
     </div>
 
-    <h2 id="select">どの Post Process Volume が使われるか</h2>
+    <h2 id="select">複数の Post Process Volume の混ざり方</h2>
     <ul>
-      <li>使われるのは 1 つだけです。複数の値を混ぜることはありません。</li>
-      <li>有効な Post Process Volume のうち、<b>優先度</b> がいちばん大きいものが使われます。</li>
-      <li>優先度が同じなら、シーンの中で先にあるものが使われます。</li>
+      <li>有効な Post Process Volume を、<b>優先度の小さい順</b>に 1 つずつ重ねていきます。いちばん大きい優先度が最後に重なるので、いちばん強く効きます。優先度が同じなら、シーンの中で先にあるものが先に重なります。</li>
+      <li>重ねる前の値は、階層パネルの <b>ポスト処理</b>・<b>描画設定</b> の値です。各 Volume は、その値に向けて、<b>重み</b>の分だけ近づけます（重み 1 で Volume の値そのもの、0.5 で中間）。</li>
+      <li>重みは、<b>ブレンド強度</b> です。「シーン全体に適用」がオフの Volume では、さらにカメラと箱の距離で決まる係数（箱の中は 1、外へ離れるほど 0 に向かう）が掛かります。重みが 0 の Volume は数えません。</li>
+      <li>数値（強度・半径など）は重みに応じてなめらかに混ざります。オン・オフのチェック類は混ざらず、重みが 0.5 以上のときに Volume の値へ切り替わります。</li>
       <li>GameObject かコンポーネントが無効（親が無効な場合も含む）のものは数えません。</li>
     </ul>
 
+    <h2 id="override">「〜を上書き」のチェック</h2>
+    <p>項目名の末尾が「を上書き」のチェックは、その<b>グループの値を、この Volume が決めるかどうか</b>を選びます。オフにしたグループは、この Volume では何も変えません（下の値は無視されます）。たとえば、洞窟の Volume で「ビネットを上書き」だけをオンにし、ほかをオフにすると、ビネット以外は元のままです。</p>
+    <p>FXAA だけは、既定でオフです。TAA を使うカメラでは、FXAA は使われません。</p>
+
     <h2 id="world-settings">階層パネルの「ポスト処理」「描画設定」との関係</h2>
-    <p>階層パネルの <b>ポスト処理</b> と <b>描画設定</b> を選ぶと、インスペクターで画面の仕上げを設定できます。シーンに有効な Post Process Volume が 1 つでもあると、次の値はその Volume の値に置き換わります。</p>
+    <p>階層パネルの <b>ポスト処理</b> と <b>描画設定</b> の値が、Volume を重ねる前の土台になります。Volume が効いている間は、その Volume が上書きするグループの値が混ざります。</p>
     <div class="table-wrap">
     <table>
-      <tr><th>置き換わる値</th><th>元の設定の場所</th></tr>
-      <tr><td>Bloom のオン・オフ、しきい値、強度、輝度抽出、最終合成、ビネットのオン・オフと強度、露出、色フィルタ</td><td>ポスト処理</td></tr>
+      <tr><th>混ざる値</th><th>元の設定の場所</th></tr>
+      <tr><td>Bloom、輝度抽出、最終合成、ビネット、露出（自動露出を含む）、色フィルタ</td><td>ポスト処理</td></tr>
       <tr><td>SSAO・SSR・TAA のオン・オフ、SSAO の半径と強度、SSR の強度</td><td>描画設定 の「スクリーン空間パス (SSAO / SSR / TAA)」</td></tr>
     </table>
     </div>
-    <p>次の値は Volume があっても変わらず、元の設定が使われます。</p>
-    <ul>
-      <li>FXAA のオン・オフ（ポスト処理）</li>
-      <li>SSAO・SSR・TAA の細かい調整値（描画設定）</li>
-    </ul>
-    <div class="warning"><strong>描画設定で SSAO を切っても消えないとき</strong>Post Process Volume があると、SSAO・SSR・TAA のオン・オフは Volume の値が使われます。描画設定のチェックを外しても効果が消えないときは、シーンの Post Process Volume の <b>SSAO を使う</b> などを確かめてください。Post Process Volume の既定値は、SSAO と TAA がオンです。</div>
+    <p>SSAO・SSR・TAA の細かい調整値（描画設定）は、Volume では変わらず、元の設定が使われます。</p>
+    <div class="warning"><strong>描画設定で SSAO を切っても消えないとき</strong>Post Process Volume があると、SSAO・SSR・TAA のオン・オフは Volume の値へ切り替わります（「SSAO を上書き」がオンの間）。描画設定のチェックを外しても効果が消えないときは、シーンの Post Process Volume の <b>SSAO を使う</b> などを確かめてください。Post Process Volume の既定値は、SSAO と TAA がオンです。</div>
     <p>起動オプションの <code>--screen-space</code> で指定した値は、Volume の値よりさらに後から上書きされます（<a href="../settings/command-line.html">起動オプション</a>）。</p>
 
     <h2 id="usage">使い方</h2>
@@ -96,7 +126,20 @@
       <li><b>露出</b> を 1 より小さくすると暗く、大きくすると明るくなります。</li>
     </ol>
     <h3>一時的に別の仕上げにする</h3>
-    <p>優先度の大きい Post Process Volume を別に置いておき、GameObject を有効・無効にして切り替えます。有効にしている間だけ、そちらの値が使われます。</p>
+    <p>優先度の大きい Post Process Volume を別に置いておき、GameObject を有効・無効にして切り替えます。有効にしている間だけ、そちらの値が重なります。</p>
+    <h3>洞窟の中だけ暗くする</h3>
+    <ol class="steps">
+      <li>洞窟の入口に空の GameObject を置き、<b>Post Process Volume</b> を追加します。</li>
+      <li><b>シーン全体に適用</b> をオフにし、<b>範囲の半幅</b> を洞窟が入る大きさにします。</li>
+      <li><b>露出</b> を 0.5 に下げ、<b>色フィルタ</b> を青みにします。使わないグループの「〜を上書き」はオフにします。</li>
+      <li><b>ブレンド距離</b> を 3 くらいにします。入口へ近づくにつれて、なめらかに暗くなります。</li>
+    </ol>
+    <h3>明るさに合わせて自動で露出を変える</h3>
+    <ol class="steps">
+      <li>Volume の <b>露出モード</b> を 1 にします。</li>
+      <li><b>Auto 最小 EV</b> と <b>Auto 最大 EV</b> で、補正してよい範囲を狭めます。</li>
+      <li>明るい場所へ出たときの追従が遅いときは <b>明順応速度</b>、暗い場所へ入ったときの追従は <b>暗順応速度</b> を上げます。</li>
+    </ol>
 
     <h2>関連項目</h2>
     <ul>

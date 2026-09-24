@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Input Action Asset（キー割り当てのファイル） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本 / Input Action Asset</div>
+    <h1>Input Action Asset（キー割り当てのファイル）</h1>
+    <p class="meta">対象：RePlayEngine ソース 08fb8f40（2026-09-24 に実装を確認）</p>
+
+    <p>ゲームの中の「操作」（ジャンプ、決定、移動など）と、キーボード・ゲームパッドのボタンを結びつけるファイルです。ファイルを選ぶと、インスペクターでキーの割り当てを書き換えられます。ゲームの C# スクリプトからは、この操作の名前で入力を読みます（<a href="../csharp/api-input.html">入力</a>）。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>ジャンプを Space から別のキーに変えたいとき</li>
+      <li>キーボードと同じ操作を、ゲームパッドのボタンでもできるようにしたいとき</li>
+      <li>左右の移動を、A / D と矢印キーの両方で行えるようにしたいとき</li>
+      <li>スティックの傾きの、反応しない範囲（デッドゾーン）を調整したいとき</li>
+    </ul>
+
+    <h2 id="create">作る</h2>
+    <ol class="steps">
+      <li>プロジェクトパネルで、作りたいフォルダーを開きます。</li>
+      <li><b>Create &gt; Data &gt; Input Action Asset</b> を選びます。名前欄が空なら <b>DefaultInput</b> の名前で、フォルダーにファイルができます。</li>
+      <li>作ると、そのファイルが自動で<b>ゲームの入力の設定として選ばれ</b>（プロジェクト設定の <a href="../settings/project-settings.html#input">Input Action Asset</a>）、すぐ使われます。</li>
+    </ol>
+    <p>できたファイルは、いまの標準の割り当てが入った状態で始まります。</p>
+
+    <h2 id="edit">書き換える</h2>
+    <p>プロジェクトパネルでファイルを選ぶと、インスペクターに <b>Input Action Asset</b> の欄が出ます。<b>Actions</b>（ボタンの操作）と <b>Axes</b>（左右・前後などの軸）の 2 つの一覧があり、名前をクリックすると、その操作の設定が開きます。</p>
+    <ul>
+      <li>操作の名前は、これまでの互換のために<b>変えられません</b>（追加や名前変更はできません）。割り当てだけを書き換えます。</li>
+      <li>書き換えるたびに、ファイルへ自動で保存されます。Undo（元に戻す）もできます。</li>
+      <li><b>再読み込み</b> ボタンで、保存済みの内容を読み直します。ファイルを外のエディターで書き換えたときも、自動で読み直されます。</li>
+      <li><b>ゲームの実行中は編集できません</b>（「Play 中は Input Action Asset を編集できません」と出ます）。</li>
+      <li>エディター用・モーション用の操作は、この一覧には出ません。</li>
+    </ul>
+
+    <h3 id="actions">Actions（ボタン）</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>説明</th></tr>
+      <tr><td>Action Map</td><td>操作のグループ名（例：ゲーム中、メニューなど）。文字で入れます</td></tr>
+      <tr><td>Keyboard Primary (VK)</td><td>1 つ目のキー。Windows の仮想キーコード（数）で入れます。例：Space は 32、A は 65。0 は「なし」</td></tr>
+      <tr><td>Keyboard Secondary (VK)</td><td>2 つ目のキー（同じ操作を別のキーでもできるようにします）</td></tr>
+      <tr><td>Primary Ctrl / Shift / Alt</td><td>1 つ目のキーと一緒に押す必要がある修飾キー</td></tr>
+      <tr><td>Secondary Ctrl / Shift / Alt</td><td>2 つ目のキーと一緒に押す修飾キー</td></tr>
+      <tr><td>Gamepad Button</td><td>ゲームパッドのボタン。XInput のボタンを表す数で入れます。0 は「なし」。<br>D-Pad 上 1、下 2、左 4、右 8、Start 16、Back 32、左スティック押し込み 64、右スティック押し込み 128、左ショルダー 256、右ショルダー 512、A 4096、B 8192、X 16384、Y 32768</td></tr>
+    </table>
+    </div>
+
+    <h3 id="axes">Axes（軸）</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>説明</th></tr>
+      <tr><td>Action Map</td><td>グループ名</td></tr>
+      <tr><td>Negative Primary / Secondary</td><td>軸をマイナス側へ倒すキー（左・後ろなど）。仮想キーコード</td></tr>
+      <tr><td>Positive Primary / Secondary</td><td>プラス側へ倒すキー（右・前など）</td></tr>
+      <tr><td>Gamepad Axis</td><td>使うスティックやトリガー。0 なし、1 左スティック X、2 左スティック Y、3 右スティック X、4 右スティック Y、5 左トリガー、6 右トリガー</td></tr>
+      <tr><td>Dead Zone</td><td>スティックの傾きが、この値より小さいときは 0 とみなします（0〜1）。スティックが勝手に動くのを防ぎます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>ジャンプを別のキーに変える</h3>
+    <ol class="steps">
+      <li>プロジェクトパネルで、Input Action Asset のファイルを選びます。</li>
+      <li>インスペクターの <b>Actions</b> から、ジャンプの操作を開きます。</li>
+      <li><b>Keyboard Primary (VK)</b> を、割り当てたいキーのコードに変えます（Space は 32、Enter は 13）。</li>
+      <li>保存は自動です。ゲームを実行して確かめます。</li>
+    </ol>
+    <h3>ゲームパッドでも操作できるようにする</h3>
+    <ol class="steps">
+      <li>操作を開き、<b>Gamepad Button</b> に、上の表のボタンの数（A ボタンなら 4096）を入れます。</li>
+      <li>軸（移動など）は、<b>Axes</b> の <b>Gamepad Axis</b> に 1（左スティック X）などを入れます。</li>
+    </ol>
+
+    <div class="note"><strong>キーの一覧が要るとき</strong>編集画面の Window &gt; キー割り当て（<a href="menu-bar.html#window">Window メニュー</a>）は、エディター自体のショートカットを変える別の画面です。このファイルは、ゲームの操作用です。</div>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../csharp/api-input.html">入力（C#）</a></li>
+      <li><a href="../settings/project-settings.html#input">プロジェクト設定：Input Action Asset</a></li>
+      <li><a href="project.html">プロジェクトパネル</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

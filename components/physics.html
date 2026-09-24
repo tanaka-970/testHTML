@@ -43,6 +43,8 @@
       <tr><td>Box Collider</td><td>Physics &gt; Box Collider</td><td>いくつでも</td><td></td></tr>
       <tr><td>Capsule Collider</td><td>Physics &gt; Capsule Collider</td><td>いくつでも</td><td></td></tr>
       <tr><td>Mesh Collider</td><td>Physics &gt; Mesh Collider</td><td>いくつでも</td><td></td></tr>
+      <tr><td><a href="#convex">Convex Collider</a></td><td>Physics &gt; Convex Collider</td><td>いくつでも</td><td></td></tr>
+      <tr><td><a href="#buoyancy">Buoyancy</a></td><td>Physics &gt; Buoyancy</td><td>1 つだけ</td><td>Rigidbody</td></tr>
     </table>
     </div>
 
@@ -207,6 +209,78 @@
       <li>プロジェクトパネルの <b>SceneへModel配置時にMesh Colliderも追加</b> にチェックを付けてモデルを置くと、Renderer のメッシュを使う Mesh Collider が、レイヤー Environment で付きます（<a href="mesh-renderers.html#create">置き方</a>）。</li>
       <li>トリガーにした Mesh Collider は、三角形ではなく、形を囲む箱の中に入ったかどうかで判定します。へこんだ形では、外側でも反応することがあります。正確に判定したい場所には Box・Sphere・Capsule のトリガーを使ってください。</li>
     </ul>
+
+    <h2 id="convex">Convex Collider（凸包）</h2>
+    <p>点の集まりから「凸包（でっぱりだけでできた、へこみのない形）」を作り、それを当たり判定にする部品です。Mesh Collider は動かない物にしか使えませんが、Convex Collider は<b>動く物（Rigidbody の Dynamic）にも使えます</b>。破壊機能（<a href="destruction.html">Sliceable / Destructible</a>）が、切った破片に付ける当たり判定として使っています。</p>
+
+    <div class="warning"><strong>インスペクターだけでは形が作れません</strong>凸包の元になる点（頂点）を入れる欄がインスペクターにありません。点は C++ のコード（<code>SetVertices</code>）か、破壊機能が自動で入れます。点を入れないまま追加すると、凸包が作られず、当たり判定として働きません（内部の状態は「凸形状の Cook には 4 頂点以上が必要です。」で、この文はインスペクターには表示されません）。手で置いた普通の小道具には、Box・Sphere・Capsule を使ってください。</div>
+
+    <p>追加は <b>コンポーネントを追加 &gt; Physics (7)</b> から行います。Physics には Rigidbody、Buoyancy、Sphere / Box / Capsule / Convex / Mesh Collider の 7 つが並びます。</p>
+    <figure>
+      <img src="../images/components/add-component-physics-list.png" alt="Physics の一覧">
+      <figcaption>コンポーネントを追加 &gt; Physics (7) を開いたところ。</figcaption>
+    </figure>
+
+    <figure>
+      <img src="../images/components/convex-collider-inspector.png" alt="Convex Collider のインスペクター">
+      <figcaption>Convex Collider。共通項目のあとに Hull 頂点上限（既定 64）だけがあります。</figcaption>
+    </figure>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>Hull 頂点上限</td><td><code>vertex_limit</code></td><td>整数</td><td>64</td><td>4〜255</td><td>できあがる凸包の頂点数の上限です。大きいほど元の形に近くなり、小さいほど計算が軽くなります。値を変えると、凸包を作り直します</td></tr>
+    </table>
+    </div>
+    <p>ほかに、<a href="#collider-common">Collider の共通項目</a>（中心オフセット、レイヤー、衝突する相手、トリガー、形状を表示）が使えます。凸包は非同期で作られるので、付けた直後の数フレームは「Cook 待ち」「Cook 中」の表示になり、その間は当たり判定が働きません。PhysX の物理エンジンで動いているときだけ使えます。</p>
+    <ul>
+      <li>へこんだ形（コの字など）は、へこみが埋まった形になります。</li>
+      <li>細かい凹凸が必要な床や壁には Mesh Collider、キャラクターの移動用には Sphere / Capsule Collider を使います。</li>
+    </ul>
+
+    <h2 id="buoyancy">Buoyancy（浮力）</h2>
+    <p>水に入った Rigidbody に、浮く力・水の抵抗・水流で押される力を加える部品です。浮かぶ箱、流される小物、水面でゆれるボートなどに使います。水は <a href="water-body.html">Water Body</a> が担当し、Buoyancy はその水面の高さを調べて力を計算します。</p>
+
+    <h3>使う準備</h3>
+    <ol class="steps">
+      <li>浮かせたい GameObject に <b>Rigidbody</b>（種別は Dynamic）と Collider を付けます。</li>
+      <li>同じ GameObject に <b>Buoyancy</b> を追加します（Rigidbody が無くても付けられますが、推奨されています）。</li>
+      <li>水の GameObject の <a href="water-body.html">Water Body</a> で、<b>Gameplay Query</b> と <b>Allow Buoyancy</b> がオン（既定でオン）であることを確かめます。</li>
+      <li>ゲームを実行します。物体を水面より上から落とすと、水に入って浮き上がります。</li>
+    </ol>
+
+    <p>Cube に Rigidbody、Box Collider、Buoyancy を付けて水面の近くに置いた例です。</p>
+    <figure>
+      <img src="../images/components/buoyancy-inspector.png" alt="Buoyancy のインスペクター">
+      <figcaption>Buoyancy の項目。下の In Water と Submerged Fraction は、ゲームを実行したときだけ値が入ります。</figcaption>
+    </figure>
+
+    <figure>
+      <img src="../images/components/buoyancy-inspector-playing.png" alt="実行中の Buoyancy">
+      <figcaption>実行中（インスペクターは読み取り専用）。水に入ると In Water にチェックが付き、Submerged Fraction に沈んでいる割合（この例では 0.7096）が出ます。</figcaption>
+    </figure>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>Sample Count</td><td><code>sample_count</code></td><td>整数</td><td>4</td><td>1〜8</td><td>水面の高さを調べる点の数です。1 だと中心の 1 点だけ。2 以上だと下の Sample Extent の範囲に点を散らすので、水面で傾いたり揺れたりします</td></tr>
+      <tr><td>Sample Extent</td><td><code>sample_extent</code></td><td>3 つの数</td><td>0.5, 0, 0.5</td><td></td><td>点を散らす範囲（GameObject の中心から X・Y・Z 方向）です。物体の大きさの半分くらいに合わせます</td></tr>
+      <tr><td>Buoyancy</td><td><code>buoyancy</code></td><td>小数</td><td>1.05</td><td>0〜10</td><td>浮く力の強さです。1 で重力とつり合い、それより大きいと浮き上がり、小さいと沈みます</td></tr>
+      <tr><td>Max Submersion</td><td><code>max_submersion</code></td><td>小数</td><td>1</td><td>0.01〜100</td><td>この深さまで沈むと浮力が最大になります。小さいほど、少し沈んだだけで強く押し返します</td></tr>
+      <tr><td>Water Drag</td><td><code>water_drag</code></td><td>小数</td><td>1.5</td><td>0〜20</td><td>水中で動きを止める力（抵抗）です。大きいほど水の中で減速します</td></tr>
+      <tr><td>Angular Drag</td><td><code>angular_drag</code></td><td>小数</td><td>0.8</td><td>0〜20</td><td>水中で回転を止める力です</td></tr>
+      <tr><td>Flow Force</td><td><code>flow_force</code></td><td>小数</td><td>0.35</td><td>0〜20</td><td>水の流れで押される力の強さです。流れの無い水では影響しません</td></tr>
+      <tr><td>Enabled In Play</td><td><code>enabled_in_play</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オフにすると、実行中も浮力を加えません</td></tr>
+      <tr><td>In Water</td><td><code>in_water</code></td><td>表示のみ</td><td>オフ</td><td></td><td>実行中に、いま水に入っているかを表示します（保存されません）</td></tr>
+      <tr><td>Submerged Fraction</td><td><code>submerged_fraction</code></td><td>表示のみ</td><td>0</td><td></td><td>実行中に、どれだけ沈んでいるかを 0〜1 で表示します</td></tr>
+    </table>
+    </div>
+
+    <h3>調整のコツ</h3>
+    <ul>
+      <li>沈みすぎる：<b>Buoyancy</b> を上げるか、Rigidbody の質量を下げます。</li>
+      <li>浮き上がってもずっと揺れる・動き続ける：<b>Water Drag</b> と <b>Angular Drag</b> を上げます。</li>
+      <li>水面に置いても傾かない：<b>Sample Count</b> を 4 以上にし、<b>Sample Extent</b> を物体の広さに合わせます。</li>
+    </ul>
+    <p>水に入った・出たときは、ゲーム内のイベント記録（WaterEntered / WaterExited）にも残ります。Rigidbody が Dynamic でないとき、ゲームを実行していないとき、水が無いときは何も起きません。</p>
 
     <h2 id="events">衝突とトリガーのイベント</h2>
     <p>ゲームの実行中、ぶつかったときや重なったときにイベントが送られます。C# スクリプトで受け取れます。</p>

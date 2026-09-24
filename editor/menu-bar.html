@@ -138,7 +138,7 @@
     <h2 id="window">Window</h2>
     <figure>
       <img src="../images/editor/menu-window.png" alt="Window メニューを開いたところ。パネルの表示切り替え、Workspace の移動、各種ウィンドウ、見た目の設定が並んでいる">
-      <figcaption>Window メニュー（Scene Workspace にいるとき）</figcaption>
+      <figcaption>Window メニュー（Scene Workspace にいるとき）。Destruction Editor と、5 つの作業別 Workspace への切り替えが並びます。</figcaption>
     </figure>
     <p>パネルやウィンドウを出したり消したりするメニューです。区切り線で 6 つのまとまりに分かれています。項目の右に ✓ が付いているものは、今表示されているパネルです。クリックするたびに表示と非表示が切り替わります。</p>
 
@@ -153,6 +153,7 @@
       <tr><td>Inspector</td><td>右のインスペクターパネル（選択中のものの中身）</td></tr>
       <tr><td>Project / Assets</td><td>下段のプロジェクトパネル（アセットの一覧）</td></tr>
       <tr><td>イージングカーブ</td><td>イージングカーブを編集するパネル</td></tr>
+      <tr><td>Destruction Editor</td><td>メッシュの切断を試す・確かめる、破砕（Blast）用のアセットを作る、破壊の状態を調べるパネル（<a href="../components/destruction.html#editor">破壊</a>）</td></tr>
       <tr><td>Console</td><td>下段のコンソール（ログ）</td></tr>
       <tr><td>Workspace</td><td>下段のワークスペースパネル</td></tr>
       <tr><td>Validation / Diagnostics</td><td>下段の検証と診断のパネル。シーンの問題点が WARN などで一覧されます</td></tr>
@@ -162,13 +163,18 @@
     </div>
 
     <h3>Workspace の切り替え</h3>
-    <p>エディターには作業ごとの画面構成（Workspace）が 3 つあります。今いる Workspace には ✓ が付きます。</p>
+    <p>エディターには作業ごとの画面構成（Workspace）が 8 つあります。今いる Workspace には ✓ が付きます。各 Workspace の中身は <a href="workspaces.html">Workspace</a> のページを見てください。</p>
     <div class="table-wrap">
     <table>
       <tr><th>項目</th><th>説明</th></tr>
       <tr><td>Scene Workspaceへ</td><td>シーンを組み立てる通常の画面に戻ります。</td></tr>
       <tr><td>UI Workspaceへ</td><td>ゲーム内 UI を作る画面に切り替えます。</td></tr>
       <tr><td>Motion Workspaceへ</td><td>モーション（アニメーション）を作る画面に切り替えます。</td></tr>
+      <tr><td>モデリング Workspaceへ</td><td>頂点カラーのペイントなど、モデルに手を加える画面に切り替えます（<a href="vertex-paint.html">頂点カラーペイント</a>）。</td></tr>
+      <tr><td>配置 Workspaceへ</td><td>プロジェクトパネルのモデルや Prefab をシーンビューに置く作業向けの画面に切り替えます。</td></tr>
+      <tr><td>アニメーション Workspaceへ</td><td>アニメーション用の画面（準備中の枠）に切り替えます。クリップの割り当てと再生は、対象の Animator で行います。</td></tr>
+      <tr><td>レンダリング Workspaceへ</td><td>描画設定を開くための画面（枠）に切り替えます。</td></tr>
+      <tr><td>シェーダー調整 Workspaceへ</td><td>シェーダーの見た目を調整する画面に切り替えます（<a href="shader-adjustment.html">シェーダー調整 Workspace</a>）。</td></tr>
     </table>
     </div>
     <p>Workspace によって、このまとまりの下に項目が増えます。</p>

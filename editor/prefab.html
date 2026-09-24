@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Prefab（プレハブ） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本 / Prefab</div>
+    <h1>Prefab（プレハブ）</h1>
+    <p class="meta">対象：RePlayEngine ソース 08fb8f40（2026-09-24 に実装を確認）</p>
+
+    <p>Prefab は、GameObject（と、その子）をまるごとファイルに保存しておき、何度でも同じ形でシーンに置けるようにする仕組みです。敵、ジャンプ台、木など、同じ物をたくさん置くときに使います。ファイルの拡張子は <code>.replayprefab</code> です。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>同じ敵や小道具を、シーンのあちこちに置きたいとき</li>
+      <li>置いた物すべての見た目や設定を、元の Prefab を直して、まとめて変えたいとき</li>
+      <li>置いた 1 つだけ設定を変えて、ほかは元のままにしたいとき（Overrides）</li>
+      <li>Prefab とのつながりを切って、ただの GameObject に戻したいとき（Unpack）</li>
+    </ul>
+
+    <h2 id="create">作る・置く</h2>
+    <ul>
+      <li><b>作る</b>：階層パネルで GameObject を右クリックし、<b>プレハブにする</b> を選びます（<a href="hierarchy.html">階層パネル</a>）。その GameObject が Prefab として保存されます。</li>
+      <li><b>置く</b>：階層パネルの <b>プレハブを置く...</b> から、Prefab のファイルを選びます。GameObject を選んでいると、その子として置かれます。</li>
+    </ul>
+    <p>置いた GameObject は、階層パネルで <b>[P]</b>（青）の印が付きます。いちばん上の GameObject は <b>[Prefab]</b> の印です。元のファイルが見つからないと <b>[Missing]</b>（赤）になります。</p>
+
+    <h2 id="inspector">インスペクターの Prefab 欄</h2>
+    <p>Prefab から置いた GameObject を選ぶと、インスペクターの上のほう（Advanced / IDs の上）に、Prefab の欄が出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示</th><th>意味</th></tr>
+      <tr><td><b>Prefab Root</b>（青）と Prefab の名前</td><td>選んでいるのが、Prefab のいちばん上の GameObject です。ここから Apply などの操作ができます</td></tr>
+      <tr><td><b>Prefab Instance</b>（青）と Prefab の名前</td><td>選んでいるのは、Prefab の中の子の GameObject です。<b>Prefab Rootを選択</b> ボタンで、いちばん上へ移れます。操作はルートで行います</td></tr>
+      <tr><td><b>[Missing Prefab]</b>（赤）</td><td>元の Prefab ファイルが見つかりません</td></tr>
+      <tr><td><b>Missing Prefab Root</b>（赤）</td><td>Prefab のいちばん上の GameObject が見つかりません</td></tr>
+      <tr><td><b>No Overrides</b>（緑）</td><td>元の Prefab と、まったく同じ状態です</td></tr>
+      <tr><td><b>Overrides</b>（橙）</td><td>元の Prefab から変更した所があります。<b>Override Details</b> を開くと、変えた項目の一覧が出ます</td></tr>
+      <tr><td><b>Unsupported Nested Prefab</b>（赤）</td><td>Prefab の中に別の Prefab が入っている形です。現在は未対応で、Apply と Revert は使えません</td></tr>
+      <tr><td><b>Overridesを再検証</b> ボタン</td><td>元のファイルと比べ直して、上の表示を更新します</td></tr>
+      <tr><td><b>Prefab Source Details</b></td><td>元のファイルの場所（Path）、AssetGUID、Local ID を表示します</td></tr>
+    </table>
+    </div>
+
+    <h2 id="buttons">Apply・Revert・Unpack</h2>
+    <p>Prefab Root を選ぶと、3 つのボタンが並びます。<b>ゲームの実行中は使えません</b>（編集できない状態のため）。押すと確認の小窓が開き、何も起きないうちに <b>キャンセル</b> で戻れます。どれも Undo（元に戻す）できます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ボタン</th><th>確認の文と、押したあとの動き</th></tr>
+      <tr><td><b>Apply</b></td><td>「Prefab Asset原本を現在のOverridesで更新します。」置いた GameObject の変更を、<b>元の Prefab ファイルに書き込みます</b>。古いファイルは <code>.bak</code> に退避され、書き込みに失敗したら元へ戻ります。確認窓の <b>Apply Overrides</b> で実行します</td></tr>
+      <tr><td><b>Revert</b></td><td>「このInstanceのOverridesを破棄してAsset状態へ戻しますか？」変更を捨てて、元の Prefab の状態に戻します。確認窓の <b>Revert Overrides</b> で実行します</td></tr>
+      <tr><td><b>Unpack</b></td><td>「PrefabとのLinkを解除します。GameObjectは残ります。」Prefab とのつながりを切ります。GameObject はそのまま残り、ただの GameObject になります。確認窓の <b>Unpack Prefab</b> で実行します</td></tr>
+    </table>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>敵を Prefab にして、たくさん置く</h3>
+    <ol class="steps">
+      <li>敵の GameObject を作って、コンポーネントを付けます。</li>
+      <li>階層パネルで敵を右クリックし、<b>プレハブにする</b> を選びます。</li>
+      <li><b>プレハブを置く...</b> から、保存した Prefab を選び、シーンに何度か置きます。</li>
+    </ol>
+    <h3>1 体だけ強くする</h3>
+    <ol class="steps">
+      <li>置いた敵の 1 体を選び、<b>Health</b> の最大体力を上げます。</li>
+      <li>インスペクターの Prefab 欄が <b>Overrides</b>（橙）になり、<b>Override Details</b> に変えた項目が出ます。ほかの敵は変わりません。</li>
+    </ol>
+    <h3>全員を強くする</h3>
+    <ol class="steps">
+      <li>強くした敵の Prefab Root を選び、<b>Apply</b> を押して、<b>Apply Overrides</b> で確定します。</li>
+      <li>元の Prefab ファイルが更新されます。</li>
+    </ol>
+    <h3>変更をやめる</h3>
+    <p>Prefab Root を選び、<b>Revert</b> &gt; <b>Revert Overrides</b> で、元の状態に戻せます。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="hierarchy.html">階層パネル</a></li>
+      <li><a href="inspector.html">インスペクター</a></li>
+      <li><a href="project.html">プロジェクトパネル</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Gameplay 部品（テンプレート用） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Gameplay</div>
+    <h1>Gameplay 部品（テンプレート用）</h1>
+    <p class="meta">対象：RePlayEngine ソース 08fb8f40（2026-09-24 に実装を確認）</p>
+
+    <p>アクション・プラットフォーマー（横スクロールや 3D の足場ゲーム）のテンプレート用に作られた部品です。キャラクターの移動、体力、チェックポイント、ゴール、敵などが入っています。組み合わせるだけで「走って、跳んで、落ちたらやり直し、ゴールしたらクリア」の基本形が作れます。</p>
+
+    <div class="note"><strong>一覧に出ないとき</strong>これらの部品は、インスペクターの <b>コンポーネントを追加</b> の一覧で「テンプレート部品も表示する」をオフにすると隠れます。オフでも、検索欄に名前を入れている間は表示されます。</div>
+
+    <h2 id="where">追加する場所</h2>
+    <p>インスペクターの <b>コンポーネントを追加</b> を押し、<b>Gameplay (12)</b> を開くと、12 個が並びます。項目にマウスを乗せると、短い説明と、所属するモジュール名（<code>RePlayEngine.Template.ActionPlatformer</code>）がツールチップで出ます。</p>
+    <figure>
+      <img src="../images/components/add-component-gameplay.png" alt="Gameplay の一覧">
+      <figcaption>コンポーネントを追加 &gt; Gameplay (12)。ほかの分類と同じ場所に並びます。</figcaption>
+    </figure>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>キーボードやゲームパッドで動かせるキャラクターを、すぐ置きたいとき</li>
+      <li>落ちたら、途中のチェックポイントからやり直すステージを作りたいとき</li>
+      <li>ジャンプ台、ダメージの床、追いかけてくる敵を置きたいとき</li>
+    </ul>
+
+    <h2 id="overview">全体の組み合わせ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>やりたいこと</th><th>使う部品</th></tr>
+      <tr><td>プレイヤーを動かす</td><td><a href="#character-input">Character Input</a> ＋ <a href="#character-motor">Character Motor</a> ＋ <a href="#player-controller">Player Controller</a>（と Collider）</td></tr>
+      <tr><td>体力を持たせる</td><td><a href="#health">Health</a></td></tr>
+      <tr><td>やり直しの位置を決める</td><td><a href="#spawn-point">Spawn Point</a>、<a href="#checkpoint">Checkpoint</a></td></tr>
+      <tr><td>落下でやり直し</td><td><a href="#kill-volume">Kill Volume</a></td></tr>
+      <tr><td>ゴールにする</td><td><a href="#goal">Goal</a></td></tr>
+      <tr><td>ジャンプ台・ダメージの床</td><td><a href="#jump-pad">Jump Pad</a>、<a href="#damage-area">Damage Area</a></td></tr>
+      <tr><td>敵を置く</td><td><a href="#enemy">Enemy Behaviour</a> ＋ <a href="nav-agent.html">Nav Agent</a> ＋ <a href="#damage-area">Damage Area</a> ＋ Health</td></tr>
+    </table>
+    </div>
+
+    <h3 id="diagnostics">足りない設定は診断に出ます</h3>
+    <p>必要な設定が足りないときは、下のパネルの <b>Validation &amp; Diagnostics &gt; Validation</b> に赤い ERROR で出ます。たとえば、次のようなメッセージです。</p>
+    <figure>
+      <img src="../images/components/validation-gameplay.png" alt="Validation の表示">
+      <figcaption>Character Motor に移動用 Collider が無い、Trigger を使う部品に Trigger Collider が無い、という ERROR。</figcaption>
+    </figure>
+    <ul>
+      <li><b>「Character Motorの移動用Colliderが無効です。」</b>（種類 <code>MOTOR_PRIMARY_MISSING</code>）：Character Motor の <b>移動用 Collider</b> が選ばれていません。インスペクターにも同じ内容が赤字で出ます。</li>
+      <li><b>「Gameplay ComponentにTrigger Colliderがありません。」</b>：Checkpoint や Kill Volume などを付けたのに、同じ GameObject に <b>トリガー</b> がオンの Collider がありません。</li>
+    </ul>
+    <figure>
+      <img src="../images/components/character-motor-missing-collider.png" alt="Character Motor の診断">
+      <figcaption>Character Motor を追加した直後のインスペクター。「この GameObject の診断」に MOTOR_PRIMARY_MISSING が出ます。</figcaption>
+    </figure>
+
+    <h3 id="trigger-common">Trigger を使う部品の共通の準備</h3>
+    <p>Checkpoint、Goal、Kill Volume、Jump Pad、Damage Area は、<b>Trigger（通り抜けられる当たり判定）に入った物</b>に反応します。共通の準備は次のとおりです。</p>
+    <ol class="steps">
+      <li>その GameObject に Collider（Box Collider など）を付けます。</li>
+      <li>Collider の <b>トリガー</b> をオンにします（<a href="physics.html#collider-common">Collider の共通項目</a>）。オフだと何も起きません。</li>
+      <li>反応させたい相手にも Collider を付けます。相手側の <b>レイヤー</b> と、こちらの <b>衝突する相手</b> の設定が噛み合っているか確かめます（<a href="physics.html#layers">レイヤー</a>）。</li>
+      <li>各部品の <b>反応する対象</b>（レイヤーの選択）で、反応させる相手のレイヤーを選びます。初期状態は「すべて」です。</li>
+    </ol>
+
+    <h2 id="character-motor">Character Motor（キャラクター移動）</h2>
+    <p>移動、加速・減速、重力、ジャンプ、接地を担当します。プレイヤーにも敵にも使えます。Rigidbody の物理で動かすのではなく、Collider を使って地形との接触を調べながら動かす方式です。</p>
+    <figure>
+      <img src="../images/components/character-motor-inspector-1.png" alt="Character Motor 上半分">
+      <figcaption>Character Motor 上半分。<b>移動用 Collider</b> は最初は「（未設定）」です。</figcaption>
+    </figure>
+
+    <figure>
+      <img src="../images/components/character-motor-inspector-2.png" alt="Character Motor 下半分">
+      <figcaption>下半分。「重力とジャンプを有効化」はオフで始まります。</figcaption>
+    </figure>
+
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>移動用 Collider</td><td><code>primary_collider_key</code></td><td>Collider の選択</td><td>（未選択）</td><td></td><td>移動・接地・押し戻しに使う Collider です。Sphere / Capsule / Box / Mesh から選びます（Landscape とトリガーは出ません）。<b>自動では選ばれません。</b>未設定だと地形との当たり判定を行いません。Mesh は外接球で近似されます</td></tr>
+      <tr><td>移動速度</td><td><code>move_speed</code></td><td>小数</td><td>6</td><td>0〜30</td><td>1 秒あたりの最高速度（m/秒）</td></tr>
+      <tr><td>加速度</td><td><code>acceleration</code></td><td>小数</td><td>30</td><td>0〜120</td><td>最高速度に達するまでの勢いです。大きいほど素早く走り出します</td></tr>
+      <tr><td>減速度</td><td><code>deceleration</code></td><td>小数</td><td>20</td><td>0〜120</td><td>入力をやめたときに止まる勢いです。小さいと滑って止まります</td></tr>
+      <tr><td>空中制御</td><td><code>air_control</code></td><td>小数</td><td>0.35</td><td>0〜1</td><td>空中での方向転換のしやすさ。0 で空中は曲がれず、1 で地上と同じです</td></tr>
+      <tr><td>重力</td><td><code>gravity</code></td><td>小数</td><td>18</td><td>0〜100</td><td>下向きの加速度</td></tr>
+      <tr><td>ジャンプ力</td><td><code>jump_power</code></td><td>小数</td><td>8</td><td>0〜50</td><td>ジャンプの初速</td></tr>
+      <tr><td>最大落下速度</td><td><code>maximum_fall_speed</code></td><td>小数</td><td>55</td><td>0〜200</td><td>落下の速さの上限</td></tr>
+      <tr><td>ジャンプ要求</td><td><code>jump_requested</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、次の更新で 1 回だけジャンプして自動でオフに戻ります。C# からは <code>RequestJump = true</code> で跳ばせます</td></tr>
+      <tr><td>地形が無い時の床の高さ</td><td><code>fallback_ground_y</code></td><td>小数</td><td>0</td><td></td><td>足元に地面の Collider が無いときに、床とみなす高さ（Y）です</td></tr>
+      <tr><td>奥行きを固定</td><td><code>lock_plane_z</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>横スクロール用。毎回 Z の速度をゼロにし、位置を次の「固定する奥行き」へ戻します</td></tr>
+      <tr><td>固定する奥行き</td><td><code>plane_z</code></td><td>小数</td><td>0</td><td></td><td>上の設定で固定する Z の値</td></tr>
+      <tr><td>登れる段差の高さ</td><td><code>max_step_height</code></td><td>小数</td><td>0.4</td><td>0〜2</td><td>これ以下の段差は登れます。大きくすると壁の上へ乗ってしまい、0 だと段差を登れません</td></tr>
+      <tr><td>重力とジャンプを有効化</td><td><code>vertical_physics</code></td><td>オン・オフ</td><td>オフ</td><td></td><td><b>オフだと重力もジャンプも働きません。</b>落下やジャンプが必要なときは必ずオンにします</td></tr>
+    </table>
+    </div>
+
+    <h3>使い方の例：キャラクターを動かせるようにする</h3>
+    <ol class="steps">
+      <li>キャラクターの GameObject に <b>Capsule Collider</b> を追加します。</li>
+      <li><b>Character Motor</b> を追加し、<b>移動用 Collider</b> の欄でその Capsule Collider を選びます。</li>
+      <li>重力とジャンプを使うなら <b>重力とジャンプを有効化</b> をオンにします。</li>
+      <li>横スクロールなら <b>奥行きを固定</b> をオンにし、<b>固定する奥行き</b> にキャラクターの Z を入れます。</li>
+      <li><a href="#character-input">Character Input</a> と <a href="#player-controller">Player Controller</a> を追加すれば、キーやパッドで動きます。</li>
+    </ol>
+
+    <h2 id="character-input">Character Input（入力）</h2>
+    <p>操作デバイス、または C# スクリプトや AI から渡された「今フレームの操作」を保持する箱です。<b>移動そのものは行いません。</b>移動は Character Motor が、両者の橋渡しは Player Controller が行います。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>入力を受け付ける</td><td><code>input_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オフにすると入力を止められます（会話中や、演出中の操作禁止に使います）</td></tr>
+      <tr><td>入力元 (0:デバイス 1:外部)</td><td><code>input_source</code></td><td>整数</td><td>0</td><td>0〜1</td><td>0 はキーボード・ゲームパッドから読みます。1 は外部（C# スクリプトや AI が書き込んだ値）を使います</td></tr>
+      <tr><td>プレイヤー番号</td><td><code>local_player_slot</code></td><td>整数</td><td>0</td><td>0〜3</td><td>何番目のプレイヤーの入力を読むか。現在は 0 のみ使われます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="player-controller">Player Controller（入力と移動の接続）</h2>
+    <p>Character Input の入力を Character Motor に渡します。カメラの向きを基準にした移動や、進行方向へ振り向く動きも担当します。<b>同じ GameObject に Character Input と Character Motor の両方が必要です。</b>足りないと動かず、警告がログに出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>旋回速度 (度/秒)</td><td><code>turn_speed_degrees</code></td><td>小数</td><td>720</td><td>0〜1440</td><td>進行方向へ向きを変える速さ</td></tr>
+      <tr><td>ダッシュ倍率</td><td><code>dash_multiplier</code></td><td>小数</td><td>1</td><td>0.1〜5</td><td>ダッシュ中に、移動速度へ掛ける倍率。1 だとダッシュしても速くなりません</td></tr>
+      <tr><td>カメラ基準で移動</td><td><code>camera_relative</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オンだと「上」が画面の奥になります。オフだと、世界の座標の向きのままです</td></tr>
+      <tr><td>進行方向へ向く</td><td><code>rotate_towards_movement</code></td><td>オン・オフ</td><td>オン</td><td></td><td>動いている向きへ、キャラクターを振り向かせます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="rotator">Rotator（回転テスト）</h2>
+    <p>GameObject を一定の速さで回し続ける、動作確認用の部品です。回る足場や、くるくる回る見本にも使えます。</p>
+    <figure>
+      <img src="../images/components/rotator-inspector.png" alt="Rotator">
+      <figcaption>Rotator。回転軸と回転速度の 2 項目だけです。</figcaption>
+    </figure>
+
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>回転軸</td><td><code>axis</code></td><td>3 つの数</td><td>0, 1, 0</td><td></td><td>回る軸の向き。0, 1, 0 は縦の軸（Y 軸）を中心に回ります</td></tr>
+      <tr><td>回転速度 (度/秒)</td><td><code>degrees_per_second</code></td><td>小数</td><td>90</td><td>−1440〜1440</td><td>1 秒あたりに回る角度。マイナスで逆向き</td></tr>
+    </table>
+    </div>
+    <p>縦軸（Y）の回転には向いています。複雑な斜めの軸では、軸ごとの角度を足していく実装のため、思った通りに回らないことがあります。</p>
+
+    <h2 id="health">Health（体力）</h2>
+    <p>最大体力、現在体力、無敵の状態を持ちます。Damage Area や Kill Volume がダメージを与える相手になります。プレイヤーにも敵にも付けます。</p>
+    <figure>
+      <img src="../images/components/health-inspector.png" alt="Health">
+      <figcaption>Health。最大体力、現在体力、無敵。</figcaption>
+    </figure>
+
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>最大体力</td><td><code>max_health</code></td><td>整数</td><td>100</td><td>1〜100000</td><td>体力の上限。下げると、現在体力も上限に合わせて減ります</td></tr>
+      <tr><td>現在体力</td><td><code>current_health</code></td><td>整数</td><td>100</td><td>0〜100000</td><td>いまの体力</td></tr>
+      <tr><td>無敵</td><td><code>invulnerable</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンだとダメージを受けません</td></tr>
+    </table>
+    </div>
+    <div class="warning"><strong>体力が 0 になっても何も起きません</strong>Health は数を持つだけです。0 になったときに倒れる・消える・やり直す、といった動きは、ゲーム側の処理（スクリプト）で作ります。</div>
+
+    <h2 id="spawn-point">Spawn Point（開始・復帰地点）</h2>
+    <p>チェックポイントを通る前のやり直し先（復帰地点）を登録します。<b>ゲーム開始時にプレイヤーをここへ動かす部品ではありません。</b>開始位置には、プレイヤーを最初から置きたい場所に置きます。</p>
+    <figure>
+      <img src="../images/components/spawn-point-inspector.png" alt="Spawn Point">
+      <figcaption>Spawn Point。Scene View に表示（既定でオン）を付けておくと、シーンビューに目印が出ます。</figcaption>
+    </figure>
+
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>スポーンID</td><td><code>spawn_id</code></td><td>整数</td><td>0</td><td>この地点を見分ける番号</td></tr>
+      <tr><td>チーム</td><td><code>team</code></td><td>整数</td><td>0</td><td>この地点を使うチームの番号</td></tr>
+      <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td>Spawn Point が複数あるとき、<b>数の大きい方が使われます</b>。同じ数なら先に登録されたものが残ります</td></tr>
+      <tr><td>Scene Viewに表示</td><td><code>debug_draw</code></td><td>オン・オフ</td><td>オン</td><td>シーンビューに位置の目印を描きます</td></tr>
+    </table>
+    </div>
+    <p>チェックポイントを 1 つでも通ると、そちらが優先されます。どちらも無い場合、Kill Volume はダメージだけ与えて復帰はしません。</p>
+
+    <h2 id="checkpoint">Checkpoint（チェックポイント）</h2>
+    <p>Trigger に入った対象の復帰地点を、ここへ更新します。通ったあとに Kill Volume で落ちると、この地点からやり直します。<a href="#trigger-common">共通の準備</a>が必要です。</p>
+    <figure>
+      <img src="../images/components/checkpoint-inspector.png" alt="Checkpoint">
+      <figcaption>Checkpoint。</figcaption>
+    </figure>
+
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>チェックポイントID</td><td><code>checkpoint_id</code></td><td>整数</td><td>0</td><td>見分ける番号（イベントに付きます）</td></tr>
+      <tr><td>復帰位置オフセット</td><td><code>respawn_position_offset</code></td><td>3 つの数</td><td>0, 0, 0</td><td>復帰する位置を、この GameObject の位置からどれだけずらすか。床にめり込まないよう、少し上（Y に 0.5 など）にします</td></tr>
+      <tr><td>復帰時の回転</td><td><code>respawn_rotation</code></td><td>3 つの数</td><td>0, 0, 0</td><td>復帰したときに向く角度（Euler 角）。内部ではラジアンで保持します</td></tr>
+      <tr><td>反応する対象</td><td><code>target_mask</code></td><td>レイヤーの選択</td><td>すべて</td><td>反応させる相手のレイヤー</td></tr>
+      <tr><td>一度だけ</td><td><code>one_shot</code></td><td>オン・オフ</td><td>オフ</td><td>オンにすると、一度反応したあとは二度と更新しません</td></tr>
+    </table>
+    </div>
+    <p>シーンビューの右クリックメニューの <b>Play From Checkpoint</b> から、チェックポイントの位置からゲームを始められます（シーンに Checkpoint がある、またはテンプレート部品を表示しているときに出ます）。</p>
+
+    <h2 id="goal">Goal（ゴール）</h2>
+    <p>対象が Trigger に入ったとき、「ゴールに着いた」というイベントを出します。<a href="#trigger-common">共通の準備</a>が必要です。</p>
+    <figure>
+      <img src="../images/components/goal-inspector.png" alt="Goal">
+      <figcaption>Goal。完了イベントの初期値は GoalReached です。</figcaption>
+    </figure>
+
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>ゴールID</td><td><code>goal_id</code></td><td>整数</td><td>0</td><td>見分ける番号</td></tr>
+      <tr><td>反応する対象</td><td><code>target_mask</code></td><td>レイヤーの選択</td><td>すべて</td><td>反応させる相手のレイヤー</td></tr>
+      <tr><td>一度だけ</td><td><code>one_shot</code></td><td>オン・オフ</td><td>オン</td><td>オンだと、一度だけ反応します</td></tr>
+      <tr><td>完了イベント</td><td><code>completion_event</code></td><td>文字列</td><td>GoalReached</td><td>ゴールしたときに発行するシーン切り替えのイベント名。空欄にすると発行しません</td></tr>
+    </table>
+    </div>
+    <p>「完了イベント」の名前は、シーンの切り替えの仕組み（Scene Flow）の遷移の条件として使われます。Scene Flow に同じ名前のイベントで別のシーンへ進む設定があれば、ゴールに入った瞬間にそのシーンへ切り替わります。設定が無ければ、記録が残るだけで、画面は変わりません。クリア表示などは、このイベントを受けるゲーム側の処理で作ります。</p>
+
+    <h2 id="kill-volume">Kill Volume（落下・即死領域）</h2>
+    <p>Trigger に入った対象へダメージを与え、設定に応じて復帰地点へ戻します。落下エリアや危険地帯に使います。<a href="#trigger-common">共通の準備</a>が必要です。</p>
+    <figure>
+      <img src="../images/components/kill-volume-inspector.png" alt="Kill Volume">
+      <figcaption>Kill Volume。ダメージの初期値は 100000 です。</figcaption>
+    </figure>
+
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>反応する対象</td><td><code>target_mask</code></td><td>レイヤーの選択</td><td>すべて</td><td></td><td>反応させる相手のレイヤー</td></tr>
+      <tr><td>チェックポイントへ復帰</td><td><code>respawn_at_checkpoint</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オンだと、入った対象を復帰地点（通過済みの Checkpoint、無ければ Spawn Point）へ移し、Health を満タンに戻します</td></tr>
+      <tr><td>ダメージ</td><td><code>damage_amount</code></td><td>整数</td><td>100000</td><td>0〜1000000</td><td>入ったときに与えるダメージ。相手に Health があるときだけ与えます</td></tr>
+    </table>
+    </div>
+
+    <h3>使い方の例：落ちたらやり直す</h3>
+    <ol class="steps">
+      <li>ステージの下に、大きな Box Collider を付けた GameObject を置き、<b>トリガー</b> をオンにします。</li>
+      <li><b>Kill Volume</b> を追加します（<b>チェックポイントへ復帰</b> はオンのまま）。</li>
+      <li>ステージのスタート地点に <b>Spawn Point</b> を、途中に Trigger の <b>Checkpoint</b> を置きます。</li>
+      <li>プレイヤーに Health を付けます。実行して落ちると、Checkpoint を通っていればそこから、通っていなければ Spawn Point からやり直します。</li>
+    </ol>
+
+    <h2 id="jump-pad">Jump Pad（ジャンプ台）</h2>
+    <p>Trigger に入った Character Motor を持つ対象へ、指定した方向に勢いを与えます。上向きだけでなく、斜めにも飛ばせます。<a href="#trigger-common">共通の準備</a>が必要で、<b>相手には Character Motor が必要</b>です。</p>
+    <figure>
+      <img src="../images/components/jump-pad-inspector.png" alt="Jump Pad と Damage Area">
+      <figcaption>Jump Pad（上）と Damage Area（下）。</figcaption>
+    </figure>
+
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>射出方向</td><td><code>direction</code></td><td>3 つの数</td><td>0, 1, 0</td><td></td><td>飛ばす向き。長さは関係なく、向きだけが使われます（0, 0, 0 だと飛びません）</td></tr>
+      <tr><td>力</td><td><code>force</code></td><td>小数</td><td>12</td><td>0〜1000</td><td>飛ばす勢い（速さ）</td></tr>
+      <tr><td>反応する対象</td><td><code>target_mask</code></td><td>レイヤーの選択</td><td>すべて</td><td></td><td>反応させる相手のレイヤー</td></tr>
+      <tr><td>一度だけ</td><td><code>one_shot</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンだと、一度使われると二度と働きません</td></tr>
+      <tr><td>再使用待ち時間 (秒)</td><td><code>cooldown</code></td><td>小数</td><td>0.5</td><td>0〜60</td><td>同じ相手に、続けて飛ばさない待ち時間</td></tr>
+      <tr><td>Scene Viewに表示</td><td><code>debug_draw</code></td><td>オン・オフ</td><td>オン</td><td></td><td>シーンビューに飛ぶ向きを描きます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="damage-area">Damage Area（ダメージ領域）</h2>
+    <p>Trigger の中にいる、Health を持つ対象へ、一定の間隔でダメージを与えます。溶岩、毒の沼、敵の接触攻撃などに使います。<a href="#trigger-common">共通の準備</a>が必要で、<b>相手には Health が必要</b>です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>ダメージ</td><td><code>damage</code></td><td>整数</td><td>10</td><td>0〜1000000</td><td>1 回あたりのダメージ</td></tr>
+      <tr><td>間隔 (秒)</td><td><code>interval</code></td><td>小数</td><td>1</td><td>0〜60</td><td>入ったときに 1 回、中にいる間は、この間隔ごとにダメージ</td></tr>
+      <tr><td>反応する対象</td><td><code>target_mask</code></td><td>レイヤーの選択</td><td>すべて</td><td></td><td>反応させる相手のレイヤー</td></tr>
+      <tr><td>一度だけ</td><td><code>one_shot</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンだと、同じ相手には最初の 1 回だけダメージを与えます</td></tr>
+    </table>
+    </div>
+
+    <h3>使い方の例：毒の沼を作る</h3>
+    <ol class="steps">
+      <li>沼の GameObject に Box Collider を付け、<b>トリガー</b> をオンにします。</li>
+      <li><b>Damage Area</b> を追加し、<b>ダメージ</b> を 5、<b>間隔</b> を 0.5 にします。</li>
+      <li>プレイヤーに <b>Health</b> を付けます。沼に入ると、0.5 秒ごとに体力が 5 減ります。</li>
+    </ol>
+
+    <h2 id="enemy">Enemy Behaviour（敵の基本挙動）</h2>
+    <p>巡回・索敵・追跡・攻撃・帰還を行う、テンプレート用の敵 AI です。動き方は <a href="nav-agent.html">Nav Agent</a>、攻撃のダメージは Damage Area と Health の仕組みを使います。</p>
+    <figure>
+      <img src="../images/components/gameplay-scene-gizmos.png" alt="シーンビューの目印">
+      <figcaption>Enemy Behaviour の Scene View デバッグ表示（黄色の扇形と、現在の状態を示す「Idle」の文字）。Spawn Point や Jump Pad の目印も、シーンビューに描かれます。</figcaption>
+    </figure>
+
+    <figure>
+      <img src="../images/components/enemy-behaviour-inspector-1.png" alt="Enemy Behaviour 上半分">
+      <figcaption>Enemy Behaviour の上部。Nav Agent が無いと「推奨: Nav Agent がありません」と出て、横の<b>追加</b>ボタンで付けられます。</figcaption>
+    </figure>
+
+    <figure>
+      <img src="../images/components/enemy-behaviour-inspector-2.png" alt="Enemy Behaviour 中ほど">
+      <figcaption>中ほど。索敵距離、視野角、攻撃距離、見失い猶予、目の高さ、対象を見る高さ。</figcaption>
+    </figure>
+
+    <figure>
+      <img src="../images/components/enemy-behaviour-inspector-3.png" alt="Enemy Behaviour 下半分">
+      <figcaption>下半分。「現在の状態」と「攻撃段階」は読み取り専用（薄い色）です。</figcaption>
+    </figure>
+
+
+    <h3>状態の流れ</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>状態</th><th>いつなるか</th></tr>
+      <tr><td>Idle（待機）</td><td>巡回ウェイポイントが無いとき、その場で待つ</td></tr>
+      <tr><td>Patrol（巡回）</td><td>ウェイポイントを順に回る</td></tr>
+      <tr><td>Chase（追跡）</td><td>索敵対象が「索敵距離」内かつ「視野角」内に見えたとき、追いかける</td></tr>
+      <tr><td>Attack（攻撃）</td><td>「攻撃距離」内まで近づいたとき</td></tr>
+      <tr><td>ReturnHome（帰還）</td><td>「見失い猶予」の間見えなかったとき、最初の位置へ戻る</td></tr>
+    </table>
+    </div>
+
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>索敵対象</td><td><code>target</code></td><td>GameObject の参照</td><td>（空）</td><td></td><td>追いかける相手。<b>空なら、Player Controller を持つ有効な GameObject を自動で探します</b></td></tr>
+      <tr><td>巡回ウェイポイント</td><td><code>patrol_waypoints</code></td><td>GameObject の一覧</td><td>0 件</td><td></td><td>巡回する地点。0 件なら待機します。無効な参照は読み飛ばします</td></tr>
+      <tr><td>索敵距離</td><td><code>detection_range</code></td><td>小数</td><td>12</td><td>0.05〜10000</td><td>対象に気づく距離</td></tr>
+      <tr><td>視野角（度）</td><td><code>field_of_view_degrees</code></td><td>小数</td><td>120</td><td>0〜360</td><td>前方どれだけの角度を見えるとするか。360 で背後も見えます</td></tr>
+      <tr><td>攻撃距離</td><td><code>attack_range</code></td><td>小数</td><td>1.5</td><td>0.05〜10000</td><td>攻撃を始める距離</td></tr>
+      <tr><td>見失い猶予（秒）</td><td><code>lose_sight_delay</code></td><td>小数</td><td>2</td><td>0〜120</td><td>対象が見えなくなってから、あきらめるまでの時間</td></tr>
+      <tr><td>目の高さ</td><td><code>eye_height</code></td><td>小数</td><td>1.2</td><td>−100〜100</td><td>視線を出す高さ（足元から）</td></tr>
+      <tr><td>対象を見る高さ</td><td><code>target_height</code></td><td>小数</td><td>1</td><td>−100〜100</td><td>対象のどの高さへ視線を向けるか</td></tr>
+      <tr><td>視線レイヤー</td><td><code>visibility_layer</code></td><td>レイヤーの選択</td><td>0</td><td></td><td>視線の判定に使うレイヤー</td></tr>
+      <tr><td>視線マスク</td><td><code>visibility_mask</code></td><td>レイヤーの選択</td><td>すべて</td><td></td><td>視線を遮る物のレイヤー。壁などが含まれていると、壁の向こうは見えません</td></tr>
+      <tr><td>攻撃中だけ Damage Area を有効化</td><td><code>attack_controls_damage_area</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オフは「触れたらダメージ」型で、Damage Area には一切触れません。オンだと、下の Windup → Active → Recovery のうち、Active の間だけ Damage Area を有効にします</td></tr>
+      <tr><td>攻撃 Windup（秒）</td><td><code>attack_windup_seconds</code></td><td>小数</td><td>0.3</td><td>0〜30</td><td>攻撃の前ぶり（構え）の長さ</td></tr>
+      <tr><td>攻撃 Active（秒）</td><td><code>attack_active_seconds</code></td><td>小数</td><td>0.2</td><td>0〜30</td><td>ダメージが出る時間</td></tr>
+      <tr><td>攻撃 Recovery（秒）</td><td><code>attack_recovery_seconds</code></td><td>小数</td><td>0.5</td><td>0〜30</td><td>攻撃後のすきの長さ</td></tr>
+      <tr><td>Scene View デバッグ表示</td><td><code>debug_draw</code></td><td>オン・オフ</td><td>オン</td><td></td><td>索敵距離・視野などをシーンビューに描きます</td></tr>
+      <tr><td>現在の状態</td><td><code>current_state</code></td><td>表示のみ</td><td></td><td></td><td>実行中の状態（Idle など）を表示します</td></tr>
+      <tr><td>攻撃段階</td><td><code>attack_phase</code></td><td>表示のみ</td><td></td><td></td><td>攻撃中の段階（Windup / Active / Recovery）を表示します</td></tr>
+    </table>
+    </div>
+
+    <h3>使い方の例：プレイヤーを追いかける敵</h3>
+    <ol class="steps">
+      <li>敵の GameObject に Collider を付けます。<b>Character Motor</b> も付け、<b>移動用 Collider</b> を選びます。</li>
+      <li><b>Nav Agent</b> と <b>Enemy Behaviour</b> を追加します（Nav Agent と Damage Area は、無いと橙色で「推奨」と出ます）。</li>
+      <li>接触で痛い敵なら、Collider の <b>トリガー</b> をオンにして <b>Damage Area</b> を追加します。</li>
+      <li>巡回させるなら、道順の地点に空の GameObject を置き、<b>巡回ウェイポイント</b> に登録します。</li>
+      <li><b>索敵距離</b> と <b>視野角</b> を調整し、実行して確かめます。<b>Scene View デバッグ表示</b> で範囲が見えます。</li>
+      <li>構えてから殴る敵にしたいときは、<b>攻撃中だけ Damage Area を有効化</b> をオンにします。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="physics.html">物理（Rigidbody と Collider）</a></li>
+      <li><a href="nav-agent.html">Nav Agent</a></li>
+      <li><a href="scene-loader.html">Scene Loader</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

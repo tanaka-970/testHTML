@@ -47,6 +47,68 @@
 
     <h2 id="items">項目</h2>
 
+    <h3 id="rendering">レンダリング / 上限</h3>
+    <p>プロジェクト設定の、いちばん上の折りたたみです。描画の仕組みそのものの設定が並びます。</p>
+    <h4>カメラ履歴数と描画送信方式</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>既定</th><th>説明</th></tr>
+      <tr><td>カメラ履歴数（1〜32）</td><td>8</td><td>TAA・SSR・自動露出が、前のフレームの情報を覚えておくカメラの数の上限。上限を超えた、使っていない履歴は破棄されます。下に「使用中: ○ / ○（推定 ○ MiB）」と出ます</td></tr>
+      <tr><td>CPU Submission</td><td>選択済み</td><td>従来の描き方です。ふつうはこれを使います</td></tr>
+      <tr><td>GPU Driven</td><td></td><td>GPU に、描く物の選別まで任せる方式。対応していない環境では薄く表示されて選べません（「非対応」の理由が出ます）。選ぶと、深度プリパスもオンになります</td></tr>
+      <tr><td>Mesh Shader</td><td></td><td>メッシュを小さな塊（Meshlet）に分けて描く方式。対応していない環境では選べません。対象外の物は、CPU の描き方に戻ります</td></tr>
+    </table>
+    </div>
+
+    <h4>DirectX Raytracing</h4>
+    <p>光線を飛ばして影・反射・間接光を作る、レイトレーシングの設定です。DXR Tier 1.1 と RayQuery（Shader Model 6.5）に対応した GPU が必要です。対応していない項目は薄く表示され、「非対応」と出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>既定</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>Ray Tracing を有効化</td><td>オフ</td><td></td><td>レイトレーシング全体のスイッチ</td></tr>
+      <tr><td>RT Shadow</td><td>オフ</td><td></td><td>Directional Light の影を、レイトレーシングで作ります</td></tr>
+      <tr><td>RT Shadow Samples</td><td>1</td><td>1〜4</td><td>1 ピクセルあたりに飛ばす光線の数。多いほどなめらかで、重くなります</td></tr>
+      <tr><td>RT Shadow Max Distance</td><td>100</td><td>1〜2000</td><td>影を調べる最大の距離</td></tr>
+      <tr><td>RT Shadow Normal Bias</td><td>0.02</td><td>0.0001〜1</td><td>影の縞やもれを防ぐ、面の向きに沿ったずらし量</td></tr>
+      <tr><td>RT Shadow Sun Angular Radius</td><td>0.0047</td><td>0〜0.1</td><td>太陽の見かけの大きさ。大きいと、影のふちがやわらかくなります</td></tr>
+      <tr><td>RT Reflection</td><td>オフ</td><td></td><td>反射を、レイトレーシングで作ります。オフのとき、または準備に失敗したときは、従来の SSR に自動で切り替わります</td></tr>
+      <tr><td>RT Reflection Quality</td><td>High FPS</td><td>High FPS / Balanced / Quality / Ultra</td><td>反射の品質。High FPS は 1 回反射・ノイズ除去 1 回、Balanced と Quality は 1 回反射・ノイズ除去 2 回、Ultra は最大 2 回反射</td></tr>
+      <tr><td>RT Reflection Trace Density</td><td>Auto</td><td>Auto / 25% / 50% / 100%</td><td>光線を飛ばすピクセルの割合。Auto は品質に合わせます（High FPS は 25%、Balanced は 50%、Quality と Ultra は 100%）</td></tr>
+      <tr><td>Dynamic RT Reflection Budget</td><td>オン</td><td></td><td>処理が重いときに、光線の数を自動で減らします（100→50→25→12.5%）。Trace Density が Auto のときだけ働きます</td></tr>
+      <tr><td>RT Target FPS</td><td>144</td><td>60〜360</td><td>動的予算の目標フレームレート</td></tr>
+      <tr><td>RT Frame Budget Share</td><td>0.30</td><td>0.10〜0.60</td><td>1 フレームの時間のうち、RT 反射に使ってよい割合</td></tr>
+      <tr><td>RT Reflection Samples</td><td>1</td><td>1〜4</td><td>反射用に 1 ピクセルあたり飛ばす光線の数</td></tr>
+      <tr><td>RT Reflection Max Distance</td><td>100</td><td>1〜1000</td><td>反射で追いかける最大の距離</td></tr>
+      <tr><td>RT Reflection Max Roughness</td><td>0.6</td><td>0〜1</td><td>この粗さより粗い面には、RT 反射を使いません</td></tr>
+      <tr><td>RTGI / Probe GI Ray Source</td><td>オフ</td><td></td><td>Probe GI が光を調べる元を、レイトレーシングに差し替えます</td></tr>
+    </table>
+    </div>
+
+    <h4 id="environment-defaults">環境描画のプロジェクト既定値</h4>
+    <p>霧・反射プローブ・Probe GI を、プロジェクト全体でどう扱うかの既定です。シーンごとに、階層パネルの <b>描画設定</b> で「このシーンでプロジェクト既定値を上書き」することもできます（<a href="../editor/game-scene-settings.html">ゲームシーンの設定</a>）。<a href="../components/environment-volumes.html">局所霧・Reflection Probe・Probe GI</a> が効くかどうかは、ここが決めます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>まとまり</th><th>項目</th><th>既定</th><th>範囲</th><th>説明</th></tr>
+      <tr><td rowspan="10">ボリューメトリック</td><td>有効</td><td>オフ</td><td></td><td>空気中の霧と、ライトの散乱（光の筋）を計算します。<b>Local Fog Volume は、これがオンのときだけ効きます。</b>使えない環境では「Froxel パイプラインを利用できないため、従来の霧を使います。」と出ます</td></tr>
+      <tr><td>全体の密度</td><td>0.02</td><td>0〜1</td><td>霧の濃さ</td></tr>
+      <tr><td>霧の色</td><td>R 217, G 230, B 255</td><td></td><td>散乱光の色。白に近いと、ライトの色が保たれます</td></tr>
+      <tr><td>光の偏り</td><td>0.2</td><td>-0.9〜0.9</td><td>正の値で、光に向かう方向の筋が強くなります</td></tr>
+      <tr><td>高さ減衰</td><td>0</td><td>0〜2</td><td>高いところほど霧を薄くする度合い</td></tr>
+      <tr><td>基準の高さ</td><td>0</td><td></td><td>高さ減衰の基準になる高さ</td></tr>
+      <tr><td>開始距離</td><td>0.1</td><td>0.01〜1000</td><td>カメラからこの距離までは、霧を計算しません</td></tr>
+      <tr><td>終了距離</td><td>120</td><td>1〜2000</td><td>この距離より遠くは、霧を計算しません</td></tr>
+      <tr><td>Froxel 解像度</td><td>高 (160×90×64)</td><td>低 (80×45×32) / 高</td><td>高は約 8 倍のセルを使い、霧や光の筋が細かくなります。そのぶん重くなります</td></tr>
+      <tr><td>履歴の比率</td><td>0.92</td><td>0〜0.98</td><td>前のフレームの結果を混ぜる割合。大きいと安定しますが、変化が遅れます</td></tr>
+      <tr><td rowspan="3">反射プローブ</td><td>使う</td><td>オン</td><td></td><td><a href="../components/environment-volumes.html#reflection-probe">Reflection Probe</a> を使うかどうか</td></tr>
+      <tr><td>重ねる数</td><td>4</td><td>1〜8</td><td>1 ピクセルあたりに評価する Probe の上限。増やすと重くなります</td></tr>
+      <tr><td>補完の強さ</td><td>1</td><td>0〜4</td><td>SSR が届かないピクセルを、Probe で補う強さ</td></tr>
+      <tr><td rowspan="4">Probe GI</td><td>有効</td><td>オフ</td><td></td><td>間接光を使うかどうかの全体スイッチ。<b>Probe GI Volume は、これがオンのときだけ効きます</b>（Volume 側の「GI 有効」もオンにします）</td></tr>
+      <tr><td>全体の強さ</td><td>1</td><td>0〜4</td><td>間接光の強さの倍率</td></tr>
+      <tr><td>Octahedral 解像度</td><td>8</td><td>4〜16</td><td>各 Probe が、方向ごとの明るさを記録する細かさ。上げると、メモリと更新の負荷が増えます</td></tr>
+      <tr><td>最大 Probe 数</td><td>512</td><td>8〜2048</td><td>プロジェクトの上限。超えると、Probe の間隔を自動で広げて、メモリを抑えます</td></tr>
+    </table>
+    </div>
+
     <h3 id="default-character">Default Controlled Character Prefab</h3>
     <p>新しいシーンを「Default」で作ったときに 1 体だけ置き、操作対象にする Prefab です。選択欄には <code>.replayprefab</code> だけが並びます。</p>
     <ul>

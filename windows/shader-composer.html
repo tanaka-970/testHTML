@@ -28,10 +28,11 @@
       <li>モデルのふちを光らせたいとき（Fresnel を Emission へつなぐ）</li>
       <li>少しずつ消えていく見た目を作りたいとき（Noise と Dissolve を Opacity へつなぐ）</li>
       <li>色や強さを、マテリアルのインスペクターのスライダーで調整できるようにしたいとき（Material Property）</li>
+      <li>水面の色、波の高さ、泡、屈折を自分で組み立てたいとき（Water グラフ。<a href="../components/water-body.html">Water Body</a> の Material に使います）</li>
       <li>UI の画像に、独自の色の加工をかけたいとき（PostProcess を Effect Stack で使う）</li>
     </ul>
 
-    <h2 id="domain">3 つの種類</h2>
+    <h2 id="domain">3 つの種類と、水用のグラフ</h2>
     <div class="table-wrap">
     <table>
       <tr><th>種類</th><th>使い道</th><th>出力ノード</th><th>HLSL の置き場所</th></tr>
@@ -41,16 +42,18 @@
     </table>
     </div>
     <p>作ったあとで種類は変えられません。</p>
+    <p>このほかに、水面用の <b>Water グラフ</b> があります。種類としては Surface と同じですが、出力ノードが <b>Water Output</b> で、専用の <a href="#nodes-water">Water ノード</a> が使えます。作った Water グラフは、<a href="../components/water-body.html">Water Body</a> の <b>Material</b> に指定して使います。</p>
     <div class="warning"><strong>Layer の種類は描画されません</strong>Layer で作ったシェーダーをマテリアルの Shader Stack に足すと、「[保存済み: カスタム Layer は DX12 描画へ未接続]」と表示され、このビルドの描画には使われません。Surface で作ったシェーダーは、マテリアルの Shader に選べば描画されます。ただし、そのマテリアルに陰影モデルやピクセレーションのレイヤーが有効だと使われません（<a href="material-editor.html#stack">マテリアルの編集</a>）。</div>
 
     <h2 id="create">作る・開く</h2>
     <ul>
-      <li><a href="../editor/project.html#create">プロジェクト</a> ウィンドウの <b>Create</b> &gt; <b>Shader</b> &gt; <b>Shader Composer</b> &gt; <b>Surface</b> / <b>Layer</b> / <b>PostProcess</b> で作ります。</li>
+      <li><a href="../editor/project.html#create">プロジェクト</a> ウィンドウの <b>Create</b> &gt; <b>Shader</b> &gt; <b>Shader Composer</b> &gt; <b>Surface</b> / <b>Water</b> / <b>Layer</b> / <b>PostProcess</b> で作ります。</li>
+      <li>同じ <b>Create &gt; Shader</b> には、グラフを使わず HLSL を直接書く <b>Surface Shader</b>、<b>Water Shader (HLSL)</b>、<b>Layer Shader</b> もあります。</li>
       <li>グラフのファイルは、いま開いているフォルダーに、名前欄の名前で作られます。空なら NewShaderGraph / NewLayerGraph / NewPostProcessGraph です。同じ名前があると末尾に 2、3 … が付きます。</li>
       <li>同時に「ファイル名_GUID の先頭 8 文字.hlsl」が上の表の場所に作られ、コンパイルされ、Shader Composer ウィンドウが開きます。</li>
       <li>あとから開くには、プロジェクト ウィンドウで <code>.replayshadergraph</code> をダブルクリックします。閉じたウィンドウは、グラフを一度開いていれば <b>Window</b> &gt; <b>Shader Composer</b> で開き直せます（UI Workspace と Motion Workspace にいる間は出ません。基本などの Workspace で開きます）。</li>
     </ul>
-    <p>新しく作ったグラフには、次のノードが最初から入っています。</p>
+    <p>Water グラフは、名前を付けなければ「New Water Graph」で、種類の分類は Project/Water になります。出力ノードの Water Output だけが最初から置かれ、<b>何もつながないと、標準の水と同じ見た目</b>になります。Surface・Layer・PostProcess の新しいグラフには、次のノードが最初から入っています。</p>
     <div class="table-wrap">
     <table>
       <tr><th>ノード</th><th>内容</th></tr>
@@ -223,6 +226,26 @@
     </table>
     </div>
 
+    <h3 id="nodes-water">Water（Water グラフだけ）</h3>
+    <p>Water Output があるグラフでだけ、右クリックのメニューに <b>Water</b> の項目が出ます（<b>World Position</b> は Input の項目から、Water グラフでも使えます）。Water グラフでは、これらのノードの結果を <b>Water Output</b> の入力へつなぎます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ノード</th><th>入力（つながないとき）</th><th>結果</th><th>結果の型</th><th>使える段階</th></tr>
+      <tr><td>World Position</td><td>なし</td><td>水面上の点のワールド座標</td><td>Float3</td><td>すべて</td></tr>
+      <tr><td>Water Height</td><td>なし</td><td>その点の水面の高さ</td><td>Float</td><td>すべて</td></tr>
+      <tr><td>Water Normal</td><td>なし</td><td>その点の水面の法線（長さ 1）</td><td>Float3</td><td>すべて</td></tr>
+      <tr><td>Water Foam</td><td>なし</td><td>その点の泡の量</td><td>Float</td><td>すべて</td></tr>
+      <tr><td>Water Flow</td><td>なし</td><td>その点の水の流れの向き</td><td>Float2</td><td>すべて</td></tr>
+      <tr><td>Gerstner Offset</td><td>なし</td><td>Gerstner 波で、その点が動く量（X・Y・Z）</td><td>Float3</td><td>すべて</td></tr>
+      <tr><td>Scene Depth</td><td>なし</td><td>水面の奥にある物までの深さ</td><td>Float</td><td>仕上げの段階だけ</td></tr>
+      <tr><td>Depth Fade</td><td>Distance = 1</td><td>水面から、その奥の物までの距離を Distance で割り、0〜1 に収めた値。物に接するところは 0、Distance 以上離れると 1（奥に何も無いときも 1）です。岸辺や、物との接触面の色・泡を作るのに使います</td><td>Float</td><td>仕上げの段階だけ</td></tr>
+      <tr><td>Scene Color</td><td>UV Offset = (0, 0)</td><td>水面の奥の、画面の色。UV Offset でずらすと、ゆがんで見えます</td><td>Float3</td><td>仕上げの段階だけ</td></tr>
+      <tr><td>Reflection Color</td><td>なし</td><td>水面に映る周りの景色の色</td><td>Float3</td><td>仕上げの段階だけ</td></tr>
+      <tr><td>Refraction Color</td><td>Strength = Water Body の Refraction</td><td>屈折した、水の中の景色の色</td><td>Float3</td><td>仕上げの段階だけ</td></tr>
+    </table>
+    </div>
+    <p>Water グラフは、水面の形を動かす「頂点の段階」、表面の性質を決める「表面の段階」、最後の色を決める「仕上げの段階」の 3 つに分けて作られます。Scene Depth、Depth Fade、Scene Color、Reflection Color、Refraction Color は、<b>仕上げの段階</b>（Water Output の Absorption、Foam、Emission、Reflection、Refraction Strength）にしかつなげません。ほかの入力につなぐと、「このWater nodeは現在の生成段では使用できません」というエラーになります。頂点の段階（Vertex Offset）には、テクスチャ（Texture Property）もつなげません。</p>
+
     <h3 id="nodes-output">Output</h3>
     <p>出力ノードはグラフに 1 つだけ置けます。ほかのノードの入力にはつなげません。</p>
     <div class="table-wrap">
@@ -231,9 +254,26 @@
       <tr><td>Surface Output（Surface）</td><td>Base Color = 白、Emission = (0, 0, 0)、Opacity = 1</td><td>Base Color の RGB に Emission を足し、A に Opacity（0〜1 に収める）を掛け、さらに頂点カラーを掛けます</td></tr>
       <tr><td>PostProcess Output（PostProcess）</td><td>Base Color = 加工前の画像の色、Emission = (0, 0, 0)、Opacity = 1</td><td>Surface Output と同じ計算（頂点カラーは掛けません）</td></tr>
       <tr><td>Layer Output（Layer）</td><td>Color = 白</td><td>Color × 頂点カラー</td></tr>
+      <tr><td>Water Output（Water）</td><td><a href="#water-output">下の表</a></td><td>水面の形・表面・仕上げを決めます。何もつながないと、標準の水と同じです</td></tr>
     </table>
     </div>
     <p>PostProcess のキャンバスでは、出力ノードの見出しは「Surface Output」と表示されます。</p>
+    <h4 id="water-output">Water Output の入力</h4>
+    <p>入力は 9 つあります。つながないと、下の「つながないときの値」が使われます（標準の水の値です）。Water Output は 1 つだけ置け、Surface Output と一緒には置けません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>入力</th><th>型</th><th>決めるもの</th><th>つながないときの値</th></tr>
+      <tr><td>Normal</td><td>Float3</td><td>表面の向き</td><td>水面の法線</td></tr>
+      <tr><td>Roughness</td><td>Float</td><td>表面のざらつき（0〜1 に収めます）</td><td>Water Body の Roughness</td></tr>
+      <tr><td>Color</td><td>Float3</td><td>水の色</td><td>Water Body の Shallow Color</td></tr>
+      <tr><td>Absorption</td><td>Float</td><td>光の吸収</td><td>Water Body の Absorption</td></tr>
+      <tr><td>Foam</td><td>Float</td><td>泡の量</td><td>水面の泡</td></tr>
+      <tr><td>Emission</td><td>Float3</td><td>自分で光る色</td><td>(0, 0, 0)</td></tr>
+      <tr><td>Reflection</td><td>Float</td><td>映り込みの強さ</td><td>Water Body の Reflection Strength</td></tr>
+      <tr><td>Vertex Offset</td><td>Float3</td><td>水面の頂点の動き</td><td>(0, 0, 0)</td></tr>
+      <tr><td>Refraction Strength</td><td>Float</td><td>屈折の強さ</td><td>Water Body の Refraction</td></tr>
+    </table>
+    </div>
 
     <h2 id="save">保存と自動保存</h2>
     <div class="table-wrap">
@@ -303,6 +343,15 @@
       <li>Dissolve の Out を、出力ノードの <b>Opacity</b> につなぎ、Ctrl+S を押します。</li>
       <li>マテリアルの <b>Rendering</b> &gt; <b>Alpha Mode</b> を Blend にして、透けるようにします。</li>
       <li>マテリアルの Amount を 0 から 1 へ動かすと、ばらばらに消えていきます。<a href="motion-workspace.html">モーション</a>で Amount を動かせば、時間で消す演出になります。</li>
+    </ol>
+
+    <h3>水面の色を、深さで変える（Water グラフ）</h3>
+    <ol class="steps">
+      <li>プロジェクトウィンドウで <b>Create &gt; Shader &gt; Shader Composer &gt; Water</b> を選び、グラフを作ります。</li>
+      <li>キャンバスを右クリックし、<b>Water &gt; Depth Fade</b> を置きます。<b>Distance</b> を 2 にします。</li>
+      <li><b>Lerp</b> を置き、A に明るい水色の <b>Color</b>（浅いところ）、B に暗い青の <b>Color</b>（深いところ）を、T に Depth Fade の結果をつなぎます。</li>
+      <li>Lerp の結果を、<b>Water Output</b> の <b>Color</b> につなぎます。</li>
+      <li>マテリアルを作って、その <b>Shader</b> に作ったグラフを選び、水の GameObject の <a href="../components/water-body.html">Water Body</a> の <b>Material</b> に、そのマテリアルを指定します。</li>
     </ol>
 
     <h2>関連項目</h2>

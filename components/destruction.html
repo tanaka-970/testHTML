@@ -21,7 +21,7 @@
 
     <p>RePlayEngine には、実行中のメッシュを平面で二分する <b>Sliceable</b> と、事前に分けた破片を爆発ダメージで離す <b>Destructible</b> があります。どちらも破片メッシュの生成と PhysX の凸形状作成をバックグラウンドで行い、完了した結果をゲーム中のシーンへ反映します。</p>
 
-    <div class="warning"><strong>試験段階の機能です</strong>インスペクターから部品と設定は追加できますが、エディターに切断・破砕アセットを作る画面や実行ボタンはありません。また、このビルドでは C# から呼び出す API も登録されていません。実際に起動するには、ゲーム側の C++ コードからコンポーネントの API を呼び出す必要があります。以下の手順は C++ でゲームロジックを組み込める開発者向けです。</div>
+    <div class="warning"><strong>試験段階の機能です</strong>インスペクターから部品と設定を追加でき、エディターには試験用の <a href="#editor">Destruction Editor</a> パネル（Window &gt; Destruction Editor）があります。パネルでは、切断の位置を確かめる、ゲームの実行中に実際に切る、切った結果から破砕用アセットを作る、といったことができます。ただし、このビルドでは C# から呼び出す API は登録されていません。ゲームの中で切断や爆発を起こすには、ゲーム側の C++ コードからコンポーネントの API を呼び出す必要があります。</div>
 
     <h2 id="when">こんなときに使う</h2>
     <ul>
@@ -40,6 +40,53 @@
     </table>
     </div>
     <p>Sliceable は呼び出すたびにその時点の破片をもう一度切れます。Destructible は実行前に Destruction Asset に入れておいた破片と接続情報を使います。実行時に任意の新しい破砕パターンを作る機能ではありません。</p>
+
+    <h2 id="editor">Destruction Editor（試験用パネル）</h2>
+    <p><b>Window &gt; Destruction Editor</b> で開く、切断と破砕を試すためのパネルです。<b>階層パネルで選んでいる GameObject</b> が対象で、何も選んでいないと「HierarchyでGameObjectを選択してください。」と出ます。パネルは 3 つの折りたたみ（切断メッシュ診断、Convex / 重心診断、Blast Fracture / Bond / Stress）でできています。</p>
+    <figure>
+      <img src="../images/components/destruction-editor-panel.png" alt="Destruction Editor パネル">
+      <figcaption>Destruction Editor。Sliceable と Mesh Renderer が無い GameObject を選んでいると、「Sliceable、Mesh Renderer、CPU形状が必要です。」と橙色で出て、ボタンは薄く表示されて押せません。</figcaption>
+    </figure>
+
+    <h3 id="editor-cut">切断メッシュ診断</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>説明</th></tr>
+      <tr><td>Renderer / CPU Mesh / 頂点・Triangle</td><td>対象の Renderer の種類（Static Mesh か Skinned Mesh）と、切断に使う形状データが読めているか、頂点数と三角形数を表示します。緑色で「候補があります」と出れば切れる状態、橙色なら足りない物があります</td></tr>
+      <tr><td>Local Plane 法線</td><td>切る平面の向き（対象のローカル座標）。既定は 0, 1, 0（上向き。水平に切る）</td></tr>
+      <tr><td>Local Plane 距離</td><td>平面の位置。法線方向へ、原点からの距離で入れます</td></tr>
+      <tr><td>試験Energy</td><td>切るときの「力」の値（既定 1000）。Sliceable の切断抵抗以上でないと切れません</td></tr>
+      <tr><td>平面をMesh中央へ</td><td>平面の距離を、メッシュの中心を通る位置に合わせます。対象を選ぶと、はじめから中央に合っています</td></tr>
+      <tr><td>非同期 Cut Preview / Convex Cook</td><td>実際には切らずに、切ったらどうなるかを別スレッドで計算します。結果として、できる 2 つの破片（A / B）の三角形数、切断面の輪の数、凸包（Convex）の頂点数、かかった時間（ms）が出ます。失敗すると理由が出ます</td></tr>
+      <tr><td>Play中に実切断</td><td>ゲームの実行中だけ押せます。この平面でその場で切り、対象のメッシュを 2 つの破片に置き換えます。結果は「実切断:」の行に、受け付け・待機・完了・失敗の理由が色つきで出ます</td></tr>
+      <tr><td>Interior Material</td><td>切断面に使われるマテリアル名（Sliceable か破壊材質で決まります）</td></tr>
+      <tr><td>Blast Asset名</td><td>作る破砕アセットの名前（既定 <code>NewDestructionAsset</code>）。使えない文字は置き換えられ、同名のファイルがあるときは番号が付きます</td></tr>
+      <tr><td>Cut Previewから2 Chunk Blast Assetを作成</td><td>Cut Preview が成功したあとに押せます。切った 2 つの破片（Chunk）と、その間の接続（Bond）を持つ <code>.replaydestruction</code> を、Project パネルで開いているフォルダーに保存し、AssetDatabase へ登録します。元のメッシュと 2 つの破片の合計が 64 MiB を超えるとは作れません</td></tr>
+    </table>
+    </div>
+    <p>シーンビューには、切断の位置が<b>橙色の半透明の面</b>で出ます。法線の矢印が、破片 A と B に分かれる向きです。</p>
+
+    <h3 id="editor-convex">Convex / 重心診断</h3>
+    <p>対象に Convex Collider があると、入力頂点の数、凸包を作っている最中か、できあがっているか、頂点数・記憶量・バウンディングボックスを表示します。Cut Preview のあとには、重心（ローカルとワールド）、メッシュの体積、Rigidbody があれば質量と箱に近似した慣性も出ます。</p>
+
+    <h3 id="editor-blast">Blast Fracture / Bond / Stress</h3>
+    <p>対象に Destructible があり、Destruction Asset が割り当てられているとき、Chunk・Bond・Actor Group・PhysX Actor の数、耐久値を超えた Bond の数、Stress の計算の状態、Bond の一覧とグラフを表示します。</p>
+    <ul>
+      <li><b>Blast試験半径</b>、<b>Blast試験Damage</b>：試験の爆発の大きさと強さ。</li>
+      <li><b>Play中にBlast Damageを試す</b>：ゲームの実行中だけ押せます。対象の位置を中心に、その半径と Damage で爆発させます。</li>
+    </ul>
+
+    <h3 id="editor-howto">使い方の例：モデルを切って、破砕アセットを作る</h3>
+    <ol class="steps">
+      <li>モデルを置いた GameObject（Mesh Renderer 付き）に、<b>コンポーネントを追加 &gt; Destruction &gt; Sliceable</b> を付けます。</li>
+      <li><b>Window &gt; Destruction Editor</b> を開き、その GameObject を階層パネルで選びます。「候補があります」と緑色で出ることを確かめます。</li>
+      <li><b>Local Plane 法線</b> と <b>距離</b> を変えて、シーンビューの橙色の面が、切りたい位置に来るように調整します。</li>
+      <li><b>非同期 Cut Preview / Convex Cook</b> を押します。三角形数などが出れば、その平面で切れます。</li>
+      <li>切った結果をゲームで確かめたいときは、ゲームを実行（F5）して <b>Play中に実切断</b> を押します。</li>
+      <li>破砕アセットにしたいときは、Cut Preview のあとで <b>Blast Asset名</b> を入れ、<b>Cut Previewから2 Chunk Blast Assetを作成</b> を押します。Project パネルに <code>.replaydestruction</code> が増えます。</li>
+      <li>爆発で壊れる物にするには、対象に <b>Destructible</b> を付け、<b>Destruction Asset</b> に作ったファイルを割り当てます。実行して <b>Play中にBlast Damageを試す</b> で試せます。</li>
+    </ol>
+    <div class="note"><strong>切れないとき</strong>ボタンが薄く表示されて押せないときは、上の橙色の文が理由です（Sliceable が無い、Mesh Renderer が無い、形状データが読めていない、など）。「Play中に実切断」は、実行中でなければ押せません。Skinned Mesh は、表示されている姿勢が取れるまで待ちます。</div>
 
     <h2 id="sliceable">Sliceable</h2>
     <p>Static Mesh または Skinned Mesh を平面で切り、切断面をふさいだ 2 つのメッシュにします。切断に成功すると、元の GameObject と新しい GameObject に形状が分かれます。Skinned Mesh は切断時の表示姿勢を静的メッシュとして取り込みます。</p>
@@ -118,7 +165,7 @@ material.SaveToFile(asset_path, error); // .replaydestructionmaterial で保存<
 
     <h3>準備と呼び出し</h3>
     <ol class="steps">
-      <li>Destruction Asset を用意します。現行ソースには <code>PrefracturedDestructionAsset::FromPlaneCut()</code> で 1 回の平面カットから 2 Chunk と 1 Bond を作る C++ API があります。Asset 用のエディター画面はありません。</li>
+      <li>Destruction Asset を用意します。<a href="#editor">Destruction Editor</a> の <b>Cut Previewから2 Chunk Blast Assetを作成</b> で、1 回の平面カットから 2 Chunk と 1 Bond のアセットを作れます（C++ の <code>PrefracturedDestructionAsset::FromPlaneCut()</code> と同じ処理です）。それ以上に細かく割ったアセットを作る画面はありません。</li>
       <li>対象の元メッシュに <b>Mesh Renderer</b> と <b>Destructible</b> を付け、Inspector の <b>Destruction Asset</b> にファイルを割り当てます。</li>
       <li>ゲームを実行し、爆発のワールド位置・半径・Damage を指定して <code>ApplyRadialDamage()</code> を呼びます。</li>
       <li>呼び出しが true でも破片の物理化は非同期です。分離した結果は後続フレームで反映されます。</li>
@@ -161,7 +208,7 @@ if (destructible != nullptr &amp;&amp;
       <tr><td>極端に重い</td><td>Sliceable の「最大破片数」を下げます。切断入力は 1 回 2,000,000 三角形までです。破片ごとにメッシュ処理と Convex Cooking が発生します。</td></tr>
     </table>
     </div>
-    <div class="warning"><strong>C# からの利用について</strong>ソースにある C++ の <code>Slice()</code>、<code>ApplyRadialDamage()</code> は C# Script API に公開されていません。Script Component を付けても呼び出し可能にはなりません。C# 連携やエディター上の破壊ツールが必要なプロジェクトでは、先にバインディングと作成画面を実装してください。</div>
+    <div class="warning"><strong>C# からの利用について</strong>ソースにある C++ の <code>Slice()</code>、<code>ApplyRadialDamage()</code> は C# Script API に公開されていません。Script Component を付けても呼び出し可能にはなりません。エディターの Destruction Editor は、実行中の試験用です。ゲームの中で C# から切断や爆発を起こしたいときは、先にバインディングを実装してください。</div>
 
     <h2 id="related">関連項目</h2>
     <ul>

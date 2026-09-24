@@ -66,6 +66,19 @@
       <li>エディターで回転・拡縮するときの中心を変えたいときは <a href="pivot.html">Pivot</a> を使います。</li>
     </ul>
 
+    <h2 id="howto">使い方の例</h2>
+    <h3>物を決まった位置へ置く</h3>
+    <ol class="steps">
+      <li>階層パネルで GameObject を選びます。</li>
+      <li>インスペクターの Transform を開き、<b>位置</b> の X・Y・Z の欄を <kbd>Ctrl</kbd> を押しながらクリックして、数値を入力します。</li>
+      <li>Enter を押すと、その位置へ動きます。</li>
+    </ol>
+    <h3>親の下に置いて、まとめて動かす</h3>
+    <ol class="steps">
+      <li>階層パネルで、子にしたい GameObject を、親にしたい GameObject の行の中央へドラッグします（<a href="../editor/hierarchy.html">階層パネル</a>）。</li>
+      <li>親を動かすと、子も一緒に動きます。子の Transform の値は、親から見た値になります。</li>
+    </ol>
+
     <h2>関連項目</h2>
     <ul>
       <li><a href="../editor/inspector.html">インスペクター</a></li>
