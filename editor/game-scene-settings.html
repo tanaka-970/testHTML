@@ -36,7 +36,9 @@
       <tr><th>欄</th><th>働き</th></tr>
       <tr><td><b>Scene / Game 背景色</b></td><td>シーンビューとゲームビューの背景の色</td></tr>
       <tr><td><b>ゲームシーン</b></td><td>シーンに使える Camera が無いときに、エンジン内部のゲーム用カメラを予備に使うかどうかの切り替えです。ふだんは変える必要はありません</td></tr>
-      <tr><td><b>背景画像</b>、<b>パーティクル</b>、<b>軌跡</b></td><td>このビルドでは、切り替えても効果がありません</td></tr>
+      <tr><td><b>背景画像</b></td><td>オンにすると、プロジェクトの <code>resources/screenshot.jpg</code> を背景として敷きます（エディターの表示用。ファイルが無いときは何も起きません）</td></tr>
+      <tr><td><b>パーティクル</b></td><td>オフにすると <a href="../components/particle-emitter.html">Particle Emitter</a> の粒を描かなくなります</td></tr>
+      <tr><td><b>軌跡</b></td><td>オフにすると <a href="../components/lines.html#trail">軌跡</a> の記録と描画が止まります。3D ライン（点をつなぐ線）は、この切り替えの影響を受けません</td></tr>
       <tr><td><b>プロジェクト設定</b></td><td>見出しを開くと、起動シーンなどの設定が出ます（<a href="../settings/project-settings.html">プロジェクト設定</a>）</td></tr>
       <tr><td><b>カメラ操作の関門</b></td><td>見出しを開くと、シーンビューのカメラ操作を止めている条件が分かります（<a href="#camera-gate">下記</a>）</td></tr>
     </table>
@@ -78,9 +80,9 @@
       <tr><th>欄</th><th>働き</th></tr>
       <tr><td><b>全画面表示</b>（既定は F11 と Alt+Enter）</td><td>エディターのウィンドウを全画面にします</td></tr>
       <tr><td>「レンダラー: Deferred（固定）」</td><td>描画の方式（変えられません）。輪郭線と半透明は、照明のあとに追加で描きます</td></tr>
-      <tr><td><b>静的メッシュ</b></td><td>このビルドでは、切り替えても効果がありません</td></tr>
+      <tr><td><b>静的メッシュ</b></td><td>動作確認用のデバッグ立方体を 1 つ描きます（既定はオフ）。ふだんは使いません</td></tr>
       <tr><td><b>シェーダー調整テーブルを開く</b></td><td><a href="shader-adjustment.html">シェーダー調整 Workspace</a> に切り替えます</td></tr>
-      <tr><td><b>追加パス</b>（<b>輪郭線パス</b>、<b>PBR影パス</b>）</td><td>見出しを開くと出ます。このビルドでは、描画側でこの値が使われていません。見た目の種類（PBR / トゥーン / アンリット）はマテリアルごとに決めます（<a href="../windows/material-editor.html">マテリアルの編集</a>）</td></tr>
+      <tr><td><b>追加パス</b>（<b>輪郭線パス</b>、<b>PBR影パス</b>）</td><td>見出しを開くと出ます。<b>輪郭線パス</b> をオフにすると、マテリアルの輪郭線レイヤーが描かれなくなります。<b>PBR影パス</b> は、このビルドでは描画側でこの値が使われていません。見た目の種類（PBR / トゥーン / アンリット）はマテリアルごとに決めます（<a href="../windows/material-editor.html">マテリアルの編集</a>）</td></tr>
       <tr><td><b>描画出力</b>（既定は Ctrl+F2）</td><td>画面に出す途中の結果を選びます。最終合成、HDRシーン、ブルーム、Deferred照明、GBuffer ベースカラー、GBuffer 法線、GBuffer マテリアル、深度、SSAO、SSR、影の可視性。ふだんは「最終合成」です</td></tr>
     </table>
     </div>

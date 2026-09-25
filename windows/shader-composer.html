@@ -37,13 +37,13 @@
     <table>
       <tr><th>種類</th><th>使い道</th><th>出力ノード</th><th>HLSL の置き場所</th></tr>
       <tr><td>Surface</td><td>マテリアルのシェーダーとして、モデルの見た目を決めます</td><td>Surface Output</td><td><code>Shader\Materials\Generated</code></td></tr>
-      <tr><td>Layer</td><td>マテリアルのレイヤーとして、色を重ねます（このビルドでは描画されません。下の注意）</td><td>Layer Output</td><td><code>Shader\Layers\Generated</code></td></tr>
+      <tr><td>Layer</td><td>マテリアルのレイヤーとして、色を重ねます（下の説明）</td><td>Layer Output</td><td><code>Shader\Layers\Generated</code></td></tr>
       <tr><td>PostProcess</td><td><a href="../components/effect-stacks.html#effect-items">Effect Stack</a> の <b>カスタムシェーダー</b> として、描いた画像を加工します</td><td>PostProcess Output</td><td><code>Shader\PostProcess\Generated</code></td></tr>
     </table>
     </div>
     <p>作ったあとで種類は変えられません。</p>
     <p>このほかに、水面用の <b>Water グラフ</b> があります。種類としては Surface と同じですが、出力ノードが <b>Water Output</b> で、専用の <a href="#nodes-water">Water ノード</a> が使えます。作った Water グラフは、<a href="../components/water-body.html">Water Body</a> の <b>Material</b> に指定して使います。</p>
-    <div class="warning"><strong>Layer の種類は描画されません</strong>Layer で作ったシェーダーをマテリアルの Shader Stack に足すと、「[保存済み: カスタム Layer は DX12 描画へ未接続]」と表示され、このビルドの描画には使われません。Surface で作ったシェーダーは、マテリアルの Shader に選べば描画されます。ただし、そのマテリアルに陰影モデルやピクセレーションのレイヤーが有効だと使われません（<a href="material-editor.html#stack">マテリアルの編集</a>）。</div>
+    <div class="note"><strong>Layer で作ったシェーダーの使い方</strong>マテリアルの Shader Stack にレイヤーとして足すと、ほかのレイヤーのあとに追加の描画として重ねられます。コンパイルが通っていることが条件で、<b>不透明度</b>（<code>Opacity</code>）のプロパティを作っておくと、レイヤーの不透明度で重ね具合を変えられます。Surface で作ったシェーダーは、マテリアルの Shader に選べば描画されます。ただし、そのマテリアルに陰影モデルやピクセレーションのレイヤーが有効だと使われません（<a href="material-editor.html#stack">マテリアルの編集</a>）。</div>
 
     <h2 id="create">作る・開く</h2>
     <ul>
@@ -51,7 +51,7 @@
       <li>同じ <b>Create &gt; Shader</b> には、グラフを使わず HLSL を直接書く <b>Surface Shader</b>、<b>Water Shader (HLSL)</b>、<b>Layer Shader</b> もあります。</li>
       <li>グラフのファイルは、いま開いているフォルダーに、名前欄の名前で作られます。空なら NewShaderGraph / NewLayerGraph / NewPostProcessGraph です。同じ名前があると末尾に 2、3 … が付きます。</li>
       <li>同時に「ファイル名_GUID の先頭 8 文字.hlsl」が上の表の場所に作られ、コンパイルされ、Shader Composer ウィンドウが開きます。</li>
-      <li>あとから開くには、プロジェクト ウィンドウで <code>.replayshadergraph</code> をダブルクリックします。閉じたウィンドウは、グラフを一度開いていれば <b>Window</b> &gt; <b>Shader Composer</b> で開き直せます（UI Workspace と Motion Workspace にいる間は出ません。基本などの Workspace で開きます）。</li>
+      <li>あとから開くには、プロジェクト ウィンドウで <code>.replayshadergraph</code> をダブルクリックします。閉じたウィンドウは、グラフを一度開いていれば <b>Window</b> &gt; <b>Shader Composer</b> で開き直せます。</li>
     </ul>
     <p>Water グラフは、名前を付けなければ「New Water Graph」で、種類の分類は Project/Water になります。出力ノードの Water Output だけが最初から置かれ、<b>何もつながないと、標準の水と同じ見た目</b>になります。Surface・Layer・PostProcess の新しいグラフには、次のノードが最初から入っています。</p>
     <div class="table-wrap">

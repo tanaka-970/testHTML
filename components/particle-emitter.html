@@ -56,7 +56,7 @@
       <tr><td>発生方向</td><td><code>direction</code></td><td>3 つの小数</td><td>0, 1, 0</td><td></td><td>粒が飛ぶ中心の向き。GameObject の回転に合わせて向きが変わります</td></tr>
       <tr><td>拡散角</td><td><code>cone_angle</code></td><td>小数</td><td>0.4</td><td>0〜3.14159</td><td>発生方向からどれだけ広がって飛ぶか（ラジアン）。0 でまっすぐ、1.57 で半球、3.14 で全方向</td></tr>
       <tr><td>画像</td><td><code>sprite</code></td><td>アセット（画像）</td><td>（空）</td><td></td><td>粒に貼る画像。空なら白い四角です</td></tr>
-      <tr><td>合成</td><td><code>blend_mode</code></td><td>選択</td><td>加算</td><td></td><td>通常、加算、乗算、スクリーン。この版では使われておらず、常に通常の半透明で描かれます</td></tr>
+      <tr><td>合成</td><td><code>blend_mode</code></td><td>選択</td><td>加算</td><td></td><td>通常、加算、乗算、スクリーン。加算にすると、粒が重なった所が明るく光ります。炎や火花向きです</td></tr>
       <tr><td>最大数</td><td><code>max_particles</code></td><td>整数</td><td>10000</td><td>1〜10000</td><td>同時に存在できる粒の数。超える分は出ません</td></tr>
     </table>
     </div>
@@ -84,7 +84,7 @@
     <h2 id="limits">制限</h2>
     <ul>
       <li>1 つの GameObject に複数の Particle Emitter を付けても、動くのは有効なもののうち一番上の 1 つだけです。いくつも出したいときは、GameObject を分けてください。</li>
-      <li><b>優先度</b> と <b>合成</b> は、この版では効きません。</li>
+      <li><b>優先度</b> は、この版では効きません。</li>
       <li><b>発生する</b> をオフにすると、新しい粒が出なくなるだけでなく、出ていた粒も表示されなくなります。もう一度オンにすると、止まっていた粒が続きから動きます。</li>
       <li>そのため、<b>発生する</b> がオフのまま <code>Emit(count)</code> を呼ぶと、粒は出たフレームだけ表示され、すぐに見えなくなります。まとめて出すときは <b>発生量/秒</b> を 0 にし、<b>発生する</b> はオンのままにします。</li>
     </ul>

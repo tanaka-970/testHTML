@@ -142,7 +142,7 @@
     </figure>
     <p>パネルやウィンドウを出したり消したりするメニューです。区切り線で 6 つのまとまりに分かれています。項目の右に ✓ が付いているものは、今表示されているパネルです。クリックするたびに表示と非表示が切り替わります。</p>
 
-    <div class="warning"><strong>UI Workspace と Motion Workspace では出ないウィンドウがあります</strong>Window メニューの項目は、どの Workspace でも同じように並びます。しかし UI Workspace と Motion Workspace にいる間は、Hierarchy（Motion では出ます）、Inspector、Workspace、Validation / Diagnostics、シーンメモ、Scene Flow、カメラ操作プリセット、Collision Diagnostics、ImGui Metrics、シェーダ一覧、Shader Composer、スクリーンショット回帰 は、✓ を付けても描かれません。Scene Workspace に戻すと出ます。どの Workspace でも出るのは、Scene / Game View、Project / Assets、イージングカーブ、Console、DX12 Debug、UI フォーカス表示、キー割り当て などです。</div>
+    <div class="note"><strong>UI Workspace と Motion Workspace では押せない項目があります</strong>UI Workspace では Hierarchy と Inspector が、Motion Workspace では Inspector が、グレーになって押せません（それぞれ専用の階層・インスペクターを使うため）。マウスを乗せると理由が出ます。ほかの項目は、どの Workspace でも同じように使えます。また Window メニューには、いまの Workspace 専用のパネルの項目が加わります。UI Workspace なら UI 階層・UI インスペクター・Canvas プレビュー、Motion Workspace なら Motion レイヤー・Motion プレビュー・Motion インスペクター・タイムライン・グラフエディター・Motion リグです。</div>
 
     <h3>パネルの表示</h3>
     <div class="table-wrap">

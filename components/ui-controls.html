@@ -105,7 +105,7 @@
 <tr><td>輪郭線を表示</td><td><code>focus_outline_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>設定値を変更すると、この Component の「focus_outline_enabled」へ反映します。 Focus Style 上書き がオンのときだけ使います。</td></tr>
 <tr><td>輪郭線色</td><td><code>focus_outline_color</code></td><td>色</td><td>0.25, 0.78, 1, 1</td><td></td><td>設定値を変更すると、この Component の「focus_outline_color」へ反映します。 Focus Style 上書き がオンのときだけ使います。Canvas の不透明度が掛かります。</td></tr>
 <tr><td>輪郭線幅</td><td><code>focus_outline_width</code></td><td>小数</td><td>2</td><td>0〜32</td><td>設定値を変更すると、この Component の「focus_outline_width」へ反映します。 画面のピクセル単位。範囲の短い辺の半分までです。Focus Style 上書き がオンのときだけ使います。</td></tr>
-<tr><td>角丸</td><td><code>focus_corner_radius</code></td><td>小数</td><td>4</td><td>0〜64</td><td>設定値を変更すると、この Component の「focus_corner_radius」へ反映します。 このビルドの描画では使われません。</td></tr>
+<tr><td>角丸</td><td><code>focus_corner_radius</code></td><td>小数</td><td>4</td><td>0〜64</td><td>設定値を変更すると、この Component の「focus_corner_radius」へ反映します。 輪郭線の角の丸みです。</td></tr>
 <tr><td>選択中</td><td><code>focused</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>設定値を変更すると、この Component の「focused」へ反映します。 今フォーカスされているか。シーン全体で 1 つだけオンになります。 （表示のみ、実行中の値、保存されません）</td></tr>
 </table></div>
 <!--/PROPS:UISelectableComponent-->
@@ -124,7 +124,7 @@
     <p>フォーカスされている部品の範囲に、四角い輪郭線を描きます。色・幅・表示するかは、ふつうはプロジェクト共通の設定（<b>階層</b> の <b>ワールド</b> を選んだインスペクターの <b>プロジェクト設定</b> &gt; <b>UI Focus Outline</b>）を使います。<b>Focus Style 上書き</b> をオンにすると、この部品の <b>輪郭線を表示</b>、<b>輪郭線色</b>、<b>輪郭線幅</b> を使います。</p>
     <ul>
       <li>輪郭線幅は画面のピクセル単位で、範囲の短い辺の半分までです。</li>
-      <li><b>角丸</b> はプロジェクト設定・部品のどちらも、このビルドの描画では使われません（常に角のある四角です）。</li>
+      <li><b>角丸</b> は輪郭線の角の丸みです。<b>Focus Style 上書き</b> がオフならプロジェクト設定の値、オンなら部品の値が使われます。</li>
     </ul>
 
     <h2 id="layout-groups">Layout Group（横・縦・グリッド）</h2>
@@ -197,14 +197,14 @@
 <tr><td>Content</td><td><code>content</code></td><td>コンポーネントの参照</td><td>（空）</td><td></td><td>設定値を変更すると、この Component の「content」へ反映します。 スクロールさせる中身の Rect Transform。Scroll View の直接の子でないとスクロールしません。</td></tr>
 <tr><td>横スクロール</td><td><code>horizontal</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>設定値を変更すると、この Component の「horizontal」へ反映します。 オフの方向は、スクロール位置が常に 0 になります。</td></tr>
 <tr><td>縦スクロール</td><td><code>vertical</code></td><td>オン・オフ</td><td>オン</td><td></td><td>設定値を変更すると、この Component の「vertical」へ反映します。 オフの方向は、スクロール位置が常に 0 になります。</td></tr>
-<tr><td>内容が収まる時は固定</td><td><code>clamp_when_content_fits</code></td><td>オン・オフ</td><td>オン</td><td></td><td>設定値を変更すると、この Component の「clamp_when_content_fits」へ反映します。 このビルドでは、オフにしても動きは変わりません（中身が枠に収まる方向は、どちらでもスクロール位置が 0 になります）。</td></tr>
+<tr><td>内容が収まる時は固定</td><td><code>clamp_when_content_fits</code></td><td>オン・オフ</td><td>オン</td><td></td><td>設定値を変更すると、この Component の「clamp_when_content_fits」へ反映します。 オンだと、中身が枠に収まっている方向はスクロールせず、位置は 0 に固定されます。オフにすると、収まっていてもホイールで 0 より先へずらせます（元の位置より手前には戻せません）。</td></tr>
 <tr><td>ホイール感度</td><td><code>scroll_sensitivity</code></td><td>小数</td><td>48</td><td>1〜512</td><td>設定値を変更すると、この Component の「scroll_sensitivity」へ反映します。 ホイール 1 目盛りで動く量（Canvas 座標）。</td></tr>
 <tr><td>スクロール位置</td><td><code>scroll_offset</code></td><td>2 つの小数</td><td>0, 0</td><td></td><td>設定値を変更すると、この Component の「scroll_offset」へ反映します。 中身をどれだけずらしているか。X を増やすと中身が左へ、Y を増やすと中身が上へ動きます。0 から「中身の大きさ − 枠の大きさ」までに収められます。</td></tr>
 <tr><td>スクロールバー表示</td><td><code>show_scrollbars</code></td><td>オン・オフ</td><td>オン</td><td></td><td>設定値を変更すると、この Component の「show_scrollbars」へ反映します。 スクロールできる方向があるときだけ描きます。縦は右端、横は下端です。</td></tr>
 <tr><td>バー幅</td><td><code>scrollbar_width</code></td><td>小数</td><td>8</td><td>2〜32</td><td>設定値を変更すると、この Component の「scrollbar_width」へ反映します。 画面のピクセル単位。</td></tr>
 <tr><td>トラック色</td><td><code>scrollbar_track_color</code></td><td>色</td><td>0.12, 0.12, 0.12, 0.4</td><td></td><td>設定値を変更すると、この Component の「scrollbar_track_color」へ反映します。 バーの溝の色。Canvas の不透明度が掛かります。</td></tr>
 <tr><td>つまみ色</td><td><code>scrollbar_thumb_color</code></td><td>色</td><td>0.8, 0.8, 0.8, 0.9</td><td></td><td>設定値を変更すると、この Component の「scrollbar_thumb_color」へ反映します。 つまみの色。ドラッグして動かせます。</td></tr>
-<tr><td>角丸</td><td><code>scrollbar_corner_radius</code></td><td>小数</td><td>4</td><td>0〜32</td><td>設定値を変更すると、この Component の「scrollbar_corner_radius」へ反映します。 このビルドの描画では使われません。</td></tr>
+<tr><td>角丸</td><td><code>scrollbar_corner_radius</code></td><td>小数</td><td>4</td><td>0〜32</td><td>設定値を変更すると、この Component の「scrollbar_corner_radius」へ反映します。 スクロールバーの角の丸みです。</td></tr>
 <tr><td>横 Overflow</td><td><code>horizontal_overflow</code></td><td>オン・オフ</td><td></td><td></td><td>横にスクロールできる状態か（中身が枠より広く、横スクロールがオン）。 （表示のみ、実行中の値、保存されません、詳細設定）</td></tr>
 <tr><td>縦 Overflow</td><td><code>vertical_overflow</code></td><td>オン・オフ</td><td></td><td></td><td>縦にスクロールできる状態か。 （表示のみ、実行中の値、保存されません、詳細設定）</td></tr>
 <tr><td>横 Normalized</td><td><code>horizontal_normalized</code></td><td>小数</td><td></td><td></td><td>横のスクロール位置を 0（左端）〜1（右端）で表した値。 （表示のみ、実行中の値、保存されません、詳細設定）</td></tr>
@@ -234,7 +234,7 @@
     <ul>
       <li>スクロールできる方向があり、<b>スクロールバー表示</b> がオンのとき、縦は枠の右端、横は枠の下端に描きます。</li>
       <li><b>バー幅</b> は画面のピクセル単位です。つまみの長さは「見えている割合」に比例し、バー幅より短くはなりません。</li>
-      <li><b>角丸</b> はこのビルドの描画では使われません。</li>
+      <li><b>角丸</b> はスクロールバー（つまみと溝）の角の丸みです。</li>
     </ul>
 
     <h2 id="slider">Slider</h2>

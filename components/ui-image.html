@@ -52,7 +52,7 @@
 <tr><td>ブレンド</td><td><code>blend_mode</code></td><td>選択</td><td>通常</td><td></td><td>画像と背景を合成する方法を指定します。 通常は半透明の重ね方、加算・スクリーンは明るく、乗算は暗く重ねます。 選択肢：通常、加算、乗算、スクリーン</td></tr>
 <tr><td>UV オフセット</td><td><code>uv_offset</code></td><td>2 つの小数</td><td>0, 0</td><td></td><td>Sprite Sheet のフレーム移動を Motion から駆動できます。Step Key なら1フレーム切替になります。 画像（アトラスのときは Region）の中で表示する部分の左上のずれを、0〜1 の割合で指定します。Sprite Animator があると毎回書き換えられます。 （詳細設定）</td></tr>
 <tr><td>UV スケール</td><td><code>uv_scale</code></td><td>2 つの小数</td><td>1, 1</td><td></td><td>Sprite Sheet の1フレーム範囲を Motion から変更できます。 表示する部分の大きさの割合です。Sprite Animator があると毎回書き換えられます。 （詳細設定）</td></tr>
-<tr><td>9 スライス</td><td><code>nine_slice</code></td><td>4 つの小数</td><td>0, 0, 0, 0</td><td></td><td>左、上、右、下の順に Canvas 座標の長さで指定します（範囲の半分まで）。このビルドでは見た目は通常の引き伸ばしと同じです。 （詳細設定）</td></tr>
+<tr><td>9 スライス</td><td><code>nine_slice</code></td><td>4 つの小数</td><td>0, 0, 0, 0</td><td></td><td>左、上、右、下の順に Canvas 座標の長さで指定します（範囲の半分まで）。指定した長さの分だけ、画像の四隅を同じピクセル数で切り取って固定します。四隅は引き伸ばされず、4 辺と中央だけが伸びます。 （詳細設定）</td></tr>
 <tr><td>比率を維持</td><td><code>preserve_aspect</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>9 スライスが有効な場合は 9 スライスを優先します。 余った上下または左右は空け、中央に表示します。クリックの判定も表示された部分だけになります。</td></tr>
 </table></div>
 <!--/PROPS:UIImageComponent-->
@@ -83,7 +83,7 @@
 
     <h3 id="nine-slice">9 スライス</h3>
     <p>4 つの値（左、上、右、下）のどれかが 0 より大きいと 9 スライスとして描きます。値は範囲の半分までに抑えられます。</p>
-    <div class="warning"><strong>このビルドでは、角が引き伸ばされないようにする効果がありません</strong>9 つに分けたときの画像の切り取り位置が、表示する範囲と同じ割合で決まるため、見た目はふつうに引き伸ばしたときと同じになります。9 スライスをオンにしたときの違いは、<b>比率を維持</b> が効かなくなることと、Shape Image や Puppet Deform より優先されることだけです。</div>
+    <div class="note"><strong>9 スライスと比率維持</strong>9 スライスを使っている（4 つの値のどれかが 0 より大きい）間は、<b>比率を維持</b> は働きません。Shape Image や Puppet Deform が付いているときは、そちらが優先されます。</div>
 
     <h3 id="gradient">グラデーション</h3>
     <p><b>塗りの種類</b> で、画像に色の変化を掛けられます。どの場合も、決まった色を画像の色に掛け合わせます。</p>

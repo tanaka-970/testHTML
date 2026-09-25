@@ -90,6 +90,25 @@
 
     <div class="note"><strong>ライトの数の上限</strong>ゲームの描画に使われるのは、Point Light が 8 個、Spot Light が 4 個までです。シーンの中で先に見つかったものから使われ、あふれたライトは光りません（Validation に「GPUへ送れるPoint/Spot Light数を超えています。」と出ます）。影を落とすライトはさらに枠が決まっていて、枠が足りないライトは影なしで光ります。</div>
 
+    <h2 id="look">見た目の違い</h2>
+    <p>同じシーン（赤い立方体・白い球・青いカプセル）で、設定だけを変えて並べました。</p>
+    <figure>
+      <img src="../images/components/shot-light-shadow.png" alt="Directional Light の影のあり・なし">
+      <figcaption>Directional Light の <b>影を落とす</b> のオン・オフ。オフにすると、物の足元の影が消えて物が床から浮いて見えます。</figcaption>
+    </figure>
+    <figure>
+      <img src="../images/components/shot-light-intensity.png" alt="Directional Light の強さの比較">
+      <figcaption><b>強さ</b> を 1・3・6 にした比較。数字が大きいほど、物も床も明るくなります。</figcaption>
+    </figure>
+    <figure>
+      <img src="../images/components/shot-light-point-range.png" alt="Point Light の範囲の比較">
+      <figcaption>Point Light の <b>範囲</b>。広いと部屋全体が照らされ、狭いと光の玉の近くだけが明るくなります（外側は真っ暗）。</figcaption>
+    </figure>
+    <figure>
+      <img src="../images/components/shot-light-spot-angle.png" alt="Spot Light の角度の比較">
+      <figcaption>Spot Light の外側の角度。小さいと細いスポットライト、大きいと広く照らします。</figcaption>
+    </figure>
+
     <h2 id="usage">使い方</h2>
     <h3>シーンを明るくする</h3>
     <ol class="steps">

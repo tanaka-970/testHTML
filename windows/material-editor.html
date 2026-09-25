@@ -355,7 +355,7 @@
       <tr><td>BuiltIn/Stylized Character</td><td>キャラクター陰影モデル</td><td>Toon の陰影として描きます</td></tr>
     </table>
     </div>
-    <div class="warning"><strong>自分で作ったレイヤーは描かれません</strong>組み込み以外のレイヤー（<a href="shader-composer.html">Shader Composer</a> の Layer や Create &gt; Shader &gt; Layer Shader で作ったもの）は、見出しに「[保存済み: カスタム Layer は DX12 描画へ未接続]」と付き、値は保存されますが、このビルドの描画には使われません。</div>
+    <div class="note"><strong>自分で作ったレイヤー</strong>組み込み以外のレイヤー（<a href="shader-composer.html">Shader Composer</a> の Layer や Create &gt; Shader &gt; Layer Shader で作ったもの）も、コンパイルが通っていれば、ほかのレイヤーのあとに追加の描画として重ねられます。コンパイルに失敗しているレイヤーは、値は保存されますが描かれません。</div>
     <div class="note"><strong>プロジェクトのシェーダーとレイヤーの組み合わせ</strong>PBR陰影モデル・Toon陰影モデル・Unlit陰影モデル・ピクセレーション・キャラクター陰影モデルのどれかのレイヤーが有効だと、Shader 欄で選んだプロジェクトのシェーダー（Shader Composer など）は、そのシェーダー自身の計算では描かれません。プロジェクトのシェーダーを使うときは、これらのレイヤーを外します。</div>
 
     <h2 id="save">保存と割り当て</h2>

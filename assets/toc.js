@@ -24,6 +24,7 @@ window.DOCS_TOC = [
   ]},
   { title: "コンポーネント", children: [
     { title: "コンポーネント一覧", href: "components/index.html", summary: "分類ごとの全コンポーネントと、必須・推奨の考え方", keywords: "Component 部品 一覧 Core Rendering Lighting Camera Audio Physics Landscape UI Motion Scene 必須 推奨" },
+    { title: "リファレンス表", href: "components/reference-table.html", summary: "全コンポーネントの役割・解説ページ・写真の有無・実装状況を 1 枚にまとめた表", keywords: "リファレンス 表 一覧 状況 写真 実装 未実装" },
     { title: "Core", children: [
       { title: "Transform", href: "components/transform.html", summary: "位置・回転・拡大率（親から見た値）", keywords: "トランスフォーム 位置 回転 拡大率 スケール ローカル 親子" },
       { title: "State", href: "components/state.html", summary: "名前付きの状態を持ち、変化を知らせる", keywords: "ステート 状態 StateChanged Motion Player トリガー" },

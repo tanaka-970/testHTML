@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>リファレンス表 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / リファレンス表</div>
+    <h1>リファレンス表</h1>
+    <p class="meta">対象：ブランチ sinotake / コンポーネント 58 件</p>
+    <p>コンポーネントごとに、役割・解説ページ・操作や見た目の写真があるか・実装状況の注記を 1 枚にまとめた表です。名前のリンクから解説ページへ移動できます。写真の数は、そのページ全体の枚数です（同じページに複数のコンポーネントがある場合は共通の枚数です）。</p>
+    <p>写真のあるコンポーネントは 32 / 58 件です。「新リポジトリ」と書いた項目は、今後のコード編集先の Team-Project-HukuHuku-main に追加した機能で、ビルドが通ることまで確認しています。エディター上での動作確認はまだです。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>分類</th><th>名前</th><th>役割</th><th>写真</th><th>注記</th></tr>
+      <tr><td>Core</td><td><a href="transform.html">Transform</a></td><td>位置・回転・拡大率。GameObject が必ず持つ</td><td>あり（1 枚）</td><td></td></tr>
+      <tr><td>Core</td><td><a href="pivot.html">Pivot</a></td><td>エディターで回転・拡縮するときの基準点を決める</td><td>なし</td><td></td></tr>
+      <tr><td>Core</td><td><a href="state.html">State</a></td><td>名前付きの状態を持ち、変わったことを Motion Player に知らせる</td><td>なし</td><td></td></tr>
+      <tr><td>Core</td><td><a href="editor-helpers.html#folder">Folder</a></td><td>階層パネルを整理するためのフォルダ（階層パネルの「+ 作成 &gt; フォルダ」で作る）</td><td>なし</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="mesh-renderers.html">Mesh Renderer</a></td><td>モデルファイルを表示する</td><td>なし</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="mesh-renderers.html">Primitive Mesh Renderer</a></td><td>Cube や Sphere などの基本形状を表示する</td><td>なし</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="mesh-renderers.html">Skinned Mesh Renderer</a></td><td>骨で動くモデルを表示する</td><td>なし</td><td>新リポジトリで骨 256 本の上限を解除、ウェイト 4 本超・複数モーフに対応。ビルドのみ確認</td></tr>
+      <tr><td>Rendering</td><td><a href="animator.html">Animator</a></td><td>アニメーションの状態と切り替えを管理する</td><td>なし</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="post-process-volume.html">Post Process Volume</a></td><td>ブルームや色補正など、画面全体の仕上げの設定</td><td>あり（4 枚）</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="water-body.html">Water Body</a></td><td>海・湖の水面（波、反射、屈折、泡、水中の表現）</td><td>あり（8 枚）</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="environment-volumes.html#local-fog">Local Fog Volume</a></td><td>範囲の中だけに霧を足す</td><td>あり（6 枚）</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="environment-volumes.html#reflection-probe">Reflection Probe</a></td><td>範囲の中に、周りの景色の映り込みを足す</td><td>あり（6 枚）</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="environment-volumes.html#probe-gi">Probe GI Volume</a></td><td>範囲の中の間接光（回り込む光）を計算する</td><td>あり（6 枚）</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="sky.html">空</a></td><td>空・雲・星・月の背景</td><td>あり（1 枚）</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="effect-stacks.html#screen">Screen Effect Stack</a></td><td>3D の画面全体にエフェクトを重ねる</td><td>なし</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="effect-stacks.html#model">Model Effect Stack</a></td><td>モデルの見た目にエフェクトを重ねる</td><td>なし</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="normal-adjust.html">Normal Adjust</a></td><td>モデルの法線を寄せて陰影の出方を整える</td><td>なし</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="particle-emitter.html">Particle Emitter</a></td><td>小さな粒を出す（煙、火花など）</td><td>なし</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="lines.html">3D ライン</a></td><td>点をつないだ線や帯を描く</td><td>なし</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="lines.html#trail">軌跡</a></td><td>動いた跡を線として残す</td><td>なし</td><td></td></tr>
+      <tr><td>Lighting</td><td><a href="lights.html">Directional Light</a></td><td>太陽のように一方向から照らす</td><td>あり（4 枚）</td><td></td></tr>
+      <tr><td>Lighting</td><td><a href="lights.html">Point Light</a></td><td>点から全方向に照らす</td><td>あり（4 枚）</td><td></td></tr>
+      <tr><td>Lighting</td><td><a href="lights.html">Spot Light</a></td><td>円錐の形に照らす</td><td>あり（4 枚）</td><td></td></tr>
+      <tr><td>Camera</td><td><a href="camera.html">Camera</a></td><td>ゲーム中の視点</td><td>あり（1 枚）</td><td></td></tr>
+      <tr><td>Camera</td><td><a href="camera-target.html">Camera Target</a></td><td>カメラに追いかけられる目印</td><td>なし</td><td></td></tr>
+      <tr><td>Camera</td><td><a href="follow-target.html">Follow Target</a></td><td>カメラを Camera Target に追いかけさせる</td><td>なし</td><td></td></tr>
+      <tr><td>Audio</td><td><a href="audio-listener.html">Audio Listener</a></td><td>音を聞く位置（耳）</td><td>なし</td><td></td></tr>
+      <tr><td>Audio</td><td><a href="audio-source.html">Audio Source</a></td><td>音を鳴らす</td><td>なし</td><td></td></tr>
+      <tr><td>Physics</td><td><a href="physics.html#rigidbody">Rigidbody</a></td><td>重さや速度を持たせ、物理で動かす</td><td>あり（4 枚）</td><td></td></tr>
+      <tr><td>Physics</td><td><a href="physics.html#sphere">Sphere Collider</a></td><td>球の当たり判定</td><td>あり（4 枚）</td><td></td></tr>
+      <tr><td>Physics</td><td><a href="physics.html#box">Box Collider</a></td><td>箱の当たり判定</td><td>あり（4 枚）</td><td></td></tr>
+      <tr><td>Physics</td><td><a href="physics.html#capsule">Capsule Collider</a></td><td>カプセルの当たり判定（人型に向く）</td><td>あり（4 枚）</td><td></td></tr>
+      <tr><td>Physics</td><td><a href="physics.html#mesh">Mesh Collider</a></td><td>モデルの形そのままの当たり判定</td><td>あり（4 枚）</td><td></td></tr>
+      <tr><td>Physics</td><td><a href="physics.html#convex">Convex Collider</a></td><td>点の集まりから作る凸包の当たり判定。動く物にも使える（点はコードから渡す）</td><td>あり（4 枚）</td><td>新リポジトリで「頂点の元」を追加（Mesh／Primitive から自動生成）。ビルドのみ確認、実行は未確認</td></tr>
+      <tr><td>Physics</td><td><a href="physics.html#buoyancy">Buoyancy</a></td><td>水に入った Rigidbody に浮力・水の抵抗・水流の力を加える</td><td>あり（4 枚）</td><td></td></tr>
+      <tr><td>Destruction</td><td><a href="destruction.html#sliceable">Sliceable</a></td><td>実行中にメッシュを平面で切り、2 つの破片へ分ける（C++ API）</td><td>あり（1 枚）</td><td>新リポジトリで C# から CanSlice / Slice を呼べる（ABI 22）。ビルドのみ確認</td></tr>
+      <tr><td>Destruction</td><td><a href="destruction.html#destructible">Destructible</a></td><td>事前に用意した破片を爆発 Damage で分離する（C++ API）</td><td>あり（1 枚）</td><td>新リポジトリで C# から CanDamage / ApplyRadialDamage を呼べる（ABI 22）。ビルドのみ確認</td></tr>
+      <tr><td>Landscape</td><td><a href="landscape.html#landscape">Landscape</a></td><td>地形の形のデータ</td><td>なし</td><td></td></tr>
+      <tr><td>Landscape</td><td><a href="landscape.html#renderer">Landscape Renderer</a></td><td>地形を表示する</td><td>なし</td><td></td></tr>
+      <tr><td>Landscape</td><td><a href="landscape.html#collider">Landscape Collider</a></td><td>地形の当たり判定</td><td>なし</td><td></td></tr>
+      <tr><td>UI</td><td><a href="effect-stacks.html#ui">Effect Stack</a></td><td>UI にエフェクトを重ねる</td><td>なし</td><td></td></tr>
+      <tr><td>Motion</td><td><a href="motion-players.html#motion-player">Motion Player</a></td><td>モーション（アニメーション）を再生する</td><td>なし</td><td></td></tr>
+      <tr><td>Motion</td><td><a href="motion-players.html#composition-player">Composition Player</a></td><td>複数のモーションをまとめたコンポジションを再生する</td><td>なし</td><td></td></tr>
+      <tr><td>Motion</td><td><a href="property-link.html">Property Link</a></td><td>ある設定の数値を、別のコンポーネントの設定へ変換してつなぐ</td><td>なし</td><td></td></tr>
+      <tr><td>Scene</td><td><a href="persistent.html">Persistent</a></td><td>シーンが切り替わっても残す</td><td>なし</td><td></td></tr>
+      <tr><td>Scene</td><td><a href="scene-loader.html">Scene Loader</a></td><td>シーンの読み込みの進み具合を表示用に出す</td><td>なし</td><td></td></tr>
+      <tr><td>Gameplay（テンプレート用）</td><td><a href="gameplay.html#character-motor">Character Motor</a></td><td>移動・加速減速・重力・ジャンプ・接地</td><td>あり（16 枚）</td><td></td></tr>
+      <tr><td>Gameplay（テンプレート用）</td><td><a href="gameplay.html#character-input">Character Input</a></td><td>操作（デバイスや AI からの入力）を保持する</td><td>あり（16 枚）</td><td></td></tr>
+      <tr><td>Gameplay（テンプレート用）</td><td><a href="gameplay.html#player-controller">Player Controller</a></td><td>入力を Character Motor へ渡し、カメラ基準の移動や振り向きを行う</td><td>あり（16 枚）</td><td></td></tr>
+      <tr><td>Gameplay（テンプレート用）</td><td><a href="gameplay.html#rotator">Rotator</a></td><td>一定の速さで回し続ける（動作確認用）</td><td>あり（16 枚）</td><td></td></tr>
+      <tr><td>Gameplay（テンプレート用）</td><td><a href="gameplay.html#health">Health</a></td><td>最大体力・現在体力・無敵</td><td>あり（16 枚）</td><td></td></tr>
+      <tr><td>Gameplay（テンプレート用）</td><td><a href="gameplay.html#spawn-point">Spawn Point</a></td><td>開始・復帰の地点</td><td>あり（16 枚）</td><td></td></tr>
+      <tr><td>Gameplay（テンプレート用）</td><td><a href="gameplay.html#checkpoint">Checkpoint</a></td><td>通ると復帰地点が更新される</td><td>あり（16 枚）</td><td></td></tr>
+      <tr><td>Gameplay（テンプレート用）</td><td><a href="gameplay.html#goal">Goal</a></td><td>ゴール到達のイベントを出す</td><td>あり（16 枚）</td><td></td></tr>
+      <tr><td>Gameplay（テンプレート用）</td><td><a href="gameplay.html#kill-volume">Kill Volume</a></td><td>落下・即死の領域。復帰も行う</td><td>あり（16 枚）</td><td></td></tr>
+      <tr><td>Gameplay（テンプレート用）</td><td><a href="gameplay.html#jump-pad">Jump Pad</a></td><td>触れた Character Motor を指定方向へ飛ばす</td><td>あり（16 枚）</td><td></td></tr>
+      <tr><td>Gameplay（テンプレート用）</td><td><a href="gameplay.html#damage-area">Damage Area</a></td><td>中にいる Health へ一定間隔でダメージ</td><td>あり（16 枚）</td><td></td></tr>
+      <tr><td>Gameplay（テンプレート用）</td><td><a href="gameplay.html#enemy">Enemy Behaviour</a></td><td>巡回・索敵・追跡・攻撃・帰還を行う敵</td><td>あり（16 枚）</td><td></td></tr>
+    </table>
+    </div>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>
