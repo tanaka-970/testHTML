@@ -42,7 +42,7 @@ window.DOCS_TOC = [
       { title: "Normal Adjust", href: "components/normal-adjust.html", summary: "陰影に使う法線を球の向きへ寄せる", keywords: "ノーマルアジャスト 法線 陰影 トゥーン 球 Blend Radius Falloff Bone スロット" }
     ]},
     { title: "Physics", children: [
-      { title: "物理（Rigidbody と Collider）", href: "components/physics.html", summary: "剛体、球・箱・カプセル・メッシュの当たり判定、レイヤー、トリガー、衝突イベント", keywords: "物理 Rigidbody リジッドボディ 剛体 Collider コライダー 当たり判定 Sphere Box Capsule Mesh Convex 凸包 Buoyancy 浮力 静的 キネマティック 動的 質量 重力 摩擦 反発 固定 停止 CCD レイヤー マスク トリガー TriggerEnter CollisionEnter AddForce Teleport" }
+      { title: "物理（Rigidbody と Collider）", href: "components/physics.html", summary: "剛体、球・箱・カプセル・メッシュの当たり判定、レイヤー、トリガー、衝突イベント", keywords: "ATLAS_PHYSICS アトラス 物理エンジン PhysX 物理 Rigidbody リジッドボディ 剛体 Collider コライダー 当たり判定 Sphere Box Capsule Mesh Convex 凸包 Buoyancy 浮力 静的 キネマティック 動的 質量 重力 摩擦 反発 固定 停止 CCD レイヤー マスク トリガー TriggerEnter CollisionEnter AddForce Teleport" }
     ]},
     { title: "水・環境", children: [
       { title: "Water Body（水域）", href: "components/water-body.html", summary: "海・湖の水面。波、反射、屈折、泡、水中の表現、浮力との連携", keywords: "水 海 湖 Ocean Lake Water Body 波 Gerstner 泡 Foam 屈折 反射 水中 Underwater 浮力 Gameplay Query Allow Buoyancy" },
@@ -52,7 +52,7 @@ window.DOCS_TOC = [
       { title: "Gameplay 部品（テンプレート用）", href: "components/gameplay.html", summary: "Character Motor、Health、Checkpoint、Goal、Kill Volume、Jump Pad、Damage Area、Enemy Behaviour など", keywords: "Gameplay テンプレート Character Motor Character Input Player Controller Rotator Health 体力 Spawn Point Checkpoint チェックポイント Goal ゴール Kill Volume Jump Pad ジャンプ台 Damage Area ダメージ Enemy Behaviour 敵 AI 巡回 索敵 追跡 プレイヤー 移動 ジャンプ" }
     ]},
     { title: "Destruction", children: [
-      { title: "破壊（Sliceable / Destructible）", href: "components/destruction.html", summary: "実行時のメッシュ切断と、事前破砕 Asset を爆発で分離する C++ API", keywords: "破壊 destruction Sliceable Destructible Slice 切断 平面 切断面 破片 Chunk Bond 爆発 Blast Damage ApplyRadialDamage PhysX Runtime Convex Cooking replaydestruction replaydestructionmaterial 試験機能 C++ C# 未対応" }
+      { title: "破壊（Sliceable / Destructible）", href: "components/destruction.html", summary: "実行時のメッシュ切断と、事前破砕 Asset を爆発で分離する C++ API", keywords: "破壊 destruction Sliceable Destructible Slice 切断 平面 切断面 破片 Chunk Bond 爆発 Blast Damage ApplyRadialDamage ATLAS_PHYSICS PhysX Runtime Convex Cooking replaydestruction replaydestructionmaterial 試験機能 C++ C# 未対応" }
     ]},
     { title: "Landscape", children: [
       { title: "地形（Landscape）", href: "components/landscape.html", summary: "地面の作成、スカルプト、面の加工、描画と当たり判定", keywords: "地形 ランドスケープ Landscape Ground Renderer Collider スカルプト ブラシ 盛り上げる 掘り下げる なめらか 平ら でこぼこ 細かく トポロジー 押し出し 穴 トンネル 洞窟 辺をつなぐ 再生成 ロード範囲 区画" }

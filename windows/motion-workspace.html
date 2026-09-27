@@ -67,6 +67,14 @@
 
     <h2 id="layout">画面の並び</h2>
     <p><b>Window</b> &gt; <b>Motion Workspaceへ</b> で切り替えると、次のウィンドウが表示されます。閉じたウィンドウは、Motion Workspace にいる間だけ <b>Window</b> メニューに出る項目から開き直せます。</p>
+    <figure>
+      <img src="../images/windows/motion-workspace-layout.png" alt="Motion Workspace の画面">
+      <figcaption>Motion Workspace（空と Cube だけのシーン）。左に Motion レイヤー（階層とタブで切り替え）、右に Motion インスペクター（イージングカーブとタブで切り替え）、下にタイムライン・グラフエディター・Motion プレビュー・プロジェクト・コンソールが並びます。</figcaption>
+    </figure>
+    <figure>
+      <img src="../images/windows/motion-workspace-window-menu.png" alt="Motion Workspace の Window メニュー">
+      <figcaption>Motion Workspace にいる間は、Window メニューに Motion レイヤー・Motion プレビュー・Motion インスペクター・タイムライン・グラフエディター・Motion リグ が出ます。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>場所</th><th>ウィンドウ</th></tr>
@@ -90,6 +98,10 @@
 
     <h2 id="layers">Motion レイヤー</h2>
     <h3 id="layers-buttons">上部のボタン</h3>
+    <figure>
+      <img src="../images/windows/motion-layer.png" alt="Motion レイヤー">
+      <figcaption>新規 で NewMotion を作り、Cube の 粗さ のトラックを足して 保存 したところ。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>ボタン</th><th>働き</th></tr>
@@ -102,6 +114,14 @@
     <p>ボタンの下に、直前の操作の結果（「Motionを保存しました」など）が表示されます。</p>
 
     <h3 id="add-track">選択からトラックを追加</h3>
+    <figure>
+      <img src="../images/windows/motion-add-track-list.png" alt="選択からトラックを追加 の一覧">
+      <figcaption>Cube を選んで 選択からトラックを追加 を押したところ。コンポーネントごとに「表示名 (内部名)」が並び、切り替わるだけのものには［段階］が付きます。</figcaption>
+    </figure>
+    <figure>
+      <img src="../images/windows/motion-add-track-filter.png" alt="絞り込み">
+      <figcaption>絞り込み に「rough」と入れると、粗さ の行だけになります。</figcaption>
+    </figure>
     <ul>
       <li>一覧はコンポーネントごとに分かれ、各行は「表示名 (内部名)」です。補間できず、切り替わるだけのプロパティには「［段階］」が付きます（イージングは効きません）。</li>
       <li><b>絞り込み（例: rough）</b> 欄に文字を入れると、内部名か表示名にその文字を含む行だけになります（大文字・小文字は区別しません）。</li>
@@ -163,6 +183,10 @@
 
     <h3 id="inspector-track">トラック</h3>
     <p>タイムラインかトラックの一覧でトラックを選ぶと表示されます。どちらも選んでいないときは「トラックまたはイベントトラックを選択してください。」と出ます。</p>
+    <figure>
+      <img src="../images/windows/motion-inspector-track.png" alt="Motion インスペクター（トラック）">
+      <figcaption>トラックを選んだときの Motion インスペクター。上にモーション全体の欄、その下にトラックの欄が並びます。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>欄</th><th>既定</th><th>働き</th></tr>
@@ -275,6 +299,10 @@
     <p>受け取る方法は <a href="../components/motion-players.html">Motion Player</a> と <a href="../csharp/script-behaviour.html">ScriptBehaviour</a>（OnAnimationEvent）を見てください。</p>
 
     <h2 id="timeline">タイムライン</h2>
+    <figure>
+      <img src="../images/windows/motion-timeline.png" alt="タイムライン">
+      <figcaption>粗さ のトラックを足した直後のタイムライン。時刻 0（0F）と終わり（30F）にキーが入っています。</figcaption>
+    </figure>
     <h3 id="timeline-bar">上部の欄</h3>
     <div class="table-wrap">
     <table>
@@ -335,6 +363,10 @@
 
     <h2 id="graph">グラフエディター</h2>
     <p>選んでいるトラックの値の変化をグラフで表示し、キーのイージングを編集します。トラックを選んでいないときは「トラック / キーを選択してください。」と出ます。</p>
+    <figure>
+      <img src="../images/windows/motion-graph-editor.png" alt="グラフエディター">
+      <figcaption>グラフエディター。粗さが 0.55 から 0 へ下がる線が表示されます。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>欄</th><th>既定</th><th>働き</th></tr>
@@ -368,6 +400,10 @@
 
     <h2 id="preview">Motion プレビュー</h2>
     <p>開いているモーションを、エディターのシーンにそのまま当てて確かめます。</p>
+    <figure>
+      <img src="../images/windows/motion-preview.png" alt="Motion プレビュー">
+      <figcaption>Motion プレビュー。再生・復元・ループ、速度、時刻のスライダー、トラック数が並びます。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>欄</th><th>既定</th><th>働き</th></tr>

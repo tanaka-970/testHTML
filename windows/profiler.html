@@ -32,6 +32,10 @@
     <h2 id="profiler">Profiler / 描画統計 (F4)</h2>
     <p>最初は画面の左下あたり（階層パネルの右）に、少し透けたウィンドウとして開きます。</p>
     <h3 id="profiler-top">上部</h3>
+    <figure>
+      <img src="../images/windows/profiler-window.png" alt="Profiler / 描画統計 のウィンドウ">
+      <figcaption>F4 で開いた Profiler / 描画統計。少し透けたウィンドウで、上部に FPS・三角形の数・CPU ms / GPU ms が出ます。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>表示</th><th>内容</th></tr>
@@ -49,8 +53,16 @@
 
     <h3 id="history">Frame履歴</h3>
     <p>CPU ms と GPU ms の折れ線グラフと、最近のフレームの「min / avg / median / p95 / max」（最小、平均、中央値、遅い方から 5% の値、最大）が出ます。履歴はメモリーにだけ置き、300 フレームを超えると古いものから消えます（「履歴はRAMリングのみ（上限 300 frames）。ディスクへ常時追記しません」と出ます）。GPU の時間が取れなかったフレームは、統計からは除かれますが、グラフには 0 として描かれます。</p>
+    <figure>
+      <video src="../images/windows/profiler-live.webm" autoplay loop muted playsinline controls></video>
+      <figcaption>Frame履歴 のグラフは毎フレーム更新されます（動画）。</figcaption>
+    </figure>
 
     <h3 id="scopes">Scope Tree / Hotspots</h3>
+    <figure>
+      <img src="../images/windows/profiler-scope-tree.png" alt="Scope Tree / Hotspots">
+      <figcaption>Scope Tree / Hotspots を 階層 で表示したところ。処理の名前、CPU の時間と親に対する割合、呼ばれた回数が並びます。</figcaption>
+    </figure>
     <ul>
       <li><b>表示</b> で「階層」「CPU重い順」「GPU重い順」を選びます。</li>
       <li>各行は「処理の名前、CPU の時間と親に対する割合、GPU の時間と割合、呼ばれた回数（x数）」です。</li>
@@ -58,6 +70,10 @@
     </ul>
 
     <h3 id="export">出力 / ログ</h3>
+    <figure>
+      <img src="../images/windows/profiler-output.png" alt="出力 / ログ">
+      <figcaption>出力 / ログ の欄。名前、計測ログを保存 (CSV + Trace)、自動ログと、その間隔・最大世代・合計上限。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>欄</th><th>働き</th></tr>
@@ -72,10 +88,18 @@
 
     <h3 id="optimization">最適化 (カリング / LOD / プリパス)</h3>
     <p>視錐台カリング（<b>有効</b>、除外した数）、自動LOD（<b>有効</b>、<b>切替の画面高さ(px)</b> 40〜1200、<b>強制LOD</b>：自動 / LOD0固定〜LOD3固定、LOD ごとの描画数）、<b>深度プリパス</b>（切り替えるとプロジェクト設定へ保存）の欄があります。</p>
+    <figure>
+      <img src="../images/windows/profiler-optimization.png" alt="最適化 (カリング / LOD / プリパス)">
+      <figcaption>最適化 (カリング / LOD / プリパス) を開いたところ。視錐台カリング、自動LOD、深度プリパスの欄があります。</figcaption>
+    </figure>
     <div class="note"><strong>切り替えると描画の量が変わります</strong>視錐台カリング・自動LOD・深度プリパスは、今の DirectX 12 の描画でも使われます。カリングを切ると画面外の物も描くため、描画数が増えます。</div>
 
     <h2 id="dx12-debug">DX12 Debug</h2>
     <p><b>Window</b> &gt; <b>DX12 Debug</b> で開きます（DirectX 12 で動いているときだけ表示されます）。どれも表示のみです。</p>
+    <figure>
+      <img src="../images/windows/dx12-debug.png" alt="DX12 Debug のウィンドウ">
+      <figcaption>Window &gt; DX12 Debug。Descriptor Heaps、Upload / Fence、Caches / DXC、GPU Passes の見出しが並びます。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>見出し</th><th>内容</th></tr>

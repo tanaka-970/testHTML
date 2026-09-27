@@ -30,6 +30,10 @@
     </ul>
 
     <h2 id="validation">Validation タブ</h2>
+    <figure>
+      <img src="../images/windows/validation-tab.png" alt="Validation タブ">
+      <figcaption>下段の Validation &amp; Diagnostics タブ。操作対象と Collider が無いシーンでは、WARN が 2 件出ます。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>表示</th><th>働き</th></tr>
@@ -74,6 +78,10 @@
 
     <h2 id="diagnostics">Diagnostics タブ</h2>
     <p>今のシーンの状態を数字で表示します（表示のみ）。</p>
+    <figure>
+      <img src="../images/windows/diagnostics-tab.png" alt="Diagnostics タブ">
+      <figcaption>Diagnostics タブ。シーン名、GameObject の数、Mode、Dirty などが並びます。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>表示</th><th>内容</th></tr>
@@ -82,7 +90,7 @@
       <tr><td>Mode</td><td>Edit（編集中）か Runtime（実行中）</td></tr>
       <tr><td>Dirty</td><td>保存していない変更があるか（Yes / No）</td></tr>
       <tr><td>Render Items</td><td>描画に送っている物の数</td></tr>
-      <tr><td>Collision Backend</td><td>当たり判定の方式（「Scene Colliders Only」）</td></tr>
+      <tr><td>Collision Backend</td><td>ゲーム中の当たり判定の問い合わせを受け持つ仕組み。ふだんは「PhysX / External Query Service」（ATLAS_PHYSICS）。使えないときは「SceneCollider (Legacy)」、何も無いときは「None」</td></tr>
       <tr><td>Gameplay events</td><td>ゲーム用の部品が出したイベントの数</td></tr>
       <tr><td>Colliders</td><td>「有効な数 (blocking 押し戻す数 / trigger 数 / mesh 数)」</td></tr>
     </table>
@@ -93,6 +101,10 @@
 
     <h2 id="component-api">Component API タブ</h2>
     <p>エンジンに登録されているすべてのコンポーネントと、そのプロパティの内部名と型の一覧です。</p>
+    <figure>
+      <img src="../images/windows/component-api-tab.png" alt="Component API タブ">
+      <figcaption>Component API タブ。TransformComponent の見出しを開くと、position・rotation・scale と型（vec3）が出ます。</figcaption>
+    </figure>
     <ul>
       <li>上に <b>検索</b> 欄と、「Component 数 種 / Property 数 個。C# から触れるのは 数 個」が出ます。検索はコンポーネントの型名で絞り込みます。</li>
       <li>「型名  [分類]  数 個」の見出しを開くと、プロパティが「内部名  型」の形で並びます。書き換えられないものには「読取のみ」が付きます。</li>

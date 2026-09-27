@@ -41,11 +41,23 @@
     <ul>
       <li><b>プロジェクト</b> パネルで右クリックし、<b>Create</b> &gt; <b>UI / Presentation</b> &gt; <b>イージングカーブ</b> を選びます。できたばかりのカーブは、サンプル 64 個のまっすぐな線で、制御点は両端の 2 つです。</li>
       <li>プロジェクトパネルで <code>.replayeasing</code> をダブルクリックすると開きます。</li>
-      <li><b>Window</b> &gt; <b>イージングカーブ</b> でウィンドウだけを開けます。何も開いていないときは説明と <b>新規作成</b> ボタンが出ます（「NewEasingCurve」という名前で作ります）。</li>
+      <li><b>Window</b> &gt; <b>イージングカーブ</b> でウィンドウだけを開けます。何も開いていないときは「Project Browser の 作成 → イージングカーブ で新規作成するか、既存の .replayeasing をダブルクリックしてください。」と <b>新規作成</b> ボタンが出ます。新規作成 は、プロジェクトパネルでいま開いているフォルダーに「NewEasingCurve」という名前で作り、そのまま開きます。</li>
     </ul>
+    <figure>
+      <img src="../images/windows/easing-curve-empty.png" alt="何も開いていないとき">
+      <figcaption>Window &gt; イージングカーブ で、何も開いていないときの表示。</figcaption>
+    </figure>
 
     <h2 id="layout">ウィンドウの並び</h2>
     <p>上から次の順に並びます。保存していない変更があると、タイトルが「イージングカーブ *」になります。</p>
+    <figure>
+      <img src="../images/windows/easing-curve-window.png" alt="イージングカーブ ウィンドウ">
+      <figcaption>固定プリセットで EaseOutBack を選び、サンプルへ焼く を押したところ。1 を少し超えてから 1 に戻る形で、下に「種類: EaseOutBack」と式、制御点の座標が出ます。</figcaption>
+    </figure>
+    <figure>
+      <img src="../images/windows/easing-curve-speed-preview.png" alt="速度グラフと挙動プレビュー">
+      <figcaption>下へスクロールしたところ。速度グラフの赤い区間は、値が戻っている（速さがマイナスの）ところです。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>場所</th><th>表示・操作</th></tr>
@@ -54,7 +66,7 @@
       <tr><td>サンプル数</td><td>16〜256。変えると、今のカーブの形を保ったまま数を変えます</td></tr>
       <tr><td>固定プリセット</td><td>決まった形を選び、<b>サンプルへ焼く</b> でカーブをその形にします</td></tr>
       <tr><td>操作の説明</td><td>「左ドラッグ: フリーハンド / 丸をドラッグ: 編集 / 右クリック: 制御点追加・削除」</td></tr>
-      <tr><td>キャンバス</td><td>カーブ（緑の線）、制御点（白い丸。つかんでいる点は黄色）、点線の Linear。カーソルを乗せると十字線と「t … / y … / カーブ …」が出ます</td></tr>
+      <tr><td>キャンバス</td><td>カーブ（緑の線）、制御点（白い丸。つかんでいる点は黄色）、点線の Linear。カーソルを乗せると十字線と「t … / y … / カーブ …」が出ます。縦の表示範囲は、カーブがはみ出さないように自動で変わります（0〜1 と、サンプル・制御点のいちばん小さい値〜大きい値を含む範囲に、上下へ余白を足したもの）</td></tr>
       <tr><td>情報</td><td>「サンプル: 数 / 制御点: 数 / Y: 最小 .. 最大」、「オーバーシュート: 最大 … / 最小 …」、「種類:」（プリセット名と式、または「カスタム（サンプル N 点）」）、制御点座標（P0、P1…）</td></tr>
       <tr><td>速度グラフ</td><td>カーブの傾き（速さ）。「最大速度 / 平均速度」。赤い区間は速さがマイナスで、値が戻っていることを表します</td></tr>
       <tr><td>挙動プレビュー</td><td>2 本の線の上を丸が動き、「カーブ」と「Linear」の動きを並べて見られます。<b>再生</b> / <b>停止</b>、<b>再生時間</b>（0.2〜5 秒）。止めているときは <b>時間 t</b> のスライダーで位置を選べます</td></tr>
@@ -62,6 +74,10 @@
     </div>
 
     <h2 id="edit">カーブを編集する</h2>
+    <figure>
+      <video src="../images/windows/easing-curve-drag.webm" autoplay loop muted playsinline controls></video>
+      <figcaption>制御点（白い丸）を下へドラッグすると、まわりのサンプルが作り直され、種類が「カスタム」になります（動画）。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>操作</th><th>結果</th></tr>
@@ -74,6 +90,10 @@
       <tr><td><b>制御点をクリア</b></td><td>制御点を消します。そのあとは、サンプルの点を直接ドラッグして編集します</td></tr>
     </table>
     </div>
+    <figure>
+      <img src="../images/windows/easing-curve-context.png" alt="キャンバスの右クリックメニュー">
+      <figcaption>キャンバスを右クリックしたところ。制御点を追加・制御点を削除 が出ます。</figcaption>
+    </figure>
 
     <h3 id="presets">固定プリセット</h3>
     <p>Linear、Step、EaseInQuad、EaseOutQuad、EaseInOutQuad、EaseInCubic、EaseOutCubic、EaseInOutCubic、EaseInBack、EaseOutBack、EaseInOutBack、EaseInElastic、EaseOutElastic、EaseInOutElastic。<b>サンプルへ焼く</b> を押すと、情報の欄に選んだ形の式が表示されます。そのあとカーブを手で変えると「カスタム」になります。</p>
@@ -99,6 +119,14 @@
       <li><a href="motion-workspace.html">Motion Workspace</a> でキーを選び、Motion インスペクターの <b>イージング</b> を PresetCurve にして、<b>カーブ</b> で作ったアセットを選びます。</li>
       <li>Motion プレビューの <b>再生</b> で確かめます。</li>
     </ol>
+    <figure>
+      <img src="../images/windows/easing-curve-custom.png" alt="山と谷のあるカーブ">
+      <figcaption>1 を少し超える山と、1 より少し下の谷を作ったカーブ。</figcaption>
+    </figure>
+    <figure>
+      <video src="../images/windows/easing-curve-preview.webm" autoplay loop muted playsinline controls></video>
+      <figcaption>挙動プレビュー の 再生 で、カーブ（緑）と Linear（白）の動きを並べて確かめます（動画）。</figcaption>
+    </figure>
     <p>ほかのキーにも同じカーブを使うときは、キーを選んで F9（プリセットを適用）を押すと、最後に選んだカーブがまとめて付きます。</p>
 
     <h2>関連項目</h2>

@@ -37,11 +37,16 @@
 
     <h2 id="sections">ウィンドウの中身</h2>
     <p>上から次の見出しが並びます。</p>
+    <figure>
+      <img src="../images/windows/collision-diagnostics-window.png" alt="衝突の診断 ウィンドウ">
+      <figcaption>Window &gt; Collision Diagnostics を開いたところ（Collider が 0 個のシーン）。問い合わせ先は「Runtime Query: ATLAS_PHYSICS」で、登録表はすべて 0 です。</figcaption>
+    </figure>
 
     <h3 id="source">問い合わせ先</h3>
-    <p>「Scene Colliders Only」と「Runtime衝突はGameObject Colliderへ一本化されています。」が表示されます。当たり判定は、GameObject に付けた Collider コンポーネントだけで行われます。</p>
+    <p>「Runtime Query: 名前」の行に、ゲーム中の当たり判定の問い合わせを受け持つ仕組みが出ます。ふだんは <b>ATLAS_PHYSICS</b>（物理エンジン）で、ゲーム用の問い合わせと物理の動きは同じ ATLAS_PHYSICS のシーンを使います。ATLAS_PHYSICS が使えないときは <b>SceneCollider (Legacy)</b> になり、エンジン内の簡易な当たり判定（SceneCollisionWorld）が代わりに受け持ちます。</p>
+    <p>下の登録表は、エディターで表示するために SceneCollisionWorld に写した控え（見出し「SceneCollisionWorld debug mirror」）です。</p>
 
-    <h3 id="registry">Collider の登録表</h3>
+    <h3 id="registry">Collider の登録表（SceneCollisionWorld debug mirror）</h3>
     <div class="table-wrap">
     <table>
       <tr><th>表示</th><th>意味</th></tr>
@@ -57,7 +62,8 @@
     </div>
 
     <h3 id="last-hit">直近の Hit 元</h3>
-    <p>「接地:」と「壁　:」の行に、最後に地面・壁として当たった相手が「SceneCollider  Object （ID）  Collider （番号）」の形で表示されます。</p>
+    <p>「接地:」と「壁　:」の行に、最後に地面・壁として当たった相手が「仕組み  Object （ID）  Collider （番号）」の形で表示されます。</p>
+    <p>「SceneCollider」の部分には当たった仕組み（ATLAS_PHYSICS または SceneCollider）が入り、まだ何にも当たっていないときは「None  Object 0  Collider 0」です。</p>
     <p>シーンの操作対象の GameObject に Character Motor が付いているときは、続けて次が表示されます。</p>
     <div class="table-wrap">
     <table>
@@ -74,6 +80,7 @@
     <table>
       <tr><th>表示名</th><th>既定</th><th>働き</th></tr>
       <tr><td>Collider の形を描く</td><td>オフ</td><td>Collider の形を線で描きます。シーンビュー上部の <b>コライダー</b> と同じ設定です。各 Collider の <b>形状を表示</b> がオフのものは描きません。Collider の中心には小さな十字が出ます</td></tr>
+      <tr><td>水域・波フィールドを描く</td><td>オフ</td><td>Water Body の範囲（水色の枠）と波の場（桃色の線）をシーンビューに描きます。Ocean は視点のまわり最大 80 m の範囲を描きます。シーンビュー上部の <b>水デバッグ</b> と同じ設定です（<a href="../components/water-body.html">Water Body</a>）</td></tr>
       <tr><td>非選択の AI・ステージのデバッグ表示</td><td>オフ</td><td>選んでいない GameObject の AI やステージ用部品の表示も出します（<a href="../components/nav-agent.html#debug">Nav Agent</a>）</td></tr>
       <tr><td>境界ボックスを描く</td><td>オン</td><td>Collider を囲む箱を、半透明の白で描きます（Collider の形を描くがオンのとき）</td></tr>
       <tr><td>Mesh の三角形を描く</td><td>オフ</td><td>Mesh Collider の三角形を描きます。Collider 側の <b>三角形を表示</b> もオンのものだけです。オフのときは境界ボックスだけです</td></tr>
@@ -81,7 +88,7 @@
       <tr><td>Normal Adjust の範囲を描く</td><td>オフ</td><td>選択中の Normal Adjust の範囲を描きます（<a href="../components/normal-adjust.html">Normal Adjust</a>）</td></tr>
     </table>
     </div>
-    <p>ライト、Normal Adjust、AI の表示は、シーンタブを表示しているときだけ出ます。</p>
+    <p>水域、ライト、Normal Adjust、AI の表示は、シーンタブを表示しているときだけ出ます。</p>
 
     <h3 id="colors">色の見かた</h3>
     <div class="table-wrap">

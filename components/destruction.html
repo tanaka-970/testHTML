@@ -19,7 +19,7 @@
     <h1>破壊（Sliceable / Destructible）</h1>
     <p class="meta">対象：RePlayEngine ソース 08fb8f40（2026-09-24 に実装を確認）</p>
 
-    <p>RePlayEngine には、実行中のメッシュを平面で二分する <b>Sliceable</b> と、事前に分けた破片を爆発ダメージで離す <b>Destructible</b> があります。どちらも破片メッシュの生成と PhysX の凸形状作成をバックグラウンドで行い、完了した結果をゲーム中のシーンへ反映します。</p>
+    <p>RePlayEngine には、実行中のメッシュを平面で二分する <b>Sliceable</b> と、事前に分けた破片を爆発ダメージで離す <b>Destructible</b> があります。どちらも破片メッシュの生成と ATLAS_PHYSICS の凸形状作成をバックグラウンドで行い、完了した結果をゲーム中のシーンへ反映します。</p>
 
     <div class="warning"><strong>試験段階の機能です</strong>インスペクターから部品と設定を追加でき、エディターには試験用の <a href="#editor">Destruction Editor</a> パネル（Window &gt; Destruction Editor）があります。パネルでは、切断の位置を確かめる、ゲームの実行中に実際に切る、切った結果から破砕用アセットを作る、といったことができます。ただし、このビルドでは C# から呼び出す API は登録されていません。ゲームの中で切断や爆発を起こすには、ゲーム側の C++ コードからコンポーネントの API を呼び出す必要があります。</div>
 
@@ -70,7 +70,7 @@
     <p>対象に Convex Collider があると、入力頂点の数、凸包を作っている最中か、できあがっているか、頂点数・記憶量・バウンディングボックスを表示します。Cut Preview のあとには、重心（ローカルとワールド）、メッシュの体積、Rigidbody があれば質量と箱に近似した慣性も出ます。</p>
 
     <h3 id="editor-blast">Blast Fracture / Bond / Stress</h3>
-    <p>対象に Destructible があり、Destruction Asset が割り当てられているとき、Chunk・Bond・Actor Group・PhysX Actor の数、耐久値を超えた Bond の数、Stress の計算の状態、Bond の一覧とグラフを表示します。</p>
+    <p>対象に Destructible があり、Destruction Asset が割り当てられているとき、Chunk・Bond・Actor Group・ATLAS_PHYSICS Actor の数、耐久値を超えた Bond の数、Stress の計算の状態、Bond の一覧とグラフを表示します。</p>
     <ul>
       <li><b>Blast試験半径</b>、<b>Blast試験Damage</b>：試験の爆発の大きさと強さ。</li>
       <li><b>Play中にBlast Damageを試す</b>：ゲームの実行中だけ押せます。対象の位置を中心に、その半径と Damage で爆発させます。</li>
@@ -199,7 +199,7 @@ if (destructible != nullptr &amp;&amp;
     <div class="table-wrap">
     <table>
       <tr><th>症状・条件</th><th>確認すること</th></tr>
-      <tr><td>実行できない、または処理が始まらない</td><td>PhysX の Runtime Convex Cooking を使える Scene で、ゲーム実行中に呼び出してください。編集モードでは動作しません。</td></tr>
+      <tr><td>実行できない、または処理が始まらない</td><td>ATLAS_PHYSICS の Runtime Convex Cooking を使える Scene で、ゲーム実行中に呼び出してください。編集モードでは動作しません。</td></tr>
       <tr><td>Sliceable が切れない</td><td>有効な GameObject に Mesh Renderer / Skinned Mesh Renderer の片方だけがあるか、メッシュの読込が完了しているか、Cooldown と最大破片数を確認します。Static Mesh は CPU 側の三角形データが必要です。</td></tr>
       <tr><td>Skinned Mesh の切断が失敗する</td><td>Renderer を表示し、実行中の姿勢取得が完了するまで待ちます。取得は最大 10 秒で打ち切られます。</td></tr>
       <tr><td>Sliceable の切断抵抗が足りない</td><td><code>cutting_energy</code> がコンポーネントまたは破壊材質の「切断抵抗」以上か確認します。</td></tr>

@@ -29,13 +29,18 @@
     </ul>
 
     <h2 id="fields">ウィンドウの欄</h2>
+    <figure>
+      <img src="../images/windows/screenshot-regression-window.png" alt="スクリーンショット回帰のウィンドウ">
+      <figcaption>Window &gt; スクリーンショット回帰 を開いたところ。ボタンは左から 基準を撮る・referenceへ登録・基準と比べる・自己診断 の順に並びます。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>欄</th><th>既定</th><th>働き</th></tr>
-      <tr><td><b>名前</b></td><td>default</td><td>画像の名前（63 バイトまで）。右に保存先「Saved/Golden/名前.png」が出ます</td></tr>
+      <tr><td><b>名前</b></td><td>default</td><td>画像の名前（63 バイトまで）。右に保存先「Saved/Golden/名前.png」、その下に「CLI比較の基準: Saved/Golden/reference/名前.png」が出ます。<code>..</code> や <code>\ / : * ? " &lt; &gt; |</code> を入れると「名前が不正です…」と出て、前の名前に戻ります</td></tr>
       <tr><td><b>止めるフレーム数</b></td><td>8</td><td>1〜60。撮る前に待つフレーム数です。TAA などで画面が落ち着くまで待ちます</td></tr>
       <tr><td><b>許容差</b></td><td>0</td><td>0〜8。ピクセルの R・G・B のうち、いちばん大きい差がこの値を超えたら「違う」とみなします。0 なら完全に一致しないと違う扱いです。透明度（A）は比べません</td></tr>
       <tr><td><b>基準を撮る</b></td><td>—</td><td>今の画面を基準画像として保存します</td></tr>
+      <tr><td><b>referenceへ登録</b></td><td>—</td><td>撮影済みの <code>Saved/Golden/名前.png</code> を、起動オプションの比較で使う基準 <code>Saved/Golden/reference/名前.png</code> へ写します（同じ名前があれば上書き）。成功すると「reference に登録しました: 場所」と出ます</td></tr>
       <tr><td><b>基準と比べる</b></td><td>—</td><td>今の画面を撮り、基準画像と比べます</td></tr>
       <tr><td><b>自己診断</b></td><td>—</td><td>同じ画面を 2 回撮って、一致するかを調べます</td></tr>
     </table>
@@ -43,6 +48,10 @@
     <p>撮っている間はボタンの代わりに「撮影中... 残り 数 フレーム」と出ます。結果はいちばん下に、成功なら緑、そうでなければ橙で表示され、コンソールにも出ます。</p>
 
     <h2 id="results">結果の見かた</h2>
+    <figure>
+      <img src="../images/windows/screenshot-regression-selfcheck-ng.png" alt="自己診断 NG の結果">
+      <figcaption>自己診断 を押した結果の例（NG）。画面に動く物があるシーンでは、何も変えなくても差分が出て橙で表示されます。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>操作</th><th>表示</th><th>作られるファイル</th></tr>
@@ -67,8 +76,8 @@
       <li><b>基準と比べる</b> を押します。「差分あり」なら、<code>Saved/Golden/light_test_diff.png</code> を開いて、どこが変わったかを見ます。</li>
     </ol>
     <p>エディターを開かずに同じことをするには、起動オプションの <code>--capture-frame</code> と <code>--compare-golden</code> を使います（<a href="../settings/command-line.html">起動オプション</a>）。</p>
-    <div class="warning"><strong>起動オプションの比較は、置き場所と合格の条件が違います</strong><code>--compare-golden</code> は、基準画像を <code>Saved/Golden/reference/名前.png</code>、今回の画像を <code>Saved/Golden/名前.png</code> から読み、差分を <code>Saved/Golden/diff/名前.png</code> に書きます。このウィンドウの <b>基準を撮る</b> が書く <code>Saved/Golden/名前.png</code> は、起動オプションでは「今回の画像」の場所です。そのまま基準としては使われないので、基準にしたい画像は <code>reference</code> フォルダーへ写します。合格の条件も違い、最大差 2 以下かつ違ったピクセルが 0.1% 以下なら合格です。</div>
-    <div class="note"><strong>名前に使う文字</strong>このウィンドウの <b>名前</b> は、そのままファイル名になります。<code>/</code> や <code>..</code> を入れると <code>Saved/Golden</code> の下に別のフォルダーができてしまうので、英数字と <code>_</code>、<code>-</code> だけにしてください。差分画像の保存に失敗したときは、結果に「差分画像: 場所」が付きません。</div>
+    <div class="warning"><strong>起動オプションの比較は、置き場所と合格の条件が違います</strong><code>--compare-golden</code> は、基準画像を <code>Saved/Golden/reference/名前.png</code>、今回の画像を <code>Saved/Golden/名前.png</code> から読み、差分を <code>Saved/Golden/diff/名前.png</code> に書きます。このウィンドウの <b>基準を撮る</b> が書く <code>Saved/Golden/名前.png</code> は、起動オプションでは「今回の画像」の場所です。そのまま基準としては使われないので、基準にしたい画像は <b>referenceへ登録</b> を押して <code>reference</code> フォルダーへ写します。合格の条件も違い、最大差 2 以下かつ違ったピクセルが 0.1% 以下なら合格です。</div>
+    <div class="note"><strong>名前に使う文字</strong>このウィンドウの <b>名前</b> は、そのままファイル名になります。<code>..</code> や <code>\ / : * ? " &lt; &gt; |</code>、制御文字は使えず、入れると前の名前に戻ります。分かりやすいように英数字と <code>_</code>、<code>-</code> で付けてください。差分画像の保存に失敗したときは、結果に「差分画像: 場所」が付きません。</div>
 
     <h2>関連項目</h2>
     <ul>

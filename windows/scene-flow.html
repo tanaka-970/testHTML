@@ -38,12 +38,16 @@
     <p>使う Scene Flow は、<a href="../settings/project-settings.html#scene-flow">プロジェクト設定</a>の <b>Active Scene Flow</b> でも選べます。「（未設定）」に戻すか <b>解除</b> を押すと、イベントを送ってもシーンは移りません（シーンを直接指定する読み込みはそのまま使えます）。設定中のアセットが見つからないときは「[ Missing Scene Flow ]」と赤く表示され、設定は残ります。</p>
 
     <h2 id="window">ウィンドウの見た目</h2>
+    <figure>
+      <img src="../images/windows/scene-flow-window.png" alt="Scene Flow ウィンドウ">
+      <figcaption>Inflate_Flow を開いたところ。Transition の見出しを開くと、Enabled・Event・Priority・From・To と + Condition が出ます。見出しの下の 先頭・↑・↓・末尾 は並べ替えのボタンです。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>場所</th><th>表示・操作</th></tr>
       <tr><td>いちばん上</td><td>アセットの名前。保存していない変更があると「 *」が付きます。右に <b>Save</b>、<b>Set Active</b>（または ACTIVE）</td></tr>
       <tr><td>その下</td><td><b>+ Transition</b>：遷移を 1 つ足します</td></tr>
-      <tr><td>一覧</td><td>「Transition #番号  イベント名」の見出しが並びます。見出しを開くと中身を編集できます。見出しをドラッグすると順番を変えられ、右クリックで <b>Delete</b> が出ます</td></tr>
+      <tr><td>一覧</td><td>「Transition #番号  イベント名」の見出しが並びます。見出しを開くと中身を編集できます。順番は、見出しの左の <b>◆</b> か見出しをドラッグするか、見出しの下の <b>先頭</b>・<b>↑</b>・<b>↓</b>・<b>末尾</b> のボタンで変えられます。見出しを右クリックすると <b>先頭へ</b>・<b>末尾へ</b> と <b>Delete</b> が出ます</td></tr>
       <tr><td>いちばん下</td><td>状態の文（「保存しました: …」など）</td></tr>
     </table>
     </div>

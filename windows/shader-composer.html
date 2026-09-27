@@ -27,7 +27,7 @@
       <li>テクスチャを流して、水面、滝、ベルトコンベアのように見せたいとき（UV Scroll）</li>
       <li>モデルのふちを光らせたいとき（Fresnel を Emission へつなぐ）</li>
       <li>少しずつ消えていく見た目を作りたいとき（Noise と Dissolve を Opacity へつなぐ）</li>
-      <li>色や強さを、マテリアルのインスペクターのスライダーで調整できるようにしたいとき（Material Property）</li>
+      <li>色や強さを、マテリアルの編集画面のスライダーで調整できるようにしたいとき（Material Property）</li>
       <li>水面の色、波の高さ、泡、屈折を自分で組み立てたいとき（Water グラフ。<a href="../components/water-body.html">Water Body</a> の Material に使います）</li>
       <li>UI の画像に、独自の色の加工をかけたいとき（PostProcess を Effect Stack で使う）</li>
     </ul>
@@ -66,6 +66,10 @@
 
     <h2 id="window">ウィンドウ</h2>
     <p>最初は 1180 × 720 の浮いたウィンドウで開きます。左がノードを置くキャンバス、右が選んだノードのインスペクターです。</p>
+    <figure>
+      <img src="../images/windows/shader-composer-window.png" alt="Shader Composer ウィンドウ">
+      <figcaption>Shader/NewItem.replayshadergraph を開いたところ。最初から入っている UV → Texture Property、Color Property、Multiply、Surface Output がつながっています。</figcaption>
+    </figure>
     <h3 id="window-top">上部</h3>
     <div class="table-wrap">
     <table>
@@ -89,6 +93,10 @@
     </div>
 
     <h3 id="canvas">キャンバスの操作</h3>
+    <figure>
+      <img src="../images/windows/shader-composer-add-node.png" alt="ノードを足すメニュー">
+      <figcaption>キャンバスの何もないところを右クリックしたところ。Input・Material Property・Math・Effect・Output の分類から選びます（Math を開いた状態）。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>操作</th><th>結果</th></tr>
@@ -109,6 +117,10 @@
     <div class="warning"><strong>元に戻せません</strong>Shader Composer の操作は、元に戻す（Ctrl+Z）の対象になりません。大きく変える前に Ctrl+S で保存しておくか、ファイルを複製しておいてください。</div>
 
     <h3 id="inspector">インスペクター</h3>
+    <figure>
+      <img src="../images/windows/shader-composer-node-selected.png" alt="Color Property を選んだところ">
+      <figcaption>Color Property の見出しをクリックすると、オレンジの枠が付き、右のインスペクターに「Color Property #3」と HLSL Name・Display Name・Category・Tooltip・Default が出ます。</figcaption>
+    </figure>
     <p>ノードを選んでいないときは「Node を選択してください」と操作の説明が出ます。選ぶと「ノード名 #番号」と、次の欄が出ます。</p>
     <div class="table-wrap">
     <table>
@@ -130,13 +142,13 @@
     <p>表の既定値は、キャンバスでノードを足した直後の値です。</p>
 
     <h3 id="properties">マテリアルプロパティ</h3>
-    <p>Float / Color / Texture Property のノードは、マテリアルのインスペクターで変えられる項目になります。</p>
+    <p>Float / Color / Texture Property のノードは、マテリアルの編集画面（プロジェクトパネル）で変えられる項目になります。</p>
     <div class="table-wrap">
     <table>
       <tr><th>欄</th><th>意味</th></tr>
       <tr><td><b>HLSL Name</b></td><td>シェーダーの中での名前。英字か <code>_</code> で始め、英数字と <code>_</code> だけを使います。グラフの中で重なってはいけません。足したときは「Value番号」「Color番号」「Texture番号」</td></tr>
-      <tr><td><b>Display Name</b></td><td>マテリアルのインスペクターに出る名前。空なら HLSL Name を使います</td></tr>
-      <tr><td><b>Category</b></td><td>インスペクターでまとめる見出し。空なら「Composer」</td></tr>
+      <tr><td><b>Display Name</b></td><td>マテリアルの編集画面に出る名前。空なら HLSL Name を使います</td></tr>
+      <tr><td><b>Category</b></td><td>マテリアルの編集画面でまとめる見出し。空なら「Composer」</td></tr>
       <tr><td><b>Tooltip</b></td><td>項目にマウスを乗せたときの説明</td></tr>
     </table>
     </div>
@@ -324,7 +336,7 @@
       <li>UV Scroll の右の青い丸（Out）をクリックし、Texture Property（Base Map）の左の <b>UV</b> の丸をクリックします。UV ノードからの線は置き換わります。</li>
       <li>UV Scroll を選び、インスペクターの <b>Fallback Speed</b> を (0.1, 0) にします。</li>
       <li>Ctrl+S を押し、状態が「Saved / generated / compiled」になることを確かめます。</li>
-      <li>プロジェクト パネルでマテリアルを選び、インスペクターの <b>Shader</b> で「Project/Composer/ScrollTexture」を選びます（<a href="material-editor.html">マテリアルの編集</a>）。</li>
+      <li>プロジェクト パネルでマテリアルを選び、パネルの下に出る編集画面の <b>Shader</b> で「Project/Composer/ScrollTexture」を選びます（<a href="material-editor.html">マテリアルの編集</a>）。</li>
       <li>マテリアルの <b>Base Map</b> にテクスチャを指定し、そのマテリアルをモデルに付けます（<a href="../components/mesh-renderers.html#material">マテリアルを付ける</a>）。</li>
     </ol>
     <h3>ふちを光らせる</h3>
@@ -333,7 +345,7 @@
       <li><b>Material Property</b> &gt; <b>Color</b> を足し、<b>HLSL Name</b> を <code>RimColor</code>、<b>Display Name</b> を「ふちの色」にします。</li>
       <li><b>Math</b> &gt; <b>Multiply</b> を足し、A に Fresnel、B に RimColor の Color Property をつなぎます。</li>
       <li>Multiply の Out を、出力ノードの <b>Emission</b> につなぎます。</li>
-      <li>Ctrl+S を押します。マテリアルのインスペクターに「ふちの色」が出るので、光らせたい色にします。</li>
+      <li>Ctrl+S を押します。マテリアルの編集画面に「ふちの色」が出るので、光らせたい色にします。</li>
     </ol>
     <h3>少しずつ消えていく見た目にする</h3>
     <ol>

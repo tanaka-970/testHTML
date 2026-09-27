@@ -19,7 +19,7 @@
     <h1>マテリアルの編集</h1>
     <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
 
-    <p>マテリアル（<code>.replaymaterial</code>）は、物の見た目を決める「シェーダー」と、その値（色、テクスチャ、粗さなど）をまとめたアセットです。プロジェクトパネルでマテリアルを選ぶと、インスペクターで編集できます。作ったマテリアルは <a href="../components/mesh-renderers.html#material">Mesh Renderer などに付けて</a> 使います。</p>
+    <p>マテリアル（<code>.replaymaterial</code>）は、物の見た目を決める「シェーダー」と、その値（色、テクスチャ、粗さなど）をまとめたアセットです。プロジェクトパネルでマテリアルを選ぶと、プロジェクトパネルの中（アセットの一覧の下）で編集できます。作ったマテリアルは <a href="../components/mesh-renderers.html#material">Mesh Renderer などに付けて</a> 使います。</p>
 
     <h2 id="when">こんなときに使う</h2>
     <ul>
@@ -35,11 +35,19 @@
     <ul>
       <li>プロジェクトパネルの <b>Create</b> &gt; <b>Data</b> &gt; <b>Material</b> で、いま開いているフォルダーに、名前欄の名前で作ります。同じ名前があると名前が変わります。作ったマテリアルは選ばれた状態になります。</li>
       <li>作ったばかりのマテリアルは、シェーダーが PBR、Alpha Mode が Opaque です。</li>
-      <li>プロジェクトパネルでマテリアルを選ぶと、インスペクターに <b>Material Asset</b> の見出し（開いた状態）と、ファイルの場所が出ます。ダブルクリックでは別の画面は開きません。</li>
+      <li>プロジェクトパネルでマテリアルを選ぶと、プロジェクトパネルのアセットの一覧の下に <b>Material Asset</b> の見出し（開いた状態）と、ファイルの場所が出ます。パネルを下へスクロールして編集します。インスペクターには名前しか出ません。ダブルクリックでは別の画面は開きません。</li>
     </ul>
+    <figure>
+      <img src="../images/windows/material-editor-preset-tab.png" alt="Material Asset の見出し">
+      <figcaption>プロジェクトパネルで NewItem.replaymaterial を選び、パネルを下へスクロールしたところ。Material Asset の見出しの中に「プリセット・キャラ材質」タブがあり、プリセットのボタンと Shader Stack が並びます。</figcaption>
+    </figure>
 
     <h2 id="shader">Shader</h2>
-    <p>いちばん上の <b>Shader</b> 欄で、使うシェーダーを選びます。一覧には、マテリアル用（Surface）のシェーダーだけが「分類/名前」の形で並びます。下に「ファイル名 | surface | ライティング」が表示されます。</p>
+        <figure>
+      <img src="../images/windows/material-editor-shader.png" alt="Shader 欄と Shader Properties">
+      <figcaption>タブの下のほうにある Shader 欄（BuiltIn/PBR）と、その下の Shader Properties。</figcaption>
+    </figure>
+    <p>「プリセット・キャラ材質」タブの下のほう（プリセット・Shader Stack・キャラクター材質の下）にある <b>Shader</b> 欄で、使うシェーダーを選びます。一覧には、マテリアル用（Surface）のシェーダーだけが「分類/名前」の形で並びます。下に「ファイル名 | surface | ライティング」が表示されます。</p>
     <div class="table-wrap">
     <table>
       <tr><th>一覧の表示</th><th>見た目</th></tr>
@@ -140,7 +148,7 @@
     <p>開くと、Shader GUID（古い形式のマテリアルでは「(legacy / empty)」）、シェーダーのファイルの場所（Source）、Schema Revision、「Retained / unknown properties  数」が表示されます。今のシェーダーが使わない値も、シェーダーを切り替えたときや見つからないときに消さずに残しておき、その数を表します。</p>
 
     <h2 id="preset-tab">「プリセット・キャラ材質」タブ</h2>
-    <p>プロジェクトパネルでマテリアルを選ぶと、マテリアルの編集画面（インスペクター）の中に、<b>プリセット・キャラ材質</b> という名前のタブがあります。マテリアルの見た目を、<b>プリセット</b>（出来合いの設定）から始めて、トゥーンの<b>キャラクター材質</b>（肌・顔・髪・目・輪郭など）を細かく調整するための画面です。</p>
+    <p>プロジェクトパネルでマテリアルを選ぶと、プロジェクトパネルに出るマテリアルの編集画面の中に、<b>プリセット・キャラ材質</b> という名前のタブがあります。この記事の Shader・Shader Properties・Rendering・Advanced も、このタブの中の下のほうにあります。マテリアルの見た目を、<b>プリセット</b>（出来合いの設定）から始めて、トゥーンの<b>キャラクター材質</b>（肌・顔・髪・目・輪郭など）を細かく調整するための画面です。</p>
 
     <h3 id="preset-buttons">プリセット</h3>
     <p>タブのいちばん上に、プリセットのボタンが並びます。押すと、<b>基本シェーダー・輪郭・レイヤー・キャラクター材質・ピクセル化</b> の設定が、そのプリセットの値にまとめて置き換わります（押したあとに、値を手直しできます）。</p>
@@ -359,6 +367,10 @@
     <div class="note"><strong>プロジェクトのシェーダーとレイヤーの組み合わせ</strong>PBR陰影モデル・Toon陰影モデル・Unlit陰影モデル・ピクセレーション・キャラクター陰影モデルのどれかのレイヤーが有効だと、Shader 欄で選んだプロジェクトのシェーダー（Shader Composer など）は、そのシェーダー自身の計算では描かれません。プロジェクトのシェーダーを使うときは、これらのレイヤーを外します。</div>
 
     <h2 id="save">保存と割り当て</h2>
+    <figure>
+      <img src="../images/windows/material-editor-bottom.png" alt="編集画面のいちばん下">
+      <figcaption>いちばん下までスクロールしたところ。Rendering（Alpha Mode）、Advanced、Shader Stack の見出しと、Save Material・Assign to Selected Renderer のボタンが並びます。値を変えると「Save Material *」になります。</figcaption>
+    </figure>
     <div class="table-wrap">
     <table>
       <tr><th>欄</th><th>働き</th></tr>

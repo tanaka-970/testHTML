@@ -82,7 +82,8 @@ kbd { border: 1px solid #8a8a8a; border-radius: 3px; padding: 0 5px; font-size: 
 .note > strong:first-child, .warning > strong:first-child { display: block; }
 
 figure { margin: 16px 0; }
-figure img { max-width: 100%; border: 1px solid #d1d1d1; }
+figure img, figure video { max-width: 100%; border: 1px solid #d1d1d1; }
+figure video { display: block; height: auto; }
 figcaption { font-size: 0.85rem; color: #505050; }
 
 ol.steps > li { margin-bottom: 8px; }
