@@ -17,9 +17,9 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / リファレンス表</div>
     <h1>リファレンス表</h1>
-    <p class="meta">対象：ブランチ sinotake / コンポーネント 58 件</p>
+    <p class="meta">対象：ブランチ sinotake / コンポーネント 62 件（破壊系は 2026-09-28 にコミット 2734f88 で確認）</p>
     <p>コンポーネントごとに、役割・解説ページ・操作や見た目の写真があるか・実装状況の注記を 1 枚にまとめた表です。名前のリンクから解説ページへ移動できます。写真の数は、そのページ全体の枚数です（同じページに複数のコンポーネントがある場合は共通の枚数です）。</p>
-    <p>写真のあるコンポーネントは 32 / 58 件です。「新リポジトリ」と書いた項目は、今後のコード編集先の Team-Project-HukuHuku-main に追加した機能で、ビルドが通ることまで確認しています。エディター上での動作確認はまだです。</p>
+    <p>写真のあるコンポーネントは 30 / 62 件です。破壊系 6 件の項目・既定値・C# API は <a href="destruction-reference.html">破壊系リファレンス</a> に、試し方は <a href="destruction.html">破壊</a> にまとめています。「新リポジトリ」と書いた項目は、今後のコード編集先の Team-Project-HukuHuku-main に追加した機能で、ビルドが通ることまで確認しています。エディター上での動作確認はまだです。</p>
     <div class="table-wrap">
     <table>
       <tr><th>分類</th><th>名前</th><th>役割</th><th>写真</th><th>注記</th></tr>
@@ -58,8 +58,12 @@
       <tr><td>Physics</td><td><a href="physics.html#mesh">Mesh Collider</a></td><td>モデルの形そのままの当たり判定</td><td>あり（4 枚）</td><td></td></tr>
       <tr><td>Physics</td><td><a href="physics.html#convex">Convex Collider</a></td><td>点の集まりから作る凸包の当たり判定。動く物にも使える（点はコードから渡す）</td><td>あり（4 枚）</td><td>新リポジトリで「頂点の元」を追加（Mesh／Primitive から自動生成）。ビルドのみ確認、実行は未確認</td></tr>
       <tr><td>Physics</td><td><a href="physics.html#buoyancy">Buoyancy</a></td><td>水に入った Rigidbody に浮力・水の抵抗・水流の力を加える</td><td>あり（4 枚）</td><td></td></tr>
-      <tr><td>Destruction</td><td><a href="destruction.html#sliceable">Sliceable</a></td><td>実行中にメッシュを平面で切り、2 つの破片へ分ける（C++ API）</td><td>あり（1 枚）</td><td>新リポジトリで C# から CanSlice / Slice を呼べる（ABI 22）。ビルドのみ確認</td></tr>
-      <tr><td>Destruction</td><td><a href="destruction.html#destructible">Destructible</a></td><td>事前に用意した破片を爆発 Damage で分離する（C++ API）</td><td>あり（1 枚）</td><td>新リポジトリで C# から CanDamage / ApplyRadialDamage を呼べる（ABI 22）。ビルドのみ確認</td></tr>
+      <tr><td>Destruction</td><td><a href="destruction-reference.html#sliceable">Sliceable</a></td><td>実行中にメッシュを平面で切り、2 つの破片へ分ける</td><td>なし</td><td>Mesh / Skinned Mesh Renderer 専用（Primitive は不可）。C# は ScriptBehaviour から Slice / CanSlice。試し方は<a href="destruction.html#try-slice">破壊</a></td></tr>
+      <tr><td>Destruction</td><td><a href="destruction-reference.html#destructible">Destructible</a></td><td>事前に割った破片（Destruction Asset）を、Damage や衝突で分離する</td><td>なし</td><td>アセットは Destruction Editor のボロノイ分割で作る。C# は ScriptBehaviour から ApplyRadialDamage / CanDamage</td></tr>
+      <tr><td>Destruction</td><td><a href="destruction-reference.html#blade">斬撃</a></td><td>刃の軌跡で Sliceable を切り、Destructible に Damage、風船を割る</td><td>なし</td><td>実行開始で判定がオフに戻るため、C# の BeginSwing() が必要</td></tr>
+      <tr><td>Destruction</td><td><a href="destruction-reference.html#balloon">風船</a></td><td>浮いて揺れ、斬撃・衝突・爆風・圧力で割れて連鎖する</td><td>なし</td><td>動的な Rigidbody と Collider が必要。C# は Balloon、OnBalloonPopped</td></tr>
+      <tr><td>Destruction</td><td><a href="destruction-reference.html#dealer">破壊する側</a></td><td>触れた Destructible に Damage、風船を割る。爆発して周りを吹き飛ばす</td><td>なし</td><td>Sliceable には効かない。C# は DestructionDealer（Explode）</td></tr>
+      <tr><td>Destruction</td><td><a href="destruction-reference.html#debris">破片の寿命</a></td><td>破片を時間・静止・シーン内の数の上限で片付ける</td><td>なし</td><td>Sliceable / Destructible の破片に自動で付く</td></tr>
       <tr><td>Landscape</td><td><a href="landscape.html#landscape">Landscape</a></td><td>地形の形のデータ</td><td>なし</td><td></td></tr>
       <tr><td>Landscape</td><td><a href="landscape.html#renderer">Landscape Renderer</a></td><td>地形を表示する</td><td>なし</td><td></td></tr>
       <tr><td>Landscape</td><td><a href="landscape.html#collider">Landscape Collider</a></td><td>地形の当たり判定</td><td>なし</td><td></td></tr>

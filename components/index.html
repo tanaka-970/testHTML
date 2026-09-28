@@ -116,10 +116,15 @@
     <div class="table-wrap">
     <table>
       <tr><th>名前</th><th>役割</th></tr>
-      <tr><td><a href="destruction.html#sliceable">Sliceable</a></td><td>実行中にメッシュを平面で切り、2 つの破片へ分ける（C++ API）</td></tr>
-      <tr><td><a href="destruction.html#destructible">Destructible</a></td><td>事前に用意した破片を爆発 Damage で分離する（C++ API）</td></tr>
+      <tr><td><a href="destruction-reference.html#sliceable">Sliceable</a></td><td>実行中にメッシュを平面で切り、2 つの破片へ分ける</td></tr>
+      <tr><td><a href="destruction-reference.html#destructible">Destructible</a></td><td>事前に割った破片（Destruction Asset）を、Damage や衝突で分離する</td></tr>
+      <tr><td><a href="destruction-reference.html#blade">斬撃</a></td><td>刃の軌跡で Sliceable を切り、Destructible に Damage、風船を割る</td></tr>
+      <tr><td><a href="destruction-reference.html#balloon">風船</a></td><td>浮いて揺れ、斬撃・衝突・爆風・圧力で割れて連鎖する</td></tr>
+      <tr><td><a href="destruction-reference.html#dealer">破壊する側</a></td><td>触れた Destructible に Damage、風船を割る。爆発して周りを吹き飛ばす</td></tr>
+      <tr><td><a href="destruction-reference.html#debris">破片の寿命</a></td><td>破片を時間・静止・シーン内の数の上限で片付ける</td></tr>
     </table>
     </div>
+    <p>組み合わせ方と試し方は <a href="destruction.html">破壊（切断・破砕・斬撃・風船）</a> を見てください。</p>
 
     <h2 id="landscape">Landscape</h2>
     <div class="table-wrap">

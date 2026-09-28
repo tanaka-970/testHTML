@@ -202,6 +202,37 @@ public void AddScore(int value)
     </table>
     </div>
 
+    <h2 id="destruction">破壊</h2>
+    <p>各項目の意味と、ScriptBehaviour から使う Sliceable / Destructible は <a href="../components/destruction-reference.html#csharp">破壊系リファレンス：C# API</a> を見てください。</p>
+    <h3 id="blade-slicer">BladeSlicer（斬撃）</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>BeginSwing()</code>、<code>EndSwing()</code></td><td>振り始めと振り終わり。実行を始めると判定はオフに戻るので、振るたびに呼びます</td></tr>
+      <tr><td><code>slicingActive</code></td><td>判定中かどうか</td></tr>
+      <tr><td><code>RecentSliceCount()</code>、<code>RecentSlicedObjectId(i)</code></td><td>今の振りで切った数と、その GameObject の ID</td></tr>
+    </table>
+    </div>
+    <h3 id="destruction-dealer">DestructionDealer（破壊する側）</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>active</code></td><td>有効かどうか</td></tr>
+      <tr><td><code>Explode()</code></td><td>今の位置で爆発させます（1 回だけ）</td></tr>
+      <tr><td><code>RecentHitCount()</code>、<code>HasExploded()</code></td><td>このフレームで当たった数、爆発したか</td></tr>
+    </table>
+    </div>
+    <h3 id="balloon">Balloon（風船）</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>説明</th></tr>
+      <tr><td><code>buoyancy</code>、<code>popImpactThreshold</code>、<code>chainPressure</code> など</td><td>インスペクターの項目と同じ</td></tr>
+      <tr><td><code>Pop()</code>、<code>IsPopped</code></td><td>割る、割れたか</td></tr>
+      <tr><td><code>AddPressure(量)</code></td><td>圧力を足します。破裂圧力に届くと割れます</td></tr>
+      <tr><td><code>void OnBalloonPopped(BalloonPoppedInfo balloon)</code></td><td>MonoBehaviour に書くと、シーンのどの風船が割れても呼ばれます</td></tr>
+    </table>
+    </div>
+
     <h2 id="howto">使い方の例</h2>
     <h3>体力ゲージを減らす</h3>
     <pre><code>public UIImage hpGauge;

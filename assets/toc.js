@@ -24,7 +24,7 @@ window.DOCS_TOC = [
   ]},
   { title: "コンポーネント", children: [
     { title: "コンポーネント一覧", href: "components/index.html", summary: "分類ごとの全コンポーネントと、必須・推奨の考え方", keywords: "Component 部品 一覧 Core Rendering Lighting Camera Audio Physics Landscape UI Motion Scene 必須 推奨" },
-    { title: "リファレンス表", href: "components/reference-table.html", summary: "全コンポーネントの役割・解説ページ・写真の有無・実装状況を 1 枚にまとめた表", keywords: "リファレンス 表 一覧 状況 写真 実装 未実装" },
+    { title: "リファレンス表", href: "components/reference-table.html", summary: "全コンポーネントの役割・解説ページ・写真の有無・実装状況を 1 枚にまとめた表", keywords: "リファレンス 表 一覧 状況 写真 実装 未実装 破壊 斬撃 風船" },
     { title: "Core", children: [
       { title: "Transform", href: "components/transform.html", summary: "位置・回転・拡大率（親から見た値）", keywords: "トランスフォーム 位置 回転 拡大率 スケール ローカル 親子" },
       { title: "State", href: "components/state.html", summary: "名前付きの状態を持ち、変化を知らせる", keywords: "ステート 状態 StateChanged Motion Player トリガー" },
@@ -52,7 +52,8 @@ window.DOCS_TOC = [
       { title: "Gameplay 部品（テンプレート用）", href: "components/gameplay.html", summary: "Character Motor、Health、Checkpoint、Goal、Kill Volume、Jump Pad、Damage Area、Enemy Behaviour など", keywords: "Gameplay テンプレート Character Motor Character Input Player Controller Rotator Health 体力 Spawn Point Checkpoint チェックポイント Goal ゴール Kill Volume Jump Pad ジャンプ台 Damage Area ダメージ Enemy Behaviour 敵 AI 巡回 索敵 追跡 プレイヤー 移動 ジャンプ" }
     ]},
     { title: "Destruction", children: [
-      { title: "破壊（Sliceable / Destructible）", href: "components/destruction.html", summary: "実行時のメッシュ切断と、事前破砕 Asset を爆発で分離する C++ API", keywords: "破壊 destruction Sliceable Destructible Slice 切断 平面 切断面 破片 Chunk Bond 爆発 Blast Damage ApplyRadialDamage ATLAS_PHYSICS PhysX Runtime Convex Cooking replaydestruction replaydestructionmaterial 試験機能 C++ C# 未対応" }
+      { title: "破壊（切断・破砕・斬撃・風船）", href: "components/destruction.html", summary: "破壊系 6 部品の組み合わせ方、コード不要の試し方、Destruction Editor、うまくいかないとき", keywords: "破壊 destruction Sliceable Destructible 斬撃 BladeSlicer 風船 Balloon 破壊する側 DestructionDealer 破片の寿命 DebrisLifetime 切断 破砕 ボロノイ Voronoi 爆発 爆弾 衝突 剣 BeginSwing 試し方 Destruction Editor 破壊材質 破裂 演出 カメラ揺れ 衝撃波" },
+      { title: "破壊系リファレンス", href: "components/destruction-reference.html", summary: "破壊系 6 部品・破壊材質・Destruction Editor の全項目と既定値、何が何に効くか、C# API、上限、検証", keywords: "リファレンス 破壊 表 既定値 範囲 内部名 Sliceable Destructible 斬撃 風船 破壊する側 破片の寿命 破壊材質 replaydestruction replaydestructionmaterial Slice ApplyRadialDamage BeginSwing EndSwing Explode Pop AddPressure OnBalloonPopped RequestCameraShake RequestShockwave ScriptBehaviour MonoBehaviour validate-destruction" }
     ]},
     { title: "Landscape", children: [
       { title: "地形（Landscape）", href: "components/landscape.html", summary: "地面の作成、スカルプト、面の加工、描画と当たり判定", keywords: "地形 ランドスケープ Landscape Ground Renderer Collider スカルプト ブラシ 盛り上げる 掘り下げる なめらか 平ら でこぼこ 細かく トポロジー 押し出し 穴 トンネル 洞窟 辺をつなぐ 再生成 ロード範囲 区画" }

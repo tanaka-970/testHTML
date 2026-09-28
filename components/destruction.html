@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
-<title>破壊（Sliceable / Destructible） - RePlayEngine ドキュメント</title>
+<title>破壊（切断・破砕・斬撃・風船） - RePlayEngine ドキュメント</title>
 <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body data-root="../">
@@ -16,206 +16,253 @@
   <nav class="side-nav" aria-label="目次"></nav>
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / 破壊</div>
-    <h1>破壊（Sliceable / Destructible）</h1>
-    <p class="meta">対象：RePlayEngine ソース 08fb8f40（2026-09-24 に実装を確認）</p>
+    <h1>破壊（切断・破砕・斬撃・風船）</h1>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster / コミット 2734f88（2026-09-28 にソースで確認）</p>
 
-    <p>RePlayEngine には、実行中のメッシュを平面で二分する <b>Sliceable</b> と、事前に分けた破片を爆発ダメージで離す <b>Destructible</b> があります。どちらも破片メッシュの生成と ATLAS_PHYSICS の凸形状作成をバックグラウンドで行い、完了した結果をゲーム中のシーンへ反映します。</p>
+    <p>モデルを実行中に切る、事前に割っておいた破片を爆発や衝突でばらばらにする、剣で切る、風船を割る、といった表現を作る部品のまとめです。部品は 6 種類あり、音や演出、破裂の設定は「破壊材質」というファイルで共有します。このページでは組み合わせ方と試し方を説明します。各項目の既定値・範囲・C# API は <a href="destruction-reference.html">破壊系リファレンス</a> にまとめています。</p>
 
-    <div class="warning"><strong>試験段階の機能です</strong>インスペクターから部品と設定を追加でき、エディターには試験用の <a href="#editor">Destruction Editor</a> パネル（Window &gt; Destruction Editor）があります。パネルでは、切断の位置を確かめる、ゲームの実行中に実際に切る、切った結果から破砕用アセットを作る、といったことができます。ただし、このビルドでは C# から呼び出す API は登録されていません。ゲームの中で切断や爆発を起こすには、ゲーム側の C++ コードからコンポーネントの API を呼び出す必要があります。</div>
+    <div class="note"><strong>実行中の「きっかけ」の作り方</strong>ゲームの実行中はインスペクターが読み取り専用なので、実行中に値を変えて切ったり壊したりはできません。実行中に切る・壊すきっかけは次の 3 つです。
+      <ul>
+        <li>物理：物をぶつける、爆弾を落とす（コード不要）</li>
+        <li>Destruction Editor の試験ボタン：<b>Play中に実切断</b>、<b>Play中にBlast Damageを試す</b>（コード不要）</li>
+        <li>C# スクリプト：<code>BeginSwing()</code>、<code>Slice()</code>、<code>ApplyRadialDamage()</code>、<code>Explode()</code>、<code>Pop()</code> など</li>
+      </ul>
+    </div>
 
     <h2 id="when">こんなときに使う</h2>
     <ul>
-      <li>剣やレーザーが通った位置で、モデルを切り分けたいとき（Sliceable）</li>
-      <li>爆発の中心と強さに応じて、建物や小道具の破片を順に離したいとき（Destructible）</li>
-      <li>切断面の色、破片の重さ、分離の勢い、破片数を調整したいとき</li>
-      <li>現在のビルドでどこまで使えるか、エディター操作や C# 連携を始める前に確かめたいとき</li>
+      <li>剣やレーザーが通った位置でモデルを切り分けたいとき（Sliceable ＋ 斬撃）</li>
+      <li>爆発や衝突で、壁・柱・岩をばらばらに崩したいとき（Destructible ＋ 破壊する側）</li>
+      <li>浮かんで揺れ、つつくと割れて、近くの風船も連鎖で割れる風船を置きたいとき（風船）</li>
+      <li>壊れたときに、音・粉塵・火花・カメラの揺れ・衝撃波を出したいとき（破壊材質の組み込み演出）</li>
+      <li>割れると周りを巻き込んで爆発する樽を作りたいとき（破壊材質の破裂）</li>
+      <li>増えた破片を、時間やシーン内の数で自動で片付けたいとき（破片の寿命）</li>
     </ul>
 
-    <h2 id="difference">2 つの方式</h2>
+    <h2 id="parts">部品の組み合わせ</h2>
     <div class="table-wrap">
     <table>
-      <tr><th>部品</th><th>切り分け方</th><th>向いている使い方</th><th>入力 API</th></tr>
-      <tr><td>Sliceable</td><td>実行時に 1 枚の平面を与え、元のメッシュを 2 つに切る</td><td>剣・レーザー・切断可能な小道具</td><td><code>Slice(plane, cutting_energy)</code></td></tr>
-      <tr><td>Destructible</td><td>用意済みの Chunk と Bond のつながりを Damage でほどく</td><td>爆発で壊れる壁・柱・大きな破片</td><td><code>ApplyRadialDamage(center, radius, damage, inner_radius)</code></td></tr>
+      <tr><th>作りたいもの</th><th>壊される側に付ける</th><th>壊す側に付ける</th></tr>
+      <tr><td>剣で切れる物</td><td>Mesh Renderer（モデル）＋ <b>Sliceable</b></td><td>刃の GameObject に <b>斬撃</b>。振るときにスクリプトで <code>BeginSwing()</code></td></tr>
+      <tr><td>爆弾で崩れる壁</td><td>Mesh Renderer ＋ Box Collider ＋ <b>Destructible</b>（Destruction Asset を割り当て）</td><td>Rigidbody ＋ Collider ＋ <b>破壊する側</b>（接触時に爆発）</td></tr>
+      <tr><td>物をぶつけると壊れる像</td><td>Mesh Renderer ＋ Collider ＋ <b>Destructible</b>（衝突で壊れる）</td><td>重めの Rigidbody ＋ Collider。確実に壊したいなら <b>破壊する側</b> も</td></tr>
+      <tr><td>浮かぶ風船</td><td>Sphere などの形 ＋ Rigidbody（動的）＋ Sphere Collider ＋ <b>風船</b></td><td>斬撃、破壊する側、爆発、ぶつかる物のどれか</td></tr>
+      <tr><td>割れると爆発する樽</td><td>Destructible ＋ <b>破壊材質</b>（破壊時に破裂、破裂爆発半径）</td><td>何でも（最初の 1 回を壊せばよい）</td></tr>
+      <tr><td>破片の片付け</td><td colspan="2"><b>破片の寿命</b>が破片に自動で付きます。時間は Sliceable / Destructible の「破片の寿命（秒）」などで決めます</td></tr>
     </table>
     </div>
-    <p>Sliceable は呼び出すたびにその時点の破片をもう一度切れます。Destructible は実行前に Destruction Asset に入れておいた破片と接続情報を使います。実行時に任意の新しい破砕パターンを作る機能ではありません。</p>
+    <p>何が何に効くかの一覧は <a href="destruction-reference.html#matrix">破壊系リファレンス：何が何に効くか</a> を見てください。<b>破壊する側と爆発は Sliceable には効きません</b>。Sliceable を切れるのは、斬撃・スクリプトの <code>Slice()</code>・Destruction Editor の試験ボタンだけです。</p>
+
+    <h2 id="prepare">試す前の準備</h2>
+    <ol class="steps">
+      <li>新しいシーンを作り、床を置きます。階層パネルの <b>+ 作成 &gt; 3D Object &gt; Cube</b> で作って平たく広げ（例：拡大率 20, 0.2, 20）、<b>Box Collider</b> を付けます。Rigidbody を付けなければ動かない床になります。</li>
+      <li>切る・割る物は<b>モデルファイル</b>（<code>.glb</code> など）で用意し、プロジェクトパネルからシーンビューへドラッグして置きます。Mesh Renderer の付いた GameObject ができます。</li>
+      <li>床から少し浮かせて置き、シーンのカメラから見える位置にします。</li>
+    </ol>
+    <div class="warning"><strong>Cube や Sphere（Primitive Mesh Renderer）は切れません・割れません</strong>Sliceable と Destructible は、Mesh Renderer か Skinned Mesh Renderer の形しか扱えません。階層パネルの「作成」で作った Cube に付けても「SliceableにはStatic MeshまたはSkinned Meshを1つ設定してください。」となります。箱で試したいときは、Blender などで箱のモデルを作って <code>.glb</code> で書き出してください。風船は Primitive の Sphere で作れます。</div>
+    <div class="note"><strong>ボロノイ分割には「閉じたメッシュ」が要る</strong>Destructible 用に細かく割るボロノイ分割は、穴のない閉じた形（箱、岩、柱など）しか割れません。キャラクターのモデルは服のすき間などで閉じていないことが多いので、試すときは単純な形を使います。平面で 2 つに切るだけ（Sliceable）なら、閉じていないモデルも切れます。</div>
+
+    <h2 id="try-slice">試し方 1：Sliceable をエディターだけで切る</h2>
+    <p>コード不要。Destruction Editor の試験ボタンで、実行中のモデルを平面で切ります。</p>
+    <ol class="steps">
+      <li>置いたモデルを階層パネルで選び、インスペクターの <b>コンポーネントを追加 &gt; Destruction &gt; Sliceable</b> を付けます。</li>
+      <li><b>Window &gt; Destruction Editor</b> を開きます。「切断メッシュ診断」に緑色で「候補があります」と出れば切れます。</li>
+      <li><b>Local Plane 法線</b> と <b>Local Plane 距離</b> を変えて、シーンビューの<b>橙色の半透明の面</b>を切りたい位置に合わせます（法線 0, 1, 0 なら水平に切ります）。</li>
+      <li>（任意）<b>非同期 Cut Preview / Convex Cook</b> を押すと、切った結果の三角形数などが出ます。失敗すると理由が出ます。</li>
+      <li><kbd>F5</kbd> で実行し、階層パネルで同じ GameObject を選んで <b>Play中に実切断</b> を押します。</li>
+      <li>「実切断:」の行に「切断完了」と出て、モデルが 2 つに分かれて床へ落ちます。もう一度押すと、選んでいる方をさらに切れます（0.15 秒の Cooldown と、最大破片数 32 まで）。</li>
+      <li>新しくできた方の破片は、15 秒たつか、止まってから 6 秒で小さく縮んで消えます。元の方は残ります（消したいときは「切断元も破片として削除」をオン）。</li>
+    </ol>
+    <p>動くキャラクター（Skinned Mesh Renderer）も同じ手順で切れます。そのときに表示されている姿勢で固まった破片になります。</p>
+
+    <h2 id="try-voronoi">試し方 2：ボロノイで割ったアセットを、爆発で崩す</h2>
+    <p>コード不要。モデルを事前に細かく割って Destruction Asset を作り、Destructible で崩します。</p>
+    <ol class="steps">
+      <li>閉じた形のモデルを置き、<b>Sliceable を一時的に付けます</b>（ボロノイ分割は Sliceable から形を読むため）。</li>
+      <li>Destruction Editor の <b>ボロノイ分割</b> で <b>レベル1の破片数</b>（例：12）を決め、<b>ボロノイ分割をプレビュー</b> を押します。</li>
+      <li>「破片数 / Bond / 体積誤差」が出て、シーンビューに<b>水色の線で展開図</b>（破片を少し離して描いた図）が出ます。割れ方を変えたいときは <b>乱数シード</b>、<b>衝撃点（ローカル）</b> と <b>衝撃点周辺の細かさ</b> を変えてもう一度プレビューします。</li>
+      <li>プロジェクトパネルで保存先のフォルダーを開き、「切断メッシュ診断」の <b>Blast Asset名</b> に名前（例：<code>Rock_Fracture</code>）を入れて、<b>プレビュー結果を破壊 Asset に保存</b> を押します。プロジェクトパネルに <code>.replaydestruction</code> が増えます。</li>
+      <li>インスペクターで Sliceable を削除し、<b>コンポーネントを追加 &gt; Destruction &gt; Destructible</b> を付けて、<b>Destruction Asset</b> に今のファイルを割り当てます。</li>
+      <li><kbd>F5</kbd> で実行し、同じ GameObject を選んで、Destruction Editor の「Blast Fracture / Bond / Stress」にある <b>Play中にBlast Damageを試す</b> を押します（既定は半径 2、Damage 10）。</li>
+      <li>対象の中心から半径 2 の中のつながりが切れ、破片のかたまりが床へ落ちます。</li>
+    </ol>
+    <div class="note"><strong>割れ方の調整</strong>崩れにくくしたいときは、ボロノイ分割の <b>Bond の強さ（面積あたり）</b> を上げてアセットを作り直すか、Destructible の <b>爆発Damage倍率</b> を下げます。一度にたくさん落としたいときは <b>動的Actor上限</b>（既定 64）を確かめます。上限を超えた分は、動かない形でその場に残ります。</div>
+
+    <h2 id="try-impact">試し方 3：玉をぶつけて壊す</h2>
+    <p>コード不要。試し方 2 の Destructible に、上から玉を落とします。</p>
+    <ol class="steps">
+      <li>Destructible の GameObject に <b>Box Collider</b> を付けます（玉を受け止め、衝突を受け取るため）。</li>
+      <li>階層パネルの <b>+ 作成 &gt; 3D Object &gt; Sphere</b> で玉を作り、Destructible の真上 3〜5 m に置いて、<b>Sphere Collider</b> と <b>Rigidbody</b>（種別は動的）を付けます。</li>
+      <li>次のどちらかで試します。
+        <ul>
+          <li><b>衝突で壊す</b>：玉の Rigidbody の <b>質量</b> を 50 にします。Destructible の「衝突で壊れる」は既定でオンです。</li>
+          <li><b>破壊する側で壊す</b>：玉に <b>コンポーネントを追加 &gt; Destruction &gt; 破壊する側</b> を付けます。質量は 1 のままで構いません。</li>
+        </ul>
+      </li>
+      <li><kbd>F5</kbd> で実行します。玉が当たった所が崩れます。</li>
+    </ol>
+    <p>「衝突で壊れる」の Damage は、(衝撃 − 衝撃しきい値 150) × 衝撃ダメージ倍率 0.05 です。衝撃は「近づく速さ × 質量」なので、質量 1 の玉を 5 m から落とした程度（約 10）ではしきい値に届きません。軽い物で壊したいときは、衝撃しきい値を下げます。破壊する側は速さや重さに関係なく、触れるたびに接触Damage（既定 200）を与えます。</p>
+
+    <h2 id="try-bomb">試し方 4：爆弾で崩し、周りも巻き込む</h2>
+    <p>コード不要。試し方 3 の玉を爆弾にします。</p>
+    <ol class="steps">
+      <li>玉の <b>破壊する側</b> で <b>接触時に爆発</b> をオンにします。</li>
+      <li>Destructible の近く（5 m 以内）に、別の Destructible や、次の試し方 5 の風船、ただの Rigidbody の箱を置いておきます。</li>
+      <li><kbd>F5</kbd> で実行します。玉が Destructible に触れた瞬間に爆発し、半径 5 m の中の Destructible に Damage（中心で 300）、風船を割り、動的な Rigidbody を外へ押し出します。玉の GameObject は消えます。</li>
+    </ol>
+    <p>接触時に爆発するのは、Destructible か風船に触れたときだけです。床に落ちても爆発しません。スクリプトから好きなときに爆発させるには <code>Explode()</code> を呼びます。</p>
+
+    <h2 id="try-balloon">試し方 5：風船を浮かべて割る</h2>
+    <p>コード不要。</p>
+    <ol class="steps">
+      <li>階層パネルの <b>+ 作成 &gt; 3D Object &gt; Sphere</b> で作り、<b>Sphere Collider</b>、<b>Rigidbody</b>（動的）、<b>コンポーネントを追加 &gt; Destruction &gt; 風船</b> を付けます。色は Primitive Mesh Renderer の <b>色</b> で変えられます（割れたときのゴム片も同じ色になります）。</li>
+      <li>これを 1 m ほど離して 4〜5 個並べます（<kbd>Ctrl</kbd>+<kbd>D</kbd> で複製）。</li>
+      <li>風船の上 3 m ほどに、「針」にする小さな Cube を置き、<b>破壊する側</b> を付けます。Collider や Rigidbody は要りません。</li>
+      <li>連鎖を見たいときは、全部の風船の <b>連鎖圧力</b> を 1 にします（既定の 0.2 だと、近くで 5 回割れないと連鎖しません）。</li>
+      <li><kbd>F5</kbd> で実行します。風船がふらふら揺れながら上がり、針の 0.5 m 以内に入った風船が割れます。連鎖圧力が 1 なら、破裂半径（2.5 m）の中の風船が、近い順に 0.05 秒ずつ遅れて次々に割れます。</li>
+    </ol>
+    <div class="note"><strong>ぶつかっただけで割れるようにするには</strong>風船の <b>衝撃しきい値</b> は既定 0 で、0 のときはぶつかっても割れません（見た目がつぶれるだけ）。1 など小さい値にすると、天井や物に当たった勢いで割れます。</div>
+
+    <h2 id="try-blade">試し方 6：斬撃で切る</h2>
+    <p>斬撃は実行を始めると判定がオフに戻るので、<code>BeginSwing()</code> を呼ぶ短いスクリプトが 1 つ要ります。ここでは刃を Rotator で回して、周りのモデルを水平に切ります。</p>
+    <ol class="steps">
+      <li>試し方 1 の Sliceable のモデルを用意します。</li>
+      <li>空の GameObject「Blade」を作り、モデルと同じ位置で、切りたい高さに置きます。</li>
+      <li>Blade に <b>コンポーネントを追加 &gt; Gameplay &gt; Rotator</b> を付け、<b>回転速度</b> を 360 にします（回転軸は 0, 1, 0 のまま）。</li>
+      <li>Blade に <b>コンポーネントを追加 &gt; Destruction &gt; 斬撃</b> を付け、<b>刃の根元</b> を 0, 0, 0、<b>刃の先端</b> を 2, 0, 0 にします。刃が横向きに回るので、先端の速さは約 12.6 m/秒になり、既定の最低速度 3 を超えます。</li>
+      <li>刃を見えるようにしたいときは、Blade の子に細長い Cube（位置 1, 0, 0、拡大率 2, 0.05, 0.05）を置きます。自分の子は切らない設定（自分の親子を無視）なので、切られません。</li>
+      <li>プロジェクトパネルで <b>Create &gt; Script &gt; C# Script</b> から <code>SwingOnStart</code> を作り、次のように書いて Blade に付けます。
+<pre><code>using ReplayEngine;
+
+namespace Game;
+
+[ReplayGuid("（作ったときの値をそのまま使う）")]
+public class SwingOnStart : MonoBehaviour
+{
+    bool started;
+
+    void Update()
+    {
+        if (started) return;
+        var blade = GetComponent&lt;BladeSlicer&gt;();
+        if (blade != null)
+        {
+            blade.BeginSwing(); // 最初のフレームで振り始める
+            started = true;
+        }
+    }
+}</code></pre>
+      </li>
+      <li><kbd>F5</kbd> で実行します。刃が通った高さでモデルが水平に切れ、上の部分がずり落ちます。</li>
+    </ol>
+    <p>1 回の振り（<code>BeginSwing()</code> から <code>EndSwing()</code> まで）では、同じ対象は 1 回だけ、合わせて 4 個まで（1振りの対象上限）切ります。剣のように振るたびに切りたいときは、振り始めに <code>BeginSwing()</code>、振り終わりに <code>EndSwing()</code> を呼びます（Scripts/SwordClash/SwordClashFighter.cs が実例です）。刃の通り道にある風船は割れ、Destructible には「先端の速さ × 斬撃Damage倍率」の Damage が入ります。</p>
+
+    <h2 id="try-material">試し方 7：破壊材質で音・演出・破裂を付ける</h2>
+    <p>破壊材質を付けないと、音も演出も出ません（破片が落ちるだけです）。</p>
+    <ol class="steps">
+      <li>プロジェクトパネルの何もない所を右クリックし、<b>Create &gt; Data &gt; 破壊材質</b> で作ります。</li>
+      <li>作ったファイルを選ぶと、プロジェクトパネルに「破壊材質 Asset」の編集欄が出ます。<b>組み込み演出</b> を開き、<b>演出スタイル</b> を「爆発」、<b>破片を赤熱発光</b> をオンにします。</li>
+      <li><b>破裂</b> を開き、<b>破壊時に破裂</b> をオン、<b>破片の外向き速度</b> を 6、<b>破裂爆発半径</b> を 4、<b>破裂爆発Damage</b> を 100 にします。</li>
+      <li>試し方 2 の Destructible の <b>破壊材質</b> にこのファイルを割り当てます。近くにもう 1 つ Destructible を置いておきます。</li>
+      <li><kbd>F5</kbd> で実行し、<b>Play中にBlast Damageを試す</b> を押します。爆発の演出とカメラの揺れ・衝撃波が出て、赤く光る破片が勢いよく飛び、近くの Destructible も巻き込まれて崩れます。</li>
+    </ol>
+    <p>破壊音・切断音・VFX Prefab も同じ編集欄で指定できます。衝撃波が出ないときは、<b>Project Settings &gt; レンダリング / 上限 &gt; 衝撃波の歪みを有効にする</b> を確かめます。各項目は <a href="destruction-reference.html#material">破壊系リファレンス：破壊材質</a> を見てください。</p>
+
+    <h2 id="try-csharp">試し方 8：C# から切る・壊す</h2>
+    <p>Sliceable と Destructible は、<a href="../csharp/script-behaviour.html">ScriptBehaviour</a> から <code>TryGetComponent</code> で取り出して使います。次の例は、実行して 2 秒後に、付けた GameObject を切るか壊します。</p>
+    <pre><code>using ReplayEngine;
+
+namespace Game;
+
+[ReplayGuid("（作ったときの値をそのまま使う）")]
+public class BreakAfterDelay : ScriptBehaviour
+{
+    float timer;
+    bool done;
+
+    public override void Update(float deltaTime)
+    {
+        if (done) return;
+        timer += deltaTime;
+        if (timer &lt; 2.0f) return;
+
+        if (TryGetComponent&lt;SliceableComponent&gt;(out var sliceable))
+        {
+            // ワールドの水平な面（y = 1）で切る。受け付けられるまで毎フレーム試す
+            if (sliceable.Slice(new Vector3(0.0f, 1.0f, 0.0f), 1.0f) == RuntimeStatus.Ok)
+                done = true;
+        }
+        else if (TryGetComponent&lt;DestructibleComponent&gt;(out var destructible))
+        {
+            destructible.ApplyRadialDamage(Transform.Position, 3.0f, 50.0f);
+            done = true;
+        }
+    }
+}</code></pre>
+    <p><code>Slice()</code> が <code>RuntimeStatus.Ok</code> を返しても、それは「受け付けた」という意味です。破片は別スレッドで作られ、あとのフレームでシーンに出ます。断られた理由は <code>sliceable.StatusMessage()</code> で読めます。</p>
+    <p>風船が割れたことは、MonoBehaviour でも受け取れます。シーンのどの風船が割れても呼ばれます。</p>
+    <pre><code>void OnBalloonPopped(BalloonPoppedInfo balloon)
+{
+    Log("風船が割れた。ゴム片 " + balloon.ScrapCount + " 個");
+}</code></pre>
+    <p>カメラの揺れと衝撃波は、ScriptBehaviour の <code>Runtime.RequestCameraShake()</code>、<code>Runtime.RequestShockwave()</code> で単独でも出せます。</p>
+
+    <h2 id="validate">自動の検証で確かめる</h2>
+    <p>エンジンを直したあと、破壊まわりがこわれていないかは、次の起動オプションで確かめられます（エディターは開かずに終わります）。結果は <code>Saved\Validation\Destruction.txt</code> と <code>DestructionRuntime.txt</code> に出ます。</p>
+    <pre><code>&amp; ".\x64\Release\3dgp.exe" --validate-destruction-runtime
+&amp; ".\x64\Release\3dgp.exe" --validate-destruction</code></pre>
+    <p>2026-09-28 の Release ビルドでは、<code>--validate-destruction-runtime</code> は 79 項目すべて OK、<code>--validate-destruction</code> は 2 項目 NG でした（<a href="destruction-reference.html#validate">詳しく</a>）。</p>
 
     <h2 id="editor">Destruction Editor（試験用パネル）</h2>
-    <p><b>Window &gt; Destruction Editor</b> で開く、切断と破砕を試すためのパネルです。<b>階層パネルで選んでいる GameObject</b> が対象で、何も選んでいないと「HierarchyでGameObjectを選択してください。」と出ます。パネルは 3 つの折りたたみ（切断メッシュ診断、Convex / 重心診断、Blast Fracture / Bond / Stress）でできています。</p>
+    <p><b>Window &gt; Destruction Editor</b> で開く、切断と破砕を試すパネルです。<b>階層パネルで選んでいる GameObject</b> が対象で、何も選んでいないと「HierarchyでGameObjectを選択してください。」と出ます。パネルは 4 つの折りたたみ（切断メッシュ診断、Convex / 重心診断、ボロノイ分割、Blast Fracture / Bond / Stress）でできています。</p>
     <figure>
       <img src="../images/components/destruction-editor-panel.png" alt="Destruction Editor パネル">
-      <figcaption>Destruction Editor。Sliceable と Mesh Renderer が無い GameObject を選んでいると、「Sliceable、Mesh Renderer、CPU形状が必要です。」と橙色で出て、ボタンは薄く表示されて押せません。</figcaption>
+      <figcaption>Destruction Editor（ボロノイ分割が入る前の写真）。Sliceable と Mesh Renderer が無い GameObject を選んでいると、「Sliceable、Mesh Renderer、CPU形状が必要です。」と橙色で出て、ボタンは薄く表示されて押せません。</figcaption>
     </figure>
-
-    <h3 id="editor-cut">切断メッシュ診断</h3>
     <div class="table-wrap">
     <table>
-      <tr><th>項目</th><th>説明</th></tr>
-      <tr><td>Renderer / CPU Mesh / 頂点・Triangle</td><td>対象の Renderer の種類（Static Mesh か Skinned Mesh）と、切断に使う形状データが読めているか、頂点数と三角形数を表示します。緑色で「候補があります」と出れば切れる状態、橙色なら足りない物があります</td></tr>
-      <tr><td>Local Plane 法線</td><td>切る平面の向き（対象のローカル座標）。既定は 0, 1, 0（上向き。水平に切る）</td></tr>
-      <tr><td>Local Plane 距離</td><td>平面の位置。法線方向へ、原点からの距離で入れます</td></tr>
-      <tr><td>試験Energy</td><td>切るときの「力」の値（既定 1000）。Sliceable の切断抵抗以上でないと切れません</td></tr>
-      <tr><td>平面をMesh中央へ</td><td>平面の距離を、メッシュの中心を通る位置に合わせます。対象を選ぶと、はじめから中央に合っています</td></tr>
-      <tr><td>非同期 Cut Preview / Convex Cook</td><td>実際には切らずに、切ったらどうなるかを別スレッドで計算します。結果として、できる 2 つの破片（A / B）の三角形数、切断面の輪の数、凸包（Convex）の頂点数、かかった時間（ms）が出ます。失敗すると理由が出ます</td></tr>
-      <tr><td>Play中に実切断</td><td>ゲームの実行中だけ押せます。この平面でその場で切り、対象のメッシュを 2 つの破片に置き換えます。結果は「実切断:」の行に、受け付け・待機・完了・失敗の理由が色つきで出ます</td></tr>
-      <tr><td>Interior Material</td><td>切断面に使われるマテリアル名（Sliceable か破壊材質で決まります）</td></tr>
-      <tr><td>Blast Asset名</td><td>作る破砕アセットの名前（既定 <code>NewDestructionAsset</code>）。使えない文字は置き換えられ、同名のファイルがあるときは番号が付きます</td></tr>
-      <tr><td>Cut Previewから2 Chunk Blast Assetを作成</td><td>Cut Preview が成功したあとに押せます。切った 2 つの破片（Chunk）と、その間の接続（Bond）を持つ <code>.replaydestruction</code> を、Project パネルで開いているフォルダーに保存し、AssetDatabase へ登録します。元のメッシュと 2 つの破片の合計が 64 MiB を超えるとは作れません</td></tr>
+      <tr><th>折りたたみ</th><th>できること</th></tr>
+      <tr><td>切断メッシュ診断</td><td>切れる形のデータがあるかの確認、切断面の位置合わせ（シーンビューの橙色の面）、切らずに結果を計算する Cut Preview、実行中の <b>Play中に実切断</b>、Cut Preview から 2 Chunk の Destruction Asset を作る</td></tr>
+      <tr><td>Convex / 重心診断</td><td>Convex Collider の状態、Cut Preview 後の重心・体積・質量</td></tr>
+      <tr><td>ボロノイ分割</td><td>モデルを細胞のような形に割るプレビュー（シーンビューに水色の展開図）と、Destruction Asset への保存</td></tr>
+      <tr><td>Blast Fracture / Bond / Stress</td><td>Destructible の Chunk・Bond・物理のかたまりの数と Bond の一覧、実行中の <b>Play中にBlast Damageを試す</b></td></tr>
     </table>
     </div>
-    <p>シーンビューには、切断の位置が<b>橙色の半透明の面</b>で出ます。法線の矢印が、破片 A と B に分かれる向きです。</p>
+    <p>各項目の既定値と説明は <a href="destruction-reference.html#editor">破壊系リファレンス：Destruction Editor パネル</a> にあります。</p>
 
-    <h3 id="editor-convex">Convex / 重心診断</h3>
-    <p>対象に Convex Collider があると、入力頂点の数、凸包を作っている最中か、できあがっているか、頂点数・記憶量・バウンディングボックスを表示します。Cut Preview のあとには、重心（ローカルとワールド）、メッシュの体積、Rigidbody があれば質量と箱に近似した慣性も出ます。</p>
-
-    <h3 id="editor-blast">Blast Fracture / Bond / Stress</h3>
-    <p>対象に Destructible があり、Destruction Asset が割り当てられているとき、Chunk・Bond・Actor Group・ATLAS_PHYSICS Actor の数、耐久値を超えた Bond の数、Stress の計算の状態、Bond の一覧とグラフを表示します。</p>
-    <ul>
-      <li><b>Blast試験半径</b>、<b>Blast試験Damage</b>：試験の爆発の大きさと強さ。</li>
-      <li><b>Play中にBlast Damageを試す</b>：ゲームの実行中だけ押せます。対象の位置を中心に、その半径と Damage で爆発させます。</li>
-    </ul>
-
-    <h3 id="editor-howto">使い方の例：モデルを切って、破砕アセットを作る</h3>
-    <ol class="steps">
-      <li>モデルを置いた GameObject（Mesh Renderer 付き）に、<b>コンポーネントを追加 &gt; Destruction &gt; Sliceable</b> を付けます。</li>
-      <li><b>Window &gt; Destruction Editor</b> を開き、その GameObject を階層パネルで選びます。「候補があります」と緑色で出ることを確かめます。</li>
-      <li><b>Local Plane 法線</b> と <b>距離</b> を変えて、シーンビューの橙色の面が、切りたい位置に来るように調整します。</li>
-      <li><b>非同期 Cut Preview / Convex Cook</b> を押します。三角形数などが出れば、その平面で切れます。</li>
-      <li>切った結果をゲームで確かめたいときは、ゲームを実行（F5）して <b>Play中に実切断</b> を押します。</li>
-      <li>破砕アセットにしたいときは、Cut Preview のあとで <b>Blast Asset名</b> を入れ、<b>Cut Previewから2 Chunk Blast Assetを作成</b> を押します。Project パネルに <code>.replaydestruction</code> が増えます。</li>
-      <li>爆発で壊れる物にするには、対象に <b>Destructible</b> を付け、<b>Destruction Asset</b> に作ったファイルを割り当てます。実行して <b>Play中にBlast Damageを試す</b> で試せます。</li>
-    </ol>
-    <div class="note"><strong>切れないとき</strong>ボタンが薄く表示されて押せないときは、上の橙色の文が理由です（Sliceable が無い、Mesh Renderer が無い、形状データが読めていない、など）。「Play中に実切断」は、実行中でなければ押せません。Skinned Mesh は、表示されている姿勢が取れるまで待ちます。</div>
-
-    <h2 id="sliceable">Sliceable</h2>
-    <p>Static Mesh または Skinned Mesh を平面で切り、切断面をふさいだ 2 つのメッシュにします。切断に成功すると、元の GameObject と新しい GameObject に形状が分かれます。Skinned Mesh は切断時の表示姿勢を静的メッシュとして取り込みます。</p>
-
-    <h3>インスペクターの項目</h3>
+    <h2 id="trouble">うまくいかないとき</h2>
+    <p>「」の中の文は、Destruction Editor の「実切断:」の行や、C# の <code>StatusMessage()</code> で見られる文です。</p>
     <div class="table-wrap">
     <table>
-      <tr><th>項目</th><th>既定値</th><th>説明</th></tr>
-      <tr><td>切断可能</td><td>オン</td><td>オフにすると <code>CanSlice()</code> は false を返し、切断要求を受け付けません。</td></tr>
-      <tr><td>破壊材質</td><td>未設定</td><td><code>.replaydestructionmaterial</code> を割り当てます。設定すると材質側の密度、切断抵抗、切断面マテリアル、効果音・VFX の参照を使います。</td></tr>
-      <tr><td>最小破片体積</td><td>0.0005</td><td>できた破片がこの値より小さく、かつ「破片の物理化しきい値」より大きい場合、その切断結果は適用されません。物理化しきい値以下の小片は物理なしで残せます。</td></tr>
-      <tr><td>最大破片数</td><td>32</td><td>最初のメッシュを含めた破片数の上限です。範囲は 1〜4096。切断で作られる子の部品も同じ上限を共有します。</td></tr>
-      <tr><td>切断面マテリアル</td><td>未設定</td><td>新しくできる切断面のマテリアルです。破壊材質側にも設定がある場合はそちらが使われます。</td></tr>
-      <tr><td>密度</td><td>500</td><td>破片の体積から Rigidbody の質量を求める値です。破壊材質を割り当てた場合は、そちらの密度が優先されます。</td></tr>
-      <tr><td>切断抵抗</td><td>0</td><td><code>cutting_energy</code> がこの値に届かない切断を拒否します。破壊材質を割り当てた場合は材質側の値が優先されます。</td></tr>
-      <tr><td>破片の物理化しきい値</td><td>0.0001</td><td>これ以下の体積の破片には動的 Collider と Rigidbody を付けず、細かな破片が物理計算を増やしすぎるのを防ぎます。</td></tr>
-      <tr><td>切断 Cooldown</td><td>0.15 秒</td><td>同じ破片を続けて切るまでの待ち時間です。</td></tr>
-      <tr><td>破片の分離 Impulse</td><td>0.5</td><td>切断面の法線方向へ、2 つの破片を分ける初速を与えます。</td></tr>
+      <tr><th>症状・出る文</th><th>確かめること</th></tr>
+      <tr><td>「SliceableにはStatic MeshまたはSkinned Meshを1つ設定してください。」</td><td>Primitive Mesh Renderer（Cube など）には使えません。Mesh Renderer か Skinned Mesh Renderer の<b>どちらか 1 つだけ</b>を付けます。</td></tr>
+      <tr><td>「描画側のStatic Mesh読み込みを待っています。」</td><td>モデルの読み込み中です。少し待ってからもう一度。</td></tr>
+      <tr><td>「切断エネルギーがCut resistanceに達していません。」</td><td>斬撃なら刃を速く振るか切断エネルギー倍率を上げる。スクリプトなら <code>Slice()</code> の切断エネルギーを上げる。または切断抵抗（破壊材質があればそちら）を下げる。</td></tr>
+      <tr><td>「切断Cooldown中です。」「Max fragment countに達しました。」</td><td>切断Cooldown（0.15 秒）を待つ。破片の数が最大破片数（32）に達しています。</td></tr>
+      <tr><td>「Runtime切断のConvex Physicsには ATLAS_PHYSICS backendが必要です。」</td><td>破片の当たり判定を実行中に作るため、物理エンジンが ATLAS_PHYSICS のシーンで、実行中に試します。編集中には切れません。</td></tr>
+      <tr><td>「DestructibleにはMeshRendererが必要です。」</td><td>Destructible は Mesh Renderer のモデルにだけ使えます。</td></tr>
+      <tr><td>「指定した破壊材質Assetを解決できません。…」</td><td>破壊材質のファイルが消えたか移動しています。割り当て直します。</td></tr>
+      <tr><td>ボロノイ分割のボタンが押せない</td><td>対象に Sliceable を一時的に付けます。</td></tr>
+      <tr><td>「分割失敗: …」</td><td>閉じていないメッシュです。穴のない単純な形で試します。</td></tr>
+      <tr><td>ぶつけても Destructible が壊れない</td><td>Destructible 側に Collider があるか、ぶつける物が動的な Rigidbody か、衝撃（速さ × 質量）が衝撃しきい値 150 を超えているかを確かめます。</td></tr>
+      <tr><td>破壊する側を当てても Sliceable が切れない</td><td>仕様です。破壊する側と爆発は Destructible と風船にだけ効きます。</td></tr>
+      <tr><td>風船が浮かない</td><td>Rigidbody の種別が動的か、浮力が 1 より大きいかを確かめます。</td></tr>
+      <tr><td>風船がぶつかっても割れない</td><td>衝撃しきい値が 0 だと、ぶつかっても割れません。</td></tr>
+      <tr><td>斬撃で切れない</td><td><code>BeginSwing()</code> を呼んでいるか（インスペクターで「斬撃判定中」をオンにしても、実行開始でオフに戻ります）、先端の速さが最低速度（3 m/秒）を超えているか、刃の通り道が対象を横切っているか、1振りの対象上限に達していないかを確かめます。</td></tr>
+      <tr><td>音・演出が出ない</td><td>破壊材質が無いか、演出スタイルが「なし」です。「破壊演出を自動再生」「切断演出を自動再生」がオンかも確かめます。</td></tr>
+      <tr><td>破片がすぐ消える、または残りすぎる</td><td>「破片の寿命（秒）」「静止後の削除時間（秒）」「シーン内の最大破片数」を調整します。</td></tr>
+      <tr><td>重い</td><td>最大破片数・レベル1の破片数・動的Actor上限を下げます。破片ごとに当たり判定の計算が起きます。</td></tr>
     </table>
     </div>
-
-    <h3>準備と呼び出し</h3>
-    <ol class="steps">
-      <li>Hierarchy で対象を選び、Inspector の <b>コンポーネントを追加</b>から <b>Sliceable</b> を検索して追加します。</li>
-      <li>対象には <b>Mesh Renderer または Skinned Mesh Renderer のどちらか 1 つ</b>を付けます。Skinned Mesh の場合は Renderer を表示状態にします。</li>
-      <li>切断面マテリアル、密度、上限を設定します。必要なら破壊材質を割り当て、切断抵抗と効果音などをまとめて管理します。</li>
-      <li>ゲーム側の C++ コードから、ワールド座標で切断平面を作って <code>Slice()</code> を呼びます。成功の戻り値は「処理を受け付けた」ことを示し、メッシュ更新完了は後のフレームになります。</li>
-    </ol>
-    <pre><code>#include "RePlayEngine/Components/Destruction/SliceableComponent.h"
-#include "RePlayEngine/Destruction/DestructionTypes.h"
-
-// object は Sliceable を追加した対象の GameObject。
-auto* sliceable = object.GetComponent&lt;ReplayEngine::Components::SliceableComponent&gt;();
-ReplayEngine::Destruction::SlicePlane plane;
-plane.normal = { 0.0f, 1.0f, 0.0f }; // 平面の向き（法線）
-plane.distance = 0.0f;              // n・位置 = distance の平面
-
-if (sliceable != nullptr &amp;&amp; sliceable-&gt;Slice(plane, 100.0f))
-{
-    // 処理を受け付けた。完了後にシーンへ 2 つの破片が反映される。
-}
-else if (sliceable != nullptr)
-{
-    // StatusMessage() で失敗理由を確認する。
-}</code></pre>
-    <p>切断中の状態は <code>StatusMessage()</code> で調べられます。<code>CanSlice()</code> は有効状態、クールダウン、破片上限、メッシュ読み込み、物理バックエンドなどをまとめて確認します。</p>
-
-    <h2 id="destructible">Destructible</h2>
-    <p>Destruction Asset に保存された Chunk（破片形状）と Bond（破片同士の接続・耐久値）を読み込み、半径 Damage または Stress Force で接続を切ります。分離後は、破片グループごとに凸 Collider を作って Rigidbody を付けます。</p>
-
-    <h3>インスペクターの項目</h3>
-    <div class="table-wrap">
-    <table>
-      <tr><th>項目</th><th>既定値</th><th>説明</th></tr>
-      <tr><td>Damage を受ける</td><td>オン</td><td>オフにすると Damage 呼び出しを受け付けません。</td></tr>
-      <tr><td>Destruction Asset</td><td>未設定</td><td><code>.replaydestruction</code> を割り当てます。Chunk のメッシュ、体積、Bond の接続、耐久値を持ちます。</td></tr>
-      <tr><td>破壊材質</td><td>未設定</td><td>密度、爆発倍率、破壊靭性、衝撃抵抗、音・VFX の参照を共有します。</td></tr>
-      <tr><td>密度</td><td>500</td><td>破片グループの体積から動的 Rigidbody の質量を求めます。破壊材質の密度がある場合はそちらが優先されます。</td></tr>
-      <tr><td>爆発 Damage 倍率</td><td>1</td><td>受け取った Damage に掛けます。さらに破壊材質の爆発倍率と破壊靭性で補正されます。</td></tr>
-      <tr><td>動的破片の最小体積</td><td>0.001</td><td>これ未満のグループは動的 Actor にしません。</td></tr>
-      <tr><td>動的 Actor 上限</td><td>64</td><td>一度の破砕で動的物理にするグループ数の上限です。上限を超えたグループは静的な形状として残ります。</td></tr>
-    </table>
-    </div>
-
-    <div class="note"><strong>破壊材質アセットの作成</strong>破壊材質もエディターの作成メニューにはありません。C++ の <code>DestructionMaterialAsset::SaveToFile()</code> で作成・保存します。音・VFX・マテリアルの参照は Asset GUID で指定します。</div>
-    <pre><code>#include "RePlayEngine/Destruction/DestructionMaterialAsset.h"
-
-ReplayEngine::Destruction::DestructionMaterialAsset material;
-material.name = "Wood";
-material.density = 500.0f;
-material.fracture_toughness = 1.0f;
-material.cut_resistance = 10.0f;
-material.blast_damage_multiplier = 1.0f;
-std::string error;
-material.SaveToFile(asset_path, error); // .replaydestructionmaterial で保存</code></pre>
-
-    <h3>準備と呼び出し</h3>
-    <ol class="steps">
-      <li>Destruction Asset を用意します。<a href="#editor">Destruction Editor</a> の <b>Cut Previewから2 Chunk Blast Assetを作成</b> で、1 回の平面カットから 2 Chunk と 1 Bond のアセットを作れます（C++ の <code>PrefracturedDestructionAsset::FromPlaneCut()</code> と同じ処理です）。それ以上に細かく割ったアセットを作る画面はありません。</li>
-      <li>対象の元メッシュに <b>Mesh Renderer</b> と <b>Destructible</b> を付け、Inspector の <b>Destruction Asset</b> にファイルを割り当てます。</li>
-      <li>ゲームを実行し、爆発のワールド位置・半径・Damage を指定して <code>ApplyRadialDamage()</code> を呼びます。</li>
-      <li>呼び出しが true でも破片の物理化は非同期です。分離した結果は後続フレームで反映されます。</li>
-    </ol>
-    <pre><code>#include "RePlayEngine/Destruction/RuntimeMeshSlicer.h"
-#include "RePlayEngine/Destruction/Blast/PrefracturedDestructionAsset.h"
-
-// intact は閉じた元メッシュ。plane は RuntimeMeshSlicer へ渡す切断面。
-auto cut = ReplayEngine::Destruction::RuntimeMeshSlicer::Slice(intact, plane);
-ReplayEngine::Destruction::PrefracturedDestructionAsset asset;
-std::string error;
-if (cut.success &amp;&amp; cut.warning.empty() &amp;&amp;
-    ReplayEngine::Destruction::PrefracturedDestructionAsset::FromPlaneCut(
-        intact, cut.negative, cut.positive, plane.normal, cut.cap_material_slot,
-        "Wall", 1.0f, asset, error))
-{
-    asset.SaveToFile(asset_path, error); // .replaydestruction で保存
-}</code></pre>
-    <p>保存したアセットをプロジェクトのリソースフォルダーに置き、Project パネルの <b>Refresh Assets</b> で再読込してから Inspector の <b>Destruction Asset</b> へ割り当てます。生成関数が受け付けるのは閉じた破片メッシュです。</p>
-    <pre><code>// object は Destructible を追加した対象の GameObject。
-auto* destructible = object.GetComponent&lt;ReplayEngine::Components::DestructibleComponent&gt;();
-const DirectX::XMFLOAT3 blast_center{ 0.0f, 1.0f, 0.0f }; // ワールド座標
-if (destructible != nullptr &amp;&amp;
-    destructible-&gt;ApplyRadialDamage(blast_center, 3.0f, 25.0f, 0.5f))
-{
-    // Damage は適用済み。Bond が切れた場合、物理化は後続フレームで完了する。
-}</code></pre>
-    <p><code>radius</code> は最大距離、<code>inner_radius</code> は最大 Damage が維持される中心側の距離です。単位はシーンのワールド単位です。Stress Force API の位置・力は Destructible のローカル座標で指定します。</p>
-
-    <h2 id="limits">制限と、うまくいかないとき</h2>
-    <div class="table-wrap">
-    <table>
-      <tr><th>症状・条件</th><th>確認すること</th></tr>
-      <tr><td>実行できない、または処理が始まらない</td><td>ATLAS_PHYSICS の Runtime Convex Cooking を使える Scene で、ゲーム実行中に呼び出してください。編集モードでは動作しません。</td></tr>
-      <tr><td>Sliceable が切れない</td><td>有効な GameObject に Mesh Renderer / Skinned Mesh Renderer の片方だけがあるか、メッシュの読込が完了しているか、Cooldown と最大破片数を確認します。Static Mesh は CPU 側の三角形データが必要です。</td></tr>
-      <tr><td>Skinned Mesh の切断が失敗する</td><td>Renderer を表示し、実行中の姿勢取得が完了するまで待ちます。取得は最大 10 秒で打ち切られます。</td></tr>
-      <tr><td>Sliceable の切断抵抗が足りない</td><td><code>cutting_energy</code> がコンポーネントまたは破壊材質の「切断抵抗」以上か確認します。</td></tr>
-      <tr><td>Destructible の Damage が効かない</td><td>Destruction Asset が読み込めているか、Bond が有効な Chunk 同士をつないでいるか、<b>Damage を受ける</b>がオンかを確認します。</td></tr>
-      <tr><td>破片が落ちない</td><td>「動的破片の最小体積」と「動的 Actor 上限」を確認します。上限を超えた破片は静的形状で残ります。</td></tr>
-      <tr><td>極端に重い</td><td>Sliceable の「最大破片数」を下げます。切断入力は 1 回 2,000,000 三角形までです。破片ごとにメッシュ処理と Convex Cooking が発生します。</td></tr>
-    </table>
-    </div>
-    <div class="warning"><strong>C# からの利用について</strong>ソースにある C++ の <code>Slice()</code>、<code>ApplyRadialDamage()</code> は C# Script API に公開されていません。Script Component を付けても呼び出し可能にはなりません。エディターの Destruction Editor は、実行中の試験用です。ゲームの中で C# から切断や爆発を起こしたいときは、先にバインディングを実装してください。</div>
 
     <h2 id="related">関連項目</h2>
     <ul>
+      <li><a href="destruction-reference.html">破壊系リファレンス</a>：全項目の既定値、C# API、上限</li>
       <li><a href="physics.html">物理（Rigidbody と Collider）</a></li>
       <li><a href="mesh-renderers.html">メッシュの描画（Mesh Renderer / Skinned Mesh Renderer）</a></li>
+      <li><a href="gameplay.html#rotator">Rotator</a></li>
+      <li><a href="../csharp/script-behaviour.html">ScriptBehaviour</a></li>
       <li><a href="../data/index.html#engine-assets">データ形式：破壊アセット</a></li>
-      <li><a href="../editor/inspector.html">インスペクター</a></li>
     </ul>
   </main>
 </div>
