@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Effekseer Emitter - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+    <h1>Effekseer Emitter と エフェクト作成ウィンドウ</h1>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec</p>
+
+    <p>無料のエフェクト作成ツール <b>Effekseer</b> で作った <code>.efkefc</code> を、GameObject の位置で再生するコンポーネントと、作成・試し再生のウィンドウです。エンジンには Effekseer 1.80.7 の DirectX 12 用の再生部分が入っています。エフェクトの編集そのものは、別のアプリの Effekseer Editor で行います。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>爆発、魔法、ヒットの光など、凝ったエフェクトを出したいとき（<a href="particle-emitter.html">Particle Emitter</a> より表現の幅が広い）</li>
+      <li>Effekseer で作られた素材を使いたいとき</li>
+    </ul>
+
+    <h2 id="setup">はじめての準備</h2>
+    <ol class="steps">
+      <li>プロジェクトのフォルダーで PowerShell から <code>.\Tools\SetupEffekseer.ps1</code> を実行し、再生部分（x64 Debug / Release）を作ります。CMake と Visual Studio の C++ 環境が必要です。</li>
+      <li><code>3dgp.vcxproj</code> を <b>x64</b> の Debug か Release でビルドします（Win32 では Effekseer は無効です）。</li>
+      <li><a href="https://effekseer.github.io/en/download.html">Effekseer 公式サイト</a> から Effekseer Editor 1.80.7 を入れます。</li>
+      <li>エディターのコンソールに <code>Effekseer DX12 ready</code> と出れば使えます。</li>
+    </ol>
+    <p>見本のエフェクトは <code>resources/Effects/GpuShowcase</code> にあります（<code>Tools\DownloadEffekseerGpuSamples.ps1</code> で取得したもの）。</p>
+
+    <h2 id="window">Effekseer エフェクト作成 / プレビュー ウィンドウ</h2>
+    <p><b>Window &gt; Effekseer エフェクト作成 / プレビュー</b>、またはプロジェクトパネルの <b>Effekseer FX</b> ボタンで開きます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ボタン・表示</th><th>働き</th></tr>
+      <tr><td>Effekseer.exe...</td><td>Effekseer Editor の実行ファイルを登録します（初回だけ）</td></tr>
+      <tr><td>新しいエフェクトを作成</td><td>Effekseer Editor を開きます。<code>resources/Effects</code> に <code>.efkefc</code> で保存してください。テクスチャもこのフォルダーの中にまとめます</td></tr>
+      <tr><td>選択Effectを編集</td><td>選んでいるエフェクトを Effekseer Editor で開きます</td></tr>
+      <tr><td>Project Assetsを更新</td><td>resources を調べ直し、新しい <code>.efkefc</code> を一覧に入れます</td></tr>
+      <tr><td>Project内の Effekseer Effect</td><td>プロジェクトにあるエフェクトの一覧。選ぶとプレビュー対象になります</td></tr>
+      <tr><td>Project Browserで選択中のEffectを使う</td><td>プロジェクトパネルで選んだものをプレビュー対象にします</td></tr>
+      <tr><td>Scene Viewで再生・停止</td><td>今のカメラの前で 1 回再生します（実行していなくても再生できます）</td></tr>
+      <tr><td>Runtime・GPU粒子</td><td>再生部分が使えるか、GPU 粒子が使えるか、再生中の Emitter の数</td></tr>
+    </table>
+    </div>
+
+    <h2 id="emitter">Effekseer Emitter</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Rendering &gt; Effekseer Emitter</td></tr>
+      <tr><td>再生される場面</td><td>実行中だけ。GameObject の位置・回転・拡大率に毎フレーム付いていきます</td></tr>
+    </table>
+    </div>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>Effekseer Effect</td><td><code>effect</code></td><td>アセット（Effekseer Effect）</td><td>（空）</td><td></td><td>再生する <code>.efkefc</code></td></tr>
+      <tr><td>開始時に再生</td><td><code>play_on_start</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オンの間、エフェクトを出します。<b>オフにすると止まります</b></td></tr>
+      <tr><td>再生速度</td><td><code>playback_speed</code></td><td>小数</td><td>1</td><td>0.01〜10</td><td></td></tr>
+      <tr><td>スケール</td><td><code>scale</code></td><td>小数</td><td>1</td><td>0.001〜100</td><td>GameObject の拡大率にさらに掛けます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="replay">もう一度出す・止める</h2>
+    <p>Emitter が「出す状態」になった瞬間に 1 回再生します。ループしないエフェクトは、終わったらそのまま消えたままです。もう一度出すには、いったん「出さない状態」にしてから戻します。</p>
+    <ul>
+      <li>出さない状態：GameObject を非アクティブにする、Emitter を無効にする、<b>開始時に再生</b> をオフにする、エフェクトを差し替える</li>
+      <li>C# からは、GameObject の <code>SetActive(false)</code> → 次のフレームで <code>SetActive(true)</code> とします（Effekseer Emitter の C# の型はまだありません）。ScriptBehaviour からは、<code>play_on_start</code> を false → true と書き換えても出し直せます（<a href="../csharp/api-components.html#generic">型の無い部品をさわる</a>）</li>
+    </ul>
+<pre><code>using System.Collections;
+using ReplayEngine;
+
+public class HitEffect : MonoBehaviour
+{
+    public GameObject? effect;   // Effekseer Emitter を付けた子
+
+    public void Play() => StartCoroutine(Restart());
+
+    IEnumerator Restart()
+    {
+        if (effect == null) yield break;
+        effect.SetActive(false);
+        yield return null;          // 1 フレーム待ってから
+        effect.SetActive(true);     // 出し直す
+    }
+}</code></pre>
+
+    <div class="warning"><strong>制限</strong>
+      <ul>
+        <li>Win32 の構成、または準備（SetupEffekseer.ps1）をしていないビルドでは何も出ません。</li>
+        <li>Effekseer の再生部分は DirectX 12 用だけです。</li>
+        <li>エフェクトのファイルの置き場所は <code>resources/Effects</code> の中にしてください。テクスチャなどはエフェクトからの相対パスで読みます。</li>
+      </ul>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>置いておくだけで光り続けるエフェクト</h3>
+    <ol class="steps">
+      <li>ウィンドウの <b>Project Assetsを更新</b> を押して、エフェクトをプロジェクトに入れます。</li>
+      <li>GameObject に <b>Rendering &gt; Effekseer Emitter</b> を付け、<b>Effekseer Effect</b> にエフェクトを入れます。</li>
+      <li>実行すると、GameObject の位置で再生されます（ループするエフェクトなら出続けます）。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="particle-emitter.html">Particle Emitter</a></li>
+      <li><a href="../editor/project.html">プロジェクトパネル</a></li>
+      <li><a href="../settings/command-line.html#validate">起動オプション：--validate-effekseer-gpu</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

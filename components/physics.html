@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Physics</div>
     <h1>物理（Rigidbody と Collider）</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（Convex Collider・計算間隔の記述を更新）</p>
 
     <p>物が落ちる、ぶつかって止まる、跳ね返る、といった動きを作るコンポーネントです。2 種類の役割があります。</p>
     <div class="note"><strong>物理エンジン ATLAS_PHYSICS</strong>このエンジンの物理は <b>ATLAS_PHYSICS</b> が計算します。中身は NVIDIA PhysX を土台にしています。エディターの診断画面やコンソールのメッセージにも、この名前で表示されます。</div>
@@ -48,11 +48,12 @@
       <tr><td><a href="#buoyancy">Buoyancy</a></td><td>Physics &gt; Buoyancy</td><td>1 つだけ</td><td>Rigidbody</td></tr>
     </table>
     </div>
+    <p>このほかの Physics の部品は別のページで説明しています：<a href="physics-joint.html">Physics Joint</a>（剛体どうしをつなぐ）、<a href="soft-body.html">XPBD有限要素Softbody</a>（柔らかい物）、<a href="strand-physics.html">ワイヤー・ヘア・ホース物理</a>、<a href="equipment.html">装備ソケット・装備アタッチ・射出アンカー</a>、<a href="inflation.html">膨張</a>。</p>
 
     <h2 id="timing">物理が動く場面</h2>
     <ul>
       <li>物理の計算は<b>ゲームの実行中だけ</b>行われます。エディターで編集しているときは、Rigidbody を付けても物は落ちません。</li>
-      <li>計算は 1/60 秒ごとの決まった間隔で行われます。画面の更新が遅れたときは、1 フレームで最大 5 回まで計算して追いつきます。それ以上の遅れは切り捨てます。</li>
+      <li>計算は決まった間隔（既定 1/60 秒。C# の <code>Time.fixedDeltaTime</code> で 0.0001〜1 秒に変えられます）で行われます。画面の更新が遅れたときは、1 フレームで最大 5 回まで計算して追いつきます。それ以上の遅れは切り捨てます。</li>
       <li>重力は下向きに 9.81（毎秒毎秒）です。</li>
     </ul>
 
@@ -214,7 +215,7 @@
     <h2 id="convex">Convex Collider（凸包）</h2>
     <p>点の集まりから「凸包（でっぱりだけでできた、へこみのない形）」を作り、それを当たり判定にする部品です。Mesh Collider は動かない物にしか使えませんが、Convex Collider は<b>動く物（Rigidbody の Dynamic）にも使えます</b>。破壊機能（<a href="destruction.html">Sliceable / Destructible</a>）が、切った破片に付ける当たり判定として使っています。</p>
 
-    <div class="warning"><strong>インスペクターだけでは形が作れません</strong>凸包の元になる点（頂点）を入れる欄がインスペクターにありません。点は C++ のコード（<code>SetVertices</code>）か、破壊機能が自動で入れます。点を入れないまま追加すると、凸包が作られず、当たり判定として働きません（内部の状態は「凸形状の Cook には 4 頂点以上が必要です。」で、この文はインスペクターには表示されません）。手で置いた普通の小道具には、Box・Sphere・Capsule を使ってください。</div>
+    <div class="note"><strong>点の元を選べます（2026-10-03 確認）</strong><b>頂点の元</b> で「同じ GameObject の Mesh Renderer」または「同じ GameObject の Primitive Mesh Renderer」を選ぶと、表示しているモデルから凸包を自動で作ります。「コードから渡す」（既定）のときは、従来どおり C++ のコード（<code>SetVertices</code>）か破壊機能が点を入れます。点が無いままだと当たり判定として働きません。</div>
 
     <p>追加は <b>コンポーネントを追加 &gt; Physics (7)</b> から行います。Physics には Rigidbody、Buoyancy、Sphere / Box / Capsule / Convex / Mesh Collider の 7 つが並びます。</p>
     <figure>
@@ -224,11 +225,14 @@
 
     <figure>
       <img src="../images/components/convex-collider-inspector.png" alt="Convex Collider のインスペクター">
-      <figcaption>Convex Collider。共通項目のあとに Hull 頂点上限（既定 64）だけがあります。</figcaption>
+      <figcaption>Convex Collider（撮影時の版。今は下の表の「複合凸の分割数」「複合凸のパーツ番号」「頂点の元」も並びます）。</figcaption>
     </figure>
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>複合凸の分割数</td><td><code>mesh_partition_count</code></td><td>整数</td><td>1</td><td>1〜16</td><td>頂点の元が Mesh Renderer のとき、メッシュをこの数の凸の部品に分けます。2 以上にすると、へこみのある形もへこみを残せます</td></tr>
+      <tr><td>複合凸のパーツ番号</td><td><code>mesh_partition_index</code></td><td>整数</td><td>0</td><td>0〜15</td><td>分けた部品のうち、この Collider が受け持つ番号。同じ GameObject に、分割数が同じ Convex Collider を部品の数だけ付け、番号を 0, 1, 2… と振ると、1 つの動く剛体の当たり判定としてまとまります</td></tr>
+      <tr><td>頂点の元</td><td><code>vertex_source</code></td><td>選択</td><td>コードから渡す</td><td>コードから渡す・同じ GameObject の Mesh Renderer・同じ GameObject の Primitive Mesh Renderer</td><td>凸包の元にする点</td></tr>
       <tr><td>Hull 頂点上限</td><td><code>vertex_limit</code></td><td>整数</td><td>64</td><td>4〜255</td><td>できあがる凸包の頂点数の上限です。大きいほど元の形に近くなり、小さいほど計算が軽くなります。値を変えると、凸包を作り直します</td></tr>
     </table>
     </div>

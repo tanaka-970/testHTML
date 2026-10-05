@@ -17,22 +17,23 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / C# スクリプト / API</div>
     <h1>Vector3・Quaternion・Mathf</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（角度が度に変わった点、Unity 表記の追加）</p>
 
-    <p>位置、向き、色、数の計算に使う型です。名前は Unity に似ていますが、<b>大文字・小文字と角度の単位が違う</b> ところがあります。</p>
+    <p>位置、向き、色、数の計算に使う型です。Unity と同じ小文字の名前（<code>v.x</code>、<code>Vector3.up</code>、<code>v.magnitude</code> など）でも、このエンジン本来の大文字の名前（<code>v.X</code>、<code>Vector3.Up</code>、<code>v.Magnitude</code>）でも書けます。</p>
 
-    <div class="warning"><strong>Unity との違い</strong>
+    <div class="warning"><strong>2026-10-03 の変更：角度は度になりました</strong>
       <ul>
-        <li>成分は大文字です：<code>v.X</code>、<code>v.Y</code>、<code>v.Z</code>（<code>v.x</code> ではありません）。色は <code>R</code>、<code>G</code>、<code>B</code>、<code>A</code>。</li>
-        <li>決まった値や計算結果の名前も大文字始まりです：<code>Vector3.Zero</code>、<code>Vector3.Up</code>、<code>v.Normalized</code>、<code>v.Magnitude</code>。</li>
-        <li><code>Quaternion.Euler</code> と <code>Quaternion.AngleAxis</code> の角度は <b>ラジアン</b> です。度で書くときは <code>Mathf.Deg2Rad</code> を掛けます。Transform の <code>eulerAngles</code> や <code>Rotate</code> は度です。</li>
+        <li><code>Quaternion.Euler</code> と <code>Quaternion.AngleAxis</code> の角度は、Unity と同じ <b>度</b> になりました（以前はラジアン）。<code>Quaternion.Euler(0, 90 * Mathf.Deg2Rad, 0)</code> のように書いていたスクリプトは、約 1.6 度しか回らなくなります。<code>Quaternion.Euler(0, 90, 0)</code> に直してください。</li>
+        <li>ラジアンで渡したいときは <code>Quaternion.EulerRadians</code>、<code>Quaternion.AngleAxisRadians</code> を使います。</li>
+        <li>小文字の名前（<code>x</code>、<code>zero</code>、<code>up</code>、<code>normalized</code>、<code>magnitude</code>、色の <code>r</code>・<code>g</code>・<code>b</code>・<code>a</code>、<code>Color.red</code> など）が使えるようになりました。</li>
+        <li><code>==</code> は「ほぼ等しい」で比べます（Vector はずれの 2 乗が 0.0000000001 未満、Quaternion は内積が 0.999999 より大きい）。</li>
       </ul>
     </div>
 
     <h2 id="when">こんなときに使う</h2>
     <ul>
       <li>2 点の距離を測る、目標へ少しずつ近づけるとき（Vector3）</li>
-      <li>決まった角度に向きを変えるとき（Quaternion。角度はラジアン）</li>
+      <li>決まった角度に向きを変えるとき（Quaternion。角度は度）</li>
       <li>色を時間に合わせて変えるとき（Color.Lerp）</li>
       <li>値を範囲に収める、行ったり来たりする値を作るとき（Mathf）</li>
       <li>インスペクターで描いたカーブで、値の変わり方を決めたいとき（AnimationCurve）</li>
@@ -52,6 +53,14 @@
       <tr><td><code>Vector3.Distance(a, b)</code></td><td>2 点の距離</td></tr>
       <tr><td><code>Vector3.Lerp(a, b, t)</code></td><td>a と b の間。t は 0〜1 に収めます</td></tr>
       <tr><td><code>Vector3.MoveTowards(今, 目標, 最大距離)</code></td><td>目標へ最大距離だけ近づけた位置</td></tr>
+      <tr><td><code>Vector3.left</code>、<code>down</code>、<code>back</code></td><td>(-1,0,0)、(0,-1,0)、(0,0,-1)</td></tr>
+      <tr><td><code>Vector3.LerpUnclamped(a, b, t)</code></td><td>t を 0〜1 に収めない Lerp</td></tr>
+      <tr><td><code>Vector3.Scale(a, b)</code></td><td>成分ごとの掛け算</td></tr>
+      <tr><td><code>Vector3.ClampMagnitude(v, 最大)</code></td><td>長さを最大までに抑えます</td></tr>
+      <tr><td><code>Vector3.Project(v, 向き)</code>、<code>Vector3.ProjectOnPlane(v, 面の向き)</code></td><td>向きへの投影、面への投影（坂に沿った移動などに使います）</td></tr>
+      <tr><td><code>Vector3.Reflect(入射, 面の向き)</code></td><td>跳ね返った向き</td></tr>
+      <tr><td><code>Vector3.Angle(a, b)</code>、<code>Vector3.SignedAngle(a, b, 軸)</code></td><td>2 つの向きの間の角度（度）。SignedAngle は軸から見た回り方で符号が付きます</td></tr>
+      <tr><td><code>v.Normalize()</code>、<code>v.Set(x, y, z)</code>、<code>v[番号]</code></td><td>自分を長さ 1 にする、値を入れる、番号（0〜2）で成分を読む</td></tr>
       <tr><td><code>+</code>、<code>-</code>、<code>* 数</code>、<code>/ 数</code></td><td>足し算、引き算、数との掛け算・割り算</td></tr>
     </table>
     </div>
@@ -64,9 +73,13 @@ transform.position = Vector3.MoveTowards(transform.position, target.position, 3.
     <table>
       <tr><th>名前</th><th>説明</th></tr>
       <tr><td><code>Quaternion.Identity</code></td><td>回転なし</td></tr>
-      <tr><td><code>Quaternion.Euler(x, y, z)</code></td><td>角度（<b>ラジアン</b>）から作ります。Y、X、Z の順に回します</td></tr>
-      <tr><td><code>Quaternion.AngleAxis(角度, 軸)</code></td><td>軸のまわりに角度（<b>ラジアン</b>）回す回転</td></tr>
-      <tr><td><code>Quaternion.LookRotation(前, 上)</code></td><td>前を指定した向きに向ける回転</td></tr>
+      <tr><td><code>Quaternion.Euler(x, y, z)</code>、<code>Quaternion.Euler(Vector3)</code></td><td>角度（<b>度</b>）から作ります。Y、X、Z の順に回します</td></tr>
+      <tr><td><code>Quaternion.AngleAxis(角度, 軸)</code></td><td>軸のまわりに角度（<b>度</b>）回す回転</td></tr>
+      <tr><td><code>Quaternion.EulerRadians(x, y, z)</code>、<code>Quaternion.AngleAxisRadians(角度, 軸)</code></td><td>ラジアンで渡す版</td></tr>
+      <tr><td><code>Quaternion.LookRotation(前, 上)</code>、<code>Quaternion.LookRotation(前)</code></td><td>前を指定した向きに向ける回転。上を省くと (0,1,0)</td></tr>
+      <tr><td><code>Quaternion.FromToRotation(向き1, 向き2)</code></td><td>向き1 を向き2 へ回す回転</td></tr>
+      <tr><td><code>Quaternion.Angle(a, b)</code>、<code>Quaternion.Dot(a, b)</code></td><td>2 つの回転の差の角度（度）、内積</td></tr>
+      <tr><td><code>q.eulerAngles</code></td><td>オイラー角（度）</td></tr>
       <tr><td><code>Quaternion.Slerp(a, b, t)</code></td><td>a と b の間の回転。t は 0〜1</td></tr>
       <tr><td><code>Quaternion.Inverse(q)</code></td><td>逆の回転</td></tr>
       <tr><td><code>Normalized</code></td><td>正規化したもの</td></tr>
@@ -75,7 +88,7 @@ transform.position = Vector3.MoveTowards(transform.position, target.position, 3.
     </table>
     </div>
     <pre><code>// Y 軸まわりに 90 度
-transform.rotation = Quaternion.Euler(0.0f, 90.0f * Mathf.Deg2Rad, 0.0f);</code></pre>
+transform.rotation = Quaternion.Euler(0.0f, 90.0f, 0.0f);</code></pre>
 
     <h2 id="color">Color</h2>
     <div class="table-wrap">
@@ -84,6 +97,7 @@ transform.rotation = Quaternion.Euler(0.0f, 90.0f * Mathf.Deg2Rad, 0.0f);</code>
       <tr><td><code>new Color(r, g, b)</code>、<code>new Color(r, g, b, a)</code></td><td>0〜1 で作ります。a を省くと 1</td></tr>
       <tr><td><code>R</code>、<code>G</code>、<code>B</code>、<code>A</code></td><td>成分</td></tr>
       <tr><td><code>Color.White</code>、<code>Color.Black</code>、<code>Color.Clear</code></td><td>白、黒、透明（すべて 0）</td></tr>
+      <tr><td><code>Color.white</code>、<code>black</code>、<code>red</code>、<code>green</code>、<code>blue</code>、<code>clear</code></td><td>Unity と同じ名前の色</td></tr>
       <tr><td><code>Color.Lerp(a, b, t)</code></td><td>a と b の間の色</td></tr>
       <tr><td><code>色 * 数</code></td><td>全成分（A も）に掛けます</td></tr>
     </table>

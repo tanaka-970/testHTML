@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Lighting</div>
     <h1>ライト（Directional Light / Point Light / Spot Light）</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（Point / Spot に影の光源半径を追加）</p>
 
     <p>シーンを照らす光のコンポーネントです。3 種類あり、照らし方が違います。ライトが 1 つも無いシーンでは、物がほとんど暗く見えます。</p>
     <div class="table-wrap">
@@ -66,6 +66,7 @@
       <tr><td>深度バイアス (m)</td><td><code>shadow_depth_bias</code></td><td>小数</td><td>0.02</td><td>0〜0.5</td><td>影のちらつきを抑えるずらし量。影の計算では 0.05 より大きい値は 0.05 として扱うので、0.05 を超えても効き方は変わりません</td></tr>
       <tr><td>法線バイアス</td><td><code>shadow_normal_bias</code></td><td>小数</td><td>1.5</td><td>0〜6</td><td>面の向きに沿って影をずらす量</td></tr>
       <tr><td>影のニア</td><td><code>shadow_near_plane</code></td><td>小数</td><td>0.15</td><td>0.01〜10</td><td>ライトからこれより近い物は影を作りません</td></tr>
+      <tr><td>影の光源半径 (m)</td><td><code>shadow_source_radius</code></td><td>小数</td><td>0.25</td><td>0〜10</td><td>光を出す球の大きさ。大きいほど影のふちがぼけて柔らかくなります（半影）。0 で以前と同じ硬い影</td></tr>
       <tr><td>Volumetric 強度</td><td><code>volumetric_intensity</code></td><td>小数</td><td>0</td><td>0〜16</td><td>光が空気中の霧・もやに当たって見える「光の筋」の強さ。0 なら出ません（既定）。<a href="environment-volumes.html#local-fog">Local Fog Volume</a> などの霧と組み合わせると、光の筋が見えます</td></tr>
     </table>
     </div>
@@ -84,6 +85,7 @@
       <tr><td>深度バイアス (m)</td><td><code>shadow_depth_bias</code></td><td>小数</td><td>0.02</td><td>0〜0.5</td><td>影のちらつきを抑えるずらし量。影の計算では 0.05 より大きい値は 0.05 として扱うので、0.05 を超えても効き方は変わりません</td></tr>
       <tr><td>法線バイアス</td><td><code>shadow_normal_bias</code></td><td>小数</td><td>1.5</td><td>0〜6</td><td>面の向きに沿って影をずらす量</td></tr>
       <tr><td>影のニア</td><td><code>shadow_near_plane</code></td><td>小数</td><td>0.15</td><td>0.01〜10</td><td>ライトからこれより近い物は影を作りません</td></tr>
+      <tr><td>影の光源半径 (m)</td><td><code>shadow_source_radius</code></td><td>小数</td><td>0.25</td><td>0〜10</td><td>光を出す球の大きさ。大きいほど影のふちがぼけて柔らかくなります（半影）。0 で以前と同じ硬い影</td></tr>
       <tr><td>Volumetric 強度</td><td><code>volumetric_intensity</code></td><td>小数</td><td>0</td><td>0〜16</td><td>光が空気中の霧・もやに当たって見える「光の筋」の強さ。0 なら出ません（既定）。<a href="environment-volumes.html#local-fog">Local Fog Volume</a> などの霧と組み合わせると、光の筋が見えます</td></tr>
     </table>
     </div>

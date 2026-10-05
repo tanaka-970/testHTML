@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / C# スクリプト</div>
     <h1>呼ばれる順番（ライフサイクル）</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（Invoke、時間の倍率の代入、コルーチンの追加分）</p>
 
     <p><code>MonoBehaviour</code> を継承したクラスに、決まった名前のメソッドを書くと、エンジンが決まったタイミングで呼び出します。このページでは、その名前と呼ばれる順番を説明します。</p>
 
@@ -127,15 +127,46 @@ void Start()
     <table>
       <tr><th>書き方</th><th>意味</th></tr>
       <tr><td><code>StartCoroutine(処理)</code></td><td>始めます。呼んだその場で最初の <code>yield</code> まで進みます。戻り値の <code>Coroutine</code> で止められます</td></tr>
-      <tr><td><code>StopCoroutine(coroutine)</code></td><td>1 つ止めます</td></tr>
+      <tr><td><code>StopCoroutine(coroutine)</code>、<code>StopCoroutine(処理)</code></td><td>1 つ止めます。<code>StartCoroutine</code> に渡した <code>IEnumerator</code> そのものでも止められます</td></tr>
       <tr><td><code>StopAllCoroutines()</code></td><td>このスクリプトのものをすべて止めます</td></tr>
       <tr><td><code>yield return null;</code></td><td>次のフレームまで待ちます</td></tr>
       <tr><td><code>yield return new WaitForSeconds(秒);</code></td><td>指定した秒数だけ待ちます。時間の倍率（<code>Time.timeScale</code>）の影響を受けます</td></tr>
       <tr><td><code>yield return new WaitUntil(() =&gt; 条件);</code></td><td>条件が true になるまで待ちます</td></tr>
       <tr><td><code>yield return new WaitWhile(() =&gt; 条件);</code></td><td>条件が true の間、待ちます</td></tr>
+      <tr><td><code>yield return new WaitForSecondsRealtime(秒);</code></td><td>実際の時間で待ちます。<code>Time.timeScale</code> が 0（一時停止メニューなど）でも進みます</td></tr>
+      <tr><td><code>yield return StartCoroutine(別の処理);</code><br><code>yield return 別の処理();</code></td><td>別のコルーチンが終わるまで待ちます（入れ子）</td></tr>
+      <tr><td><code>CustomYieldInstruction</code> を継承したクラス</td><td><code>keepWaiting</code> が true の間、待ちます。自分で待ち方を作れます</td></tr>
     </table>
     </div>
+    <p>コルーチンを止めたとき、GameObject が消えたとき、実行を終えたときは、そのコルーチンの <code>finally</code> の中身が実行されます（後片付けを書けます）。<code>WaitForFixedUpdate</code> と <code>WaitForEndOfFrame</code> はありません。</p>
     <p>2 回目以降の続きは、1 フレームの順番の 5 番目（LateUpdate と衝突の配送のあと）で進みます。</p>
+
+    <h2 id="invoke">名前を指定して後で呼ぶ（Invoke）</h2>
+    <p>引数のない <code>void</code> メソッドを、名前で予約して呼べます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>書き方</th><th>意味</th></tr>
+      <tr><td><code>Invoke("名前", 秒)</code></td><td>秒後に 1 回呼びます</td></tr>
+      <tr><td><code>InvokeRepeating("名前", 秒, 間隔)</code></td><td>秒後から、間隔ごとに繰り返し呼びます。間隔は 0 より大きい値</td></tr>
+      <tr><td><code>CancelInvoke()</code>、<code>CancelInvoke("名前")</code></td><td>予約をすべて、またはその名前の予約を取り消します</td></tr>
+      <tr><td><code>IsInvoking()</code>、<code>IsInvoking("名前")</code></td><td>予約が残っているか</td></tr>
+    </table>
+    </div>
+    <p>名前のメソッドが無い（引数がある、戻り値がある場合も含む）と、その場で例外になります。時間は <code>Time.timeScale</code> の影響を受けます。名前の書き間違いを防ぐには <code>nameof(メソッド)</code> を使います。</p>
+    <pre><code>void Start()
+{
+    InvokeRepeating(nameof(Spawn), 1.0f, 2.0f); // 1 秒後から 2 秒ごと
+}
+
+void Spawn()
+{
+    Debug.Log("敵を出す");
+}
+
+void OnDisable()
+{
+    CancelInvoke();
+}</code></pre>
 
     <h2 id="exceptions">例外が起きたとき</h2>
     <ul>
@@ -149,9 +180,10 @@ void Start()
     <table>
       <tr><th>名前</th><th>内容</th></tr>
       <tr><td><code>Time.deltaTime</code></td><td>前のフレームからの秒数。時間の倍率を掛けたあとの値です</td></tr>
-      <tr><td><code>Time.fixedDeltaTime</code></td><td>物理の 1 刻みの秒数</td></tr>
+      <tr><td><code>Time.unscaledDeltaTime</code></td><td>前のフレームからの秒数。時間の倍率を掛ける前の値です</td></tr>
+      <tr><td><code>Time.fixedDeltaTime</code></td><td>物理の 1 刻みの秒数。<b>代入できます</b>（0.0001〜1 秒。範囲外は例外）</td></tr>
       <tr><td><code>Time.frameCount</code></td><td>フレームの番号</td></tr>
-      <tr><td><code>Time.timeScale</code></td><td>時間の倍率。スクリプトからは読むだけで、変えられません</td></tr>
+      <tr><td><code>Time.timeScale</code></td><td>時間の倍率。<b>代入できます</b>（0〜100。範囲外は例外）。0 で一時停止、0.2 でスローモーション。コンソールの <code>timescale</code> コマンドと同じ値です</td></tr>
       <tr><td><code>Debug.Log(内容)</code>、<code>Debug.LogWarning</code>、<code>Debug.LogError</code></td><td>コンソールに出します。2 つ目の引数に GameObject やコンポーネントを渡すと、どの GameObject のログかが付きます</td></tr>
       <tr><td><code>Debug.LogException(例外)</code></td><td>例外をエラーとして出します</td></tr>
       <tr><td><code>Debug.Assert(条件, 内容)</code></td><td>条件が false のときだけエラーを出します</td></tr>

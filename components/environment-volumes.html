@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / 局所霧・Reflection Probe・Probe GI</div>
     <h1>局所霧・Reflection Probe・Probe GI</h1>
-    <p class="meta">対象：RePlayEngine ソース 08fb8f40（2026-09-24 に実装を確認）</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（Probe GI に局所光の間接反射を追加）</p>
 
     <p>シーンの一部の範囲だけに効かせる、環境の見た目の部品が 3 つあります。どれも GameObject の位置を中心にした箱（または球）の範囲を持ちます。</p>
     <div class="table-wrap">
@@ -159,6 +159,7 @@
       <tr><td>壁内 Probe の自動再配置</td><td><code>relocate_probes</code></td><td>オン・オフ</td><td>オン</td><td></td><td>壁の中に入ってしまった Probe を、壁の外へ押し戻します</td></tr>
       <tr><td>更新方式</td><td><code>update_mode</code></td><td>数（0 か 1 を入力）</td><td>0</td><td>0〜1</td><td>数字を直接入れる欄です（選択肢の一覧ではありません）。0 は Realtime（少しずつ更新し続ける）、1 は Baked（全部の更新が終わったら固定し、更新し直すまで変わらない）</td></tr>
       <tr><td>バウンス回数</td><td><code>bounce_count</code></td><td>整数</td><td>1</td><td>1〜2</td><td>光が跳ね返る回数です。2 にするとより明るく自然になりますが、重くなります</td></tr>
+      <tr><td>局所光の間接反射</td><td><code>local_light_bounces</code></td><td>オン・オフ</td><td>オン</td><td></td><td>点光源・スポットライトの光も、跳ね返った間接光として Probe GI に入れます。オフにすると、点光源・スポットライトの光は Probe GI の間接光に入りません</td></tr>
       <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td></td><td>Volume が重なる場所で、どちらを優先するかを決める数です</td></tr>
       <tr><td>Bake Revision</td><td><code>bake_revision</code></td><td>整数</td><td>0</td><td></td><td>焼き直し・更新リセットの世代番号です。ボタンで増えます</td></tr>
       <tr><td>Cache Clear Revision</td><td><code>cache_clear_revision</code></td><td>整数</td><td>0</td><td></td><td>保存済みキャッシュを消した世代の番号です（詳細項目）</td></tr>

@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
     <h1>Post Process Volume</h1>
-    <p class="meta">対象：RePlayEngine ソース 08fb8f40（2026-09-24 に実装を確認）</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（太陽光条を追加）</p>
 
     <p>画面の仕上げ（光のにじみ、周辺を暗くする効果、明るさ、色味、陰影の強調など）を決めるコンポーネントです。<b>シーン全体</b>に効かせることも、<b>箱の範囲の中にカメラが入ったときだけ</b>効かせることもできます。複数置くと、優先度の順に重ねて、重み（ブレンド強度）に応じて混ぜます。</p>
 
@@ -88,6 +88,11 @@
       <tr><td>明順応速度</td><td><code>auto_exposure_speed_up</code></td><td>小数</td><td>3</td><td>0.01〜10</td><td>0.01〜10</td><td>暗い場所から明るい場所へ出たとき、露出が合う速さ</td></tr>
       <tr><td>暗順応速度</td><td><code>auto_exposure_speed_down</code></td><td>小数</td><td>1</td><td>0.01〜10</td><td>0.01〜10</td><td>明るい場所から暗い場所へ入ったとき、露出が合う速さ</td></tr>
       <tr><td>色フィルタ</td><td><code>color_filter</code></td><td>色</td><td>白</td><td></td><td></td><td>画面全体に掛ける色。白なら色は変わりません</td></tr>
+      <tr id="sun-shafts"><td>太陽光条を上書き</td><td><code>override_sun_shafts</code></td><td>オン・オフ</td><td>オフ</td><td></td><td></td><td>オンにすると、この範囲の中では下の 4 つの太陽光条の値を使います</td></tr>
+      <tr><td>太陽光条の強度</td><td><code>sun_shafts_intensity</code></td><td>小数</td><td>0</td><td>0〜2</td><td></td><td>太陽の方向の明るい空から伸びる光の筋（ゴッドレイ）の強さ。0 で出ません</td></tr>
+      <tr><td>太陽光条の広がり</td><td><code>sun_shafts_density</code></td><td>小数</td><td>0.84</td><td>0.1〜1.5</td><td></td><td>筋が伸びる長さ</td></tr>
+      <tr><td>太陽光条の減衰</td><td><code>sun_shafts_decay</code></td><td>小数</td><td>0.94</td><td>0.5〜0.99</td><td></td><td>太陽から離れるにつれて弱まる度合い。1 に近いほど遠くまで届きます</td></tr>
+      <tr><td>太陽光条の重み</td><td><code>sun_shafts_weight</code></td><td>小数</td><td>0.025</td><td>0〜0.08</td><td></td><td>1 本ずつの筋の明るさ</td></tr>
     </table>
     </div>
 
@@ -109,7 +114,7 @@
     <div class="table-wrap">
     <table>
       <tr><th>混ざる値</th><th>元の設定の場所</th></tr>
-      <tr><td>Bloom、輝度抽出、最終合成、ビネット、露出（自動露出を含む）、色フィルタ</td><td>ポスト処理</td></tr>
+      <tr><td>Bloom、輝度抽出、最終合成、ビネット、露出（自動露出を含む）、色フィルタ、太陽光条</td><td>ポスト処理</td></tr>
       <tr><td>SSAO・SSR・TAA のオン・オフ、SSAO の半径と強度、SSR の強度</td><td>描画設定 の「スクリーン空間パス (SSAO / SSR / TAA)」</td></tr>
     </table>
     </div>

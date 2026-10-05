@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / C# スクリプト / API</div>
     <h1>レイキャストとシーンの切り替え</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（Physics を Unity 表記へ更新）</p>
 
     <p>当たり判定に線や形を飛ばして調べる <code>Physics</code>、別のシーンへ移る <code>SceneManager</code>、ゲームを終える <code>Application</code> の使い方です。</p>
 
@@ -31,22 +31,32 @@
     </ul>
 
     <h2 id="physics">Physics</h2>
-    <p>シーンの Collider に対して調べます。最大距離を省くと 1000 です。</p>
+    <p>シーンの Collider に対して調べます。2026-10-03 に Unity と同じ書き方へそろえました。最大距離を省くと無限です。どの関数も、最後に <b>レイヤーマスク</b>（<code>layerMask</code>、省くとすべて）と <b>トリガーの扱い</b>（<code>QueryTriggerInteraction</code>）を付けられます。</p>
     <div class="table-wrap">
     <table>
       <tr><th>名前</th><th>説明</th></tr>
-      <tr><td><code>Physics.Raycast(始点, 向き, out RaycastHit hit, 最大距離)</code></td><td>線を飛ばし、当たったら true。一番近い当たりが <code>hit</code> に入ります</td></tr>
-      <tr><td><code>Physics.Raycast(始点, 向き, 最大距離)</code></td><td>当たるかどうかだけ</td></tr>
-      <tr><td><code>Physics.Raycast(ray, out hit, 最大距離)</code></td><td><code>Ray</code> で渡す書き方</td></tr>
-      <tr><td><code>Physics.RaycastAll(始点, 向き, 最大距離)</code></td><td>当たったものすべて（<code>PhysicsHit[]</code>）</td></tr>
-      <tr><td><code>Physics.SphereCast(始点, 半径, 向き, out PhysicsHit hit, 最大距離)</code></td><td>球を飛ばします</td></tr>
-      <tr><td><code>Physics.BoxCast(中心, 大きさの半分, 向き, out hit, 最大距離)</code></td><td>箱（回転なし）を飛ばします</td></tr>
+      <tr><td><code>Physics.Raycast(始点, 向き, out RaycastHit hit, 最大距離, レイヤー, トリガー)</code></td><td>線を飛ばし、当たったら true。一番近い当たりが <code>hit</code> に入ります</td></tr>
+      <tr><td><code>Physics.Raycast(始点, 向き, 最大距離)</code>、<code>Physics.Raycast(ray, …)</code></td><td>当たるかどうかだけ／<code>Ray</code> で渡す書き方</td></tr>
+      <tr><td><code>Physics.RaycastAll(始点, 向き, 最大距離)</code></td><td>当たったものすべて（<code>RaycastHit[]</code>）</td></tr>
+      <tr><td><code>Physics.Linecast(始点, 終点, out hit)</code></td><td>2 点の間に何かあるか（見通しの判定など）</td></tr>
+      <tr><td><code>Physics.SphereCast(始点, 半径, 向き, out hit, 最大距離)</code>、<code>SphereCast(ray, 半径, …)</code></td><td>球を飛ばします</td></tr>
+      <tr><td><code>Physics.BoxCast(中心, 大きさの半分, 向き, out hit, 回転, 最大距離)</code></td><td>箱を飛ばします。回転を付けられます</td></tr>
       <tr><td><code>Physics.CapsuleCast(点1, 点2, 半径, 向き, out hit, 最大距離)</code></td><td>カプセルを飛ばします</td></tr>
-      <tr><td><code>Physics.OverlapSphere(中心, 半径)</code></td><td>球に重なる Collider（<code>Collider[]</code>）</td></tr>
-      <tr><td><code>Physics.OverlapBox(中心, 大きさの半分)</code></td><td>箱（回転なし）に重なる Collider</td></tr>
-      <tr><td><code>Physics.OverlapCapsule(点1, 点2, 半径)</code></td><td>カプセルに重なる Collider</td></tr>
+      <tr><td><code>SphereCastAll</code>、<code>BoxCastAll</code>、<code>CapsuleCastAll</code></td><td>当たったものすべて</td></tr>
+      <tr><td><code>Physics.OverlapSphere(中心, 半径)</code>、<code>OverlapBox(中心, 大きさの半分, 回転)</code>、<code>OverlapCapsule(点1, 点2, 半径)</code></td><td>形に重なる Collider（<code>Collider[]</code>）</td></tr>
+      <tr><td><code>Physics.CheckSphere</code>、<code>CheckBox</code>、<code>CheckCapsule</code></td><td>重なる物があるかだけ（true / false）。接地判定などに使います</td></tr>
+      <tr><td><code>RaycastNonAlloc</code>、<code>SphereCastNonAlloc</code>、<code>BoxCastNonAlloc</code>、<code>CapsuleCastNonAlloc</code>、<code>OverlapSphereNonAlloc</code>、<code>OverlapBoxNonAlloc</code>、<code>OverlapCapsuleNonAlloc</code></td><td>用意した配列に入れて、入った数を返します。毎フレーム呼んでもゴミ（GC）が出ません</td></tr>
+      <tr><td><code>Physics.queriesHitTriggers</code></td><td>トリガーの扱いが <code>UseGlobal</code> のとき、トリガーに当たるか（既定 true）</td></tr>
+      <tr><td><code>QueryTriggerInteraction</code></td><td><code>UseGlobal</code>（既定）、<code>Ignore</code>（トリガーを無視）、<code>Collide</code>（トリガーにも当たる）</td></tr>
     </table>
     </div>
+<pre><code>// 足元 0.1 の所に何か重なっていれば接地（トリガーは無視）
+bool grounded = Physics.CheckSphere(transform.position, 0.1f,
+    queryTriggerInteraction: QueryTriggerInteraction.Ignore);
+
+// 毎フレーム使う配列は 1 回だけ作る
+readonly Collider[] nearby = new Collider[16];
+int count = Physics.OverlapSphereNonAlloc(transform.position, 3.0f, nearby);</code></pre>
     <h3 id="hit">当たりの情報（RaycastHit / PhysicsHit）</h3>
     <div class="table-wrap">
     <table>
@@ -55,7 +65,7 @@
       <tr><td><code>normal</code></td><td>当たった面の向き</td></tr>
       <tr><td><code>distance</code></td><td>始点からの距離</td></tr>
       <tr><td><code>gameObject</code>、<code>transform</code></td><td>当たった GameObject、その Transform</td></tr>
-      <tr><td><code>collider</code></td><td>当たった GameObject の Collider（複数あるときは最初の 1 つ）</td></tr>
+      <tr><td><code>collider</code></td><td>当たった Collider。1 つの GameObject に Collider が複数あっても、当たったものそのものが入ります</td></tr>
       <tr><td><code>Fraction</code></td><td>最大距離に対する割合（<code>PhysicsHit</code> だけ）</td></tr>
     </table>
     </div>

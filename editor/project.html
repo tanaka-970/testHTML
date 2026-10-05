@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
     <h1>プロジェクトパネル</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（Effekseer FX、膨張プロファイルを追加）</p>
 
     <p>画面下段の <b>プロジェクト</b> タブには、プロジェクトのフォルダとファイル（アセット）が並びます。モデル、シーン、マテリアル、スクリプトなどを探す、作る、名前を変える、移動する、シーンに置く、といった操作をここで行います。</p>
     <p>下段にタブが見えないときは、<b>Window &gt; Project / Assets</b> か <b>作成 &gt; プロジェクトを開く</b> で表示できます。</p>
@@ -34,7 +34,7 @@
     <p>上から次の順に並びます。</p>
     <ol>
       <li><b>パンくず</b>：<b>Project</b> ボタンの右に、今開いているフォルダまでの道筋が「/」区切りのボタンで並びます。ボタンを押すと、そのフォルダに戻ります。</li>
-      <li><b>操作の行</b>：左から <b>Search Project...</b>（検索欄）、種類の絞り込み（既定は All）、<b>□ グリッド</b>、アイコンの大きさのスライダー（48〜160 px）、<b>Refresh Assets</b> ボタン。</li>
+      <li><b>操作の行</b>：左から <b>Search Project...</b>（検索欄）、種類の絞り込み（既定は All）、<b>□ グリッド</b>、アイコンの大きさのスライダー（48〜160 px）、<b>Refresh Assets</b> ボタン、<b>Effekseer FX</b> ボタン（<a href="../components/effekseer.html#window">Effekseer エフェクト作成 / プレビュー</a> を開きます）。</li>
       <li><b>左：フォルダのツリー</b>。いちばん上が <b>Project</b>（黄色の文字）で、フォルダとファイルが同じツリーに並びます。</li>
       <li><b>右：今のフォルダの中身</b>。アイコンと名前が並びます。</li>
       <li><b>Missing Assets (N)</b>：登録されているのにファイルが見つからないアセットがあるときだけ出ます。開くと「[Missing] 名前」とファイルの場所が並びます。</li>
@@ -45,7 +45,7 @@
     <h2 id="search">探す・絞り込む</h2>
     <ul>
       <li><b>Search Project...</b> に文字を入れると、今のフォルダだけでなくプロジェクト全体から、名前にその文字を含むファイルが右側に並びます。英字の大文字と小文字は区別しません。</li>
-      <li>種類の絞り込みで、右側に出すファイルの種類を 1 つに絞れます。フォルダは絞り込みに関係なく表示されます。</li>
+      <li>種類の絞り込みで、右側に出すファイルの種類を 1 つに絞れます。フォルダは絞り込みに関係なく表示されます。<b>Effekseer Effect</b>（.efkefc）と <b>Inflation Profile</b>（.replayinflationprofile）も選べます。</li>
     </ul>
     <div class="table-wrap">
     <table>
@@ -110,7 +110,7 @@
       <tr><td>Script ▶</td><td>C# Script（下に作られる名前空間が表示されます）</td></tr>
       <tr><td>Animation ▶</td><td>Motion Asset、Motion Composition</td></tr>
       <tr><td>UI / Presentation ▶</td><td>Sprite Atlas、Effect Preset、イージングカーブ</td></tr>
-      <tr><td>Data ▶</td><td>破壊材質（<a href="../components/destruction-reference.html#material">説明</a>）、Material、Scene Flow、Localization Table、Input Action Asset</td></tr>
+      <tr><td>Data ▶</td><td>破壊材質（<a href="../components/destruction-reference.html#material">説明</a>）、膨張プロファイル（<a href="../components/inflation.html#profile">説明</a>）、Material、Scene Flow、Localization Table、Input Action Asset</td></tr>
       <tr><td>Shader ▶</td><td>Surface Shader、Water Shader (HLSL)（水面用の HLSL。<a href="../components/water-body.html">Water Body</a> の Material で使います）、Layer Shader、Shader Composer ▶（Surface、Water、Layer、PostProcess。<a href="../windows/shader-composer.html">Shader Composer</a>）</td></tr>
     </table>
     </div>

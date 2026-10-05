@@ -1,7 +1,8 @@
 // サイト全体の目次。ページを足したらここにも足す（検索もこの表を引く）
 window.DOCS_TOC = [
   { title: "はじめに", children: [
-    { title: "このドキュメントについて", href: "index.html", summary: "ドキュメントの読み方と対象バージョン" }
+    { title: "このドキュメントについて", href: "index.html", summary: "ドキュメントの読み方と対象バージョン" },
+    { title: "更新内容と評価（10/03）", href: "changes.html", summary: "9/28〜10/03 に増えた機能と、ゲーム制作にそのまま使えるかの評価", keywords: "更新 変更 新機能 評価 使い勝手 ホース 膨張 Softbody Joint 射出アンカー Orbit Camera Effekseer 太陽光条 Unity 互換 Euler 度 Translate timeScale Invoke 足りないもの" }
   ]},
   { title: "エディターの基本", children: [
     { title: "メニューバー", href: "editor/menu-bar.html", summary: "File、Edit、作成、カメラ、UI、Window、実行、Help の各項目", keywords: "New Empty Scene Save Undo Redo 保存 元に戻す 実行 停止 一時停止 Workspace 見た目 プリセット カメラ 移動速度" },
@@ -33,16 +34,24 @@ window.DOCS_TOC = [
     { title: "Rendering", children: [
       { title: "メッシュの描画（Mesh / Primitive / Skinned）", href: "components/mesh-renderers.html", summary: "モデルや基本形状の表示、マテリアル、スロット、影", keywords: "Mesh Renderer Primitive Mesh Renderer Skinned Mesh Renderer メッシュ モデル マテリアル マテリアル上書き スロット テクスチャ 影 描画方式 PBR トゥーン アンリット 輪郭線 Rendering Layer 表示姿勢補正 縮尺 Animator マゼンタ 両面 glTF 制限 両面 片面 アウトライン 黒い 骨 256 ウェイト JOINTS_1 モーフ リグ表示" },
       { title: "Animator", href: "components/animator.html", summary: "骨アニメーションの状態と遷移、パラメーター", keywords: "アニメーター アニメーション ステート State Transition 遷移 クリップ ブレンド Bool Float Trigger パラメーター AnimatorStateChanged SetFloat SetTrigger Play 旧 待機 移動 ジャンプ" },
-      { title: "Post Process Volume", href: "components/post-process-volume.html", summary: "画面全体の仕上げ（Bloom、ビネット、SSAO、SSR、TAA、露出、色）", keywords: "ポストプロセス ポスト処理 Bloom ブルーム ビネット SSAO SSR TAA 露出 色フィルタ 優先度 描画設定" },
+      { title: "Post Process Volume", href: "components/post-process-volume.html", summary: "画面全体の仕上げ（Bloom、ビネット、SSAO、SSR、TAA、露出、色）", keywords: "ポストプロセス ポスト処理 Bloom ブルーム ビネット SSAO SSR TAA 露出 色フィルタ 優先度 描画設定 太陽光条 ゴッドレイ 光の筋" },
       { title: "空", href: "components/sky.html", summary: "空の画像、時間帯の移り変わり、雲・星・月", keywords: "Skybox スカイボックス 空 キューブマップ HDR パノラマ 時間帯 キーフレーム 雲 星 月 回転 トゥーン 環境光" },
-      { title: "Particle Emitter", href: "components/particle-emitter.html", summary: "火花や煙などの粒を出す", keywords: "パーティクル 粒 エミッター 発生量 寿命 初速 重力 抵抗 拡散角 Emit Clear 火花 煙" },
+      { title: "Particle Emitter", href: "components/particle-emitter.html", summary: "火花や煙などの粒を出す", keywords: "パーティクル 粒 エミッター 発生量 寿命 初速 重力 抵抗 拡散角 Emit Clear 火花 煙 GPU駆動 GpuSimulation" },
       { title: "3D ラインと軌跡", href: "components/lines.html", summary: "点をつなぐ帯状の線と、動いた跡の線", keywords: "3D ライン Line Renderer 軌跡 Trail リボン 点 曲線 滑らかさ 太さ Trim UV テクスチャ グラデーション" },
       { title: "Effect Stack と Effect Preset", href: "components/effect-stacks.html", summary: "Screen / Model / UI の Effect Stack、適用範囲、Effect Preset", keywords: "エフェクト Screen Effect Stack Model Effect Stack UI Effect Stack Effect Preset replayeffect 適用範囲 マスク 投げ縄 Rendering Layer 背景だけ 空だけ 切り抜き Overlay はみ出し Precompose 背景を取り込む カスタムシェーダー" },
       { title: "エフェクトの種類", href: "components/effect-kinds.html", summary: "86 種類のエフェクトと種類ごとの項目", keywords: "ぼかし 発光 色調補正 ノイズ 揺れ マスク ワイプ ディゾルブ 歪み 色収差 網点 ブラー ビネット 光条 レンズ ポスタライズ 二値化 カラーランプ レベル補正 色温度 エッジ 輪郭線 ブラシストローク モザイク グリッチ CRT VHS レターボックス LUT トーンカーブ ドロップシャドウ ホログラム 集中線 レンズフレア 玉ボケ チルトシフト" },
-      { title: "Normal Adjust", href: "components/normal-adjust.html", summary: "陰影に使う法線を球の向きへ寄せる", keywords: "ノーマルアジャスト 法線 陰影 トゥーン 球 Blend Radius Falloff Bone スロット" }
+      { title: "Normal Adjust", href: "components/normal-adjust.html", summary: "陰影に使う法線を球の向きへ寄せる", keywords: "ノーマルアジャスト 法線 陰影 トゥーン 球 Blend Radius Falloff Bone スロット" },
+      { title: "Effekseer Emitter", href: "components/effekseer.html", summary: "Effekseer のエフェクト（.efkefc）の再生と、作成・プレビューのウィンドウ", keywords: "Effekseer エフェクシア efkefc エフェクト 再生 Emitter 開始時に再生 再生速度 スケール SetupEffekseer プレビュー Effekseer FX GPU粒子" }
     ]},
     { title: "Physics", children: [
+      { title: "Physics Joint", href: "components/physics-joint.html", summary: "剛体を固定・ヒンジ・スライダー・スプリングでつなぐ", keywords: "ジョイント Joint 固定 ヒンジ 蝶番 扉 スライダー スプリング ばね 振り子 アンカー 軸 可動範囲 下限 上限 周波数 減衰比 PhysX" },
+      { title: "XPBD有限要素Softbody", href: "components/soft-body.html", summary: "ゼリーのように変形する柔らかい物", keywords: "ソフトボディ Softbody 軟体 ゼリー スライム 有限要素 四面体 XPBD ヤング率 ポアソン比 密度 衝撃 CPU メッシュ" },
+      { title: "ワイヤー・ヘア・ホース物理", href: "components/strand-physics.html", summary: "ロープ、髪の揺れ、太さのある管、ホースリール、髪用の衝突形状", keywords: "ワイヤー ロープ 紐 ケーブル ヘア 髪 揺れ ボーン ホース XPBD チューブ リール 巻き取り 繰り出し 衝突形状 球 カプセル HosePhysics paidOutLength StrandShowcase" },
+      { title: "装備ソケット・装備アタッチ・射出アンカー", href: "components/equipment.html", summary: "武器を手やソケットに持たせる、撃って刺さるアンカー", keywords: "装備 ソケット アタッチ 武器 手 ボーン 持たせる 射出アンカー フック 銛 グラップル 刺さる Launch" },
       { title: "物理（Rigidbody と Collider）", href: "components/physics.html", summary: "剛体、球・箱・カプセル・メッシュの当たり判定、レイヤー、トリガー、衝突イベント", keywords: "ATLAS_PHYSICS アトラス 物理エンジン PhysX 物理 Rigidbody リジッドボディ 剛体 Collider コライダー 当たり判定 Sphere Box Capsule Mesh Convex 凸包 Buoyancy 浮力 静的 キネマティック 動的 質量 重力 摩擦 反発 固定 停止 CCD レイヤー マスク トリガー TriggerEnter CollisionEnter AddForce Teleport" }
+    ]},
+    { title: "Inflation", children: [
+      { title: "膨張（空気・圧力・破裂）", href: "components/inflation.html", summary: "空気供給元・空気接続・膨張対象・膨張区画と膨張プロファイル", keywords: "膨張 空気 圧力 内圧 破裂 漏れ ダメージ 風船 浮き輪 ボンベ 空気入れ 空気供給元 空気接続 膨張対象 膨張区画 膨張プロファイル replayinflationprofile XPBD ケージ 浮力 揚力 反発 InflationComponent RequestLeakAt" }
     ]},
     { title: "水・環境", children: [
       { title: "Water Body（水域）", href: "components/water-body.html", summary: "海・湖の水面。波、反射、屈折、泡、水中の表現、浮力との連携", keywords: "水 海 湖 Ocean Lake Water Body 波 Gerstner 泡 Foam 屈折 反射 水中 Underwater 浮力 Gameplay Query Allow Buoyancy" },
@@ -59,12 +68,13 @@ window.DOCS_TOC = [
       { title: "地形（Landscape）", href: "components/landscape.html", summary: "地面の作成、スカルプト、面の加工、描画と当たり判定", keywords: "地形 ランドスケープ Landscape Ground Renderer Collider スカルプト ブラシ 盛り上げる 掘り下げる なめらか 平ら でこぼこ 細かく トポロジー 押し出し 穴 トンネル 洞窟 辺をつなぐ 再生成 ロード範囲 区画" }
     ]},
     { title: "Lighting", children: [
-      { title: "ライト（Directional / Point / Spot）", href: "components/lights.html", summary: "3 種類のライトのプロパティと使い方、影の設定", keywords: "Directional Light Point Light Spot Light 平行光源 点光源 スポットライト 影 シャドウ バイアス 強さ 範囲 角度" }
+      { title: "ライト（Directional / Point / Spot）", href: "components/lights.html", summary: "3 種類のライトのプロパティと使い方、影の設定", keywords: "Directional Light Point Light Spot Light 平行光源 点光源 スポットライト 影 シャドウ バイアス 強さ 範囲 角度 影の光源半径 半影 柔らかい影" }
     ]},
     { title: "Camera", children: [
       { title: "Camera", href: "components/camera.html", summary: "ゲーム中の視点。投影方式、クリップ、優先度、分割表示", keywords: "カメラ 視野角 FOV Orthographic Perspective Near Far 優先度 分割表示 ビューポート 画面分割" },
       { title: "Camera Target", href: "components/camera-target.html", summary: "カメラに追いかけられる目印", keywords: "カメラターゲット 注視点 オフセット 優先度 操作対象" },
-      { title: "Follow Target", href: "components/follow-target.html", summary: "カメラを Camera Target に追従させる", keywords: "追従 三人称 距離 高さ 回り込み CameraRotate Motion" }
+      { title: "Follow Target", href: "components/follow-target.html", summary: "カメラを Camera Target に追従させる", keywords: "追従 三人称 距離 高さ 回り込み CameraRotate Motion" },
+      { title: "Orbit Camera", href: "components/orbit-camera.html", summary: "Camera Target の周りを回る三人称カメラ。壁へのめり込みを防ぐ", keywords: "オービット 周回 三人称 カメラ 回転 ズーム ホイール 壁 衝突 めり込み 球スイープ yaw pitch 視野ガイド" }
     ]},
     { title: "Audio", children: [
       { title: "Audio Listener", href: "components/audio-listener.html", summary: "音を聞く位置", keywords: "オーディオリスナー 耳 3D 優先度" },
@@ -104,7 +114,7 @@ window.DOCS_TOC = [
     { title: "UI Workspace", href: "windows/ui-workspace.html", summary: "UI の配置・リサイズ・回転、UI 階層、UI インスペクター、図形マスクの編集", keywords: "UI Workspace UI 階層 UI インスペクター シーンビュー 解像度 拡大 グリッド リサイズ ハンドル 回転 Shift Alt 描画順 最前面 最背面 図形で切り抜いたImage 図形イメージ UI図形イメージ マスク枠 全体の拡大率 自由図形 頂点 Pin Track Matte アンカー 左上 中央 全体 Motion を作成" },
     { title: "イージングカーブ ウィンドウ", href: "windows/easing-curve.html", summary: "サンプルと制御点でカーブを描き、モーションに使う", keywords: "イージング カーブ easing replayeasing サンプル 制御点 フリーハンド 再近似 プリセット サンプルへ焼く オーバーシュート 速度グラフ 挙動プレビュー PresetCurve 時間リマップ Time Remap EaseOutBack Elastic" },
     { title: "Sprite Atlas Editor", href: "windows/sprite-atlas.html", summary: "画像に名前付きの範囲（Region）を付け、UI Image で使う", keywords: "スプライトアトラス Sprite Atlas replayatlas Region 矩形作成 Pixel Snap 自由形状 UV Rect Pivot Original Size Trim Offset Rotated DDS 埋め込み 選択画像をAtlasに設定 atlas_region UI Image" },
-    { title: "カメラ操作プリセット ウィンドウ", href: "windows/camera-presets.html", summary: "シーンビューのカメラ操作を選ぶ・自分用に変える", keywords: "カメラ 操作プリセット プリセット管理 Shared Personal 複製して自分用にする チーム共有コピー 移動速度 高速倍率 Look Orbit Pan Dolly 感度 反転 View Snap FOV Near Clip Far Clip replaycamerapreset CameraPresets" },
+    { title: "カメラ操作プリセット ウィンドウ", href: "windows/camera-presets.html", summary: "シーンビューのカメラ操作を選ぶ・自分用に変える", keywords: "カメラ 操作プリセット プリセット管理 Shared Personal 複製して自分用にする チーム共有コピー 移動速度 高速倍率 Look Orbit Pan Dolly 感度 反転 View Snap FOV Near Clip Far Clip replaycamerapreset CameraPresets 視野ガイド 選択カメラの表示" },
     { title: "衝突の診断 ウィンドウ", href: "windows/collision-diagnostics.html", summary: "Collider の登録数、当たった相手、形の表示と色の意味", keywords: "衝突の診断 Collision Diagnostics Collider の形を描く コライダー 境界ボックス Mesh の三角形 ライトの範囲 Normal Adjust 接地 壁 Cook 再走査 すり抜け 色 橙 緑 水色 灰 赤 Character Motor" },
     { title: "Scene Flow ウィンドウ", href: "windows/scene-flow.html", summary: "イベント名と条件でシーンの移り先を決める", keywords: "Scene Flow シーンフロー replaysceneflow Transition Event Priority From To Any Scene Conditions 条件 フラグ Set Active Active Scene Flow TriggerFlow TriggerSceneFlow SetSceneFlowBool 遷移" }
   ]},
@@ -114,17 +124,17 @@ window.DOCS_TOC = [
   ]},
   { title: "C# スクリプト", children: [
     { title: "はじめてのスクリプト", href: "csharp/index.html", summary: "作る、書く、ビルド、付ける、動かす。インスペクターに出る変数と属性", keywords: "C# スクリプト MonoBehaviour 作成 Create Script ReplayGuid SerializeField public Range Tooltip Header HideInInspector ReadOnly DisplayName AssetType AssetReference List 配列 Script コンポーネント Execution Order Add Component Scripts/C# transform Rotate Time.deltaTime Lua" },
-    { title: "呼ばれる順番（ライフサイクル）", href: "csharp/lifecycle.html", summary: "Awake、Start、Update、FixedUpdate、衝突、コルーチン、例外", keywords: "ライフサイクル Awake OnEnable Start Update FixedUpdate LateUpdate OnDisable OnDestroy OnCollisionEnter OnTriggerEnter Collision コルーチン StartCoroutine WaitForSeconds WaitUntil WaitWhile yield 例外 Time deltaTime timeScale Debug.Log 実行順" },
+    { title: "呼ばれる順番（ライフサイクル）", href: "csharp/lifecycle.html", summary: "Awake、Start、Update、FixedUpdate、衝突、コルーチン、例外", keywords: "ライフサイクル Awake OnEnable Start Update FixedUpdate LateUpdate OnDisable OnDestroy OnCollisionEnter OnTriggerEnter Collision コルーチン StartCoroutine WaitForSeconds WaitForSecondsRealtime CustomYieldInstruction WaitUntil WaitWhile yield 例外 Time deltaTime unscaledDeltaTime fixedDeltaTime timeScale 一時停止 スロー Invoke InvokeRepeating CancelInvoke IsInvoking Debug.Log 実行順" },
     { title: "GameObject・Component・Transform", href: "csharp/api-objects.html", summary: "探す、作る、消す、GetComponent、位置と回転", keywords: "API GameObject Find Create SetActive activeInHierarchy Object Destroy Instantiate Prefab PrefabAsset GetComponent TryGetComponent AddComponent GetComponentInChildren GetComponentInParent Behaviour enabled Transform position rotation eulerAngles localPosition localScale forward parent SetParent Translate Space.Self Rotate LookAt" },
-    { title: "Vector3・Quaternion・Mathf", href: "csharp/api-math.html", summary: "ベクトル、回転、色、数学関数、AnimationCurve。Unity との違い", keywords: "API Vector3 Vector2 Vector4 X Y Z Zero One Up Normalized Magnitude Dot Cross Distance Lerp MoveTowards Quaternion Euler ラジアン AngleAxis LookRotation Slerp Identity Color Mathf Deg2Rad Clamp Sin AnimationCurve Keyframe Evaluate" },
-    { title: "エンジンのコンポーネントを操作する", href: "csharp/api-components.html", summary: "Rigidbody、Collider、Camera、Animator、AudioSource、UIText など", keywords: "API Rigidbody AddForce AddImpulse velocity isKinematic useGravity WakeUp Collider BoxCollider SphereCollider CapsuleCollider isTrigger Camera fieldOfView MeshRenderer PointLight ParticleEmitter Emit Trail ScreenEffectStack Animator SetTrigger SetBool Play AudioSource UIText text UIImage fillAmount UIButton interactable Landscape Sculpt SampleHeight CharacterMotor PlayerInput" },
+    { title: "Vector3・Quaternion・Mathf", href: "csharp/api-math.html", summary: "ベクトル、回転、色、数学関数、AnimationCurve。Unity との違い", keywords: "API Vector3 Vector2 Vector4 X Y Z x y z zero up Zero One Up Normalized Magnitude Dot Cross Distance Lerp LerpUnclamped MoveTowards Project ProjectOnPlane Reflect Angle SignedAngle ClampMagnitude Quaternion Euler EulerRadians 度 ラジアン AngleAxis AngleAxisRadians FromToRotation LookRotation Slerp Identity Color Mathf Deg2Rad Clamp Sin AnimationCurve Keyframe Evaluate" },
+    { title: "エンジンのコンポーネントを操作する", href: "csharp/api-components.html", summary: "Rigidbody、Collider、Camera、Animator、AudioSource、UIText など", keywords: "API Rigidbody AddForce AddImpulse velocity isKinematic useGravity WakeUp Collider BoxCollider SphereCollider CapsuleCollider isTrigger Camera fieldOfView MeshRenderer PointLight ParticleEmitter Emit Trail ScreenEffectStack Animator SetTrigger SetBool Play AudioSource UIText text UIImage fillAmount UIButton interactable Landscape Sculpt SampleHeight CharacterMotor PlayerInput ForceMode constraints freezeRotation Sleep AddRelativeForce HosePhysics InflationComponent ComponentAccessor ComponentTypes 汎用" },
     { title: "入力（Input）", href: "csharp/api-input.html", summary: "アクション、軸、キーボード、マウス、ゲームパッド", keywords: "API Input GetButton GetButtonDown GetAxis MoveX MoveY Jump InputActions InputAxes GetKey GetKeyDown KeyCode Key GetMouseButton mousePosition mouseScrollDelta Gamepad GetGamepadButton GetLeftStick SetVibration" },
-    { title: "レイキャストとシーンの切り替え", href: "csharp/api-physics-scene.html", summary: "Physics.Raycast、Overlap、SceneManager、Application.Quit", keywords: "API Physics Raycast RaycastHit RaycastAll SphereCast BoxCast CapsuleCast OverlapSphere OverlapBox PhysicsHit Ray SceneManager LoadScene LoadSceneAsync ReloadScene ReturnToPreviousScene TriggerFlow SceneAsset Application Quit" },
+    { title: "レイキャストとシーンの切り替え", href: "csharp/api-physics-scene.html", summary: "Physics.Raycast、Overlap、SceneManager、Application.Quit", keywords: "API Physics Raycast RaycastHit RaycastAll Linecast SphereCast BoxCast CapsuleCast OverlapSphere OverlapBox OverlapCapsule CheckSphere CheckBox NonAlloc layerMask QueryTriggerInteraction queriesHitTriggers PhysicsHit Ray SceneManager LoadScene LoadSceneAsync ReloadScene ReturnToPreviousScene TriggerFlow SceneAsset Application Quit" },
     { title: "ScriptBehaviour（ボタン・セーブ・イベント）", href: "csharp/script-behaviour.html", summary: "ボタンやスライダーの通知、シーン・アニメーションのイベント、セーブデータ、Timer と Tween", keywords: "ScriptBehaviour override OnButtonClicked OnAnyButtonClicked OnSliderValueChanged OnInputFieldSubmitted OnAnimationFinished OnAnimationEvent OnAnimatorStateChanged OnSceneLoaded OnApplicationQuit セーブ SetSaveInt GetSaveInt SaveGame LoadGame DeleteSave スロット Timer After Every Tween TweenValue Easing Runtime TryFindObject RequireObject ObjectHandle" },
     { title: "ビルドと、動かないとき", href: "csharp/build.html", summary: "C# をすべて更新、自動更新、状態表示、エラーの見方", keywords: "ビルド コンパイル C# をすべて更新 自動更新 Refresh C# Catalog Build Reload Unresolved Loaded Running Error .NET 8 hostfxr dotnet engine_log.txt 動かない csproj sln" }
   ]},
   { title: "起動オプションと設定", children: [
-    { title: "起動オプション", href: "settings/command-line.html", summary: "--game、撮影、性能計測、動作テスト、検証スイート、DX12 デバッグ、環境変数、.replaygame", keywords: "コマンドライン 引数 capture-frame compare-golden profile-scene frames warmup screen-space ssao ssr taa smoke-test validate dump-component-properties dx12 debug-layer warp 環境変数 REPLAY_AUTO_PROFILE replaygame 書き出し 終了コード" },
+    { title: "起動オプション", href: "settings/command-line.html", summary: "--game、撮影、性能計測、動作テスト、検証スイート、DX12 デバッグ、環境変数、.replaygame", keywords: "コマンドライン 引数 capture-frame compare-golden profile-scene frames warmup screen-space ssao ssr taa smoke-test validate validate-strands validate-softbody validate-physx create-strand-showcase create-xpbd-hose-showcase create-inflation-vertical-showcase create-destruction-showcase 見本 dump-component-properties dx12 debug-layer warp 環境変数 REPLAY_AUTO_PROFILE replaygame 書き出し 終了コード" },
     { title: "プロジェクト設定", href: "settings/project-settings.html", summary: "Startup Scene、起動ロゴ、ロード画面、Active Scene Flow、Input Action Asset、Localization、UI Focus Outline、種類別アイコン", keywords: "プロジェクト設定 Project replayproject Startup Scene 起動シーン Boot Logo 起動ロゴ Loading Screen ロード画面 Active Scene Flow Input Action Asset Localization 既定言語 UI Focus Outline 輪郭線 Default Controlled Character Prefab 操作キャラクター 新しいシーンを作成 Runtime 診断 種類別アイコン アトラス ワールド" },
   ]}
 ];

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>装備ソケット・装備アタッチ・射出アンカー - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Physics</div>
+    <h1>装備ソケット・装備アタッチ・射出アンカー</h1>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec</p>
+
+    <p>武器や道具をキャラクターの手や背中に持たせる部品と、撃ち出して当たった物に刺さる「アンカー」です。親子付けをしなくても、決めた位置に毎フレーム追従させられます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>剣を右手のボーンに、盾を背中に持たせたいとき（装備アタッチ）</li>
+      <li>「右手」「背中」など、装備を付ける場所に名前を付けておきたいとき（装備ソケット）</li>
+      <li>フックや銛を撃ち、動く物に刺さったまま付いていかせたいとき（射出アンカー）</li>
+    </ul>
+
+    <h2 id="socket">装備ソケット</h2>
+    <p><b>Physics &gt; 装備ソケット</b>。装備を付ける場所に名前を付けます。1 つの GameObject にいくつでも付けられます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>ソケット名</td><td><code>socket_name</code></td><td>文字</td><td>Socket</td><td>装備アタッチから指定する名前</td></tr>
+      <tr><td>ローカル位置</td><td><code>local_position</code></td><td>3 つの小数</td><td>0, 0, 0</td><td>この GameObject から見た位置</td></tr>
+      <tr><td>ローカル回転（ラジアン）</td><td><code>local_rotation</code></td><td>3 つの小数</td><td>0, 0, 0</td><td>向き。<b>度ではなくラジアン</b>です（90 度 ≒ 1.5708）</td></tr>
+      <tr><td>ローカル拡縮</td><td><code>local_scale</code></td><td>3 つの小数</td><td>1, 1, 1</td><td></td></tr>
+    </table>
+    </div>
+
+    <h2 id="attachment">装備アタッチ</h2>
+    <p><b>Physics &gt; 装備アタッチ</b>。装備する側（剣など）に付け、装着先の GameObject の、名前付きソケットかスキンモデルのボーンへ追従させます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>装着先</td><td><code>target</code></td><td>GameObject</td><td>（空）</td><td>キャラクターなど</td></tr>
+      <tr><td>ソケット名</td><td><code>socket_name</code></td><td>文字</td><td>（空）</td><td>装着先の装備ソケットの名前</td></tr>
+      <tr><td>ボーン名</td><td><code>bone_name</code></td><td>文字</td><td>（空）</td><td>装着先のスキンモデルのボーン名。入れるとソケットの代わりにボーンに付きます</td></tr>
+      <tr><td>装着位置・装着回転（ラジアン）・装着拡縮</td><td><code>local_position</code>、<code>local_rotation</code>、<code>local_scale</code></td><td>3 つの小数</td><td>0、0、1</td><td>ソケット（ボーン）から見たずれ</td></tr>
+      <tr><td>状態</td><td><code>status</code></td><td>文字（読取のみ）</td><td></td><td>「指定した名前のソケットが見つかりません。」「指定したボーンがモデルに見つかりません。」「ボーン姿勢を待っています。」など</td></tr>
+    </table>
+    </div>
+    <p>追従は LateUpdate で行うので、アニメーションで動いた手の位置にずれずに付きます。親子付けではないため、装備を外したいときは装着先を空にするか、コンポーネントを無効にします。</p>
+
+    <h2 id="anchor">射出アンカー</h2>
+    <p><b>Physics &gt; 射出アンカー</b>。発射されると、重力を受けながら球の形で前を調べつつ飛び（高速でもすり抜けにくい）、当たった物の表面に刺さります。刺さった相手が動けば一緒に動きます。<a href="inflation.html#connection">空気接続</a> の注入アンカーにも使えます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>シーン開始時の状態</td><td><code>initial_state</code></td><td>選択</td><td>装着中</td><td>装着中・飛行中・命中物へ固定・切り離し</td><td>「飛行中」は速度が無いため、開始時に「切り離し」に戻ります</td></tr>
+      <tr><td>装着先・装着ソケット名・装着ボーン名</td><td><code>mounted_target</code>、<code>mounted_socket</code>、<code>mounted_bone</code></td><td>GameObject、文字</td><td>（空）</td><td></td><td>撃つ前に付いている場所（銃口など）。装着中は自動で装備アタッチが付きます</td></tr>
+      <tr><td>固定先・固定位置・固定回転（ラジアン）・固定時の拡縮・固定面の法線</td><td><code>attached_target</code> ほか</td><td>GameObject、3 つの小数</td><td>（空）、0、0、1、0,1,0</td><td></td><td>刺さった相手と、相手から見た位置。「命中物へ固定」で始めるときに使います</td></tr>
+      <tr><td>飛行中の重力</td><td><code>gravity</code></td><td>3 つの小数</td><td>0, -9.80665, 0</td><td></td><td></td></tr>
+      <tr><td>掃引半径</td><td><code>projectile_radius</code></td><td>小数</td><td>0.04</td><td>0.0001〜5</td><td>当たりを調べる球の半径</td></tr>
+      <tr><td>飛行距離上限・飛行時間上限</td><td><code>maximum_flight_distance</code>、<code>maximum_flight_time</code></td><td>小数</td><td>1000、30</td><td></td><td>超えると切り離し</td></tr>
+      <tr><td>表面からのずらし</td><td><code>surface_offset</code></td><td>小数</td><td>0.002</td><td>-1〜1</td><td>刺さる位置を表面から浮かせる量</td></tr>
+      <tr><td>命中物へ追従固定</td><td><code>attach_to_hit_object</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オフなら当たった位置で止まるだけ</td></tr>
+      <tr><td>衝突レイヤー</td><td><code>collision_mask</code></td><td>レイヤー</td><td>すべて</td><td></td><td></td></tr>
+      <tr><td>発射の向き（ローカル）</td><td><code>launch_direction</code></td><td>3 つの小数</td><td>0, 0, 1</td><td></td><td>「発射を実行」で使う向き。アンカーのローカル座標で指定します（保存しません）</td></tr>
+      <tr><td>発射の速さ</td><td><code>launch_speed</code></td><td>小数</td><td>40</td><td>0.01〜1000</td><td>「発射を実行」で使う速さ（m/s、保存しません）</td></tr>
+      <tr><td>発射を実行</td><td><code>request_launch</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>実行中にオンにすると、次の LateUpdate で一度だけ発射して自動でオフに戻ります</td></tr>
+      <tr><td>固定回転（度）</td><td><code>attached_local_rotation_degrees</code></td><td>3 つの小数</td><td></td><td></td><td>固定回転をインスペクターで度として表示・編集します（保存はラジアン）</td></tr>
+      <tr><td>現在の状態・飛行距離・状態説明</td><td><code>state</code>、<code>flight_distance</code>、<code>status</code></td><td>読取のみ</td><td></td><td></td><td></td></tr>
+    </table>
+    </div>
+    <p id="anchor-limit">発射・切り離し・付け直しは、実行中であればインスペクターの <b>発射を実行</b> か、C# の <code>Launch</code>・<code>Detach</code>・<code>Remount</code> で行えます（下の「スクリプトから使う」）。止まっているとき（編集中）に呼ぶと <code>UnsupportedOperation</code> が返り、何もしません。命中すると <code>OnAnchorAttached</code>、切り離されると <code>OnAnchorDetached</code> が届きます。</p>
+
+    <h2 id="csharp">スクリプトから使う（C#）</h2>
+    <p>MonoBehaviour では <code>GetComponent&lt;EquipmentAttachment&gt;()</code>・<code>GetComponent&lt;AnchorProjectile&gt;()</code> で取り出せます。どの操作も実行中だけ受け付け、結果を <code>RuntimeStatus</code> で返します。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>型</th><th>メンバー</th><th>説明</th></tr>
+      <tr><td><code>EquipmentAttachment</code></td><td><code>target</code>、<code>socketName</code>、<code>boneName</code>、<code>localPosition</code>、<code>status</code></td><td>装着先・ソケット名・ボーン名・ずれ・状態</td></tr>
+      <tr><td><code>EquipmentAttachment</code></td><td><code>AttachToSocket(owner, socket)</code>、<code>AttachToBone(owner, bone)</code>、<code>Detach()</code></td><td>付け替えと取り外し</td></tr>
+      <tr><td><code>AnchorProjectile</code></td><td><code>state</code>、<code>flightDistance</code>、<code>attachedTarget</code>、<code>gravity</code>、<code>maximumFlightDistance</code>、<code>status</code></td><td>状態（<code>AnchorState</code>）・飛んだ距離・刺さった相手・重力など</td></tr>
+      <tr><td><code>AnchorProjectile</code></td><td><code>Launch(direction, speed)</code>、<code>Detach()</code>、<code>Remount()</code></td><td>ワールドの向きと速さで撃つ、切り離す、装着先へ戻す</td></tr>
+    </table>
+    </div>
+    <p>命中と切り離しは <code>OnAnchorAttached(AnchorEventInfo)</code>・<code>OnAnchorDetached(AnchorEventInfo)</code> で受け取れます。<code>AnchorEventInfo</code> には刺さった相手（<code>targetObject</code>）、位置（<code>WorldPosition</code>）、面の向き（<code>Normal</code>）、切り離しの理由（<code>Reason</code>：手動・相手が消えた・飛行の上限・Transform が不正）が入ります。</p>
+    <pre><code>public class Hook : MonoBehaviour
+{
+    AnchorProjectile anchor;
+    void Start() =&gt; anchor = GetComponent&lt;AnchorProjectile&gt;();
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0)) anchor.Launch(transform.forward, 40.0f);
+        if (Input.GetMouseButtonDown(1)) anchor.Remount();
+    }
+    void OnAnchorAttached(AnchorEventInfo hit) =&gt; Debug.Log("刺さった: " + hit.targetObject?.name);
+}</code></pre>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>剣を右手に持たせる</h3>
+    <ol class="steps">
+      <li>剣の GameObject に <b>Physics &gt; 装備アタッチ</b> を付けます。</li>
+      <li><b>装着先</b> にキャラクター（Skinned Mesh Renderer の GameObject）を入れ、<b>ボーン名</b> に右手のボーン名を入れます。</li>
+      <li>実行して、手の中で向きがずれていれば <b>装着回転（ラジアン）</b> と <b>装着位置</b> で合わせます。</li>
+    </ol>
+    <h3>背中に「Back」という場所を作って盾を付ける</h3>
+    <ol class="steps">
+      <li>キャラクターに <b>装備ソケット</b> を付け、<b>ソケット名</b> を <code>Back</code>、<b>ローカル位置</b> を背中の位置にします。</li>
+      <li>盾に <b>装備アタッチ</b> を付け、<b>装着先</b> にキャラクター、<b>ソケット名</b> に <code>Back</code> を入れます（ボーン名は空）。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="strand-physics.html#hose">XPBDホース物理</a></li>
+      <li><a href="inflation.html">膨張</a></li>
+      <li><a href="../csharp/api-physics-scene.html">レイキャスト</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

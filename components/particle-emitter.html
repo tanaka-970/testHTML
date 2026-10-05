@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
     <h1>Particle Emitter</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（GPU駆動を追加）</p>
 
     <p>小さな粒（パーティクル）をたくさん出すコンポーネントです。火花、煙、光の粒などに使います。粒は常にカメラの方を向いた四角で、画像を貼れます。</p>
 
@@ -58,6 +58,7 @@
       <tr><td>画像</td><td><code>sprite</code></td><td>アセット（画像）</td><td>（空）</td><td></td><td>粒に貼る画像。空なら白い四角です</td></tr>
       <tr><td>合成</td><td><code>blend_mode</code></td><td>選択</td><td>加算</td><td></td><td>通常、加算、乗算、スクリーン。加算にすると、粒が重なった所が明るく光ります。炎や火花向きです</td></tr>
       <tr><td>最大数</td><td><code>max_particles</code></td><td>整数</td><td>10000</td><td>1〜10000</td><td>同時に存在できる粒の数。超える分は出ません</td></tr>
+      <tr><td>GPU駆動</td><td><code>gpu_simulation</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>粒の発生・移動・寿命・描画を GPU で行います。粒が多いときに軽くなります。<b>画像が空のときだけ</b>効き、粒は丸い形になります（<a href="#gpu">下を見てください</a>）</td></tr>
     </table>
     </div>
 
@@ -66,6 +67,14 @@
       <li>粒は GameObject の位置から出ます。出たあとは GameObject が動いても付いてきません。</li>
       <li>重力はワールドの真下向きにかかります。GameObject を傾けても重力の向きは変わりません。</li>
       <li>大きさは寿命に合わせて <b>開始サイズ</b> から <b>終了サイズ</b> へ、色は <b>開始色</b> から <b>終了色</b> へ変わります。色は寿命を 8 段階に分けて変わります。</li>
+    </ul>
+
+    <h2 id="gpu">GPU駆動にしたとき</h2>
+    <ul>
+      <li><b>画像</b> を設定していると GPU駆動はオンでも使われず、これまでどおり CPU で動きます。</li>
+      <li>色・大きさ・重力・抵抗・拡散角・合成などの設定は同じように効きます。<code>Emit(count)</code> と <code>Clear()</code> も使えます。</li>
+      <li>GPU駆動の Emitter は、同じ GameObject に複数付けてもそれぞれ動きます（CPU のときの「上の 1 つだけ」の制限はありません）。</li>
+      <li>C# では <code>GpuSimulation</code>（オン・オフ）で切り替えられます。</li>
     </ul>
 
     <h2 id="csharp">C# スクリプトから操作する</h2>
@@ -83,7 +92,7 @@
 
     <h2 id="limits">制限</h2>
     <ul>
-      <li>1 つの GameObject に複数の Particle Emitter を付けても、動くのは有効なもののうち一番上の 1 つだけです。いくつも出したいときは、GameObject を分けてください。</li>
+      <li>1 つの GameObject に複数の Particle Emitter を付けても、動くのは有効なもののうち一番上の 1 つだけです（GPU駆動のものを除く）。いくつも出したいときは、GameObject を分けてください。</li>
       <li><b>優先度</b> は、この版では効きません。</li>
       <li><b>発生する</b> をオフにすると、新しい粒が出なくなるだけでなく、出ていた粒も表示されなくなります。もう一度オンにすると、止まっていた粒が続きから動きます。</li>
       <li>そのため、<b>発生する</b> がオフのまま <code>Emit(count)</code> を呼ぶと、粒は出たフレームだけ表示され、すぐに見えなくなります。まとめて出すときは <b>発生量/秒</b> を 0 にし、<b>発生する</b> はオンのままにします。</li>

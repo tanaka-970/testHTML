@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / 起動オプションと設定</div>
     <h1>起動オプション</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（検証スイートと見本シーン作成を追加）</p>
 
     <p>エンジンの実行ファイル（<code>3dgp.exe</code>）は、起動するときに付ける文字（起動オプション）で動きが変わります。何も付けずに起動するとエディターが開きます。このページでは、使える起動オプションを目的ごとに説明します。</p>
 
@@ -148,8 +148,23 @@ Get-Content stderr.txt -Encoding UTF8</code></pre></div>
       <tr><td>スクリプト</td><td>--validate-script-core、--validate-script-lifecycle、--validate-script-serialization、--validate-csharp-scripting、--validate-csharp-startup-recovery、--validate-monobehaviour、--validate-landscape-script</td></tr>
       <tr><td>シェーダー</td><td>--validate-shader-compile、--validate-shader-asset、--validate-shader-builtin、--validate-shader-material、--validate-shader-lighting、--validate-shader-render、--validate-shader-texture、--validate-shader-editor、--validate-shader-layer、--validate-shader-pass、--validate-shader-composer、--validate-dxc</td></tr>
       <tr><td>地形</td><td>--validate-landscape、--validate-landscape-editor</td></tr>
+      <tr><td>物理・ジョブ</td><td>--validate-physx、--validate-strands（ワイヤー・ヘア。結果は <code>Saved\Validation\Strands.txt</code>）、--validate-softbody、--validate-xpbd-hose-physx、--validate-job-system（2026-10-03 時点）</td></tr>
       <tr><td>破壊</td><td>--validate-destruction、--validate-destruction-runtime（結果は <code>Saved\Validation\Destruction.txt</code>、<code>DestructionRuntime.txt</code>。<a href="../components/destruction-reference.html#validate">説明</a>）</td></tr>
       <tr><td>DirectX 12 描画</td><td>--validate-dx12、--validate-dx12-ui、--validate-dx12-effect、--validate-dx12-resize、--validate-dx12-reload、--validate-dx12-device、--validate-dx12-gpu、--validate-dx12-skinned、--validate-dx12-animation、--validate-dx12-gbuffer、--validate-dx12-deferred、--validate-dx12-directional-light、--validate-dx12-point-light、--validate-dx12-spot-light、--validate-dx12-csm、--validate-dx12-point-shadow、--validate-dx12-spot-shadow</td></tr>
+      <tr><td>描画の機能別</td><td>--validate-gpu-driven、--validate-render-graph、--validate-hiz、--validate-temporal、--validate-tiled-lighting、--validate-tiled-lighting-stress、--validate-volumetric、--validate-water、--validate-probe-gi、--validate-reflection-probe、--validate-rt-reflections、--validate-bloom、--validate-auto-exposure、--validate-character-rendering、--validate-effekseer-gpu</td></tr>
+      <tr><td>その他</td><td>--validate-crash-diagnostics</td></tr>
+    </table>
+    </div>
+
+    <h3 id="showcase">見本シーンを作る（--create-…）</h3>
+    <p>新しい機能を試すための見本シーンを作って終了します。エディターは開きません。できたシーンをエディターで開いて実行します。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>起動オプション</th><th>作るもの</th></tr>
+      <tr><td>--create-strand-showcase</td><td><code>resources/StrandShowcase/StrandComparison.replayscene</code>。ロープ・紐・髪の見比べ（<a href="../components/strand-physics.html">説明</a>）。同じ名前のシーンがあると失敗します（同梱済み）</td></tr>
+      <tr><td>--create-xpbd-hose-showcase</td><td><code>Saved/Validation/XPBDHoseVisual.replayscene</code>。XPBD ホースの見た目</td></tr>
+      <tr><td>--create-inflation-vertical-showcase</td><td><code>Saved/Validation/InflationVerticalTest.replayscene</code>。XPBD変形の膨張（<a href="../components/inflation.html">説明</a>）</td></tr>
+      <tr><td>--create-destruction-showcase</td><td><code>resources/DestructionShowcase/</code>（あれば <code>_2</code> などを付けた別フォルダー）。破壊の材質ごとの見比べ（<a href="../components/destruction-reference.html#showcase">説明</a>）</td></tr>
     </table>
     </div>
 

@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / データ形式</div>
     <h1>データ形式の一覧</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（シーンの版 14、膨張プロファイル、Effekseer を追加）</p>
 
     <p>RePlayEngine が読み書きするファイルを、拡張子と置き場所ごとにまとめてる。「版」は、今のエンジンが書き出すときにファイルの 1 行目などに入れる番号です。</p>
 
@@ -34,8 +34,8 @@
     <div class="table-wrap">
     <table>
       <tr><th>拡張子</th><th>中身</th><th>版</th></tr>
-      <tr><td><code>.replayscene</code></td><td>シーン（<a href="scene-file.html">詳しく</a>）</td><td>11</td></tr>
-      <tr><td><code>.replayprefab</code></td><td>プレハブ。形式はシーンと同じ（<a href="scene-file.html">詳しく</a>）</td><td>11</td></tr>
+      <tr><td><code>.replayscene</code></td><td>シーン（<a href="scene-file.html">詳しく</a>）</td><td>14</td></tr>
+      <tr><td><code>.replayprefab</code></td><td>プレハブ。形式はシーンと同じ（<a href="scene-file.html">詳しく</a>）</td><td>14</td></tr>
       <tr><td><code>.replaymaterial</code></td><td>マテリアル</td><td>5</td></tr>
       <tr><td><code>.replaymotion</code></td><td>モーション（<a href="../components/motion-players.html">Motion Player</a> で再生）</td><td>7</td></tr>
       <tr><td><code>.replaycomp</code></td><td>コンポジション（複数のモーションの組み合わせ）</td><td>2</td></tr>
@@ -48,6 +48,7 @@
       <tr><td><code>.replayshadergraph</code></td><td>シェーダーコンポーザー。プロジェクトパネルではシェーダーとして表示されます</td><td>1</td></tr>
       <tr><td><code>.replaydestruction</code></td><td>破壊用の元形状・Chunk・Bond（<a href="../components/destruction-reference.html#asset">説明</a>）。Destruction Editor のボロノイ分割などで作ります</td><td>1</td></tr>
       <tr><td><code>.replaydestructionmaterial</code></td><td>Sliceable / Destructible / 風船で共有する密度・抵抗・音・VFX・演出・破裂の設定（<a href="../components/destruction-reference.html#material">説明</a>）。プロジェクトパネルの Create &gt; Data &gt; 破壊材質 で作ります</td><td>1</td></tr>
+      <tr><td><code>.replayinflationprofile</code></td><td>膨張プロファイル。圧力・破裂・物理反応・XPBD の設定（<a href="../components/inflation.html#profile">説明</a>）。プロジェクトパネルの 作成 &gt; Data &gt; 膨張プロファイル で作ります</td><td>3</td></tr>
       <tr><td><code>.replayrig</code></td><td>リグクリップ</td><td>1</td></tr>
       <tr><td><code>（モデル名）.replayvcolor</code></td><td>頂点カラー。モデリング Workspace の頂点ペイントで塗った色を、モデルと同じフォルダーに「<code>model.glb.replayvcolor</code>」のようにモデルの名前のうしろへ付けて保存します。モデルの頂点の数などが変わると、塗った色は使われません</td><td>1</td></tr>
     </table>
@@ -63,6 +64,7 @@
       <tr><td>フォント</td><td><code>.ttf</code>、<code>.otf</code>、<code>.ttc</code></td><td>0tf,ttcは怪しい</td></tr>
       <tr><td>シェーダー</td><td><code>.hlsl</code>、<code>.fx</code>、<code>.cso</code></td><td>fxなんて使いません。一応できるようにはしてるがわざわざそんなことする奇天烈はいないと思ってます</td></tr>
       <tr><td>C# スクリプト</td><td><code>.cs</code></td><td><code>Scripts/</code> の下に置きます</td></tr>
+      <tr><td>Effekseer エフェクト</td><td><code>.efkefc</code></td><td>Effekseer Editor で作ります。<code>resources/Effects</code> の下に置きます（<a href="../components/effekseer.html">Effekseer Emitter</a>）</td></tr>
     </table>
     </div>
     <p>ここにない拡張子のファイルは、プロジェクトパネルで種類の分からないファイルとして扱われます。</p>

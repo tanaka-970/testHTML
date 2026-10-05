@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / コンポーネント</div>
     <h1>コンポーネント一覧</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（新しいコンポーネント 17 件を追加）</p>
 
     <p>コンポーネントは、GameObject に付けて機能を足す部品です。たとえば「Mesh Renderer」を付けるとモデルが表示され、「Rigidbody」を付けると物理で動くようになります。このページは、エンジンに入っているコンポーネントを分類ごとに並べた一覧です。</p>
 
@@ -32,7 +32,7 @@
 
     <figure>
       <img src="../images/components/add-component-categories.png" alt="コンポーネントを追加の分類一覧">
-      <figcaption>コンポーネントを追加を開いたところ。分類ごとに折りたたまれ、件数が付きます（Core 4、Rendering 16、Physics 7、Gameplay 12 など）。</figcaption>
+      <figcaption>コンポーネントを追加を開いたところ。分類ごとに折りたたまれ、件数が付きます（撮影時：Core 4、Rendering 16、Physics 7、Gameplay 12 など。2026-10-03 時点では Rendering 17、Physics 17、Camera 4、Destruction 7 で、Inflation 4 が増えています）。</figcaption>
     </figure>
 
     <h2 id="core">Core</h2>
@@ -66,6 +66,7 @@
       <tr><td><a href="particle-emitter.html">Particle Emitter</a></td><td>小さな粒を出す（煙、火花など）</td></tr>
       <tr><td><a href="lines.html">3D ライン</a></td><td>点をつないだ線や帯を描く</td></tr>
       <tr><td><a href="lines.html#trail">軌跡</a></td><td>動いた跡を線として残す</td></tr>
+      <tr><td><a href="effekseer.html">Effekseer Emitter</a></td><td>Effekseer で作ったエフェクト（.efkefc）を再生する（新規）</td></tr>
     </table>
     </div>
 
@@ -86,6 +87,7 @@
       <tr><td><a href="camera.html">Camera</a></td><td>ゲーム中の視点</td></tr>
       <tr><td><a href="camera-target.html">Camera Target</a></td><td>カメラに追いかけられる目印</td></tr>
       <tr><td><a href="follow-target.html">Follow Target</a></td><td>カメラを Camera Target に追いかけさせる</td></tr>
+      <tr><td><a href="orbit-camera.html">Orbit Camera</a></td><td>Camera Target の周りを回る三人称カメラ。壁へのめり込みを防ぐ（新規）</td></tr>
     </table>
     </div>
 
@@ -107,8 +109,29 @@
       <tr><td><a href="physics.html#box">Box Collider</a></td><td>箱の当たり判定</td></tr>
       <tr><td><a href="physics.html#capsule">Capsule Collider</a></td><td>カプセルの当たり判定（人型に向く）</td></tr>
       <tr><td><a href="physics.html#mesh">Mesh Collider</a></td><td>モデルの形そのままの当たり判定</td></tr>
-      <tr><td><a href="physics.html#convex">Convex Collider</a></td><td>点の集まりから作る凸包の当たり判定。動く物にも使える（点はコードから渡す）</td></tr>
+      <tr><td><a href="physics.html#convex">Convex Collider</a></td><td>凸包の当たり判定。動く物にも使える。点は Mesh / Primitive Mesh Renderer から自動で作るか、コードから渡す</td></tr>
       <tr><td><a href="physics.html#buoyancy">Buoyancy</a></td><td>水に入った Rigidbody に浮力・水の抵抗・水流の力を加える</td></tr>
+      <tr><td><a href="physics-joint.html">Physics Joint</a></td><td>剛体どうしを固定・ヒンジ・スライダー・ばねでつなぐ（新規）</td></tr>
+      <tr><td><a href="soft-body.html">XPBD有限要素Softbody</a></td><td>ゼリーのように変形する柔らかい物（新規）</td></tr>
+      <tr><td><a href="strand-physics.html#wire">ワイヤー物理</a></td><td>3D ラインをロープとして揺らす（新規）</td></tr>
+      <tr><td><a href="strand-physics.html#hair">ヘア物理</a></td><td>スキンモデルの髪ボーンを揺らす（新規）</td></tr>
+      <tr><td><a href="strand-physics.html#collider">髪・ワイヤー用の衝突形状</a></td><td>髪とワイヤーだけを押し返す球・カプセル（新規）</td></tr>
+      <tr><td><a href="strand-physics.html#hose">XPBDホース物理</a></td><td>太さのある管を伸び縮みさせる（新規）</td></tr>
+      <tr><td><a href="strand-physics.html#reel">ホースリール</a></td><td>ホースの繰り出し・巻き取りとドラムの回転（新規）</td></tr>
+      <tr><td><a href="equipment.html#socket">装備ソケット</a></td><td>装備を付ける場所に名前を付ける（新規）</td></tr>
+      <tr><td><a href="equipment.html#attachment">装備アタッチ</a></td><td>装備をソケットやボーンへ追従させる（新規）</td></tr>
+      <tr><td><a href="equipment.html#anchor">射出アンカー</a></td><td>撃ち出して当たった物に刺さる（新規。今はゲーム中に撃てません）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="inflation">Inflation</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>役割</th></tr>
+      <tr><td><a href="inflation.html#target">膨張対象</a></td><td>空気量・内圧・変形・浮力・漏れ・破裂を管理する（新規）</td></tr>
+      <tr><td><a href="inflation.html#source">空気供給元</a></td><td>圧力・流量・残量を持つ空気の元（新規）</td></tr>
+      <tr><td><a href="inflation.html#connection">空気接続</a></td><td>供給元から膨張対象へ空気を送る（新規）</td></tr>
+      <tr><td><a href="inflation.html#region">膨張区画</a></td><td>膨張対象の中の、別々に空気を持つ部屋（新規）</td></tr>
     </table>
     </div>
 
@@ -122,6 +145,7 @@
       <tr><td><a href="destruction-reference.html#balloon">風船</a></td><td>浮いて揺れ、斬撃・衝突・爆風・圧力で割れて連鎖する</td></tr>
       <tr><td><a href="destruction-reference.html#dealer">破壊する側</a></td><td>触れた Destructible に Damage、風船を割る。爆発して周りを吹き飛ばす</td></tr>
       <tr><td><a href="destruction-reference.html#debris">破片の寿命</a></td><td>破片を時間・静止・シーン内の数の上限で片付ける</td></tr>
+      <tr><td><a href="destruction-reference.html#showcase">破壊比較・自動再生</a></td><td>見本シーンで壊れ方を順に見せる（新規。見本用）</td></tr>
     </table>
     </div>
     <p>組み合わせ方と試し方は <a href="destruction.html">破壊（切断・破砕・斬撃・風船）</a> を見てください。</p>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Physics Joint - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Physics</div>
+    <h1>Physics Joint</h1>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec</p>
+
+    <p>2 つの Rigidbody を、固定・ヒンジ（回転）・スライダー（平行移動）・スプリング（ばね）のどれかでつなぎます。接続先を空にすると、ワールドの 1 点につなぎます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>扉、跳ね橋、振り子を蝶番で回したいとき（ヒンジ）</li>
+      <li>引き出しやピストンを、決まった向きにだけ動かしたいとき（スライダー）</li>
+      <li>吊るした看板、ばねで戻る足場を作りたいとき（スプリング）</li>
+      <li>2 つの物を 1 つの塊として動かしたいとき（固定）</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Physics &gt; Physics Joint</td></tr>
+      <tr><td>推奨</td><td>Rigidbody（実際には必須。無いと「状態」に理由が出て、つながりません）</td></tr>
+      <tr><td>物理エンジン</td><td>PhysX（ATLAS_PHYSICS）で動きます。PhysX を使えないときの予備の計算方式では動きません</td></tr>
+      <tr><td>いつ作られるか</td><td>実行中、コンポーネントが有効になったとき。設定を変えると作り直します</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>種類</td><td><code>joint_kind</code></td><td>選択</td><td>固定</td><td>固定・ヒンジ・スライダー・スプリング</td><td></td></tr>
+      <tr><td>接続先 Rigidbody</td><td><code>connected_body</code></td><td>GameObject</td><td>（空）</td><td></td><td>Rigidbody を持つ GameObject。空ならワールドへつなぎます</td></tr>
+      <tr><td>自分側アンカー</td><td><code>anchor_a</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>つなぐ点。自分のローカル座標</td></tr>
+      <tr><td>接続先アンカー</td><td><code>anchor_b</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>接続先のローカル座標。<b>接続先が空のときはワールド座標</b></td></tr>
+      <tr><td>自分側の軸・接続先の軸</td><td><code>axis_a</code>、<code>axis_b</code></td><td>3 つの小数</td><td>1, 0, 0</td><td></td><td>ヒンジの回転軸、スライダーの移動方向（ローカルの向き）。固定では使いません</td></tr>
+      <tr><td>可動範囲制限を使う</td><td><code>use_limits</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>ヒンジとスライダーで使います</td></tr>
+      <tr><td>下限・上限</td><td><code>lower_limit</code>、<code>upper_limit</code></td><td>小数</td><td>-45、45</td><td>-1000〜1000</td><td>ヒンジは<b>度</b>、スライダーは<b>距離</b></td></tr>
+      <tr><td>最小距離・最大距離</td><td><code>minimum_distance</code>、<code>maximum_distance</code></td><td>小数</td><td>0、1</td><td>0〜1000</td><td>スプリングで、アンカー同士の距離をこの間に保ちます</td></tr>
+      <tr><td>ばね周波数</td><td><code>spring_frequency_hz</code></td><td>小数</td><td>2</td><td>0〜30</td><td>1 秒に何回揺れるか。重さが変わっても周期は変わりません</td></tr>
+      <tr><td>ばね減衰比</td><td><code>spring_damping_ratio</code></td><td>小数</td><td>0.5</td><td>0〜1</td><td>1 で揺れずに戻ります</td></tr>
+      <tr><td>状態</td><td><code>status</code></td><td>文字（読取のみ）</td><td></td><td></td><td>「同じ GameObject に Rigidbody が必要です」「接続先にも Rigidbody が必要です」「選択中の物理 Backend は Joint に対応していません」など</td></tr>
+    </table>
+    </div>
+
+    <div class="warning"><strong>ワールドにつなぐときの注意</strong>接続先を空にしたとき、<b>接続先アンカー</b> はワールド座標です。既定の 0, 0, 0 のままだと、物体がワールドの原点へ引き寄せられます。吊るしたい点のワールド座標を入れてください。</div>
+
+    <h2 id="csharp">スクリプトから使う（C#）</h2>
+    <p>C# の型はまだありません。ScriptBehaviour からは、プロパティを内部名で読み書きできます（<a href="../csharp/api-components.html#generic">型の無い部品をさわる</a>。値を変えるとつながりを作り直します）。実行中に有効・無効を切り替えるには、GameObject ごと <code>SetActive</code> します（コンポーネントが無効になるとつながりが外れます）。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>扉を蝶番で回す</h3>
+    <ol class="steps">
+      <li>扉の GameObject に Rigidbody（動的）と Box Collider を付けます。</li>
+      <li><b>Physics Joint</b> を付け、<b>種類</b> をヒンジにします。</li>
+      <li><b>自分側アンカー</b> を扉の端（例：幅 1 なら <code>-0.5, 0, 0</code>）、<b>自分側の軸</b> を <code>0, 1, 0</code>（縦軸）にします。</li>
+      <li><b>接続先アンカー</b> に、その蝶番のワールド座標を入れます（接続先は空）。</li>
+      <li><b>可動範囲制限を使う</b> をオンにし、下限 0、上限 100 にすると、片側にだけ開きます。</li>
+    </ol>
+    <h3>天井から看板をばねで吊るす</h3>
+    <ol class="steps">
+      <li>看板に Rigidbody と Collider を付け、Physics Joint の <b>種類</b> をスプリングにします。</li>
+      <li><b>自分側アンカー</b> を看板の上端、<b>接続先アンカー</b> を天井の点のワールド座標にします。</li>
+      <li><b>最小距離</b> 0、<b>最大距離</b> 1、<b>ばね周波数</b> 2、<b>ばね減衰比</b> 0.3 から調整します。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="physics.html">物理（Rigidbody と Collider）</a></li>
+      <li><a href="strand-physics.html">ワイヤー・ヘア・ホース物理</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

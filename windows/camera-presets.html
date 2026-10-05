@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターのウィンドウ</div>
     <h1>カメラ操作プリセット</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（選択カメラの表示（視野ガイド）を追加）</p>
 
     <p>シーンビューのカメラを、どのキーとマウス操作で動かすかをまとめた「カメラ操作プリセット」を、選んだり自分用に作り変えたりするウィンドウです。組み込みプリセットの違いは <a href="../editor/scene-view.html#presets">シーンビューとカメラ操作</a> を見てください。</p>
 
@@ -132,6 +132,15 @@
       <tr><td>FOV</td><td>5〜170</td><td>シーンビューの視野角（度）</td></tr>
       <tr><td>Near Clip</td><td>0.001〜10</td><td>これより近いものは描きません</td></tr>
       <tr><td>Far Clip</td><td>10〜1000000</td><td>これより遠いものは描きません</td></tr>
+    </table>
+    </div>
+    <h3 id="guide">選択カメラの表示</h3>
+    <p>2026-10-03 に追加されました。<a href="../components/camera.html">Camera</a> を持つ GameObject を選ぶと、シーンビューに小さなカメラの形と、写る範囲（視野の四角すい）を線で描きます。編集中だけ表示され、ゲームの画面には出ません。設定はプリセットに保存されますが、変える欄はこのウィンドウではなく、階層パネルでワールドを選んだときの <a href="../editor/game-scene-settings.html#scene-camera">Scene Camera</a> にあります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>視野ガイドを表示</td><td>オン</td><td></td><td>選んだカメラの写る範囲を描くか</td></tr>
+      <tr><td>視野ガイドの長さ</td><td>12</td><td>0.25〜100000</td><td>四角すいを描く奥行き</td></tr>
     </table>
     </div>
     <p>おかしな値が入ったときは、移動速度 5、高速倍率 4、低速倍率 0.25、回転感度 0.15、Pan・Zoom感度 1、キーボード回転 90、FOV 60、Near Clip 0.05、Far Clip 10000 に直されます。</p>

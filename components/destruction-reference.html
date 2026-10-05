@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / 破壊系リファレンス</div>
     <h1>破壊系リファレンス</h1>
-    <p class="meta">対象：ブランチ sinotake_ReplayMaster / コミット 2734f88（2026-09-28 にソースで確認）</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（断面マテリアル・膜片・破壊比較を追加）</p>
     <p>破壊・切断・斬撃・風船にかかわるコンポーネント 6 種類、破壊材質アセット、Destruction Editor、C# API、上限値を表にまとめたページです。使い方の流れや試し方は <a href="destruction.html">破壊（切断・破砕・斬撃・風船）</a> を見てください。</p>
     <p>インスペクターの <b>コンポーネントを追加 &gt; Destruction</b> に、下の 6 つが並びます。表示名は追加メニューとインスペクターに出る名前、内部名はシーンファイルや C# の <code>Accessor</code> で使う名前です。</p>
 
@@ -59,6 +59,7 @@
       <tr><td>最小破片体積</td><td><code>minimum_fragment_volume</code></td><td>小数</td><td>0.0005</td><td>0.000001〜1000000</td><td>できた破片がこれより小さく、かつ「破片の物理化しきい値」より大きいとき、その切断は取り消されます</td></tr>
       <tr><td>最大破片数</td><td><code>maximum_fragment_count</code></td><td>整数</td><td>32</td><td>1〜4096</td><td>元の 1 個を含めた破片の総数の上限。切ってできた破片も同じ枠を分け合います</td></tr>
       <tr><td>切断面マテリアル</td><td><code>interior_material</code></td><td>マテリアルのパス</td><td>なし</td><td></td><td>切り口に使うマテリアル。破壊材質の「切断面 Material」があればそちらが優先です</td></tr>
+      <tr><td>断面Material Slot（-1で自動）</td><td><code>interior_material_slot</code></td><td>整数</td><td>-1</td><td>-1〜31</td><td>切り口の面を、モデルのどのマテリアル番号として描くか。-1 なら自動で決めます（2026-10-03 追加）</td></tr>
       <tr><td>密度</td><td><code>density</code></td><td>小数</td><td>500</td><td>0.01〜100000</td><td>破片の質量 ＝ 体積 × 密度</td></tr>
       <tr><td>切断抵抗</td><td><code>cut_resistance</code></td><td>小数</td><td>0</td><td>0〜1000000</td><td>切断エネルギーがこれに届かないと切れません</td></tr>
       <tr><td>破片の物理化しきい値</td><td><code>debris_threshold</code></td><td>小数</td><td>0.0001</td><td>0〜100000</td><td>これ以下の体積の破片には Collider と Rigidbody を付けません（細かい破片で物理が重くなるのを防ぐ）</td></tr>
@@ -89,6 +90,8 @@
       <tr><td>衝撃の再受付間隔</td><td><code>impact_cooldown</code></td><td>小数（秒）</td><td>0.1</td><td>0〜60</td><td>衝突で壊れたあと、次の衝突 Damage を受けるまでの時間</td></tr>
       <tr><td>Destruction Asset</td><td><code>destruction_asset</code></td><td>アセットのパス（<code>.replaydestruction</code>）</td><td>なし</td><td></td><td>破片の形と、破片どうしのつながり（Bond）と耐久。<a href="#editor">Destruction Editor</a> で作ります</td></tr>
       <tr><td>破壊材質</td><td><code>material_asset</code></td><td>アセット（破壊材質）</td><td>なし</td><td></td><td>密度・Damage の補正・音・VFX・組み込み演出・破裂を<a href="#material">破壊材質</a>から取ります</td></tr>
+      <tr><td>断面マテリアル</td><td><code>interior_material</code></td><td>マテリアルのパス</td><td>なし</td><td></td><td>割れた断面に使うマテリアル（2026-10-03 追加）</td></tr>
+      <tr><td>断面スロット（-1でAssetから自動）</td><td><code>interior_material_slot</code></td><td>整数</td><td>-1</td><td>-1〜31</td><td>断面を描くマテリアル番号。-1 なら Destruction Asset の設定を使います</td></tr>
       <tr><td>密度</td><td><code>density</code></td><td>小数</td><td>500</td><td>0.01〜100000</td><td>破片の質量 ＝ 体積 × 密度。破壊材質があればその密度を使います</td></tr>
       <tr><td>爆発Damage倍率</td><td><code>radial_damage_multiplier</code></td><td>小数</td><td>1</td><td>0〜1000</td><td>受けた Damage に掛けます。破壊材質があると、さらに「Blast Damage倍率 ÷ 破壊靭性」を掛けます</td></tr>
       <tr><td>動的破片の最小体積</td><td><code>minimum_dynamic_piece_volume</code></td><td>小数</td><td>0.001</td><td>0〜1000000</td><td>これより小さい破片のかたまりは、物理で動かしません</td></tr>
@@ -144,6 +147,10 @@
       <tr><td>連鎖圧力</td><td><code>chain_pressure</code></td><td>小数</td><td>0.2</td><td>0〜1</td><td>割れたとき、破裂半径の中の風船に足す圧力。既定値では 5 回受けないと割れません</td></tr>
       <tr><td>連鎖間隔（秒）</td><td><code>chain_delay</code></td><td>小数</td><td>0.05</td><td>0.02〜60</td><td>近い風船から順に、この間隔ずつ遅らせて圧力を足します</td></tr>
       <tr><td>ゴム片の数</td><td><code>scrap_count</code></td><td>整数</td><td>6</td><td>0〜64</td><td>割れたときに飛び散るゴム片の数。色は風船の色を使います</td></tr>
+      <tr><td>元の膜・模様を残す</td><td><code>preserve_skin</code></td><td>オン・オフ</td><td>オン</td><td></td><td>ゴム片を、風船の表面（模様・テクスチャごと）を切り分けた膜片にします。オフなら単色のゴム片です（2026-10-03 追加）</td></tr>
+      <tr><td>膜片の物理上限</td><td><code>maximum_physics_scraps</code></td><td>整数</td><td>6</td><td>0〜64</td><td>物理で飛ばす膜片の数の上限。超えた分は見た目だけです</td></tr>
+      <tr><td>膜が縮んだ後の大きさ</td><td><code>scrap_recoil</code></td><td>小数</td><td>0.45</td><td>0.1〜1</td><td>割れたゴムが縮む割合</td></tr>
+      <tr><td>膜片の寿命</td><td><code>scrap_lifetime</code></td><td>小数（秒）</td><td>3</td><td>0.1〜30</td><td>膜片が消えるまでの時間</td></tr>
       <tr><td>破裂時に衝撃波を表示</td><td><code>pop_shockwave</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>割れたときに画面のゆがみ（衝撃波）を出します</td></tr>
       <tr><td>破壊材質</td><td><code>material_asset</code></td><td>アセット（破壊材質）</td><td>なし</td><td></td><td>破裂音（無ければ破壊音）と、破裂 VFX（無ければ衝撃 VFX）をここから取ります</td></tr>
       <tr><td>破裂音</td><td><code>pop_sound</code></td><td>アセット（音声）</td><td>なし</td><td></td><td>割れたときの音。破壊材質の音より優先します</td></tr>
@@ -354,6 +361,17 @@
       <tr><td>Destruction Editor の表示</td><td>切断面は 2048 三角形まで、Bond グラフは 128 Chunk / 512 Bond まで</td></tr>
     </table>
     </div>
+
+    <h2 id="showcase">破壊比較・自動再生</h2>
+    <p><b>Destruction &gt; 破壊比較・自動再生</b>（2026-10-03 追加）。見本シーンで、木・金属・ガラス・陶器・風船・細かい破片の壊れ方を、時間を決めて順に見せるための部品です。ゲーム用ではありません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>実行中に比較を自動再生</td><td><code>auto_run</code></td><td>オン・オフ</td><td>オン</td><td></td><td>実行すると、2 秒後から 16 秒後まで、決まった名前の GameObject（<code>Showcase_Metal</code>、<code>Showcase_Glass</code>、<code>Showcase_Ceramic</code>、<code>Showcase_Wood</code>、<code>Showcase_Balloon</code>、<code>Showcase_FineDebris</code>）に順に Damage を与え、風船を割ります</td></tr>
+      <tr><td>再生速度</td><td><code>playback_speed</code></td><td>小数</td><td>1</td><td>0.1〜10</td><td>進む速さ</td></tr>
+    </table>
+    </div>
+    <p>見本シーンは起動オプション <code>--create-destruction-showcase</code> で <code>resources/DestructionShowcase</code>（すでにあれば <code>DestructionShowcase_2</code> など）に作れます。</p>
 
     <h2 id="validate">自動の検証</h2>
     <p>次の起動オプションで、破壊まわりのテストだけを行って終了します（エディターは開きません）。結果は <code>Saved\Validation\</code> のファイルに 1 行 1 項目で書かれます。</p>

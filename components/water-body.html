@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Water Body</div>
     <h1>Water Body（水域）</h1>
-    <p class="meta">対象：RePlayEngine ソース 08fb8f40（2026-09-24 に実装を確認）</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（泡と入水のしぶきを追記）</p>
 
     <p>海（Ocean）や湖（Lake）の水面を作る部品です。波の動き、光の反射、水を通した屈折、泡、水中に入ったときの画面の色までをこの 1 つで持ちます。水面の高さや流れを物理の側から調べる用途にも使われ、<a href="physics.html#buoyancy">Buoyancy</a> を付けた物体はこの水面に浮きます。</p>
 
@@ -151,6 +151,13 @@
       <img src="../images/components/shot-water-waves.png" alt="波なし・既定・大きい波の比較">
       <figcaption>左は波なし（平らな鏡のような水面）、中は既定の Gerstner 波、右は <b>波の大きさ</b> を 3.5 にしたときです。波が大きいほど、箱や球の水際が波に隠れたり現れたりします。</figcaption>
     </figure>
+
+    <h3 id="foam">泡と入水のしぶき（2026-10-01 追加）</h3>
+    <ul>
+      <li>波が物に当たる所に、泡の模様が自動で出ます。設定はありません。</li>
+      <li><a href="physics.html#buoyancy">Buoyancy</a> を付けた Rigidbody が水に入ると、その位置に入水のしぶき（泡の輪）が出ます。速く落ちるほど強くなります。同時に表示できるのは 4 か所までで、古いものから入れ替わります。</li>
+      <li>空の雲の影と、雲・月の映り込みが水面に出ます。細かいさざ波、深さによる色の変化、遠くの泡の見え方も改善されました。</li>
+    </ul>
 
     <h2 id="usage">使い方の例</h2>
     <h3>湖を置く</h3>

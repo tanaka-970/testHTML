@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>更新内容と評価（10/03） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body data-root="">
+<header class="site-header">
+  <a class="site-name" href="index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="index.html">ホーム</a> / はじめに</div>
+    <h1>今回の更新内容と使い勝手の評価</h1>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 2734f88（2026-09-28）→ 60775ec（2026-10-03）の 232 コミット</p>
+
+    <p>前回ドキュメントを更新してから増えた機能と、それぞれを<b>ゲーム制作にそのまま使えるか</b>をまとめたページです。評価はソースコード、インスペクターの項目、C# の公開 API、自動検証の結果（<code>Saved/Validation</code>）から行いました。<b>実機での見た目・操作感・FPS は確かめていません</b>（スクリーンショットは別作業）。</p>
+
+    <h2 id="legend">評価の見方</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>印</th><th>意味</th></tr>
+      <tr><td>◎</td><td>インスペクターでもスクリプトでも使え、すぐゲームに入れられる</td></tr>
+      <tr><td>○</td><td>使える。ただし注意点を知っておく必要がある</td></tr>
+      <tr><td>△</td><td>条件が厳しい、またはスクリプトから扱いにくい。見せ場の演出向き</td></tr>
+      <tr><td>×</td><td>今のままではゲームの中で使えない</td></tr>
+    </table>
+    </div>
+
+    <h2 id="summary">新しい機能の評価</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>機能</th><th>評価</th><th>できること</th><th>ゲームで使うときの注意</th></tr>
+      <tr><td><a href="components/strand-physics.html#hose">XPBDホース物理</a>・<a href="components/strand-physics.html#reel">ホースリール</a></td><td>◎</td><td>太さのある管が伸び縮みし、壁に当たって曲がる</td><td>C# の <code>HosePhysics.paidOutLength</code> で長さを変えられる。GrapplerClimb のワイヤーで実際に使われている。見た目と長さの部品で、キャラクターを吊る力は出さない（振り子の動きはスクリプト側）</td></tr>
+      <tr><td><a href="components/strand-physics.html#wire">ワイヤー物理</a>・<a href="components/strand-physics.html#hair">ヘア物理</a>・衝突形状</td><td>○</td><td>ロープのたるみ、髪の揺れ</td><td>見本シーンあり、自動検証 75 項目が成功。インスペクターだけで組める。剛体を引っぱらない・髪どうしは当たらない。C# の型は無い（ScriptBehaviour の<a href="csharp/api-components.html#generic">汎用の入口</a>で値は変えられる）</td></tr>
+      <tr><td><a href="components/inflation.html">膨張</a>（4 部品＋膨張プロファイル）</td><td>○</td><td>空気を送って膨らませ、圧力・漏れ・ダメージで破裂</td><td>ScriptBehaviour 用の型と <code>RequestLeakAt</code> などの関数があり、自動検証 19 項目が成功。ただし<b>破裂のイベントが無い</b>（<code>State == 5</code> を見張る）、空気接続の「接続中」が<b>既定オフ</b>、簡易方式は見た目だけ大きくなり当たり判定は変わらない、XPBD変形は CPU メッシュ（Sliceable / Convex Collider）が必要</td></tr>
+      <tr><td><a href="components/physics-joint.html">Physics Joint</a></td><td>○</td><td>扉・振り子・引き出し・ばね</td><td>固定・ヒンジ・スライダー・スプリングとも自動検証が成功。<b>接続先を空にしたときの「接続先アンカー」はワールド座標</b>で、既定 0,0,0 のままだと原点へ引っぱられる。PhysX が無い予備の計算方式では動かない</td></tr>
+      <tr><td><a href="components/equipment.html#socket">装備ソケット</a>・<a href="components/equipment.html#attachment">装備アタッチ</a></td><td>○</td><td>武器を手のボーンや名前付きの場所に持たせる</td><td>インスペクターだけで使える。回転の欄はラジアン（ほかの多くの欄は度）</td></tr>
+      <tr><td><a href="components/equipment.html#anchor">射出アンカー</a></td><td>×</td><td>撃って刺さり、動く物に付いていく</td><td><b>発射（Launch）を呼ぶ手段が C# にもインスペクターにも無い</b>。今は「装着中」か「命中物へ固定」で置いておくことしかできない。グラップリングは Raycast を使うスクリプトで作る（GrapplerClimb の方式）。発射用の C# API が必要</td></tr>
+      <tr><td><a href="components/soft-body.html">XPBD有限要素Softbody</a></td><td>△</td><td>ゼリーのようにつぶれて戻る</td><td>自動検証は成功。ただし閉じた凸に近いモデル専用で、Mesh Renderer に加えて Sliceable か Convex Collider が要る（CPU メッシュのため）。Rigidbody を押し返さない片方向。Primitive の Cube / Sphere には使えない</td></tr>
+      <tr><td><a href="components/orbit-camera.html">Orbit Camera</a></td><td>○</td><td>三人称で周りを回るカメラ、壁よけ</td><td>マウス・キー・ホイールで動く。<b>ゲームパッドのスティックでは回らない</b>（ScriptBehaviour から yaw / pitch を書く必要あり）。Follow Target と同じカメラに付けない</td></tr>
+      <tr><td><a href="components/effekseer.html">Effekseer Emitter</a></td><td>△</td><td>Effekseer のエフェクトを再生</td><td>各自が <code>Tools\SetupEffekseer.ps1</code> を実行してから x64 でビルドする必要がある。<b>準備していないビルドでも、エラーにならずエフェクトが出ないだけ</b>なので気づきにくい。1 回再生の部品で、出し直しは GameObject の有効・無効で行う。C# の型は無い</td></tr>
+      <tr><td>Particle Emitter の <a href="components/particle-emitter.html#gpu">GPU駆動</a></td><td>○</td><td>大量の粒を GPU で軽く出す</td><td>画像を設定すると使われない（丸い粒だけ）</td></tr>
+      <tr><td><a href="components/post-process-volume.html#sun-shafts">太陽光条</a>、<a href="components/lights.html">影の光源半径</a>、<a href="components/sky.html">体積雲・月</a>、<a href="components/water-body.html#foam">水面の泡・しぶき</a>、<a href="components/environment-volumes.html#probe-gi">局所光の間接反射</a></td><td>◎</td><td>見た目の向上</td><td>値を変えるだけで使える。太陽光条は既定で強度 0（出ない）</td></tr>
+      <tr><td><a href="components/physics.html#convex">Convex Collider</a> の頂点の元・複合凸</td><td>◎</td><td>モデルから動く当たり判定を作る</td><td>以前はコードからしか形を作れなかったのが、インスペクターで作れるようになった</td></tr>
+    </table>
+    </div>
+
+    <h2 id="csharp">C# スクリプトの変更</h2>
+    <p>Unity と同じ書き方に大きくそろえました。Unity の経験がある人には書きやすくなりましたが、<b>以前の書き方と結果が変わる所が 3 つ</b>あります。プロジェクトの <code>Scripts/</code> を調べたところ、影響を受ける書き方は見つかりませんでした。</p>
+    <div class="warning"><strong>結果が変わる変更</strong>
+      <ul>
+        <li><code>Quaternion.Euler</code>・<code>Quaternion.AngleAxis</code> の角度が <b>ラジアン → 度</b>。ラジアンは <code>EulerRadians</code> / <code>AngleAxisRadians</code>（<a href="csharp/api-math.html">説明</a>）</li>
+        <li>MonoBehaviour の <code>transform.Translate(v)</code> が <b>ワールドの軸 → 自分の軸</b>（<a href="csharp/api-objects.html#transform">説明</a>）</li>
+        <li>MonoBehaviour の <code>transform.Rotate</code> が、オイラー角の足し算から回転の掛け合わせに変わった（複数軸を同時に回したときの結果が変わる）</li>
+      </ul>
+    </div>
+    <div class="table-wrap">
+    <table>
+      <tr><th>追加</th><th>評価</th><th>内容</th></tr>
+      <tr><td><code>Time.timeScale</code>・<code>Time.fixedDeltaTime</code> への代入</td><td>◎</td><td>一時停止メニュー、スローモーションがスクリプトで作れる。<code>WaitForSecondsRealtime</code>、<code>Time.unscaledDeltaTime</code> で止めた間も UI を動かせる（<a href="csharp/lifecycle.html#time">説明</a>）</td></tr>
+      <tr><td><code>Invoke</code>・<code>InvokeRepeating</code>・<code>CancelInvoke</code></td><td>◎</td><td>名前で後から呼ぶ（<a href="csharp/lifecycle.html#invoke">説明</a>）</td></tr>
+      <tr><td>コルーチンの入れ子、<code>CustomYieldInstruction</code>、停止時の <code>finally</code></td><td>◎</td><td><code>yield return StartCoroutine(…)</code> で待てる</td></tr>
+      <tr><td>Physics の Unity 表記（Linecast、Check…、…NonAlloc、layerMask、QueryTriggerInteraction）</td><td>◎</td><td>当たった Collider そのものが分かるようになった（<a href="csharp/api-physics-scene.html#physics">説明</a>）</td></tr>
+      <tr><td>Rigidbody の Unity 表記（ForceMode、constraints、Sleep、AddRelativeForce など）</td><td>○</td><td><code>MoveRotation</code> / <code>Move</code> は補間せずにその場へ移る（Unity のキネマティックのような滑らかな移動ではない）（<a href="csharp/api-components.html#rigidbody">説明</a>）</td></tr>
+      <tr><td>Vector3 / Quaternion / Color の Unity 表記（小文字の名前、Project、Reflect、Angle、FromToRotation など）</td><td>◎</td><td>（<a href="csharp/api-math.html">説明</a>）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="editor">エディターの変更</h2>
+    <ul>
+      <li>Camera を選ぶと、シーンビューに写る範囲（視野ガイド）が出るようになりました（<a href="windows/camera-presets.html#guide">説明</a>）。</li>
+      <li>シーンビューのカメラの移動速度が、物に寄っても遅くならなくなりました。カメラ操作中もギズモが消えなくなりました（<a href="editor/scene-view.html">説明</a>）。</li>
+      <li>Window に <b>Effekseer エフェクト作成 / プレビュー</b>、プロジェクトパネルの作成に <b>膨張プロファイル</b> が増えました。</li>
+      <li>見本シーンを作る起動オプション（<code>--create-…-showcase</code>）と、物理系の検証（<code>--validate-strands</code> など）が増えました（<a href="settings/command-line.html#showcase">説明</a>）。</li>
+      <li>シーンファイルの版が 14 になりました（<a href="data/scene-file.html">説明</a>）。</li>
+    </ul>
+
+    <h2 id="internal">見えない所の変更</h2>
+    <p>コミットの半分以上は、描画・物理・ECS・JobSystem の処理の分割と高速化（並列化、割り当ての削減、GPU 駆動描画の作業領域の再利用など）です。操作や設定は変わりません。重さの改善はプロファイラー（F4）の物理の計測で確かめられますが、このページの作成では計っていません。</p>
+
+    <h2 id="todo">ゲーム制作のために足りないもの</h2>
+    <ol>
+      <li><b>射出アンカーを撃つ C# API</b>（<code>Launch</code>・<code>Detach</code>）。今のままでは部品として使えません。</li>
+      <li><b>新しい部品の C# の型</b>（Orbit Camera、Physics Joint、Softbody、Effekseer Emitter、ホースリール など）。今は ScriptBehaviour の汎用の入口で、内部名の文字列を書く必要があります。</li>
+      <li><b>膨張の破裂イベント</b>（風船の <code>OnBalloonPopped</code> のようなもの）。</li>
+      <li><b>Orbit Camera のゲームパッド対応</b>。</li>
+      <li><b>Effekseer の準備漏れの警告</b>。準備していないビルドで Effekseer Emitter を置いたときに、コンソールへ知らせる表示があると安全です。</li>
+      <li>Grass（草）のコンポーネントは実装の途中で、まだ追加できません。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="components/reference-table.html">リファレンス表</a>（全コンポーネントの状況）</li>
+      <li><a href="components/index.html">コンポーネント一覧</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="assets/toc.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>

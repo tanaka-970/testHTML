@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / C# スクリプト / API</div>
     <h1>GameObject・Component・Transform</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（Translate の既定の軸が変わった点、Transform の追加分）</p>
 
     <p>シーンの GameObject を探す、作る、消す、コンポーネントを取り出す、位置や回転を変える、といった基本の操作です。すべて <code>using ReplayEngine;</code> で使えます。</p>
 
@@ -129,13 +129,17 @@ void Update()
       <tr><td><code>SetParent(親, worldPositionStays)</code></td><td>親を変えます。2 つ目を <code>false</code> にすると、ローカルの値を保ちます（見た目の位置が変わります）</td></tr>
       <tr><td><code>childCount</code>、<code>GetChild(番号)</code></td><td>子の数、番号の子</td></tr>
       <tr><td><code>Find(名前)</code></td><td>直接の子から名前で探します（孫は探しません）</td></tr>
-      <tr><td><code>Translate(移動量)</code></td><td>ワールドの軸で動かします</td></tr>
-      <tr><td><code>Translate(移動量, Space.Self)</code></td><td>自分の向きの軸で動かします</td></tr>
-      <tr><td><code>Rotate(x, y, z)</code>、<code>Rotate(Vector3)</code></td><td>インスペクターの回転の値（ローカル、度）に足します</td></tr>
+      <tr><td><code>Translate(移動量)</code></td><td><b>自分の向きの軸</b>で動かします（2026-10-03 から。Unity と同じ）</td></tr>
+      <tr><td><code>Translate(移動量, Space.World)</code></td><td>ワールドの軸で動かします</td></tr>
+      <tr><td><code>Translate(移動量, 別の Transform)</code></td><td>別の Transform の向きの軸で動かします（カメラの向きで動かすときなど）</td></tr>
+      <tr><td><code>Rotate(x, y, z)</code>、<code>Rotate(Vector3)</code>、<code>Rotate(…, Space.World)</code></td><td>度で回します。既定は自分の軸、<code>Space.World</code> でワールドの軸。回転を掛け合わせて回すので、複数の軸を同時に回しても Unity と同じ結果になります</td></tr>
+      <tr><td><code>Rotate(軸, 角度)</code>、<code>RotateAround(点, 軸, 角度)</code></td><td>軸のまわりに回す、点を中心に回す（公転）</td></tr>
+      <tr><td><code>TransformDirection(向き)</code>、<code>InverseTransformDirection(向き)</code></td><td>自分から見た向き ⇔ ワールドの向き</td></tr>
+      <tr><td><code>SetPositionAndRotation(位置, 回転)</code>、<code>SetLocalPositionAndRotation(…)</code></td><td>位置と回転を一度に入れます</td></tr>
       <tr><td><code>LookAt(相手の Transform)</code><br><code>LookAt(位置)</code>、<code>LookAt(位置, 上の向き)</code></td><td>前（+Z）を相手に向けます</td></tr>
     </table>
     </div>
-    <div class="warning"><strong>Unity との違い</strong><code>Translate(移動量)</code> は、何も指定しないと <b>ワールドの軸</b> で動きます（Unity は自分の向きの軸）。キャラクターの前へ進めるときは <code>Translate(移動量, Space.Self)</code> と書くか、<code>transform.position += transform.forward * 距離</code> と書きます。</div>
+    <div class="warning"><strong>2026-10-03 の変更</strong><code>Translate(移動量)</code> は、何も指定しないと <b>自分の向きの軸</b> で動くようになりました（Unity と同じ。以前はワールドの軸）。ワールドの軸で動かしていたスクリプトは <code>Translate(移動量, Space.World)</code> に直してください。ScriptBehaviour の <code>Transform.Translate</code> は別の API で、変わっていません。</div>
     <pre><code>void Update()
 {
     // 前へ進む

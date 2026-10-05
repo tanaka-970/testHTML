@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / C# スクリプト / API</div>
     <h1>エンジンのコンポーネントを操作する</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（Rigidbody の Unity 表記、ホース・膨張を追加）</p>
 
     <p><code>MonoBehaviour</code> から、<code>GetComponent&lt;型&gt;()</code> で取り出して使えるエンジンのコンポーネントの一覧です。ここにある名前で読み書きした値は、インスペクターの同じ項目と同じものです。項目の意味は各コンポーネントのページを見てください。</p>
     <pre><code>var light = GetComponent&lt;PointLight&gt;();
@@ -66,6 +66,13 @@ if (light != null)
       <tr><td><code>ClearForces()</code></td><td>ためた力を捨てます</td></tr>
       <tr><td><code>MovePosition(位置)</code></td><td>その位置へ移します</td></tr>
       <tr><td><code>WakeUp()</code></td><td>起こします</td></tr>
+      <tr><td><code>Sleep()</code></td><td>眠らせます</td></tr>
+      <tr><td><code>AddForce(x, y, z, ForceMode)</code>、<code>AddTorque(…)</code></td><td><code>ForceMode</code> は <code>Force</code>（既定）、<code>Impulse</code>、<code>VelocityChange</code>、<code>Acceleration</code></td></tr>
+      <tr><td><code>AddRelativeForce(力)</code>、<code>AddRelativeTorque(トルク)</code></td><td>自分の向きの軸で力・回す力を加えます</td></tr>
+      <tr><td><code>position</code>、<code>rotation</code></td><td>剛体の位置・回転。書き込むとその場へ移して起こします</td></tr>
+      <tr><td><code>MoveRotation(回転)</code>、<code>Move(位置, 回転)</code></td><td>その回転・位置へ移します（補間はせず、すぐ移ります）</td></tr>
+      <tr><td><code>linearVelocity</code>、<code>linearDamping</code>、<code>angularDamping</code></td><td><code>velocity</code>、<code>drag</code>、<code>angularDrag</code> の別名（Unity 6 の名前）</td></tr>
+      <tr><td><code>constraints</code>、<code>freezeRotation</code></td><td>軸ごとの固定（<code>RigidbodyConstraints.FreezePositionX</code> … <code>FreezeRotation</code>、<code>FreezeAll</code>）。インスペクターの「固定」と同じ</td></tr>
     </table>
     </div>
     <p>力や速度を与える操作は、自動で剛体を起こしてから行います。床で止まって眠った剛体にも効きます。</p>
@@ -115,6 +122,7 @@ if (light != null)
       <tr><td><code>startColor</code></td><td>出るときの色</td></tr>
       <tr><td><code>Play()</code>、<code>Stop()</code>、<code>Clear()</code></td><td>出し始める、止める、出ている粒を消す</td></tr>
       <tr><td><code>Emit(個数)</code></td><td>その場で指定した数だけ出します</td></tr>
+      <tr><td><code>GpuSimulation</code></td><td>GPU駆動にするか（ScriptBehaviour の <code>ParticleEmitterComponent</code>）</td></tr>
     </table>
     </div>
     <p>注意点は <a href="../components/particle-emitter.html">Particle Emitter</a> を見てください。</p>
@@ -232,6 +240,38 @@ public void AddScore(int value)
       <tr><td><code>void OnBalloonPopped(BalloonPoppedInfo balloon)</code></td><td>MonoBehaviour に書くと、シーンのどの風船が割れても呼ばれます</td></tr>
     </table>
     </div>
+
+    <h2 id="new-physics">ホース・膨張（2026-10-03 追加）</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>型</th><th>使える場所</th><th>主なメンバー</th></tr>
+      <tr><td><code>HosePhysics</code></td><td>MonoBehaviour（<code>GetComponent&lt;HosePhysics&gt;()</code>）</td><td><code>paidOutLength</code>、<code>maximumLength</code>、<code>overstretched</code>、<code>distanceCompliance</code>、<code>solverIterations</code>、<code>damping</code>（<a href="../components/strand-physics.html#csharp">説明</a>）</td></tr>
+      <tr><td><code>InflationComponent</code>、<code>InflationRegionComponent</code>、<code>AirSourceComponent</code>、<code>AirConnectionComponent</code></td><td>ScriptBehaviour（<code>GetComponent&lt;T&gt;()</code>）</td><td><code>RequestLeakAt</code>、<code>RequestDamage</code>、<code>RequestDeflation</code>、<code>RequestRuptureNow</code>、<code>State</code>、<code>Connected</code> など（<a href="../components/inflation.html#csharp">説明</a>）</td></tr>
+    </table>
+    </div>
+    <p>ワイヤー物理、ヘア物理、ホースリール、Softbody、Physics Joint、装備ソケット・装備アタッチ・射出アンカー、Orbit Camera、Effekseer Emitter には、まだ C# の型がありません。</p>
+
+    <h3 id="generic">型の無い部品をさわる（ScriptBehaviour）</h3>
+    <p>ScriptBehaviour では、コンポーネントを <b>型の内部名</b> で探し、プロパティを <b>内部名</b> で読み書きできます。内部名は各ページのプロパティ表と、<a href="../windows/validation.html">Validation と Diagnostics</a> の一覧で分かります。型の内部名は、コンポーネントのクラス名（<code>SoftBodyComponent</code>、<code>OrbitCameraComponent</code>、<code>PhysicsJointComponent</code>、<code>EffekseerEmitterComponent</code>、<code>HoseReelComponent</code>、<code>WirePhysicsComponent</code>、<code>EquipmentAttachmentComponent</code> など）です。</p>
+<pre><code>using ReplayEngine;
+
+public sealed class PadOrbit : ScriptBehaviour
+{
+    public override void Update(float deltaTime)
+    {
+        var found = Runtime.GetComponent(GameObject, ComponentTypes.IdOf("OrbitCameraComponent"));
+        if (!found.Succeeded) return;
+        var orbit = new ComponentAccessor(found.Value);
+        Vector2 stick = Input.GetRightStick();
+        orbit.SetFloat("yaw", orbit.GetFloat("yaw") + stick.X * 2.0f * deltaTime);
+        orbit.SetFloat("pitch", orbit.GetFloat("pitch") - stick.Y * 2.0f * deltaTime);
+    }
+}</code></pre>
+    <ul>
+      <li>読み書きできるのはプロパティだけです。射出アンカーの発射のような、プロパティになっていない操作は呼べません。</li>
+      <li>名前を間違えても例外にはならず、<code>Set…</code> の戻り値（<code>RuntimeStatus</code>）が <code>Ok</code> 以外になります。</li>
+      <li>この方法は ScriptBehaviour 用です（<code>Runtime</code> は ScriptBehaviour にだけあります）。</li>
+    </ul>
 
     <h2 id="howto">使い方の例</h2>
     <h3>体力ゲージを減らす</h3>

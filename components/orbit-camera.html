@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Orbit Camera - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Camera</div>
+    <h1>Orbit Camera</h1>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec</p>
+
+    <p>Camera Target を中心にぐるりと回る、三人称のゲーム用カメラです。マウスやキーで回し、ホイールで寄り引きし、壁があればカメラが壁の手前まで寄って、めり込みを防ぎます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>アクションゲームのように、プレイヤーの周りをマウスで回して見たいとき</li>
+      <li>狭い通路でカメラが壁の向こうへ抜けないようにしたいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Camera &gt; Orbit Camera</td></tr>
+      <tr><td>必須</td><td><a href="camera.html">Camera</a>（追加すると一緒に付きます）</td></tr>
+      <tr><td>回る中心</td><td><a href="camera-target.html">Camera Target</a> の選び方と同じです（操作対象の Camera Target が優先、なければ優先度の高いもの）。Camera Target の <b>追従基準のオフセット</b> と <b>注視点オフセット</b> を足した点を中心にします</td></tr>
+      <tr><td>動く場面</td><td>実行中だけ（LateUpdate）。編集中はカメラを動かしません</td></tr>
+      <tr><td>Follow Target との違い</td><td>Follow Target は「後ろから追いかける」、Orbit Camera は「中心の周りを自由に回る ＋ 壁よけ」。<b>同じカメラに両方は付けないでください</b>（どちらも位置を書き換えます）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>距離</td><td><code>distance</code></td><td>小数</td><td>8</td><td>0.05〜10000</td><td>中心からカメラまでの距離。ホイールで変わります</td></tr>
+      <tr><td>最小距離・最大距離</td><td><code>minimum_distance</code>、<code>maximum_distance</code></td><td>小数</td><td>1、30</td><td></td><td>ホイールで寄り引きできる範囲</td></tr>
+      <tr><td>水平角度</td><td><code>yaw</code></td><td>小数</td><td>0</td><td></td><td>ラジアン。0 のとき、カメラは中心の -Z 側に来て +Z の向きを見ます</td></tr>
+      <tr><td>垂直角度</td><td><code>pitch</code></td><td>小数</td><td>0.25</td><td>-1.48〜1.48</td><td>ラジアン。プラスで上から見下ろします</td></tr>
+      <tr><td>回転感度</td><td><code>rotation_sensitivity</code></td><td>小数</td><td>0.006</td><td>0.0001〜0.1</td><td>マウス 1 ドットあたりの回転（ラジアン）</td></tr>
+      <tr><td>ズーム感度</td><td><code>zoom_sensitivity</code></td><td>小数</td><td>1</td><td>0〜20</td><td>ホイール 1 目盛りで変わる距離</td></tr>
+      <tr><td>追従の速さ</td><td><code>follow_speed</code></td><td>小数</td><td>14</td><td>0〜100</td><td>中心が動いたときに追いつく速さ。0 ですぐに合わせます</td></tr>
+      <tr><td>操作入力を使う</td><td><code>input_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オフにするとマウス・キー・ホイールを無視します（演出中など）</td></tr>
+      <tr><td>Motion 中は変形を上書きしない</td><td><code>yield_to_motion</code></td><td>オン・オフ</td><td>オン</td><td></td><td>Motion がこのカメラの位置・回転・拡大率を動かしている間は、Orbit Camera は何もしません。カメラ演出を Motion で作るときに使います</td></tr>
+      <tr><td>カメラ衝突を使う</td><td><code>collision_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>中心とカメラの間に壁があれば、壁の手前まで寄ります</td></tr>
+      <tr><td>衝突半径</td><td><code>collision_radius</code></td><td>小数</td><td>0.2</td><td>0〜5</td><td>カメラの太さ</td></tr>
+      <tr><td>壁との余白</td><td><code>collision_skin</code></td><td>小数</td><td>0.08</td><td>0〜2</td><td></td></tr>
+      <tr><td>壁から戻る速さ</td><td><code>collision_recovery_speed</code></td><td>小数</td><td>8</td><td>0〜60</td><td>壁が無くなったあと、元の距離へ戻る速さ（寄るときはすぐ寄ります）</td></tr>
+      <tr><td>衝突問い合わせ</td><td><code>collision_query_mode</code></td><td>選択</td><td>球スイープ + レイ</td><td>球スイープ + レイ・球スイープ・レイキャスト</td><td>壁の調べ方。レイキャストは軽く、細いすき間を抜けやすくなります</td></tr>
+    </table>
+    </div>
+
+    <h2 id="input">操作</h2>
+    <p>ゲームの入力アクションを使います。既定の割り当ては次のとおりです（<a href="../editor/input-action-asset.html">Input Action Asset</a> で変えられます）。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>アクション</th><th>既定のキー</th><th>働き</th></tr>
+      <tr><td>CameraRotate</td><td>右ボタンを押したまま、マウスを動かす</td><td>回す</td></tr>
+      <tr><td>CameraYawLeft・CameraYawRight</td><td>J・L</td><td>左右に回す</td></tr>
+      <tr><td>CameraPitchUp・CameraPitchDown</td><td>I・K</td><td>上下に回す</td></tr>
+      <tr><td>（ホイール）</td><td>マウスホイール</td><td>寄る・引く</td></tr>
+    </table>
+    </div>
+    <p>ゲームパッドの右スティックでは回りません。パッドで回すときは、ScriptBehaviour から <code>yaw</code>・<code>pitch</code>・<code>distance</code> をプロパティとして書き換えます（<a href="../csharp/api-components.html#generic">型の無い部品をさわる</a>。Orbit Camera の型はまだありません）。演出中に操作を止めるときは <code>input_enabled</code> を false にします。</p>
+
+    <h2 id="guide">シーンビューの視野ガイド</h2>
+    <p>Camera を持つ GameObject を選ぶと、シーンビューに小さなカメラの形と、写る範囲（視野の四角すい）が線で出ます。表示と長さは、階層パネルでワールドを選んだときの <a href="../editor/game-scene-settings.html#scene-camera">Scene Camera</a> にある「選択カメラの表示」で変えられます（<a href="../windows/camera-presets.html#guide">カメラ操作プリセット</a>に保存されます）。</p>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>プレイヤーの周りを回るカメラ</h3>
+    <ol class="steps">
+      <li>プレイヤーの GameObject に <b>Camera Target</b> を付けます（<b>注視点オフセット</b> は既定で 0, 1, 0 なので、足元より 1 上を中心に回ります）。</li>
+      <li>カメラの GameObject に <b>Camera &gt; Orbit Camera</b> を付けます。Follow Target が付いていたら外します。</li>
+      <li>実行し、右ボタンを押しながらマウスを動かすと回ります。ホイールで寄り引きします。</li>
+      <li>壁際で回して、カメラが壁の手前で止まることを確かめます。抜けるときは <b>衝突半径</b> を上げるか、壁の Collider のレイヤーを確認します。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="camera.html">Camera</a></li>
+      <li><a href="camera-target.html">Camera Target</a></li>
+      <li><a href="follow-target.html">Follow Target</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

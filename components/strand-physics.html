@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>ワイヤー・ヘア・ホース物理 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Physics</div>
+    <h1>ワイヤー・ヘア・ホース物理</h1>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec</p>
+
+    <p>ひも状のものを揺らす 5 つのコンポーネントです。<b>ワイヤー物理</b> と <b>XPBDホース物理</b> は 3D ラインの点列をロープやホースとして動かし、<b>ヘア物理</b> はスキンモデルの髪ボーンを揺らします。<b>髪・ワイヤー用の衝突形状</b> は髪とワイヤーだけを押し返す球・カプセル、<b>ホースリール</b> はホースの繰り出しと巻き取りです。どれも実行中だけ計算し、停止すると実行前の形へ戻ります。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>吊り橋のロープ、電線、たるんだケーブルを置きたいとき（ワイヤー物理）</li>
+      <li>キャラクターの髪やリボンを、動きに遅れて揺らしたいとき（ヘア物理）</li>
+      <li>グラップリングのワイヤー、消防ホースなど、太さのある管を伸び縮みさせたいとき（XPBDホース物理・ホースリール）</li>
+    </ul>
+
+    <h2 id="choose">どれを使うか</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>やりたいこと</th><th>使うもの</th><th>付ける場所</th></tr>
+      <tr><td>軽いロープ・紐</td><td>ワイヤー物理</td><td>3D ライン（Line Renderer）の GameObject</td></tr>
+      <tr><td>太さのある管。長さを実行中に変える</td><td>XPBDホース物理（＋ホースリール）</td><td>3D ラインの GameObject（リールは別の GameObject でも可）</td></tr>
+      <tr><td>髪・リボン・尻尾</td><td>ヘア物理</td><td>Skinned Mesh Renderer の GameObject</td></tr>
+      <tr><td>髪が頭に埋まらないようにする</td><td>髪・ワイヤー用の衝突形状</td><td>キャラクターの GameObject（複数可）</td></tr>
+    </table>
+    </div>
+    <div class="note"><strong>見本シーン</strong><code>resources/StrandShowcase/StrandComparison.replayscene</code> を開いて実行すると、両端固定のロープ、片端の紐、髪付きモデルを見比べられます。シーンビューの「コライダー」で衝突形状（桃色）、「リグ」で髪ボーンを確認できます。ホースの見本は起動オプション <code>--create-xpbd-hose-showcase</code> で <code>Saved/Validation/XPBDHoseVisual.replayscene</code> に作れます。</div>
+
+    <h2 id="wire">ワイヤー物理</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Physics &gt; ワイヤー物理</td></tr>
+      <tr><td>必須</td><td>Line Renderer（3D ライン）。追加すると一緒に付きます</td></tr>
+      <tr><td>点</td><td>3D ラインに 2 点以上。閉じたラインは使えません。点はこの GameObject のローカル座標です</td></tr>
+      <tr><td>上限</td><td>1 本 129 点まで（途中の分割数 128）</td></tr>
+    </table>
+    </div>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>計算品質</td><td><code>quality</code></td><td>選択</td><td>標準</td><td>軽量・標準・高精度</td><td>反復回数の目安。高精度ほど伸びにくく、重くなります</td></tr>
+      <tr><td>重力の倍率</td><td><code>gravity_scale</code></td><td>小数</td><td>1</td><td>-5〜5</td><td>マイナスで上へ浮きます</td></tr>
+      <tr><td>揺れの減衰</td><td><code>damping</code></td><td>小数</td><td>3</td><td>0〜40</td><td>大きいほど早く揺れが収まります</td></tr>
+      <tr><td>元の形へ戻る強さ</td><td><code>stiffness</code></td><td>小数</td><td>0</td><td>0〜1</td><td>0 で柔らかいロープ、上げると元の経路に戻ろうとするケーブル</td></tr>
+      <tr><td>風の加速度</td><td><code>wind</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>ワールドの向きで常にかかる加速度</td></tr>
+      <tr><td>衝突の太さ</td><td><code>particle_radius</code></td><td>小数</td><td>0.025</td><td>0.0001〜1</td><td>当たり判定の半径。見た目の太さ（3D ライン側）とは別です</td></tr>
+      <tr><td>シーンの物体にも当てる</td><td><code>world_collision</code></td><td>オン・オフ</td><td>オン</td><td></td><td>シーンの Collider に当てます。オフの方が軽くなります。専用の衝突形状は常に当たります</td></tr>
+      <tr><td>当たるレイヤー</td><td><code>collision_mask</code></td><td>レイヤー</td><td>すべて</td><td></td><td>シーンの Collider のうち当てるレイヤー</td></tr>
+      <tr><td>揺れを戻す移動距離</td><td><code>teleport_distance</code></td><td>小数</td><td>3</td><td>0.01〜100</td><td>1 フレームでこれ以上動いたら、ワープとみなして揺れをリセットします</td></tr>
+      <tr><td>途中の分割数</td><td><code>segment_count</code></td><td>整数</td><td>24</td><td>2〜128</td><td>物理で計算する点の数。細かい角に沿わせるなら増やします</td></tr>
+      <tr><td>始点を固定・終点を固定</td><td><code>pin_start</code>、<code>pin_end</code></td><td>オン・オフ</td><td>オン、オフ</td><td></td><td>両端を吊るすなら両方オン</td></tr>
+      <tr><td>始点の固定先・終点の固定先</td><td><code>start_anchor</code>、<code>end_anchor</code></td><td>GameObject</td><td>（空）</td><td></td><td>追従させる GameObject。空ならラインの元の端</td></tr>
+      <tr><td>始点（終点）の固定先からの位置</td><td><code>start_offset</code>、<code>end_offset</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>固定先のローカル座標</td></tr>
+      <tr><td>長さの余裕</td><td><code>slack</code></td><td>小数</td><td>1.05</td><td>1〜4</td><td>1 は元の長さ。1.05〜1.3 でたるみます。両端を離しすぎると張り切ります</td></tr>
+      <tr><td>状態</td><td><code>status</code></td><td>文字（読取のみ）</td><td></td><td></td><td>設定が正しくないときの理由が出ます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="hair">ヘア物理</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Physics &gt; ヘア物理</td></tr>
+      <tr><td>必須</td><td>Skinned Mesh Renderer。髪ボーンとウェイトを持つモデルが必要です（ボーンを自動では作りません）</td></tr>
+      <tr><td>上限</td><td>1 キャラクターの髪は合計 2048 点まで。衝突形状は 128 個まで候補にします</td></tr>
+    </table>
+    </div>
+    <p>計算品質・重力の倍率・揺れの減衰・元の形へ戻る強さ・風・衝突の太さ・シーンの物体にも当てる・当たるレイヤー・揺れを戻す移動距離はワイヤー物理と同じ意味です（既定値は 標準、0.4、5、0.35、0、0.015、<b>オフ</b>、すべて、2）。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>根元ボーン名</td><td><code>root_bones</code></td><td>文字</td><td>（空）</td><td></td><td>髪束の先頭のボーン名。複数はカンマ区切り。インスペクターの「根元ボーンを選んで追加」からも選べます。頭本体のボーンは選ばないでください</td></tr>
+      <tr><td>自動検索する文字</td><td><code>name_filter</code></td><td>文字</td><td>hair,Hair,髪</td><td></td><td>根元ボーン名が空のときだけ、この文字を含むボーンを探します。大文字・小文字を区別します</td></tr>
+      <tr><td>髪束の上限</td><td><code>maximum_chains</code></td><td>整数</td><td>16</td><td>1〜64</td><td></td></tr>
+      <tr><td>1束のボーン上限</td><td><code>maximum_segments</code></td><td>整数</td><td>24</td><td>1〜64</td><td>超えた先のボーンは、最後に計算したボーンに付いて動きます</td></tr>
+      <tr><td>何フレームごとに計算</td><td><code>update_interval</code></td><td>整数</td><td>1</td><td>1〜4</td><td>2 にすると計算が半分になります。距離による自動切り替えはありません</td></tr>
+      <tr><td>末端ボーンの先の長さ</td><td><code>tip_length</code></td><td>小数</td><td>0.08</td><td>0.001〜100</td><td>毛先の回転を出すための長さ（モデルの座標）</td></tr>
+      <tr><td>曲げ角度の上限</td><td><code>maximum_angle</code></td><td>小数</td><td>85</td><td>1〜180</td><td>度。髪が折れ曲がりすぎないようにします</td></tr>
+      <tr><td>計算中の点数</td><td><code>runtime_points</code></td><td>整数（読取のみ）</td><td></td><td></td><td>実行中に計算している点の数</td></tr>
+    </table>
+    </div>
+    <p>1 束は根元からスキン用ボーンの最初の子を順にたどります。枝分かれする髪は、枝ごとに根元を追加してください。Animator のアニメーションの上に揺れを重ねます。モデルの頂点や共有アニメーションは書き換えません。</p>
+
+    <h2 id="collider">髪・ワイヤー用の衝突形状</h2>
+    <p><b>Physics &gt; 髪・ワイヤー用の衝突形状</b>。1 つの GameObject にいくつでも付けられます。剛体の当たり判定は増やさず、髪とワイヤーだけを押し返します。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>形状</td><td><code>shape</code></td><td>選択</td><td>カプセル</td><td>球・カプセル</td><td>頭は球、肩や腕はカプセルが目安</td></tr>
+      <tr><td>追従するボーン名</td><td><code>bone_name</code></td><td>文字</td><td>（空）</td><td></td><td>同じ GameObject のスキンモデルのボーン。空なら GameObject に追従。見つからない名前の形状は使われません</td></tr>
+      <tr><td>中心の位置</td><td><code>center</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>ボーン（または GameObject）の座標</td></tr>
+      <tr><td>半径</td><td><code>radius</code></td><td>小数</td><td>0.15</td><td>0.001〜1000</td><td></td></tr>
+      <tr><td>カプセルの全長</td><td><code>height</code></td><td>小数</td><td>0.5</td><td>0.001〜1000</td><td></td></tr>
+      <tr><td>カプセルの向き</td><td><code>axis</code></td><td>選択</td><td>Y</td><td>X・Y・Z</td><td></td></tr>
+      <tr><td>シーンビューで形状を表示</td><td><code>debug_draw</code></td><td>オン・オフ</td><td>オン</td><td></td><td>シーンビューの「コライダー」がオンのとき桃色で表示</td></tr>
+    </table>
+    </div>
+
+    <h2 id="hose">XPBDホース物理</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Physics &gt; XPBDホース物理</td></tr>
+      <tr><td>必須</td><td>Line Renderer（開いたラインに 2 点以上）</td></tr>
+      <tr><td>見た目</td><td>ラインの点列から管（チューブ）を作って描きます。3D ラインの「GPUで頂点生成」がオンなら、曲線と断面を GPU で作ります</td></tr>
+      <tr><td>計算</td><td>固定刻みの XPBD。断面の向き・曲げ・ねじれも計算します（PositionBasedDynamics の Cosserat ロッド）</td></tr>
+    </table>
+    </div>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>始点の固定先・終点の固定先</td><td><code>start_anchor</code>、<code>end_anchor</code></td><td>GameObject</td><td>（空）</td><td></td><td>端を付ける GameObject</td></tr>
+      <tr><td>始点の固定位置・終点の固定位置</td><td><code>start_offset</code>、<code>end_offset</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>固定先のローカル座標</td></tr>
+      <tr><td>物理分割数</td><td><code>segment_count</code></td><td>整数</td><td>32</td><td>2〜128</td><td></td></tr>
+      <tr><td>チューブ断面数</td><td><code>tube_sides</code></td><td>整数</td><td>10</td><td>3〜24</td><td>断面の角の数。多いほど丸く見えます</td></tr>
+      <tr><td>チューブ半径</td><td><code>tube_radius</code></td><td>小数</td><td>0.025</td><td>0.001〜2</td><td>見た目の太さ</td></tr>
+      <tr><td>拘束反復回数</td><td><code>solver_iterations</code></td><td>整数</td><td>8</td><td>1〜32</td><td>多いほど伸びにくく、重くなります</td></tr>
+      <tr><td>最大固定刻み回数</td><td><code>maximum_substeps</code></td><td>整数</td><td>8</td><td>1〜16</td><td>重いフレームで 1 フレームに進める刻みの上限</td></tr>
+      <tr><td>繰り出し長さ</td><td><code>paid_out_length</code></td><td>小数</td><td>0</td><td>0〜1000</td><td>0 なら端点間の距離 × 自動長さの余裕。正の値ならその長さ（リールや C# から変えます）</td></tr>
+      <tr><td>ホース長の上限</td><td><code>maximum_length</code></td><td>小数</td><td>30</td><td>0.01〜1000</td><td></td></tr>
+      <tr><td>自動長さの余裕</td><td><code>slack</code></td><td>小数</td><td>1.08</td><td>1〜4</td><td></td></tr>
+      <tr><td>伸縮の柔らかさ</td><td><code>distance_compliance</code></td><td>小数</td><td>0.000001</td><td>0〜0.1</td><td>0 に近いほど伸びません</td></tr>
+      <tr><td>曲げの柔らかさ</td><td><code>bend_compliance</code></td><td>小数</td><td>0.25</td><td>0〜1</td><td>中心線の曲げやすさ</td></tr>
+      <tr><td>ロッドのせん断剛性</td><td><code>rod_shear_stiffness</code></td><td>小数</td><td>0.35</td><td>0〜1</td><td>断面の向きと中心線のずれを抑えます</td></tr>
+      <tr><td>断面の曲げ剛性</td><td><code>rod_bend_stiffness</code></td><td>小数</td><td>0.025</td><td>0〜1</td><td>隣り合う断面の相対回転を抑えます</td></tr>
+      <tr><td>断面のねじり剛性</td><td><code>rod_twist_stiffness</code></td><td>小数</td><td>0.01</td><td>0〜1</td><td>軸まわりのねじれを抑えます。管のテクスチャの向きにも反映されます</td></tr>
+      <tr><td>重力の倍率</td><td><code>gravity_scale</code></td><td>小数</td><td>1</td><td>-10〜10</td><td></td></tr>
+      <tr><td>速度の減衰</td><td><code>damping</code></td><td>小数</td><td>0.015</td><td>0〜40</td><td></td></tr>
+      <tr><td>風の加速度</td><td><code>wind</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td></td></tr>
+      <tr><td>衝突半径</td><td><code>particle_radius</code></td><td>小数</td><td>0.025</td><td>0.0001〜2</td><td></td></tr>
+      <tr><td>シーンの Collider と衝突</td><td><code>world_collision</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td></tr>
+      <tr><td>衝突レイヤー</td><td><code>collision_mask</code></td><td>レイヤー</td><td>すべて</td><td></td><td></td></tr>
+      <tr><td>ワープ時に姿勢を戻す距離</td><td><code>teleport_reset_distance</code></td><td>小数</td><td>3</td><td>0.01〜1000</td><td></td></tr>
+      <tr><td>計算中の点数・最大伸び率・長さの限界を超過・状態</td><td><code>runtime_points</code>、<code>current_tension</code>、<code>overstretched</code>、<code>status</code></td><td>読取のみ</td><td></td><td></td><td>実行中の様子。両端がホース長の上限より離れると「長さの限界を超過」がオンになります</td></tr>
+    </table>
+    </div>
+
+    <h2 id="reel">ホースリール</h2>
+    <p><b>Physics &gt; ホースリール</b>。XPBDホース物理の長さを一定の速さで伸ばし縮めし、ドラムの回転を合わせます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>操作するホース</td><td><code>hose</code></td><td>GameObject</td><td>（空）</td><td></td><td>XPBDホース物理を持つ GameObject。未設定だと動きません</td></tr>
+      <tr><td>回転するドラム</td><td><code>drum</code></td><td>GameObject</td><td>（空）</td><td></td><td>空ならこの GameObject を回します。ホースの端点を持つ GameObject のときは別のものを指定します</td></tr>
+      <tr><td>動作</td><td><code>mode</code></td><td>選択</td><td>停止</td><td>停止・繰り出す・巻き取る</td><td></td></tr>
+      <tr><td>ホース速度</td><td><code>line_speed</code></td><td>小数</td><td>1.5</td><td>0〜100</td><td>1 秒に伸び縮みする長さ</td></tr>
+      <tr><td>ドラム半径</td><td><code>drum_radius</code></td><td>小数</td><td>0.15</td><td>0.001〜10</td><td>回転の速さの計算に使います</td></tr>
+      <tr><td>回転軸</td><td><code>spin_axis</code></td><td>選択</td><td>Z</td><td>X・Y・Z</td><td></td></tr>
+      <tr><td>ドラム角度・状態</td><td><code>drum_angle</code>、<code>status</code></td><td>読取のみ</td><td></td><td></td><td></td></tr>
+    </table>
+    </div>
+
+    <h2 id="csharp">スクリプトから使う（C#）</h2>
+    <p>C# から触れるのは <b>XPBDホース物理</b> だけです（MonoBehaviour から <code>GetComponent&lt;HosePhysics&gt;()</code>）。ワイヤー物理・ヘア物理・衝突形状・ホースリールの型はまだありませんが、ScriptBehaviour からはプロパティを内部名で読み書きできます（<a href="../csharp/api-components.html#generic">型の無い部品をさわる</a>。例：ホースリールの <code>mode</code> を 1 にして繰り出す）。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>メンバー</th><th>働き</th></tr>
+      <tr><td><code>paidOutLength</code></td><td>繰り出し長さ。0.001〜<code>maximumLength</code> に収めて設定します</td></tr>
+      <tr><td><code>maximumLength</code></td><td>ホース長の上限（0.001〜1000）</td></tr>
+      <tr><td><code>overstretched</code></td><td>長さの限界を超えているか（読取のみ）</td></tr>
+      <tr><td><code>distanceCompliance</code>、<code>solverIterations</code>、<code>damping</code></td><td>伸縮の柔らかさ、拘束反復回数、速度の減衰</td></tr>
+    </table>
+    </div>
+<pre><code>using ReplayEngine;
+
+public class Winch : MonoBehaviour
+{
+    HosePhysics? hose;
+
+    void Start() => hose = GetComponent&lt;HosePhysics&gt;();
+
+    void Update()
+    {
+        if (hose == null) return;
+        // 押している間だけ巻き取る
+        if (Input.GetKey(KeyCode.Q)) hose.paidOutLength -= 2.0f * Time.deltaTime;
+        if (Input.GetKey(KeyCode.E)) hose.paidOutLength += 2.0f * Time.deltaTime;
+    }
+}</code></pre>
+    <p>ゲーム「GrapplerClimb」の <code>HaveHook.cs</code> は、ワイヤーの見た目にこの方法を使っています（当たり判定と振り子の動きはスクリプト側で計算し、ホースには長さだけを渡す）。</p>
+
+    <div class="warning"><strong>制限</strong>
+      <ul>
+        <li>ワイヤー・ヘアの束同士はぶつかりません。ロープが剛体を引っぱる（双方向の連結）こともありません。剛体をつなぐときは <a href="physics-joint.html">Physics Joint</a> を使います。</li>
+        <li>ワイヤー・ヘア・ホースは編集中（実行していないとき）は動きません。F1 でエディター表示を切り替えても始まりません。</li>
+        <li>実行中に揺れた形は保存されません。設定を残すには停止してから編集し、保存します。</li>
+      </ul>
+    </div>
+
+    <h2 id="tuning">軽い設定から始める</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>設定</th><th>軽量</th><th>標準</th><th>細かい見本</th></tr>
+      <tr><td>計算品質</td><td>軽量</td><td>標準</td><td>高精度</td></tr>
+      <tr><td>髪束の上限</td><td>8</td><td>16</td><td>必要な数</td></tr>
+      <tr><td>1束のボーン上限</td><td>12</td><td>24</td><td>32〜64</td></tr>
+      <tr><td>何フレームごとに計算</td><td>2</td><td>1</td><td>1</td></tr>
+      <tr><td>ワイヤーの途中の分割数</td><td>12</td><td>24</td><td>48</td></tr>
+      <tr><td>シーンの物体にも当てる</td><td>オフ</td><td>必要な物だけ</td><td>必要な物だけ</td></tr>
+    </table>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>2 本の柱の間にロープを張る</h3>
+    <ol class="steps">
+      <li>空の GameObject を作り、<b>コンポーネントを追加 &gt; Physics &gt; ワイヤー物理</b> を付けます。Line Renderer も一緒に付きます。</li>
+      <li>Line Renderer の点を 2 つにし、始点 <code>(0, 3, 0)</code>、終点 <code>(3, 3, 0)</code> のように置きます。太さと色は Line Renderer で決めます。</li>
+      <li><b>始点を固定</b> と <b>終点を固定</b> をオンにし、<b>始点の固定先</b>・<b>終点の固定先</b> に柱の GameObject を入れます。</li>
+      <li><b>長さの余裕</b> を 1.1 くらいにして実行します。ロープがたるみ、柱を動かすと付いてきます。</li>
+    </ol>
+    <h3>キャラクターの髪を揺らす</h3>
+    <ol class="steps">
+      <li>Skinned Mesh Renderer のあるキャラクターに <b>ヘア物理</b> を付けます。</li>
+      <li>モデルが一度表示されたら、<b>根元ボーンを選んで追加</b> から髪束の先頭のボーンを選びます（束の数だけ繰り返す）。</li>
+      <li>同じ GameObject に <b>髪・ワイヤー用の衝突形状</b> を付け、<b>形状</b> を球、<b>追従するボーン名</b> を頭のボーン（見本では <code>Head</code>）にして、頭が包まれる大きさにします。</li>
+      <li>実行して、重力・減衰・元の形へ戻る強さを調整します。髪が頭に入り込むときは、球の半径と髪の衝突の太さを少し上げます。</li>
+    </ol>
+    <h3>リールでホースを巻き取る</h3>
+    <ol class="steps">
+      <li>3D ラインの GameObject に <b>XPBDホース物理</b> を付け、両端の固定先を設定します。</li>
+      <li>リール役の GameObject に <b>ホースリール</b> を付け、<b>操作するホース</b> にホースの GameObject を入れます。</li>
+      <li><b>動作</b> を「巻き取る」にして実行すると、ホースが短くなり、ドラムが回ります。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="lines.html">3D ラインと軌跡</a></li>
+      <li><a href="physics.html">物理（Rigidbody と Collider）</a></li>
+      <li><a href="physics-joint.html">Physics Joint</a></li>
+      <li><a href="equipment.html">装備ソケット・装備アタッチ・射出アンカー</a></li>
+      <li><a href="../settings/command-line.html#validate">起動オプション：--validate-strands、--validate-xpbd-hose-physx</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / データ形式</div>
     <h1>シーンファイルとプレハブ（.replayscene / .replayprefab）</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（版 14 に更新）</p>
 
     <p>シーン（<code>.replayscene</code>）は、GameObject、親子関係、Transform、コンポーネントとそのプロパティを保存するファイルです。プレハブ（<code>.replayprefab</code>）は、GameObject とその子だけを同じ形式で保存したファイルです。どちらも文字で書かれたテキストファイルで、メモ帳などで開いて読めます。</p>
 
@@ -33,15 +33,16 @@
     <table>
       <tr><th>項目</th><th>内容</th></tr>
       <tr><td>形式</td><td>1 行に 1 つのキーワードと値を書くテキスト</td></tr>
-      <tr><td>1 行目</td><td><code>REPLAY_SCENE 11</code>（形式の名前と版）</td></tr>
-      <tr><td>今の版</td><td>11。版 7〜11 のファイルを読めます。7 より古い版や、12 以上の新しい版は読めません</td></tr>
+      <tr><td>1 行目</td><td><code>REPLAY_SCENE 14</code>（形式の名前と版）</td></tr>
+      <tr><td>今の版</td><td>14。版 7〜14 のファイルを読めます。7 より古い版や、15 以上の新しい版は読めません。古い版のファイルは、開いただけでは書き換わらず、保存したときに今の版になります</td></tr>
+      <tr><td>版ごとの追加</td><td>12：描画設定とポスト処理（<code>RENDER_SETTINGS</code>、<code>SCREEN_SPACE_SETTINGS</code>、<code>POST_PROCESS_SETTINGS</code>、<code>SCENE_COLOR</code>）。11 以前のファイルはプロジェクト設定の値を使います。13：霧・反射・Probe GI の設定（<code>ENVIRONMENT_RENDER_SETTINGS</code>）。14：ポスト処理に太陽光条の 4 つの値を追加</td></tr>
       <tr><td>作られる操作</td><td>シーン：<b>File &gt; Save Scene</b> など（<a href="../editor/scene-files.html">シーンを作る・開く・保存する</a>）。プレハブ：GameObject を Prefab として保存したとき</td></tr>
       <tr><td>プレハブとの違い</td><td>中身の形式は同じです。プレハブでは、保存した起点の GameObject が親なし（<code>PARENT 0</code>）として書かれます</td></tr>
     </table>
     </div>
 
     <h2 id="example">例</h2>
-    <p>Canvas を 1 つ置いたシーンの先頭部分です。</p>
+    <p>Canvas を 1 つ置いたシーンの先頭部分です（版 11 で保存した例。版 12 以降は <code>COLLISION_STATE</code> の次に描画設定の行が入ります）。</p>
     <pre><code>REPLAY_SCENE 11
 SCENE "新しいシーン"
 SCENE_STATE 0

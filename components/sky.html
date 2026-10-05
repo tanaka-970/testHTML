@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
     <h1>空</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（雲と月の見た目の変更を追記）</p>
 
     <p>シーンの背景に空の画像を表示するコンポーネントです。画像の上に雲・星・月を重ねたり、朝から夜へ空の画像を移り変わらせたりできます。コンポーネントを追加の一覧では「空」という名前です。</p>
 
@@ -100,6 +100,7 @@
       <img src="../images/components/shot-sky-day-night.png" alt="昼の空と夜の空">
       <figcaption>左は HDR の空を強さ 1 で表示した昼の見た目。右は強さを下げて空を暗くし、星と月をオンにした夜の見た目です。物への光も空の明るさに連動して暗くなります。</figcaption>
     </figure>
+    <div class="note"><strong>2026-10-01 の見た目の変更</strong>雲は厚みのある体積として描かれ、太陽の光が雲の中を通って明るさが変わるようになりました。雲の影は地面や水面にも落ちます。月には表面の模様が付き、夜は月の光が物や水面を照らします。プロパティは増えていません。</div>
 
     <h2 id="usage">使い方</h2>
     <h3>空を表示する</h3>
