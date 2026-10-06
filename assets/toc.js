@@ -54,7 +54,7 @@ window.DOCS_TOC = [
       { title: "物理（Rigidbody と Collider）", href: "components/physics.html", summary: "剛体、球・箱・カプセル・メッシュの当たり判定、レイヤー、トリガー、衝突イベント", keywords: "ATLAS_PHYSICS アトラス 物理エンジン PhysX 物理 Rigidbody リジッドボディ 剛体 Collider コライダー 当たり判定 Sphere Box Capsule Mesh Convex 凸包 Buoyancy 浮力 静的 キネマティック 動的 質量 重力 摩擦 反発 固定 停止 CCD レイヤー マスク トリガー TriggerEnter CollisionEnter AddForce Teleport" }
     ]},
     { title: "Inflation", children: [
-      { title: "膨張（空気・圧力・破裂）", href: "components/inflation.html", summary: "空気供給元・空気接続・膨張対象・膨張区画と膨張プロファイル", keywords: "膨張 空気 圧力 内圧 破裂 漏れ ダメージ 風船 浮き輪 ボンベ 空気入れ 空気供給元 空気接続 膨張対象 膨張区画 膨張プロファイル replayinflationprofile XPBD ケージ 浮力 揚力 反発 InflationComponent RequestLeakAt 浮く高さ 破片 膜片 固さ 厚み 中身 液体 粉 閃光 裂け目 OnInflationRuptured Inflation AirConnection" }
+      { title: "膨張（空気・圧力・破裂）", href: "components/inflation.html", summary: "空気供給元・空気接続・膨張対象・膨張区画と膨張プロファイル", keywords: "膨張 空気 圧力 内圧 破裂 漏れ ダメージ 風船 浮き輪 ボンベ 空気入れ 空気供給元 空気接続 膨張対象 膨張区画 膨張プロファイル replayinflationprofile XPBD ケージ 浮力 揚力 反発 InflationComponent RequestLeakAt 浮く高さ 破片 膜片 固さ 厚み 中身 液体 粉 閃光 裂け目 OnInflationRuptured Inflation AirConnection 局所膨張 地面 壁 盛り上げる 盛り上がり 丘 SurfaceInflation" }
     ]},
     { title: "水・環境", children: [
       { title: "Water Body（水域）", href: "components/water-body.html", summary: "海・湖の水面。波、反射、屈折、泡、水中の表現、浮力との連携", keywords: "水 海 湖 Ocean Lake Water Body 波 Gerstner 泡 Foam 屈折 反射 水中 Underwater 浮力 Gameplay Query Allow Buoyancy" },

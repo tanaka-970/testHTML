@@ -341,6 +341,9 @@
       <tr><td>攻撃 Windup（秒）</td><td><code>attack_windup_seconds</code></td><td>小数</td><td>0.3</td><td>0〜30</td><td>攻撃の前ぶり（構え）の長さ</td></tr>
       <tr><td>攻撃 Active（秒）</td><td><code>attack_active_seconds</code></td><td>小数</td><td>0.2</td><td>0〜30</td><td>攻撃が当たる（ダメージが出る）時間。長くするほど当たりやすくなります。</td></tr>
       <tr><td>攻撃 Recovery（秒）</td><td><code>attack_recovery_seconds</code></td><td>小数</td><td>0.5</td><td>0〜30</td><td>攻撃の後、次の行動までのすき。長くするほどプレイヤーが反撃しやすくなります。</td></tr>
+      <tr><td>膨らむと動けなくなる倍率</td><td><code>inflation_stun_ratio</code></td><td>小数</td><td>1.5</td><td>1〜100</td><td>同じ GameObject の <a href="inflation.html#target">膨張対象</a> がこの倍率まで膨らむと、追いかけも攻撃もやめ、NavAgent・Character Motor・Damage Area を止めて浮きます。小さいほど少し膨らませただけで動けなくなります</td></tr>
+      <tr><td>膨らんだときに浮く高さ</td><td><code>inflated_float_height</code></td><td>小数</td><td>1.5</td><td>0〜1000</td><td>いちばん膨らんだときに、膨らみ始めた位置から浮き上がる高さ（m）。途中の膨らみでは比例して低く浮きます。0 ならその場で止まるだけです。浮いた敵には乗れます（足場）</td></tr>
+      <tr><td>膨らみから戻る速さ</td><td><code>inflation_recovery_rate</code></td><td>小数</td><td>0.3</td><td>0〜1000</td><td>動けない間に 1 秒で抜ける空気の量。空気が抜けて膨張倍率が少し下がる（「動けなくなる倍率」が 1.5 なら 1.4）と、落ちて動き出します。0 なら膨らんだまま戻りません。送気を続ければ抜けるより速く膨らみ、入れすぎると破裂して倒れます</td></tr>
       <tr><td>Scene View デバッグ表示</td><td><code>debug_draw</code></td><td>オン・オフ</td><td>オン</td><td></td><td>索敵距離・視野などをシーンビューに描きます</td></tr>
       <tr><td>現在の状態</td><td><code>current_state</code></td><td>表示のみ</td><td></td><td></td><td>実行中の状態（Idle など）を表示します</td></tr>
       <tr><td>攻撃段階</td><td><code>attack_phase</code></td><td>表示のみ</td><td></td><td></td><td>攻撃中の段階（Windup / Active / Recovery）を表示します</td></tr>

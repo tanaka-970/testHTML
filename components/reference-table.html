@@ -76,6 +76,7 @@
       <tr><td>Inflation</td><td><a href="inflation.html#target">膨張対象</a></td><td>空気量・内圧・変形・浮力・漏れ・破裂</td><td>なし</td><td>新規。C# は Inflation（MonoBehaviour）、破裂は同じ GameObject のスクリプトへ OnInflationRuptured。割れると膜片が飛び散り本体は消える。浮く高さの上限あり</td></tr>
       <tr><td>Inflation</td><td><a href="inflation.html#source">空気供給元</a></td><td>圧力・流量・残量を持つ空気の元</td><td>なし</td><td>新規。C# は AirSource</td></tr>
       <tr><td>Inflation</td><td><a href="inflation.html#connection">空気接続</a></td><td>供給元から膨張対象へ空気を送る</td><td>なし</td><td>新規。「接続中」の既定がオフ。C# は AirConnection</td></tr>
+      <tr><td>Inflation</td><td><a href="inflation.html#surface">局所膨張</a></td><td>地面・壁の、空気を入れた点のまわりだけを盛り上げる</td><td>なし</td><td>新規（10/06）。乗れる・上の物を持ち上げる・入れすぎると破裂。C# は SurfaceInflation</td></tr>
       <tr><td>Inflation</td><td><a href="inflation.html#region">膨張区画</a></td><td>膨張対象の中の別々の部屋</td><td>なし</td><td>新規。C# は InflationRegion</td></tr>
       <tr><td>Destruction</td><td><a href="destruction-reference.html#sliceable">Sliceable</a></td><td>実行中にメッシュを平面で切り、2 つの破片へ分ける</td><td>なし</td><td>Mesh・Skinned・Primitive のどれでも可。C# は ScriptBehaviour から Slice / CanSlice。試し方は<a href="destruction.html#try-slice">破壊</a></td></tr>
       <tr><td>Destruction</td><td><a href="destruction-reference.html#destructible">Destructible</a></td><td>事前に割った破片（Destruction Asset）を、Damage や衝突で分離する</td><td>なし</td><td>アセットは Destruction Editor のボロノイ分割で作る。C# は ScriptBehaviour から ApplyRadialDamage / CanDamage</td></tr>

@@ -30,6 +30,29 @@
     </table>
     </div>
 
+    <section class="change-entry" id="2026-10-06-surface">
+    <h2>2026-10-06 地面を局所的に膨らませる・敵を膨らませて動けなくする・運ぶ／足場／穴あけ</h2>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8 ＋ まだコミットしていない変更</p>
+    <p>チーム制作企画の「地面を膨らませて高くする・坂を作る」「膨らまされた敵は宙に浮いて動けなくなる（足場になる）」「膨らませた物を運ぶ」に向けた追加です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>変わったこと</th><th>確認</th></tr>
+      <tr><td>新しい部品 <a href="components/inflation.html#surface">局所膨張</a>。地面や壁にフックを刺して空気を送ると、刺した点のまわりだけが山のように盛り上がる。乗ると一緒に持ち上がる。入れすぎると破裂して土の塊が飛び、上の物を吹き飛ばす</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>デモシーンの床を「膨張対象」から「局所膨張」へ付け替え（最大 2.5m、約 5 秒で満杯、満杯の 1.25 倍で破裂）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="components/gameplay.html#enemy">Enemy Behaviour</a> に 3 項目。同じ GameObject の膨張対象が膨らむと、追いかけ・攻撃をやめて浮き、足場になる。空気が抜けると落ちて動き出す。入れすぎると破裂して倒れる</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>XPBD変形の膨張対象でも、凸の衝突代理を使わないときは Box・Sphere・Capsule の当たり判定を膨らみに合わせて広げる（膨らんだ敵に乗れるように）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>デモの操作：<b>R</b> を押している間、刺した物を手元へ引き寄せる（<code>carryStrength</code>・<code>carryHoldDistance</code>）。<b>右クリック</b>で狙った膨張物に穴をあけてしぼませる（<code>punctureSeverity</code>）。上から乗ったときは横から当たったときの 1.6 倍で跳ねる（<code>balloonTopBounceMultiplier</code>）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+    </table>
+    </div>
+    <h3>まだやっていないこと</h3>
+    <ul>
+      <li><span class="status todo">未着手</span> デモシーンへの敵（フグ）の配置。Enemy Behaviour・NavAgent・膨張対象を付けた敵が必要です</li>
+      <li><span class="status todo">未着手</span> 局所膨張の盛り上がりに穴をあけてしぼませる操作（今は全体が膨らむ物だけ）</li>
+    </ul>
+    <h3>直したページ</h3>
+    <p><a href="components/inflation.html#surface">膨張（局所膨張の節）</a>、<a href="components/gameplay.html#enemy">ゲーム用部品（Enemy Behaviour）</a>、<a href="components/reference-table.html">リファレンス表</a>、<a href="components/index.html">コンポーネント一覧</a></p>
+    </section>
+
     <section class="change-entry" id="2026-10-06-docs">
     <h2>2026-10-06 部品の追加・変更（10/03〜10/06 の 187 コミット）をドキュメントに反映、項目の説明を補強</h2>
     <p class="meta">対象：ブランチ sinotake_test / コミット 60775ec → cdc0fd8。エンジンの登録コード（インスペクターの項目・表示名・範囲）と C# の型から確かめました</p>

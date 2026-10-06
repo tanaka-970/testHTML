@@ -39,6 +39,7 @@
       <tr><td><a href="#source">空気供給元</a></td><td>圧力・流量・残量を持つ空気の元（ボンベ、空気入れ）</td><td>どこでも</td></tr>
       <tr><td><a href="#connection">空気接続</a></td><td>供給元から膨張対象へ、圧力差に応じて空気を送る管</td><td>どこでも（ホースの GameObject など）</td></tr>
       <tr><td><a href="#region">膨張区画</a></td><td>膨張対象の中の、別々に空気を持つ部屋</td><td>膨張対象の子など</td></tr>
+      <tr><td><a href="#surface">局所膨張</a></td><td>空気を入れた点のまわりだけを盛り上げる</td><td>地面・壁（膨張対象とは別の GameObject）</td></tr>
     </table>
     </div>
     <p>空気は <b>空気供給元 → 空気接続 → 膨張対象（または膨張区画）</b> と流れます。流れる量は、供給元の出力圧力と対象の内圧の差、通気係数、最大流量で決まります。ホースの見た目（<a href="strand-physics.html#hose">XPBDホース物理</a>）と空気の流れは別々に計算します。</p>
@@ -119,7 +120,7 @@
       <tr><td>内圧の外向き力</td><td><code>outward_pressure_strength</code></td><td>小数</td><td>0.3</td><td>0〜100</td><td>内圧に比例して表面を外へ押す強さ。上げるほど膨らむ動きが速く、ぷるんと揺れやすくなります。</td></tr>
       <tr><td>ワールド衝突を有効化</td><td><code>cage_world_collision</code></td><td>オン・オフ</td><td>オン</td><td></td><td>表面が壁に当たったところを押し返します。<b>動的な Rigidbody が付いているときは使われません</b>（押し合いは Rigidbody の当たり判定が受け持ち、形が偏らないようにするため）</td></tr>
       <tr><td>変形に合わせて衝突形状を更新</td><td><code>update_collision_proxy</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>同じ GameObject の Convex Collider を、膨らんだ形に作り直します。頂点の元が「メッシュ」などでも、膨らんでいる間は自動でケージの形に切り替え、空気が抜けると元の設定に戻します</td></tr>
-      <tr><td>簡易膨張で当たり判定も広げる</td><td><code>simple_scale_colliders</code></td><td>オン・オフ</td><td>オン</td><td></td><td>計算方式が簡易のとき、見た目と同じ倍率で Box・Sphere・Capsule Collider も広げます</td></tr>
+      <tr><td>簡易膨張で当たり判定も広げる</td><td><code>simple_scale_colliders</code></td><td>オン・オフ</td><td>オン</td><td></td><td>計算方式が簡易のとき、見た目と同じ倍率で Box・Sphere・Capsule Collider も広げます。XPBD変形でも「変形に合わせて衝突形状を更新」がオフなら、Box・Sphere・Capsule を膨らみに合わせて広げます（膨らんだ敵に乗れるようにするため）</td></tr>
       <tr><td>衝突形状の更新間隔・最小変位</td><td><code>collision_proxy_update_interval</code>、<code>collision_proxy_minimum_displacement</code></td><td>小数</td><td>0.25、0.05</td><td></td><td>作り直しの頻度（秒）と、作り直す最小の形の変化</td></tr>
     </table>
     </div>
@@ -182,6 +183,37 @@
       <tr><td>区画圧力・区画体積・区画の漏れ量・区画の状態</td><td></td><td>読取のみ（実行中）</td><td></td><td></td><td></td></tr>
     </table>
     </div>
+
+    <h2 id="surface">局所膨張（地面・壁を盛り上げる）</h2>
+    <p><b>Inflation &gt; 局所膨張</b>。地面や壁に付けると、空気を入れた点のまわりだけが山のように盛り上がります。物全体は膨らみません。盛り上がりには乗れ、上に乗った人や物は一緒に持ち上がります。高い所の物を取る足場や、岩を転がす坂に使えます。入れすぎると破裂し、土の塊が飛び散って上の物を吹き飛ばします。</p>
+    <ul>
+      <li>空気は <a href="#connection">空気接続</a> から送ります。フック（<a href="equipment.html#anchor">射出アンカー</a>）が刺さった点が盛り上がりの中心になり、刺さった面の向きへ盛り上がります。壁なら横向きに膨らみます。</li>
+      <li>盛り上がりは、この GameObject の子として「（名前）_Bump」という GameObject で作られます。見た目は地面と同じマテリアルで、当たり判定は凸の形です。実行を止めると消えます。</li>
+      <li>高さは空気の量に比例し、一定の速さで高くなります。裾の半径は「高さ × 裾の広がり」です。</li>
+      <li>盛り上がりに刺さったフックは、その後の盛り上がりの分だけ持ち上がるので、埋まりません。</li>
+    </ul>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>満杯になる空気の量</td><td><code>full_air</code></td><td>小数</td><td>6</td><td>0.001〜</td><td>この量の空気で最大の高さになります。小さいほど早く盛り上がります（毎秒 1.25 の流量なら、6 で約 5 秒）</td></tr>
+      <tr><td>裾の広がり</td><td><code>spread</code></td><td>小数</td><td>2.5</td><td>0.2〜20</td><td>裾の半径を高さの何倍にするか。大きいほどなだらかな丘で歩いて登りやすく、小さいほど尖った山になります</td></tr>
+      <tr><td>最大の高さ</td><td><code>maximum_height</code></td><td>小数</td><td>2</td><td>0.01〜1000</td><td>満杯のときの高さ（m）。これ以上は高くならず、空気は内圧として溜まります</td></tr>
+      <tr><td>満杯の内圧</td><td><code>full_pressure</code></td><td>小数</td><td>6</td><td>0〜</td><td>満杯のときの内圧。空気接続は供給元の出力圧力との差で流れるので、出力圧力がこれより低いと満杯まで膨らみません</td></tr>
+      <tr><td>入れすぎると破裂</td><td><code>rupture_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オフにすると、満杯でそれ以上空気を受け付けなくなり、割れません</td></tr>
+      <tr><td>破裂する満杯率</td><td><code>rupture_fill</code></td><td>小数</td><td>1.25</td><td>1〜100</td><td>満杯の何倍の空気で破裂するか。1 なら最大の高さに届いた瞬間に割れ、上げるほど満杯のまま長く耐えます</td></tr>
+      <tr><td>同じ山とみなす距離</td><td><code>merge_distance</code></td><td>小数</td><td>1.5</td><td>0〜1000</td><td>今ある盛り上がりの中心からこの距離（大きい山では裾の半分）以内に入れた空気は、その山を育てます。離れた所に入れると別の山ができます</td></tr>
+      <tr><td>盛り上がりの数の上限</td><td><code>maximum_bumps</code></td><td>整数</td><td>8</td><td>1〜64</td><td>これより多くは作れず、新しい場所には空気が入りません</td></tr>
+      <tr><td>しぼむ速さ</td><td><code>deflate_rate</code></td><td>小数</td><td>0</td><td>0〜</td><td>空気を入れていない間に 1 秒で抜ける空気の量。0 なら形を保ち、上げると時間がたつと元の地面に戻ります（時間制限のある足場）</td></tr>
+      <tr><td>盛り上がりに当たり判定</td><td><code>collision_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オフにすると見た目だけ盛り上がり、乗れません</td></tr>
+      <tr><td>当たり判定の更新間隔</td><td><code>collision_update_interval</code></td><td>小数</td><td>0.1</td><td>0.02〜5</td><td>当たり判定を作り直す間隔（秒）。短いほど見た目とずれませんが重くなります</td></tr>
+      <tr><td>見た目の輪の数・見た目の分割数</td><td><code>ring_count</code>、<code>segment_count</code></td><td>整数</td><td>16、32</td><td>4〜64、8〜128</td><td>盛り上がりのメッシュの細かさ。上げるほどなめらかになります</td></tr>
+      <tr><td>破裂範囲・破裂の押し出し</td><td><code>rupture_blast_radius</code>、<code>rupture_blast_impulse</code></td><td>小数</td><td>3、6</td><td></td><td>破裂したときに周りの物を吹き飛ばす範囲と強さ。上げるほど遠くの物まで強く飛びます</td></tr>
+      <tr><td>破裂の破片数・破片が残る秒数</td><td><code>rupture_scrap_count</code>、<code>rupture_scrap_lifetime</code></td><td>整数、小数</td><td>8、6</td><td>0〜64、0.1〜30</td><td>破裂で飛び散る土の塊の数と、床に残る秒数</td></tr>
+      <tr><td>盛り上がりの数・一番高い盛り上がり・状態説明</td><td><code>bump_count</code>、<code>highest_bump</code>、<code>status</code></td><td>読取のみ（実行中）</td><td></td><td></td><td></td></tr>
+    </table>
+    </div>
+    <p>C# では MonoBehaviour から <code>GetComponent&lt;SurfaceInflation&gt;()</code> で取り出し、<code>fullAir</code>、<code>spread</code>、<code>maximumHeight</code>、<code>ruptureEnabled</code>、<code>deflateRate</code>、読取のみの <code>bumpCount</code>・<code>highestBump</code>・<code>status</code> を使えます。</p>
+    <div class="note"><strong>膨張対象と一緒に付けない</strong>同じ GameObject に <a href="#target">膨張対象</a> があると、空気はそちらへ送られ、局所膨張は使われません。地面には局所膨張だけを付けます。</div>
 
     <h2 id="profile">膨張プロファイル（.replayinflationprofile）</h2>
     <p>素材（ゴム、ビニールなど）ごとの圧力・破裂・物理反応・XPBD の設定をまとめた Asset です。同じ素材の物にまとめて使えます。</p>
