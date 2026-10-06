@@ -145,12 +145,12 @@
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
       <tr><td>色</td><td><code>tint</code></td><td>色</td><td></td><td>地形の色。Landscape Ground で作ったときは緑色です</td></tr>
       <tr><td>ベースカラーテクスチャ</td><td><code>base_color_texture</code></td><td>アセット（画像）</td><td></td><td>地形に貼る画像。空なら色だけで表示します</td></tr>
-      <tr><td>タイリング</td><td><code>uv_tiling</code></td><td>小数</td><td>0.0001〜10000</td><td>画像を繰り返す倍率</td></tr>
+      <tr><td>タイリング</td><td><code>uv_tiling</code></td><td>小数</td><td>0.0001〜10000</td><td>画像を繰り返す倍率。上げるほど模様が細かく何度も繰り返され、下げるほど大きく引き伸ばされます。</td></tr>
       <tr><td>ロード範囲</td><td><code>load_range</code></td><td>小数</td><td>0〜1000000</td><td>カメラからこの距離より遠い部分を表示しません。0 なら距離に関係なく全部表示します（<a href="#chunks">下を見てください</a>）</td></tr>
       <tr><td>表示</td><td><code>visible</code></td><td>オン・オフ</td><td></td><td>オフにすると表示しません</td></tr>
       <tr><td>影を落とす</td><td><code>cast_shadow</code></td><td>オン・オフ</td><td></td><td>ほかの物に影を落とします</td></tr>
-      <tr><td>影を受ける</td><td><code>receive_shadow</code></td><td>オン・オフ</td><td></td><td>ほかの物の影を受けます</td></tr>
-      <tr><td>両面描画</td><td><code>double_sided</code></td><td>オン・オフ</td><td></td><td>面の裏側も表示します</td></tr>
+      <tr><td>影を受ける</td><td><code>receive_shadow</code></td><td>オン・オフ</td><td></td><td>オフにすると、ほかの物の影が地形の上に落ちなくなります。</td></tr>
+      <tr><td>両面描画</td><td><code>double_sided</code></td><td>オン・オフ</td><td></td><td>オンにすると面の裏側も表示します。下から見上げても地形が消えなくなります。</td></tr>
     </table>
     </div>
     <h3 id="chunks">ロード範囲と区画</h3>

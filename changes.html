@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
-<title>更新内容と評価（10/03） - RePlayEngine ドキュメント</title>
+<title>更新履歴 - RePlayEngine ドキュメント</title>
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body data-root="">
@@ -16,89 +16,141 @@
   <nav class="side-nav" aria-label="目次"></nav>
   <main>
     <div class="breadcrumb"><a href="index.html">ホーム</a> / はじめに</div>
-    <h1>今回の更新内容と使い勝手の評価</h1>
+    <h1>更新履歴</h1>
+    <p>エンジンやデモを更新するたびに、<b>何が変わったか</b>と<b>どのページを直したか</b>をここに足していきます。新しい更新が一番上です。前回から何が変わったかを知りたいときは、まずこのページを見てください。</p>
+
+    <h2 id="how">各更新の見方</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>欄</th><th>書いてあること</th></tr>
+      <tr><td>対象</td><td>ブランチとコミット。まだコミットしていない変更を含むときはそう書きます</td></tr>
+      <tr><td>変わったこと</td><td>ゲームでの見た目・挙動の変化、増えたインスペクターの項目、スクリプトの API</td></tr>
+      <tr><td>確認</td><td><span class="status ok">確認済み</span> 実機で動きを見た　<span class="status wait">ビルド後に確認</span> コードは入っているが、まだ実機で見ていない　<span class="status todo">未着手</span> まだ手を付けていない</td></tr>
+      <tr><td>直したページ</td><td>この更新に合わせて書き直したドキュメントのページ</td></tr>
+    </table>
+    </div>
+
+    <section class="change-entry" id="2026-10-06-docs">
+    <h2>2026-10-06 部品の追加・変更（10/03〜10/06 の 187 コミット）をドキュメントに反映、項目の説明を補強</h2>
+    <p class="meta">対象：ブランチ sinotake_test / コミット 60775ec → cdc0fd8。エンジンの登録コード（インスペクターの項目・表示名・範囲）と C# の型から確かめました</p>
+
+    <h3>新しい部品</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>部品</th><th>できること</th><th>確認</th></tr>
+      <tr><td><a href="components/cloth.html">XPBD布物理</a></td><td>旗・カーテン・マントを、辺を固定して風と当たり判定で揺らす</td><td><span class="status todo">未着手</span> 実機の見た目</td></tr>
+      <tr><td><a href="components/wind.html">風場</a></td><td>布・Softbody・ワイヤー・ホース・ヘア・Rigidbody に同じ風を吹かせる。範囲・突風あり。<b>風速の既定は 0</b></td><td><span class="status todo">未着手</span> 実機の見た目</td></tr>
+      <tr><td><a href="components/lights.html#rect-props">Rect Light</a></td><td>長方形の面から照らす。影・霧の光の筋・間接光にも対応</td><td><span class="status todo">未着手</span> 実機の見た目</td></tr>
+    </table>
+    </div>
+
+    <h3>変わった部品</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>部品</th><th>変わったこと</th></tr>
+      <tr><td><a href="components/strand-physics.html">ワイヤー・ヘア・ホース</a></td><td>Line Renderer が無くてもメッシュを曲げて動く。骨の無いメッシュの髪。ワイヤーが両端の Rigidbody を引っぱれる（剛体を引く）。風場・水の抵抗と浮力・着水のしぶき。C# の WirePhysics・HairPhysics・HoseReel</td></tr>
+      <tr><td><a href="components/soft-body.html">Softbody</a></td><td>Mesh・Skinned・Primitive のどれでも動く（Sliceable などは不要に）。へこんだ形は内部の格子で動かす。当たった Rigidbody を押し返す。風場。C# の SoftBody</td></tr>
+      <tr><td><a href="components/physics.html">Rigidbody・Collider</a></td><td>風の影響、描画の補間、キネマティックの MovePosition が乗った物を運ぶ。Convex・Mesh Collider を Skinned・Primitive からも作れる</td></tr>
+      <tr><td><a href="components/physics-joint.html">Physics Joint</a></td><td>接続先アンカーの自動設定（置いた位置でつながる）、破断する力・トルクと OnJointBreak、シーンビューに可動範囲を表示。C# の PhysicsJoint</td></tr>
+      <tr><td><a href="components/orbit-camera.html">Orbit Camera</a></td><td>ゲームパッドの右スティックで回り、トリガーで寄り引き。C# の OrbitCamera</td></tr>
+      <tr><td><a href="components/water-body.html">Water Body</a></td><td>モデルの形の水（Mesh）、流体の波（Fluid Simulation）、着水のしぶきと泡の粒、エフェクトスタック</td></tr>
+      <tr><td><a href="components/post-process-volume.html#contact-shadows">Post Process Volume</a></td><td>コンタクトシャドウ（足元の細かい接地影）。シーンの既定ではオフ</td></tr>
+      <tr><td><a href="components/effekseer.html">Effekseer Emitter</a></td><td>ループ再生、C# の Play / Stop、ビルド時に有効・無効を表示</td></tr>
+      <tr><td><a href="components/particle-emitter.html">Particle Emitter</a></td><td>GPU駆動でも画像を貼れる。最大数 65536（GPU）</td></tr>
+      <tr><td><a href="components/destruction.html">破壊・切断</a></td><td>Sliceable・Destructible・斬撃が Primitive（Cube など）でも使える</td></tr>
+      <tr><td><a href="components/equipment.html">装備</a></td><td>回転をインスペクターで度として表示</td></tr>
+      <tr><td><a href="components/effect-stacks.html">Model Effect Stack</a></td><td>Water Body と 3D ラインにも掛けられる</td></tr>
+    </table>
+    </div>
+
+    <h3>項目の説明の補強</h3>
+    <p>全ページの項目表を調べ、「値を変えるとどうなるか」が書かれていなかった <b>328 行</b> に、増やす・減らす・0 にしたときの見え方や動き方を書き足しました（<a href="components/effect-kinds.html">エフェクトの種類</a> の 154 行を含む）。向きが紛らわしい項目（エフェクトの角度と中心の座標、フロストクラックのひび密度など）はシェーダーで確かめました。あわせて、コードと合っていなかった説明を直しました（膨張の「接続効率」、Physics Joint の「ワールドにつなぐときの注意」など）。</p>
+
+    <h3>まだやっていないこと</h3>
+    <ul>
+      <li><span class="status todo">未着手</span> 部品以外の更新：プロジェクト設定（TAAU の方式・品質・動的解像度、テクスチャの最大サイズ）、C++ の NativeScript、C# Jobs、C# の Source Generator（インスペクター情報と診断）、C# の API の追加（タグ、Instantiate での複製、Physics.gravity、PlayerPrefs、Perlin ノイズ ほか）、スタンドアロン書き出しの起動オプション、プロファイラー（F4）の ECS・ジョブのタブ</li>
+      <li><span class="status todo">未着手</span> 新しい部品と変わった項目のスクリーンショット</li>
+    </ul>
+
+    <h3>直したページ</h3>
+    <p>新規：<a href="components/cloth.html">XPBD布物理</a>、<a href="components/wind.html">風場</a>。更新：上の表の各ページ、<a href="components/reference-table.html">リファレンス表</a>、<a href="components/index.html">コンポーネント一覧</a>、<a href="csharp/api-components.html#new-physics">C# のコンポーネント API</a>、説明を補強した 30 ページ。</p>
+    </section>
+
+    <section class="change-entry" id="2026-10-06">
+    <h2>2026-10-06 膨張の風船を企画どおりに：均一に膨らむ・浮く・跳ねる・割れる</h2>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8 ＋ まだコミットしていない変更（破裂の演出・ホースの巻き取り・ヒットストップ）</p>
+    <p>チーム制作企画（空気を入れて膨らませ、大きさ・浮力・弾み方を変え、入れすぎると破裂する）に合わせて、<a href="components/inflation.html">膨張</a>と、デモシーン <code>resources/Game/Inflate/Inflate_NativeDemo.replayscene</code> を直しました。</p>
+
+    <h3>膨らみ方</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>変わったこと</th><th>前は</th><th>確認</th></tr>
+      <tr><td>XPBD変形の膨張が、元の形のまま均一に大きくなる</td><td>計算の偏りで一方向だけ伸び（x1.44・y1.13・z2.35 倍など）、形が崩れた</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>動的な Rigidbody の膨張対象は、床や壁に触れても形が偏らない。押し返しは Rigidbody の当たり判定が受け持つ</td><td>触れた面だけ押さえ付けられ、残りが飛び出して溶けたような形になった</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>Convex Collider の頂点の元が「メッシュ」でも、膨らんでいる間はケージの形で当たり判定を作り直す（空気が抜けたら元に戻す）</td><td>頂点の元が「コード指定」でないと当たり判定が膨らまず、見た目だけ大きくなって内圧だけ上がった</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>刺さった<a href="components/equipment.html#anchor">射出アンカー</a>が、膨らんだ表面に付いていく</td><td>刺さった位置に残り、膨らむと風船の中に埋まった</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>新しい項目「浮く高さの上限」（<code>float_height</code>）。開始位置から上がるほど浮力を弱め、ある高さで漂う</td><td>膨らむほど浮力が増え、飛んでいった</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+    </table>
+    </div>
+
+    <h3>破裂</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>変わったこと</th><th>前は</th><th>確認</th></tr>
+      <tr><td>破裂すると本体を消し、膨らんだ表面を切り分けた<b>膜片</b>が飛び散って床に残る（既定 10 枚・8 秒）。どのモデル（Mesh・Skinned・Primitive）でも、今の形から作る</td><td>状態が「破裂」になるだけで、膨らんだ形も当たり判定も残った（急に落ちるだけに見えた）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>穴・傷 → 送気口 → 一番伸びた所、の順で裂け目の起点を決め、そこから裂けたように破片が剥がれ飛ぶ</td><td>（演出なし）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>新しい項目：破裂の破片数・破片が残る秒数・破片の固さ・殻の厚み・破裂の中身（空気・液体・粉・爆発）と色・子を中身として残す・破裂の閃光</td><td>（項目なし）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>カメラの揺れを、膨らんでいた大きさに比例させた</td><td>大きさによらず同じ</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>内圧が破裂圧に届くと破裂する（送気ログで内圧が 7.42 → 破裂圧 7.50 の手前まで上がり、浮いていた風船が落ちることを確認）</td><td>デモの値では最大体積に先に達し、見た目が止まってから長く押し続けないと割れなかった</td><td><span class="status ok">確認済み</span></td></tr>
+    </table>
+    </div>
+
+    <h3>ホース・ラインの描画</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>変わったこと</th><th>前は</th><th>確認</th></tr>
+      <tr><td>ホースのチューブ（3D ラインの管の描画）を不透明として描く。空を背景にしても消えない</td><td>半透明として描かれて深度を書かず、空の前では遠景フォグに塗りつぶされて途中で消えた</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>Trim 終了が Trim 開始以下（表示範囲が空）の 3D ラインは描かない。チューブにも効く</td><td>チューブは Trim を見ず、隠したつもりのホースが実行開始時から見えていた</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>C#：<code>HosePhysics.endAnchor</code>・<code>endOffset</code>（終点を付ける物と、その物の座標系での位置）</td><td>終点の付け先はシーンでしか変えられなかった</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+    </table>
+    </div>
+
+    <h3>デモ（Inflate_NativeDemo と InflationDemoController）</h3>
+    <ul>
+      <li>ワイヤー（ホース）を銛の<b>矢じりではなく柄尻</b>に結ぶ。発射中は銛の軸が刺さる点に合うように置く。</li>
+      <li><b>F でホースを巻き取って</b>フックを銃口へ引き戻す（<code>reelSpeed</code>、既定 25 m/秒）。刺さった風船が割れたときも巻き取る。</li>
+      <li>送気中に銃口から一直線に出ていた「空気噴射ライン」を出さないようにした。</li>
+      <li>プレイヤーが風船に当たると、膨らみに応じて跳ね返り、風船も押される（<code>balloonBounceMin</code> / <code>Max</code>、<code>balloonPush</code>）。</li>
+      <li>風船が割れた瞬間に一瞬だけ時間を止める（<code>hitStopSeconds</code> 0.06 秒、<code>hitStopTimeScale</code> 0.05）。</li>
+      <li>送気中は 0.5 秒ごとに「空気・膨張率・内圧・破裂圧・状態」をコンソールに出す。</li>
+      <li>シーンの 3 つの風船：破裂圧 9.5 → 7.5、危険圧力 8.5 → 6.5、体積浮力 4 → 0、空中揚力 8.5 → 7.4、浮く高さの上限 2.5、反発 0 / 0.9 / 0.45 → 0.3 / 0.8 / 0.7、Rigidbody の空気抵抗 0.4 → 1.2。</li>
+    </ul>
+
+    <h3>まだやっていないこと</h3>
+    <ul>
+      <li><span class="status todo">未着手</span> この更新の内容のスクリーンショット（最新のビルドで撮り直す）</li>
+      <li><span class="status todo">未着手</span> 破裂音。音の素材が決まったら、破裂の演出に付けられます</li>
+    </ul>
+
+    <h3>直したページ</h3>
+    <ul>
+      <li><a href="components/inflation.html">膨張（空気・圧力・破裂）</a>：膨らみ方・浮く高さ・破裂の演出・C# の型とイベント</li>
+      <li><a href="components/strand-physics.html#hose">XPBDホース物理</a>：終点の付け先を C# から変える</li>
+      <li><a href="components/lines.html">3D ライン</a>：チューブの描き方と Trim</li>
+      <li><a href="csharp/api-components.html">C# のコンポーネント API</a>：<code>HosePhysics</code> の行</li>
+    </ul>
+    </section>
+
+    <section class="change-entry" id="2026-10-03">
+    <h2>2026-10-03 ホース・膨張・Softbody など 17 部品と、C# の Unity 互換の書き方</h2>
     <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 2734f88（2026-09-28）→ 60775ec（2026-10-03）の 232 コミット</p>
-
-    <p>前回ドキュメントを更新してから増えた機能と、それぞれを<b>ゲーム制作にそのまま使えるか</b>をまとめたページです。評価はソースコード、インスペクターの項目、C# の公開 API、自動検証の結果（<code>Saved/Validation</code>）から行いました。<b>実機での見た目・操作感・FPS は確かめていません</b>（スクリーンショットは別作業）。</p>
-
-    <h2 id="legend">評価の見方</h2>
-    <div class="table-wrap">
-    <table>
-      <tr><th>印</th><th>意味</th></tr>
-      <tr><td>◎</td><td>インスペクターでもスクリプトでも使え、すぐゲームに入れられる</td></tr>
-      <tr><td>○</td><td>使える。ただし注意点を知っておく必要がある</td></tr>
-      <tr><td>△</td><td>条件が厳しい、またはスクリプトから扱いにくい。見せ場の演出向き</td></tr>
-      <tr><td>×</td><td>今のままではゲームの中で使えない</td></tr>
-    </table>
-    </div>
-
-    <h2 id="summary">新しい機能の評価</h2>
-    <div class="table-wrap">
-    <table>
-      <tr><th>機能</th><th>評価</th><th>できること</th><th>ゲームで使うときの注意</th></tr>
-      <tr><td><a href="components/strand-physics.html#hose">XPBDホース物理</a>・<a href="components/strand-physics.html#reel">ホースリール</a></td><td>◎</td><td>太さのある管が伸び縮みし、壁に当たって曲がる</td><td>C# の <code>HosePhysics.paidOutLength</code> で長さを変えられる。GrapplerClimb のワイヤーで実際に使われている。見た目と長さの部品で、キャラクターを吊る力は出さない（振り子の動きはスクリプト側）</td></tr>
-      <tr><td><a href="components/strand-physics.html#wire">ワイヤー物理</a>・<a href="components/strand-physics.html#hair">ヘア物理</a>・衝突形状</td><td>○</td><td>ロープのたるみ、髪の揺れ</td><td>見本シーンあり、自動検証 75 項目が成功。インスペクターだけで組める。剛体を引っぱらない・髪どうしは当たらない。C# の型は無い（ScriptBehaviour の<a href="csharp/api-components.html#generic">汎用の入口</a>で値は変えられる）</td></tr>
-      <tr><td><a href="components/inflation.html">膨張</a>（4 部品＋膨張プロファイル）</td><td>○</td><td>空気を送って膨らませ、圧力・漏れ・ダメージで破裂</td><td>ScriptBehaviour 用の型と <code>RequestLeakAt</code> などの関数があり、自動検証 19 項目が成功。ただし<b>破裂のイベントが無い</b>（<code>State == 5</code> を見張る）、空気接続の「接続中」が<b>既定オフ</b>、簡易方式は見た目だけ大きくなり当たり判定は変わらない、XPBD変形は CPU メッシュ（Sliceable / Convex Collider）が必要</td></tr>
-      <tr><td><a href="components/physics-joint.html">Physics Joint</a></td><td>○</td><td>扉・振り子・引き出し・ばね</td><td>固定・ヒンジ・スライダー・スプリングとも自動検証が成功。<b>接続先を空にしたときの「接続先アンカー」はワールド座標</b>で、既定 0,0,0 のままだと原点へ引っぱられる。PhysX が無い予備の計算方式では動かない</td></tr>
-      <tr><td><a href="components/equipment.html#socket">装備ソケット</a>・<a href="components/equipment.html#attachment">装備アタッチ</a></td><td>○</td><td>武器を手のボーンや名前付きの場所に持たせる</td><td>インスペクターだけで使える。回転の欄はラジアン（ほかの多くの欄は度）</td></tr>
-      <tr><td><a href="components/equipment.html#anchor">射出アンカー</a></td><td>×</td><td>撃って刺さり、動く物に付いていく</td><td><b>発射（Launch）を呼ぶ手段が C# にもインスペクターにも無い</b>。今は「装着中」か「命中物へ固定」で置いておくことしかできない。グラップリングは Raycast を使うスクリプトで作る（GrapplerClimb の方式）。発射用の C# API が必要</td></tr>
-      <tr><td><a href="components/soft-body.html">XPBD有限要素Softbody</a></td><td>△</td><td>ゼリーのようにつぶれて戻る</td><td>自動検証は成功。ただし閉じた凸に近いモデル専用で、Mesh Renderer に加えて Sliceable か Convex Collider が要る（CPU メッシュのため）。Rigidbody を押し返さない片方向。Primitive の Cube / Sphere には使えない</td></tr>
-      <tr><td><a href="components/orbit-camera.html">Orbit Camera</a></td><td>○</td><td>三人称で周りを回るカメラ、壁よけ</td><td>マウス・キー・ホイールで動く。<b>ゲームパッドのスティックでは回らない</b>（ScriptBehaviour から yaw / pitch を書く必要あり）。Follow Target と同じカメラに付けない</td></tr>
-      <tr><td><a href="components/effekseer.html">Effekseer Emitter</a></td><td>△</td><td>Effekseer のエフェクトを再生</td><td>各自が <code>Tools\SetupEffekseer.ps1</code> を実行してから x64 でビルドする必要がある。<b>準備していないビルドでも、エラーにならずエフェクトが出ないだけ</b>なので気づきにくい。1 回再生の部品で、出し直しは GameObject の有効・無効で行う。C# の型は無い</td></tr>
-      <tr><td>Particle Emitter の <a href="components/particle-emitter.html#gpu">GPU駆動</a></td><td>○</td><td>大量の粒を GPU で軽く出す</td><td>画像を設定すると使われない（丸い粒だけ）</td></tr>
-      <tr><td><a href="components/post-process-volume.html#sun-shafts">太陽光条</a>、<a href="components/lights.html">影の光源半径</a>、<a href="components/sky.html">体積雲・月</a>、<a href="components/water-body.html#foam">水面の泡・しぶき</a>、<a href="components/environment-volumes.html#probe-gi">局所光の間接反射</a></td><td>◎</td><td>見た目の向上</td><td>値を変えるだけで使える。太陽光条は既定で強度 0（出ない）</td></tr>
-      <tr><td><a href="components/physics.html#convex">Convex Collider</a> の頂点の元・複合凸</td><td>◎</td><td>モデルから動く当たり判定を作る</td><td>以前はコードからしか形を作れなかったのが、インスペクターで作れるようになった</td></tr>
-    </table>
-    </div>
-
-    <h2 id="csharp">C# スクリプトの変更</h2>
-    <p>Unity と同じ書き方に大きくそろえました。Unity の経験がある人には書きやすくなりましたが、<b>以前の書き方と結果が変わる所が 3 つ</b>あります。プロジェクトの <code>Scripts/</code> を調べたところ、影響を受ける書き方は見つかりませんでした。</p>
-    <div class="warning"><strong>結果が変わる変更</strong>
-      <ul>
-        <li><code>Quaternion.Euler</code>・<code>Quaternion.AngleAxis</code> の角度が <b>ラジアン → 度</b>。ラジアンは <code>EulerRadians</code> / <code>AngleAxisRadians</code>（<a href="csharp/api-math.html">説明</a>）</li>
-        <li>MonoBehaviour の <code>transform.Translate(v)</code> が <b>ワールドの軸 → 自分の軸</b>（<a href="csharp/api-objects.html#transform">説明</a>）</li>
-        <li>MonoBehaviour の <code>transform.Rotate</code> が、オイラー角の足し算から回転の掛け合わせに変わった（複数軸を同時に回したときの結果が変わる）</li>
-      </ul>
-    </div>
-    <div class="table-wrap">
-    <table>
-      <tr><th>追加</th><th>評価</th><th>内容</th></tr>
-      <tr><td><code>Time.timeScale</code>・<code>Time.fixedDeltaTime</code> への代入</td><td>◎</td><td>一時停止メニュー、スローモーションがスクリプトで作れる。<code>WaitForSecondsRealtime</code>、<code>Time.unscaledDeltaTime</code> で止めた間も UI を動かせる（<a href="csharp/lifecycle.html#time">説明</a>）</td></tr>
-      <tr><td><code>Invoke</code>・<code>InvokeRepeating</code>・<code>CancelInvoke</code></td><td>◎</td><td>名前で後から呼ぶ（<a href="csharp/lifecycle.html#invoke">説明</a>）</td></tr>
-      <tr><td>コルーチンの入れ子、<code>CustomYieldInstruction</code>、停止時の <code>finally</code></td><td>◎</td><td><code>yield return StartCoroutine(…)</code> で待てる</td></tr>
-      <tr><td>Physics の Unity 表記（Linecast、Check…、…NonAlloc、layerMask、QueryTriggerInteraction）</td><td>◎</td><td>当たった Collider そのものが分かるようになった（<a href="csharp/api-physics-scene.html#physics">説明</a>）</td></tr>
-      <tr><td>Rigidbody の Unity 表記（ForceMode、constraints、Sleep、AddRelativeForce など）</td><td>○</td><td><code>MoveRotation</code> / <code>Move</code> は補間せずにその場へ移る（Unity のキネマティックのような滑らかな移動ではない）（<a href="csharp/api-components.html#rigidbody">説明</a>）</td></tr>
-      <tr><td>Vector3 / Quaternion / Color の Unity 表記（小文字の名前、Project、Reflect、Angle、FromToRotation など）</td><td>◎</td><td>（<a href="csharp/api-math.html">説明</a>）</td></tr>
-    </table>
-    </div>
-
-    <h2 id="editor">エディターの変更</h2>
     <ul>
-      <li>Camera を選ぶと、シーンビューに写る範囲（視野ガイド）が出るようになりました（<a href="windows/camera-presets.html#guide">説明</a>）。</li>
-      <li>シーンビューのカメラの移動速度が、物に寄っても遅くならなくなりました。カメラ操作中もギズモが消えなくなりました（<a href="editor/scene-view.html">説明</a>）。</li>
-      <li>Window に <b>Effekseer エフェクト作成 / プレビュー</b>、プロジェクトパネルの作成に <b>膨張プロファイル</b> が増えました。</li>
-      <li>見本シーンを作る起動オプション（<code>--create-…-showcase</code>）と、物理系の検証（<code>--validate-strands</code> など）が増えました（<a href="settings/command-line.html#showcase">説明</a>）。</li>
-      <li>シーンファイルの版が 14 になりました（<a href="data/scene-file.html">説明</a>）。</li>
+      <li>ホース・ワイヤー・髪の物理、膨張、Softbody、Physics Joint、装備・射出アンカー、Orbit Camera、Effekseer など 17 個のコンポーネントを追加しました。</li>
+      <li>C# を Unity と同じ書き方に大きくそろえました。<b><code>Quaternion.Euler</code> が度になる</b>など、結果が変わる変更が 3 つあります。</li>
+      <li>機能ごとに「ゲーム制作にそのまま使えるか」を評価しました。</li>
     </ul>
-
-    <h2 id="internal">見えない所の変更</h2>
-    <p>コミットの半分以上は、描画・物理・ECS・JobSystem の処理の分割と高速化（並列化、割り当ての削減、GPU 駆動描画の作業領域の再利用など）です。操作や設定は変わりません。重さの改善はプロファイラー（F4）の物理の計測で確かめられますが、このページの作成では計っていません。</p>
-
-    <h2 id="todo">ゲーム制作のために足りないもの</h2>
-    <ol>
-      <li><b>射出アンカーを撃つ C# API</b>（<code>Launch</code>・<code>Detach</code>）。今のままでは部品として使えません。</li>
-      <li><b>新しい部品の C# の型</b>（Orbit Camera、Physics Joint、Softbody、Effekseer Emitter、ホースリール など）。今は ScriptBehaviour の汎用の入口で、内部名の文字列を書く必要があります。</li>
-      <li><b>膨張の破裂イベント</b>（風船の <code>OnBalloonPopped</code> のようなもの）。</li>
-      <li><b>Orbit Camera のゲームパッド対応</b>。</li>
-      <li><b>Effekseer の準備漏れの警告</b>。準備していないビルドで Effekseer Emitter を置いたときに、コンソールへ知らせる表示があると安全です。</li>
-      <li>Grass（草）のコンポーネントは実装の途中で、まだ追加できません。</li>
-    </ol>
-
-    <h2>関連項目</h2>
-    <ul>
-      <li><a href="components/reference-table.html">リファレンス表</a>（全コンポーネントの状況）</li>
-      <li><a href="components/index.html">コンポーネント一覧</a></li>
-    </ul>
+    <p><a href="changes/2026-10-03.html">10/03 の更新内容と評価（詳しく）</a></p>
+    </section>
   </main>
 </div>
 <footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>

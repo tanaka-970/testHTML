@@ -41,7 +41,7 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
-      <tr><td>Motion Asset</td><td><code>motion</code></td><td>アセット（モーション）</td><td>（空）</td><td></td><td>再生するモーション</td></tr>
+      <tr><td>Motion Asset</td><td><code>motion</code></td><td>アセット（モーション）</td><td>（空）</td><td></td><td>再生するモーション。差し替えると、次の再生から新しいモーションになります。</td></tr>
       <tr><td>キー</td><td><code>key</code></td><td>文字</td><td>（空）</td><td></td><td>この Motion Player を見分ける名前。1 つの GameObject に複数あるとき、C# スクリプトで名前を指定して探すのに使います。終了のイベントにも入ります</td></tr>
       <tr><td>開始時に再生</td><td><code>play_on_start</code></td><td>オン・オフ</td><td>オン</td><td></td><td><b>きっかけ</b> が <b>開始時</b> のとき、ゲームの開始時に再生するかどうか</td></tr>
       <tr><td>きっかけ</td><td><code>trigger</code></td><td>選択</td><td>開始時</td><td></td><td>再生を始めるきっかけ（<a href="#triggers">下の表</a>）</td></tr>
@@ -105,7 +105,7 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
-      <tr><td>Composition</td><td><code>composition</code></td><td>アセット（コンポジション）</td><td>（空）</td><td></td><td>再生するコンポジション</td></tr>
+      <tr><td>Composition</td><td><code>composition</code></td><td>アセット（コンポジション）</td><td>（空）</td><td></td><td>再生するコンポジション（複数の Motion をまとめたもの）。</td></tr>
       <tr><td>キー</td><td><code>key</code></td><td>文字</td><td>（空）</td><td></td><td>この Composition Player を見分ける名前。終了のイベントに入ります</td></tr>
       <tr><td>開始時に再生</td><td><code>play_on_start</code></td><td>オン・オフ</td><td>オン</td><td></td><td>ゲームの開始時に再生します。止まっているときに有効になった場合も、最初から再生します</td></tr>
       <tr><td>State変更で再生</td><td><code>play_on_state_change</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>State の状態が変わったときに、最初から再生します</td></tr>
@@ -115,7 +115,7 @@
       <tr><td>Time Scaleを無視</td><td><code>ignore_time_scale</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>Motion Player と同じ</td></tr>
       <tr><td>終了位置を保持</td><td><code>hold_on_end</code></td><td>オン・オフ</td><td>オン</td><td></td><td>ループしないとき、最後まで再生したら、オンなら最後の値のまま一時停止、オフなら停止します</td></tr>
       <tr><td>再生速度</td><td><code>speed</code></td><td>小数</td><td>1</td><td>-8〜8</td><td>再生の速さの倍率。マイナスで逆再生します</td></tr>
-      <tr><td>重み</td><td><code>weight</code></td><td>小数</td><td>1</td><td>0〜1</td><td>ほかの再生と混ぜる割合</td></tr>
+      <tr><td>重み</td><td><code>weight</code></td><td>小数</td><td>1</td><td>0〜1</td><td>ほかの再生と混ぜる割合。1 でこの再生の動きだけ、0.5 で半分ずつ混ざり、0 で効きません。</td></tr>
       <tr><td>再生状態</td><td><code>state</code></td><td>選択（読み取り専用）</td><td></td><td></td><td>停止、再生、一時停止。保存されません</td></tr>
       <tr><td>現在時刻</td><td><code>time</code></td><td>小数（秒）</td><td></td><td></td><td>今の再生位置。保存されません</td></tr>
     </table>

@@ -47,6 +47,7 @@
       <tr><td>Lighting</td><td><a href="lights.html">Directional Light</a></td><td>太陽のように一方向から照らす</td><td>あり（4 枚）</td><td></td></tr>
       <tr><td>Lighting</td><td><a href="lights.html">Point Light</a></td><td>点から全方向に照らす</td><td>あり（4 枚）</td><td></td></tr>
       <tr><td>Lighting</td><td><a href="lights.html">Spot Light</a></td><td>円錐の形に照らす</td><td>あり（4 枚）</td><td></td></tr>
+      <tr><td>Lighting</td><td><a href="lights.html#rect-props">Rect Light</a></td><td>長方形の面から前方を照らす</td><td>なし</td><td>新規（10/04）。影は Spot と同じ枠を使う</td></tr>
       <tr><td>Camera</td><td><a href="camera.html">Camera</a></td><td>ゲーム中の視点</td><td>あり（1 枚）</td><td></td></tr>
       <tr><td>Camera</td><td><a href="camera-target.html">Camera Target</a></td><td>カメラに追いかけられる目印</td><td>なし</td><td></td></tr>
       <tr><td>Camera</td><td><a href="follow-target.html">Follow Target</a></td><td>カメラを Camera Target に追いかけさせる</td><td>なし</td><td></td></tr>
@@ -60,21 +61,23 @@
       <tr><td>Physics</td><td><a href="physics.html#mesh">Mesh Collider</a></td><td>モデルの形そのままの当たり判定</td><td>あり（4 枚）</td><td></td></tr>
       <tr><td>Physics</td><td><a href="physics.html#convex">Convex Collider</a></td><td>凸包の当たり判定。動く物にも使える</td><td>あり（4 枚・旧版）</td><td>「頂点の元」（Mesh／Primitive から自動生成）と「複合凸」の分割が入りました</td></tr>
       <tr><td>Physics</td><td><a href="physics.html#buoyancy">Buoyancy</a></td><td>水に入った Rigidbody に浮力・水の抵抗・水流の力を加える</td><td>あり（4 枚）</td><td>入水すると水面にしぶきの泡が出るようになりました</td></tr>
-      <tr><td>Physics</td><td><a href="physics-joint.html">Physics Joint</a></td><td>剛体どうしを固定・ヒンジ・スライダー・ばねでつなぐ</td><td>なし</td><td>新規。PhysX のときだけ動く。ワールドにつなぐときは接続先アンカーにワールド座標を入れる。C# の型なし</td></tr>
-      <tr><td>Physics</td><td><a href="soft-body.html">XPBD有限要素Softbody</a></td><td>ゼリーのように変形する柔らかい物</td><td>なし</td><td>新規。閉じた凸に近いモデル ＋ Sliceable か Convex Collider（CPU メッシュ用）が必要。Rigidbody を押し返さない。C# の型なし</td></tr>
-      <tr><td>Physics</td><td><a href="strand-physics.html#wire">ワイヤー物理</a></td><td>3D ラインをロープとして揺らす</td><td>なし</td><td>新規。見本 resources/StrandShowcase。剛体を引っぱらない。C# の型なし</td></tr>
-      <tr><td>Physics</td><td><a href="strand-physics.html#hair">ヘア物理</a></td><td>スキンモデルの髪ボーンを揺らす</td><td>なし</td><td>新規。髪ボーンとウェイトがあるモデル専用。C# の型なし</td></tr>
+      <tr><td>Physics</td><td><a href="physics-joint.html">Physics Joint</a></td><td>剛体どうしを固定・ヒンジ・スライダー・ばねでつなぐ</td><td>なし</td><td>新規。PhysX のときだけ動く。接続先アンカーは自動設定（置いた位置でつながる）。破断する力・トルクと OnJointBreak あり。C# は PhysicsJoint</td></tr>
+      <tr><td>Physics</td><td><a href="soft-body.html">XPBD有限要素Softbody</a></td><td>ゼリーのように変形する柔らかい物</td><td>なし</td><td>新規。閉じたモデルなら Mesh・Skinned・Primitive のどれでも可（へこんだ形は内部の格子で動かす）。動的 Rigidbody を押し返す。C# は SoftBody</td></tr>
+      <tr><td>Physics</td><td><a href="strand-physics.html#wire">ワイヤー物理</a></td><td>3D ラインをロープとして揺らす</td><td>なし</td><td>新規。見本 resources/StrandShowcase。Line Renderer が無くてもメッシュを曲げて動かせる。「剛体を引く」で両端の Rigidbody を引っぱれる。風場と水に反応。C# は WirePhysics</td></tr>
+      <tr><td>Physics</td><td><a href="strand-physics.html#hair">ヘア物理</a></td><td>スキンモデルの髪ボーンを揺らす</td><td>なし</td><td>新規。骨の無い Mesh・Primitive はメッシュ全体を 1 束として揺らす。C# は HairPhysics</td></tr>
       <tr><td>Physics</td><td><a href="strand-physics.html#collider">髪・ワイヤー用の衝突形状</a></td><td>髪とワイヤーだけを押し返す球・カプセル</td><td>なし</td><td>新規</td></tr>
-      <tr><td>Physics</td><td><a href="strand-physics.html#hose">XPBDホース物理</a></td><td>太さのある管を伸び縮みさせる</td><td>なし</td><td>新規。C# は MonoBehaviour の HosePhysics（長さなど）。GrapplerClimb のワイヤーで使用中</td></tr>
-      <tr><td>Physics</td><td><a href="strand-physics.html#reel">ホースリール</a></td><td>ホースの繰り出し・巻き取りとドラムの回転</td><td>なし</td><td>新規。C# の型なし（動作はインスペクターの「動作」で切り替え）</td></tr>
-      <tr><td>Physics</td><td><a href="equipment.html#socket">装備ソケット</a></td><td>装備を付ける場所に名前を付ける</td><td>なし</td><td>新規。回転はラジアン</td></tr>
-      <tr><td>Physics</td><td><a href="equipment.html#attachment">装備アタッチ</a></td><td>装備をソケットやボーンへ追従させる</td><td>なし</td><td>新規。インスペクターだけで使える。C# の型なし</td></tr>
-      <tr><td>Physics</td><td><a href="equipment.html#anchor">射出アンカー</a></td><td>撃ち出して当たった物に刺さる</td><td>なし</td><td>新規。<b>発射を呼ぶ手段が C# にもインスペクターにも無く、今はゲーム中に撃てない</b></td></tr>
-      <tr><td>Inflation</td><td><a href="inflation.html#target">膨張対象</a></td><td>空気量・内圧・変形・浮力・漏れ・破裂</td><td>なし</td><td>新規。C# は ScriptBehaviour の InflationComponent。破裂のイベントは無い（State を見る）。XPBD変形は CPU メッシュが必要</td></tr>
-      <tr><td>Inflation</td><td><a href="inflation.html#source">空気供給元</a></td><td>圧力・流量・残量を持つ空気の元</td><td>なし</td><td>新規。C# は AirSourceComponent</td></tr>
-      <tr><td>Inflation</td><td><a href="inflation.html#connection">空気接続</a></td><td>供給元から膨張対象へ空気を送る</td><td>なし</td><td>新規。「接続中」の既定がオフ。C# は AirConnectionComponent</td></tr>
-      <tr><td>Inflation</td><td><a href="inflation.html#region">膨張区画</a></td><td>膨張対象の中の別々の部屋</td><td>なし</td><td>新規。C# は InflationRegionComponent</td></tr>
-      <tr><td>Destruction</td><td><a href="destruction-reference.html#sliceable">Sliceable</a></td><td>実行中にメッシュを平面で切り、2 つの破片へ分ける</td><td>なし</td><td>Mesh / Skinned Mesh Renderer 専用（Primitive は不可）。C# は ScriptBehaviour から Slice / CanSlice。試し方は<a href="destruction.html#try-slice">破壊</a></td></tr>
+      <tr><td>Physics</td><td><a href="strand-physics.html#hose">XPBDホース物理</a></td><td>太さのある管を伸び縮みさせる</td><td>なし</td><td>新規。C# は HosePhysics（長さ・終点の付け先など）。風場と水に反応。GrapplerClimb・Inflate のワイヤーで使用中</td></tr>
+      <tr><td>Physics</td><td><a href="strand-physics.html#reel">ホースリール</a></td><td>ホースの繰り出し・巻き取りとドラムの回転</td><td>なし</td><td>新規。C# は HoseReel（mode・lineSpeed など）</td></tr>
+      <tr><td>Physics</td><td><a href="cloth.html">XPBD布物理</a></td><td>旗・カーテンなど開いた面を揺らす</td><td>なし</td><td>新規（10/03）。辺を固定でき、風場と Collider に反応。Rigidbody は押し返さない。C# は ClothPhysics</td></tr>
+      <tr><td>Physics</td><td><a href="wind.html">風場</a></td><td>布・Softbody・ワイヤー・Rigidbody へ同じ風を吹かせる</td><td>なし</td><td>新規（10/03）。<b>風速の既定が 0</b>。範囲指定・突風あり。C# は WindField</td></tr>
+      <tr><td>Physics</td><td><a href="equipment.html#socket">装備ソケット</a></td><td>装備を付ける場所に名前を付ける</td><td>なし</td><td>新規。回転はインスペクターでは度（保存はラジアン）</td></tr>
+      <tr><td>Physics</td><td><a href="equipment.html#attachment">装備アタッチ</a></td><td>装備をソケットやボーンへ追従させる</td><td>なし</td><td>新規。C# は EquipmentAttachment（AttachToSocket など）</td></tr>
+      <tr><td>Physics</td><td><a href="equipment.html#anchor">射出アンカー</a></td><td>撃ち出して当たった物に刺さる</td><td>なし</td><td>新規。C# の AnchorProjectile.Launch／Detach／Remount、インスペクターの「発射を実行」で撃てる。膨らむ物に刺さると表面に付いていく</td></tr>
+      <tr><td>Inflation</td><td><a href="inflation.html#target">膨張対象</a></td><td>空気量・内圧・変形・浮力・漏れ・破裂</td><td>なし</td><td>新規。C# は Inflation（MonoBehaviour）、破裂は同じ GameObject のスクリプトへ OnInflationRuptured。割れると膜片が飛び散り本体は消える。浮く高さの上限あり</td></tr>
+      <tr><td>Inflation</td><td><a href="inflation.html#source">空気供給元</a></td><td>圧力・流量・残量を持つ空気の元</td><td>なし</td><td>新規。C# は AirSource</td></tr>
+      <tr><td>Inflation</td><td><a href="inflation.html#connection">空気接続</a></td><td>供給元から膨張対象へ空気を送る</td><td>なし</td><td>新規。「接続中」の既定がオフ。C# は AirConnection</td></tr>
+      <tr><td>Inflation</td><td><a href="inflation.html#region">膨張区画</a></td><td>膨張対象の中の別々の部屋</td><td>なし</td><td>新規。C# は InflationRegion</td></tr>
+      <tr><td>Destruction</td><td><a href="destruction-reference.html#sliceable">Sliceable</a></td><td>実行中にメッシュを平面で切り、2 つの破片へ分ける</td><td>なし</td><td>Mesh・Skinned・Primitive のどれでも可。C# は ScriptBehaviour から Slice / CanSlice。試し方は<a href="destruction.html#try-slice">破壊</a></td></tr>
       <tr><td>Destruction</td><td><a href="destruction-reference.html#destructible">Destructible</a></td><td>事前に割った破片（Destruction Asset）を、Damage や衝突で分離する</td><td>なし</td><td>アセットは Destruction Editor のボロノイ分割で作る。C# は ScriptBehaviour から ApplyRadialDamage / CanDamage</td></tr>
       <tr><td>Destruction</td><td><a href="destruction-reference.html#blade">斬撃</a></td><td>刃の軌跡で Sliceable を切り、Destructible に Damage、風船を割る</td><td>なし</td><td>実行開始で判定がオフに戻るため、C# の BeginSwing() が必要</td></tr>
       <tr><td>Destruction</td><td><a href="destruction-reference.html#balloon">風船</a></td><td>浮いて揺れ、斬撃・衝突・爆風・圧力で割れて連鎖する</td><td>なし</td><td>動的な Rigidbody と Collider が必要。C# は Balloon、OnBalloonPopped</td></tr>

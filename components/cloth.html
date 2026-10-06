@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>XPBD布物理 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Physics</div>
+    <h1>XPBD布物理</h1>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8</p>
+
+    <p>旗・カーテン・マントのような<b>開いた面のメッシュ</b>を、重力・<a href="wind.html">風場</a>・シーンの Collider に合わせて揺らすコンポーネントです。実行中だけ計算し、停止すると元の形に戻ります。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>旗やのれんを風になびかせたいとき</li>
+      <li>カーテンやテーブルクロスを、置いた物に沿って垂らしたいとき</li>
+      <li>キャラクターのマントを揺らしたいとき（Skinned Mesh Renderer でも使えます）</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Physics &gt; XPBD布物理</td></tr>
+      <tr><td>必要なもの</td><td>同じ GameObject の Mesh・Skinned・Primitive のどれかの Renderer（推奨は Mesh Renderer）。Renderer は自動では付きません</td></tr>
+      <tr><td>メッシュ</td><td>開いた三角形メッシュ（板・帯など）。三角形が少ないメッシュ（内蔵の Plane など）は、512 枚以上になるまで自動で細かく分けてから揺らします</td></tr>
+      <tr><td>上限</td><td>描画頂点 60,000、三角形 20,000、物理の点 20,000</td></tr>
+      <tr><td>計算の向き</td><td>布は Collider に押し返されますが、Rigidbody を押し返しません（片方向）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>面密度</td><td><code>surface_density</code></td><td>小数</td><td>0.45</td><td>0.001〜1000</td><td>1 平方メートルあたりの重さ。0 より大きい値が必要です</td></tr>
+      <tr><td>伸びにくさ</td><td><code>stretch_stiffness</code></td><td>小数</td><td>0.92</td><td>0〜1</td><td>1 に近いほど伸びません。下げるとゴム布のように伸びます</td></tr>
+      <tr><td>曲げにくさ</td><td><code>bend_stiffness</code></td><td>小数</td><td>0.18</td><td>0〜1</td><td>上げると厚手の生地のように折れにくくなります</td></tr>
+      <tr><td>重力の倍率</td><td><code>gravity_scale</code></td><td>小数</td><td>1</td><td>-10〜10</td><td>重力に掛ける倍率。1 で通常、0 で重力なし（その場に浮く）、マイナスで上へ落ちます。</td></tr>
+      <tr><td>揺れの減衰</td><td><code>damping</code></td><td>小数</td><td>0.8</td><td>0〜40</td><td>大きいほど早く揺れが収まります</td></tr>
+      <tr><td>風の受けやすさ</td><td><code>wind_drag</code></td><td>小数</td><td>1.5</td><td>0〜40</td><td><a href="wind.html">風場</a> の風にどれだけ流されるか。0 なら風場を無視します</td></tr>
+      <tr><td>追加の風加速度</td><td><code>wind</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>風場とは別に、この布にだけ常にかける加速度（ワールドの向き）</td></tr>
+      <tr><td>固定する辺</td><td><code>pin_axis</code></td><td>選択</td><td>+X側</td><td>固定なし・-X側・-Y側・-Z側・+X側・+Y側・+Z側</td><td>メッシュのローカル軸の端の点を固定します。固定した辺は GameObject の移動・回転に付いていきます</td></tr>
+      <tr><td>固定辺の幅</td><td><code>pin_edge_fraction</code></td><td>小数</td><td>0.025</td><td>0.001〜0.25</td><td>端からどこまでを固定するか（メッシュの大きさに対する割合）</td></tr>
+      <tr><td>拘束反復回数</td><td><code>solver_iterations</code></td><td>整数</td><td>8</td><td>1〜24</td><td>多いほど伸びにくく正確になり、重くなります</td></tr>
+      <tr><td>シーンのColliderと衝突</td><td><code>world_collision</code></td><td>オン・オフ</td><td>オン</td><td></td><td>シーンの Collider に当たって止まります</td></tr>
+      <tr><td>衝突半径</td><td><code>collision_radius</code></td><td>小数</td><td>0.0125</td><td>0〜5</td><td>布の点の太さ。Collider へのめり込みを減らします</td></tr>
+      <tr><td>衝突レイヤー</td><td><code>collision_mask</code></td><td>レイヤー</td><td>すべて</td><td></td><td>当たる相手のレイヤー。外したレイヤーの Collider はすり抜けます。</td></tr>
+      <tr><td>計算点数・拘束数・準備完了・状態</td><td><code>runtime_particles</code>、<code>runtime_constraints</code>、<code>ready</code>、<code>status</code></td><td>読取のみ（実行中）</td><td></td><td></td><td>うまく揺れないときは「状態」の文を見ます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="status">状態に出る文と直し方</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>状態</th><th>直し方</th></tr>
+      <tr><td>布には同じ物体のMesh・Skinned・PrimitiveのいずれかのRendererが必要です</td><td>同じ GameObject に Renderer を付けます</td></tr>
+      <tr><td>布のCPUメッシュを取得できません</td><td>メッシュの読み込みを待つか、Runtime Mesh・Sliceable・Convex Collider・調理済みの Mesh Collider のどれかを付けます</td></tr>
+      <tr><td>布メッシュの上限を超えています / 布の物理点が上限を超えています</td><td>メッシュを軽くします</td></tr>
+      <tr><td>布の面密度は0より大きい値が必要です</td><td>面密度を 0 より大きくします</td></tr>
+      <tr><td>XPBD布を実行中です</td><td>正常に動いています</td></tr>
+    </table>
+    </div>
+
+    <h2 id="csharp">スクリプトから使う（C#）</h2>
+    <p>MonoBehaviour では <code>GetComponent&lt;ClothPhysics&gt;()</code> で取り出せます。メンバーは <code>surfaceDensity</code>、<code>stretchStiffness</code>、<code>bendStiffness</code>、<code>gravityScale</code>、<code>damping</code>、<code>windDrag</code>、<code>wind</code>、<code>pinAxis</code>（0 固定なし〜6 +Z側）、<code>pinEdgeFraction</code>、<code>solverIterations</code>、<code>worldCollision</code>、<code>collisionRadius</code> です。</p>
+<pre><code>using ReplayEngine;
+
+public sealed class FlagGust : MonoBehaviour
+{
+    ClothPhysics? cloth;
+
+    void Start() =&gt; cloth = GetComponent&lt;ClothPhysics&gt;();
+
+    void Update()
+    {
+        // G を押している間だけ、この旗にだけ強い横風を足す
+        if (cloth != null)
+            cloth.wind = Input.GetKey(KeyCode.G) ? new Vector3(8.0f, 0.0f, 0.0f) : Vector3.Zero;
+    }
+}</code></pre>
+
+    <div class="warning" id="limits"><strong>制限</strong>
+      <ul>
+        <li>布どうし、布と自分自身はぶつかりません。</li>
+        <li>Rigidbody を押し返さないので、布で物を持ち上げる・包むことはできません。</li>
+        <li>閉じたメッシュ（球など）を膨らませる用途には <a href="soft-body.html">Softbody</a> か <a href="inflation.html">膨張</a> を使います。</li>
+      </ul>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>風になびく旗を作る</h3>
+    <ol class="steps">
+      <li>GameObject を作り、Primitive Mesh Renderer（形を Plane）を付けて、旗の大きさに拡大します。</li>
+      <li><b>Physics &gt; XPBD布物理</b> を付け、<b>固定する辺</b> を竿側（例：-X側）にします。</li>
+      <li>別の GameObject に <a href="wind.html">風場</a> を付け、<b>風速</b> を 6、<b>突風の強さ</b> を 0.4 にします。</li>
+      <li>実行すると、竿側を残して旗がなびきます。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="wind.html">風場</a></li>
+      <li><a href="strand-physics.html">ワイヤー・ヘア・ホース物理</a></li>
+      <li><a href="soft-body.html">XPBD有限要素Softbody</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

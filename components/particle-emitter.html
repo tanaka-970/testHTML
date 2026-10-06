@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
     <h1>Particle Emitter</h1>
-    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（GPU駆動を追加）</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8（GPU駆動で画像を貼れるようにした）</p>
 
     <p>小さな粒（パーティクル）をたくさん出すコンポーネントです。火花、煙、光の粒などに使います。粒は常にカメラの方を向いた四角で、画像を貼れます。</p>
 
@@ -49,16 +49,16 @@
       <tr><td>初速</td><td><code>start_speed</code></td><td>小数</td><td>2</td><td>0〜200</td><td>出たときの速さ。粒ごとに 0.75〜1.25 倍のばらつきが付きます</td></tr>
       <tr><td>重力</td><td><code>gravity</code></td><td>小数</td><td>1.8</td><td>-100〜100</td><td>下向きに引っぱる強さ。マイナスにすると上へ昇ります</td></tr>
       <tr><td>抵抗</td><td><code>drag</code></td><td>小数</td><td>0.5</td><td>0〜20</td><td>大きいほど早く減速します</td></tr>
-      <tr><td>開始サイズ</td><td><code>start_size</code></td><td>小数</td><td>0.1</td><td>0.001〜100</td><td>出たときの粒の大きさ</td></tr>
+      <tr><td>開始サイズ</td><td><code>start_size</code></td><td>小数</td><td>0.1</td><td>0.001〜100</td><td>出たときの粒の大きさ（m）。寿命の間に「終了サイズ」へ変わっていきます。</td></tr>
       <tr><td>終了サイズ</td><td><code>end_size</code></td><td>小数</td><td>0.02</td><td>0.001〜100</td><td>消える直前の大きさ。寿命に合わせてだんだん変わります</td></tr>
-      <tr><td>開始色</td><td><code>start_color</code></td><td>色</td><td>橙</td><td></td><td>出たときの色</td></tr>
+      <tr><td>開始色</td><td><code>start_color</code></td><td>色</td><td>橙</td><td></td><td>出たときの粒の色と不透明度。寿命の間に「終了色」へ変わっていきます。A を下げると薄く出ます。</td></tr>
       <tr><td>終了色</td><td><code>end_color</code></td><td>色</td><td>赤（不透明度 0）</td><td></td><td>消える直前の色。不透明度を 0 にすると、消えるときにだんだん透明になります</td></tr>
       <tr><td>発生方向</td><td><code>direction</code></td><td>3 つの小数</td><td>0, 1, 0</td><td></td><td>粒が飛ぶ中心の向き。GameObject の回転に合わせて向きが変わります</td></tr>
       <tr><td>拡散角</td><td><code>cone_angle</code></td><td>小数</td><td>0.4</td><td>0〜3.14159</td><td>発生方向からどれだけ広がって飛ぶか（ラジアン）。0 でまっすぐ、1.57 で半球、3.14 で全方向</td></tr>
       <tr><td>画像</td><td><code>sprite</code></td><td>アセット（画像）</td><td>（空）</td><td></td><td>粒に貼る画像。空なら白い四角です</td></tr>
       <tr><td>合成</td><td><code>blend_mode</code></td><td>選択</td><td>加算</td><td></td><td>通常、加算、乗算、スクリーン。加算にすると、粒が重なった所が明るく光ります。炎や火花向きです</td></tr>
-      <tr><td>最大数</td><td><code>max_particles</code></td><td>整数</td><td>10000</td><td>1〜10000</td><td>同時に存在できる粒の数。超える分は出ません</td></tr>
-      <tr><td>GPU駆動</td><td><code>gpu_simulation</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>粒の発生・移動・寿命・描画を GPU で行います。粒が多いときに軽くなります。<b>画像が空のときだけ</b>効き、粒は丸い形になります（<a href="#gpu">下を見てください</a>）</td></tr>
+      <tr><td>最大数</td><td><code>max_particles</code></td><td>整数</td><td>10000</td><td>1〜65536</td><td>同時に存在できる粒の数。超える分は出ません。入力は 65536 までで、GPU駆動では 65536、CPU では 10000 で打ち切ります</td></tr>
+      <tr><td>GPU駆動</td><td><code>gpu_simulation</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>粒の発生・移動・寿命・描画を GPU で行います。粒が多いときに軽くなります。画像を設定すれば GPU駆動でも粒に貼られます。画像が空なら丸い形の粒になります（<a href="#gpu">下を見てください</a>）</td></tr>
     </table>
     </div>
 
@@ -71,7 +71,7 @@
 
     <h2 id="gpu">GPU駆動にしたとき</h2>
     <ul>
-      <li><b>画像</b> を設定していると GPU駆動はオンでも使われず、これまでどおり CPU で動きます。</li>
+      <li><b>画像</b> を設定しても GPU駆動で動き、粒ごとに画像を貼ります（以前は画像があると CPU に戻っていました）。</li>
       <li>色・大きさ・重力・抵抗・拡散角・合成などの設定は同じように効きます。<code>Emit(count)</code> と <code>Clear()</code> も使えます。</li>
       <li>GPU駆動の Emitter は、同じ GameObject に複数付けてもそれぞれ動きます（CPU のときの「上の 1 つだけ」の制限はありません）。</li>
       <li>C# では <code>GpuSimulation</code>（オン・オフ）で切り替えられます。</li>

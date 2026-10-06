@@ -73,11 +73,11 @@
       <tr><td>Box 半径</td><td><code>half_extents</code></td><td>3 つの数</td><td>5, 5, 5</td><td></td><td>Box のとき、中心から各面までの距離（X・Y・Z）です。全体の大きさは 2 倍になります</td></tr>
       <tr><td>Sphere 半径</td><td><code>radius</code></td><td>小数</td><td>5</td><td>0.01〜10000</td><td>Sphere のときの半径です</td></tr>
       <tr><td>密度</td><td><code>density</code></td><td>小数</td><td>0.35</td><td>0〜16</td><td>霧の濃さです。大きいほど向こうが見えなくなります</td></tr>
-      <tr><td>散乱色</td><td><code>color</code></td><td>色</td><td>R 217, G 230, B 255（色は 0〜255 の整数で入れます）</td><td></td><td>霧の色です</td></tr>
+      <tr><td>散乱色</td><td><code>color</code></td><td>色</td><td>R 217, G 230, B 255（色は 0〜255 の整数で入れます）</td><td></td><td>霧の色です。白で普通の霧、黄色っぽくすると砂ぼこり、青っぽくすると冷たい霧のように見えます。</td></tr>
       <tr><td>境界フェード</td><td><code>falloff</code></td><td>小数</td><td>1</td><td>0〜32</td><td>範囲のふちで霧がだんだん薄れる幅です。0 だとふちがくっきり出ます</td></tr>
       <tr><td>ノイズ</td><td><code>noise_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、霧に濃い所・薄い所のむらが付きます</td></tr>
-      <tr><td>ノイズスケール</td><td><code>noise_scale</code></td><td>小数</td><td>0.25</td><td>0.001〜64</td><td>むらの細かさです</td></tr>
-      <tr><td>ノイズ強度</td><td><code>noise_strength</code></td><td>小数</td><td>0.25</td><td>0〜1</td><td>むらの目立ち方です</td></tr>
+      <tr><td>ノイズスケール</td><td><code>noise_scale</code></td><td>小数</td><td>0.25</td><td>0.001〜64</td><td>むらの細かさです。上げるほど細かいむらに、下げるほど大きなむらになります。</td></tr>
+      <tr><td>ノイズ強度</td><td><code>noise_strength</code></td><td>小数</td><td>0.25</td><td>0〜1</td><td>むらの目立ち方です。0 で均一な霧、上げるほど濃い所と薄い所の差が大きくなります。</td></tr>
       <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td></td><td>霧が重なる場所で、どちらを優先するかを決める数です</td></tr>
     </table>
     </div>
@@ -105,7 +105,7 @@
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>範囲</td><td><code>half_extents</code></td><td>3 つの数</td><td>5, 5, 5</td><td></td><td>反射を効かせる箱の、中心から各面までの距離です。部屋なら部屋の大きさに合わせます</td></tr>
       <tr><td>ブレンド距離</td><td><code>blend_distance</code></td><td>小数</td><td>1</td><td>0〜1000</td><td>範囲のふちで、反射が周りとなじむ幅です</td></tr>
-      <tr><td>強さ</td><td><code>intensity</code></td><td>小数</td><td>1</td><td>0〜8</td><td>反射の強さです</td></tr>
+      <tr><td>強さ</td><td><code>intensity</code></td><td>小数</td><td>1</td><td>0〜8</td><td>反射の強さです。0 で映り込まず、上げるほど周りの景色がはっきり映り込みます。</td></tr>
       <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td></td><td>Probe の範囲が重なる場所で、どちらを優先するかを決める数です</td></tr>
       <tr><td>Box Projection</td><td><code>box_projection</code></td><td>オン・オフ</td><td>オン</td><td></td><td>反射を、範囲の箱の壁に貼り付けたように補正します。四角い部屋の中では、映り込みの位置が現実に近くなります</td></tr>
       <tr><td>Capture 解像度</td><td><code>capture_resolution</code></td><td>整数</td><td>128</td><td>32〜1024（32 刻み）</td><td>撮影する画像の大きさです。大きいほど細かい映り込みになり、重く、メモリも使います</td></tr>
@@ -152,7 +152,7 @@
       <tr><td>範囲</td><td><code>half_extents</code></td><td>3 つの数</td><td>10, 5, 10</td><td></td><td>Probe を並べる箱の、中心から各面までの距離です</td></tr>
       <tr><td>Probe 間隔</td><td><code>spacing</code></td><td>3 つの数</td><td>1, 1, 1</td><td></td><td>Probe と Probe の間の距離（X・Y・Z）です。小さいほど細かい光になりますが、Probe の数と負荷が増えます。プロジェクト側の Probe 数の上限を超える場合は、実行時に間隔を自動で広げ、インスペクターに橙色で知らせます</td></tr>
       <tr><td>1フレーム更新数</td><td><code>probes_per_frame</code></td><td>整数</td><td>8</td><td>1〜128</td><td>Realtime のとき、1 フレームで更新する Probe の数です。大きいと早く反映されますが、そのぶん重くなります</td></tr>
-      <tr><td>GI 強さ</td><td><code>intensity</code></td><td>小数</td><td>1</td><td>0〜8</td><td>間接光の明るさです</td></tr>
+      <tr><td>GI 強さ</td><td><code>intensity</code></td><td>小数</td><td>1</td><td>0〜8</td><td>間接光の明るさです。0 で回り込む光が無くなり、上げるほど影の中や部屋の奥が明るくなります。</td></tr>
       <tr><td>履歴保持</td><td><code>hysteresis</code></td><td>小数</td><td>0.96</td><td>0〜0.999</td><td>前の結果をどれだけ残すかです。大きいと光の変化がゆっくりで安定し、小さいと変化に素早く追従しますがちらつきやすくなります</td></tr>
       <tr><td>Normal Bias</td><td><code>normal_bias</code></td><td>小数</td><td>0.15</td><td>0〜2</td><td>面の向きに沿って測る位置をずらす量です。壁際で光が漏れるときに上げます</td></tr>
       <tr><td>View Bias</td><td><code>view_bias</code></td><td>小数</td><td>0.05</td><td>0〜2</td><td>カメラの方向に測る位置をずらす量です</td></tr>

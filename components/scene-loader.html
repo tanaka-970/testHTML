@@ -43,7 +43,7 @@
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
       <tr><td>進捗</td><td><code>progress</code></td><td>小数</td><td>0〜1</td><td>読み込みの進み具合。1 で完了</td></tr>
-      <tr><td>読込中</td><td><code>is_loading</code></td><td>オン・オフ</td><td></td><td>読み込み中ならオン</td></tr>
+      <tr><td>読込中</td><td><code>is_loading</code></td><td>オン・オフ</td><td></td><td>読み込み中ならオン（読取のみ）。読み込みが終わるとオフに戻ります。ロード画面を出す・消す合図に使えます。</td></tr>
       <tr><td>状態</td><td><code>state</code></td><td>選択</td><td></td><td>Idle、Loading、ReadyToSwap、Swapping、Completed、Failed のどれか</td></tr>
     </table>
     </div>

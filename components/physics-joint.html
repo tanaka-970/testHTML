@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Physics</div>
     <h1>Physics Joint</h1>
-    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8（接続先アンカーの自動設定・破断・C# の型を追加）</p>
 
     <p>2 つの Rigidbody を、固定・ヒンジ（回転）・スライダー（平行移動）・スプリング（ばね）のどれかでつなぎます。接続先を空にすると、ワールドの 1 点につなぎます。</p>
 
@@ -44,24 +44,39 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
-      <tr><td>種類</td><td><code>joint_kind</code></td><td>選択</td><td>固定</td><td>固定・ヒンジ・スライダー・スプリング</td><td></td></tr>
+      <tr><td>種類</td><td><code>joint_kind</code></td><td>選択</td><td>固定</td><td>固定・ヒンジ・スライダー・スプリング</td><td><b>固定</b>：くっついて離れない。<b>ヒンジ</b>：軸のまわりにだけ回る（扉）。<b>スライダー</b>：軸の方向にだけ動く（引き出し）。<b>スプリング</b>：距離をばねで保つ（吊り看板）。</td></tr>
       <tr><td>接続先 Rigidbody</td><td><code>connected_body</code></td><td>GameObject</td><td>（空）</td><td></td><td>Rigidbody を持つ GameObject。空ならワールドへつなぎます</td></tr>
       <tr><td>自分側アンカー</td><td><code>anchor_a</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>つなぐ点。自分のローカル座標</td></tr>
-      <tr><td>接続先アンカー</td><td><code>anchor_b</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>接続先のローカル座標。<b>接続先が空のときはワールド座標</b></td></tr>
+      <tr><td>接続先アンカー</td><td><code>anchor_b</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>接続先のローカル座標。<b>接続先が空のときはワールド座標</b>。0, 0, 0 のままなら下の自動設定が使われます</td></tr>
+      <tr><td>接続先アンカーを自動設定</td><td><code>auto_connected_anchor</code></td><td>オン・オフ</td><td>オン</td><td></td><td>接続先アンカーが 0, 0, 0 のとき、自分側アンカーの<b>今の位置</b>でつなぎます。置いた場所のまま固定・回転させたいときは、接続先アンカーを入れなくてよくなります</td></tr>
       <tr><td>自分側の軸・接続先の軸</td><td><code>axis_a</code>、<code>axis_b</code></td><td>3 つの小数</td><td>1, 0, 0</td><td></td><td>ヒンジの回転軸、スライダーの移動方向（ローカルの向き）。固定では使いません</td></tr>
       <tr><td>可動範囲制限を使う</td><td><code>use_limits</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>ヒンジとスライダーで使います</td></tr>
       <tr><td>下限・上限</td><td><code>lower_limit</code>、<code>upper_limit</code></td><td>小数</td><td>-45、45</td><td>-1000〜1000</td><td>ヒンジは<b>度</b>、スライダーは<b>距離</b></td></tr>
       <tr><td>最小距離・最大距離</td><td><code>minimum_distance</code>、<code>maximum_distance</code></td><td>小数</td><td>0、1</td><td>0〜1000</td><td>スプリングで、アンカー同士の距離をこの間に保ちます</td></tr>
       <tr><td>ばね周波数</td><td><code>spring_frequency_hz</code></td><td>小数</td><td>2</td><td>0〜30</td><td>1 秒に何回揺れるか。重さが変わっても周期は変わりません</td></tr>
-      <tr><td>ばね減衰比</td><td><code>spring_damping_ratio</code></td><td>小数</td><td>0.5</td><td>0〜1</td><td>1 で揺れずに戻ります</td></tr>
+      <tr><td>ばね減衰比</td><td><code>spring_damping_ratio</code></td><td>小数</td><td>0.5</td><td>0〜1</td><td>0 に近いほどびよんびよんと長く揺れ、1 で揺れずにすっと戻ります。</td></tr>
+      <tr><td>破断する力・破断するトルク</td><td><code>break_force</code>、<code>break_torque</code></td><td>小数</td><td>0、0</td><td>0〜10 億</td><td>つなぎ目にかかる力（N）・ねじる力（N·m）がこれを超えると切れます。0 なら切れません。切れると <code>OnJointBreak</code> が届きます</td></tr>
       <tr><td>状態</td><td><code>status</code></td><td>文字（読取のみ）</td><td></td><td></td><td>「同じ GameObject に Rigidbody が必要です」「接続先にも Rigidbody が必要です」「選択中の物理 Backend は Joint に対応していません」など</td></tr>
     </table>
     </div>
 
-    <div class="warning"><strong>ワールドにつなぐときの注意</strong>接続先を空にしたとき、<b>接続先アンカー</b> はワールド座標です。既定の 0, 0, 0 のままだと、物体がワールドの原点へ引き寄せられます。吊るしたい点のワールド座標を入れてください。</div>
+    <div class="note"><strong>ワールドにつなぐとき</strong>接続先を空にしたとき、<b>接続先アンカー</b> はワールド座標です。0, 0, 0 のままで <b>接続先アンカーを自動設定</b> がオン（既定）なら、置いた位置でつながります。自動設定をオフにして 0, 0, 0 のままにすると、物体がワールドの原点へ引き寄せられるので注意してください。</div>
+    <p>Physics Joint を選ぶと、シーンビューにアンカー・軸・接続先と、ヒンジの可動範囲が表示されます（自動設定で決まった位置も含めて表示します）。</p>
 
     <h2 id="csharp">スクリプトから使う（C#）</h2>
-    <p>C# の型はまだありません。ScriptBehaviour からは、プロパティを内部名で読み書きできます（<a href="../csharp/api-components.html#generic">型の無い部品をさわる</a>。値を変えるとつながりを作り直します）。実行中に有効・無効を切り替えるには、GameObject ごと <code>SetActive</code> します（コンポーネントが無効になるとつながりが外れます）。</p>
+    <p>MonoBehaviour では <code>GetComponent&lt;PhysicsJoint&gt;()</code> で取り出せます。メンバーは <code>jointKind</code>（Unity 風の <code>kind</code> も同じ値）、<code>connectedBody</code>（<code>Rigidbody</code>）、<code>anchorA</code>、<code>anchorB</code>、<code>axisA</code>、<code>axisB</code>、<code>useLimits</code>、<code>lowerLimit</code>、<code>upperLimit</code>、<code>minimumDistance</code>、<code>maximumDistance</code>、<code>springFrequencyHz</code>、<code>springDampingRatio</code>、<code>breakForce</code>、<code>breakTorque</code>、読取のみの <code>broken</code>・<code>currentForceMagnitude</code>・<code>currentTorqueMagnitude</code>・<code>status</code> です。値を変えるとつながりを作り直します。</p>
+    <p>切れたときは、Physics Joint と<b>同じ GameObject</b> のスクリプトに <code>OnJointBreak(JointBreakInfo info)</code> が届きます。<code>info.connectedObject</code>（接続先）、<code>BreakForce</code>・<code>BreakTorque</code>（切れたときの力）、<code>JointKind</code> が入っています。</p>
+<pre><code>using ReplayEngine;
+
+public sealed class RopeBridgePlank : MonoBehaviour
+{
+    // 踏み板のつなぎ目が切れたら、落ちる音を鳴らして 3 秒後に消す
+    void OnJointBreak(JointBreakInfo info)
+    {
+        GetComponent&lt;AudioSource&gt;()?.Play();
+        Destroy(gameObject, 3.0f);
+    }
+}</code></pre>
 
     <h2 id="howto">使い方の例</h2>
     <h3>扉を蝶番で回す</h3>
@@ -69,13 +84,13 @@
       <li>扉の GameObject に Rigidbody（動的）と Box Collider を付けます。</li>
       <li><b>Physics Joint</b> を付け、<b>種類</b> をヒンジにします。</li>
       <li><b>自分側アンカー</b> を扉の端（例：幅 1 なら <code>-0.5, 0, 0</code>）、<b>自分側の軸</b> を <code>0, 1, 0</code>（縦軸）にします。</li>
-      <li><b>接続先アンカー</b> に、その蝶番のワールド座標を入れます（接続先は空）。</li>
+      <li><b>接続先</b> は空、<b>接続先アンカー</b> は 0, 0, 0 のままにします（自動設定で、今の蝶番の位置でつながります）。</li>
       <li><b>可動範囲制限を使う</b> をオンにし、下限 0、上限 100 にすると、片側にだけ開きます。</li>
     </ol>
     <h3>天井から看板をばねで吊るす</h3>
     <ol class="steps">
       <li>看板に Rigidbody と Collider を付け、Physics Joint の <b>種類</b> をスプリングにします。</li>
-      <li><b>自分側アンカー</b> を看板の上端、<b>接続先アンカー</b> を天井の点のワールド座標にします。</li>
+      <li><b>自分側アンカー</b> を看板の上端にし、<b>接続先アンカー</b> は 0, 0, 0 のままにします（今の上端の位置が吊り点になります）。別の点から吊るすときは、その点のワールド座標を入れます。</li>
       <li><b>最小距離</b> 0、<b>最大距離</b> 1、<b>ばね周波数</b> 2、<b>ばね減衰比</b> 0.3 から調整します。</li>
     </ol>
 

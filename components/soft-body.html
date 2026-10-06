@@ -17,9 +17,9 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Physics</div>
     <h1>XPBD有限要素Softbody</h1>
-    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8</p>
 
-    <p>ゼリーやゴムのように、ぶつかるとへこんで戻る柔らかい物を作ります。メッシュの中を四面体（有限要素）に分け、XPBD で変形させて、シーンの Collider とぶつけます。</p>
+    <p>ゼリーやゴムのように、ぶつかるとへこんで戻る柔らかい物を作ります。メッシュの中を四面体（有限要素）に分け、辺の長さと体積を保つ XPBD で変形させて、シーンの Collider とぶつけます。当たった動的な Rigidbody も押し返します。</p>
 
     <h2 id="when">こんなときに使う</h2>
     <ul>
@@ -32,9 +32,8 @@
     <table>
       <tr><th>項目</th><th>内容</th></tr>
       <tr><td>コンポーネントを追加での場所</td><td>Physics &gt; XPBD有限要素Softbody</td></tr>
-      <tr><td>必須</td><td>Mesh Renderer（追加すると一緒に付きます）</td></tr>
-      <tr><td>もう 1 つ必要なもの</td><td>CPU 側のメッシュ。<b>Sliceable</b> か <b>Convex Collider</b>（頂点の元をメッシュに）を同じ GameObject に付けると用意されます。Mesh Renderer だけでは「Softbody用のCPUメッシュを待っています」のまま動きません</td></tr>
-      <tr><td>使えるメッシュ</td><td>閉じた（穴のない）凸に近い形。中心から表面へ四面体を作るため、へこみの大きい形は「四面体が退化しています」になります。頂点・三角形とも 20,000 まで</td></tr>
+      <tr><td>必要なもの</td><td>同じ GameObject の Mesh・Skinned・Primitive のどれかの Renderer。メッシュは実行開始時に Renderer から読み込みます（Sliceable や Convex Collider は不要になりました）。Renderer は自動では付きません</td></tr>
+      <tr><td>使えるメッシュ</td><td>閉じた（穴のない）形。凸に近い形は重心から四面体を作り、へこんだ形は内部の格子に表面を埋め込んで動かします（<b>四面体の作り方</b>）。頂点・三角形とも 20,000 まで</td></tr>
       <tr><td>計算のタイミング</td><td>実行中の FixedUpdate</td></tr>
       <tr><td>Rigidbody</td><td>使いません（Softbody 自身が動きます）</td></tr>
     </table>
@@ -47,37 +46,41 @@
       <tr><td>密度</td><td><code>density</code></td><td>小数</td><td>500</td><td>0.01〜100000</td><td>重さ。体積 × 密度が「計算質量」になります</td></tr>
       <tr><td>ヤング率</td><td><code>youngs_modulus</code></td><td>小数</td><td>18000</td><td>1〜10000000</td><td>硬さ。大きいほど形を保ちます</td></tr>
       <tr><td>ポアソン比</td><td><code>poisson_ratio</code></td><td>小数</td><td>0.32</td><td>0〜0.49</td><td>つぶしたとき横へ広がる度合い。0.49 に近いほど体積を保ちます</td></tr>
-      <tr><td>重力の倍率</td><td><code>gravity_scale</code></td><td>小数</td><td>1</td><td>-10〜10</td><td></td></tr>
+      <tr><td>重力の倍率</td><td><code>gravity_scale</code></td><td>小数</td><td>1</td><td>-10〜10</td><td>重力に掛ける倍率。1 で通常、0 で重力なし（その場に浮く）、マイナスで上へ落ちます。</td></tr>
       <tr><td>速度の減衰</td><td><code>damping</code></td><td>小数</td><td>1.5</td><td>0〜40</td><td>大きいほど揺れが早く収まります</td></tr>
-      <tr><td>風の加速度</td><td><code>wind</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td></td></tr>
-      <tr><td>拘束反復回数</td><td><code>solver_iterations</code></td><td>整数</td><td>5</td><td>1〜24</td><td></td></tr>
-      <tr><td>シーンのColliderと衝突</td><td><code>world_collision</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td></tr>
-      <tr><td>衝突半径</td><td><code>collision_radius</code></td><td>小数</td><td>0.025</td><td>0〜5</td><td></td></tr>
-      <tr><td>衝突レイヤー</td><td><code>collision_mask</code></td><td>レイヤー</td><td>すべて</td><td></td><td></td></tr>
-      <tr><td>衝撃の中心</td><td><code>impulse_position</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>ワールド座標</td></tr>
+      <tr><td>風の加速度</td><td><code>wind</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>風場とは別に、常にかける加速度（ワールドの向き、m/秒²）。0, 0, 0 で何もかかりません。値を大きくするほどその向きへ強く流されます。</td></tr>
+      <tr><td>風の受けやすさ</td><td><code>wind_drag</code></td><td>小数</td><td>1.5</td><td>0〜40</td><td><a href="wind.html">風場</a> の風に流される度合い。0 なら風場を無視します</td></tr>
+      <tr><td>拘束反復回数</td><td><code>solver_iterations</code></td><td>整数</td><td>5</td><td>1〜24</td><td>1 回の計算で形を戻す回数。上げるほど硬く形を保ち、つぶれにくくなりますが重くなります。</td></tr>
+      <tr><td>四面体の作り方</td><td><code>tetra_mode</code></td><td>選択</td><td>自動</td><td>自動・重心から・内部の格子</td><td>自動なら、重心から張れない凹んだ形のときだけ内部の格子を使います。格子は表面の点で当たりを取り、押し戻しを格子点へ配ります</td></tr>
+      <tr><td>格子の細かさ</td><td><code>lattice_resolution</code></td><td>整数</td><td>8</td><td>2〜24</td><td>内部の格子の 1 辺の分割数。細かいほど形に沿いますが重くなります</td></tr>
+      <tr><td>剛体への押し返し</td><td><code>rigidbody_coupling</code></td><td>小数</td><td>1</td><td>0〜1</td><td>当たった動的 Rigidbody へ返す力の強さ。0 なら以前と同じく Softbody だけが押し戻されます</td></tr>
+      <tr><td>シーンのColliderと衝突</td><td><code>world_collision</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オンにするとシーンの Collider に当たって止まります。オフにすると通り抜けますが、計算は軽くなります。</td></tr>
+      <tr><td>衝突半径</td><td><code>collision_radius</code></td><td>小数</td><td>0.025</td><td>0〜5</td><td>表面の点の太さ。上げるほど Collider から離れた所で止まり、めり込みにくくなります。</td></tr>
+      <tr><td>衝突レイヤー</td><td><code>collision_mask</code></td><td>レイヤー</td><td>すべて</td><td></td><td>当たる相手のレイヤー。外したレイヤーの Collider はすり抜けます。</td></tr>
+      <tr><td>衝撃の中心</td><td><code>impulse_position</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>ワールド座標。「衝撃を実行」のとき、ここから「衝撃の範囲」内の点に力を配ります。</td></tr>
       <tr><td>要求する衝撃</td><td><code>requested_impulse</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>範囲内の点に分ける衝撃の合計。頂点が多くても合計は同じです</td></tr>
-      <tr><td>衝撃の範囲</td><td><code>impulse_radius</code></td><td>小数</td><td>0.5</td><td>0.001〜100</td><td></td></tr>
+      <tr><td>衝撃の範囲</td><td><code>impulse_radius</code></td><td>小数</td><td>0.5</td><td>0.001〜100</td><td>衝撃を配る半径。小さいとその場所だけ深くへこみ、大きいと広い範囲がまとめて押されます。</td></tr>
       <tr><td>衝撃を実行</td><td><code>request_impulse</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると次の FixedUpdate で 1 回だけ衝撃を加え、自動でオフに戻ります（保存されません）</td></tr>
       <tr><td>計算質量・並進運動量・計算点数・有限要素数・準備完了・状態</td><td><code>total_mass</code>、<code>linear_momentum</code>、<code>runtime_particles</code>、<code>runtime_tetrahedra</code>、<code>ready</code>、<code>status</code></td><td>読取のみ</td><td></td><td></td><td>動かないときは「状態」を見てください</td></tr>
     </table>
     </div>
 
     <h2 id="csharp">スクリプトから使う（C#）</h2>
-    <p>C# の型はまだありませんが、ScriptBehaviour からはプロパティを内部名で読み書きできます（<a href="../csharp/api-components.html#generic">型の無い部品をさわる</a>）。叩いた所をへこませる例：</p>
-<pre><code>// ScriptBehaviour の中。softBody は Softbody を持つ GameObject の ObjectHandle
-var found = Runtime.GetComponent(softBody, ComponentTypes.IdOf("SoftBodyComponent"));
-if (found.Succeeded)
+    <p>MonoBehaviour では <code>GetComponent&lt;SoftBody&gt;()</code> で取り出せます。メンバーは <code>density</code>、<code>youngsModulus</code>、<code>poissonRatio</code>、<code>damping</code>、<code>gravityScale</code>、<code>wind</code>、<code>solverIterations</code>、<code>rigidbodyCoupling</code>、読取のみの <code>ready</code>・<code>totalMass</code>・<code>particleCount</code>・<code>status</code>、<code>ApplyImpulse(位置, 力積, 範囲 = 0.5f)</code>、<code>ResetSimulation()</code> です。叩いた所をへこませる例：</p>
+<pre><code>using ReplayEngine;
+
+public sealed class JellyTarget : MonoBehaviour
 {
-    var body = new ComponentAccessor(found.Value);
-    body.SetVector3("impulse_position", hitPoint);          // ワールド座標
-    body.SetVector3("requested_impulse", direction * 5.0f);  // 合計の衝撃
-    body.SetBool("request_impulse", true);                   // 次の FixedUpdate で 1 回だけ
+    // 弾が当たった位置（ワールド座標）と向きを受け取り、その周りだけへこませる
+    public void Hit(Vector3 point, Vector3 direction)
+    {
+        GetComponent&lt;SoftBody&gt;()?.ApplyImpulse(point, direction * 5.0f, 0.3f);
+    }
 }</code></pre>
 
     <div class="warning"><strong>制限</strong>
       <ul>
-        <li>Primitive Mesh Renderer（Cube や Sphere）には付けられません。モデルファイルの Mesh Renderer を使います。</li>
-        <li>剛体（Rigidbody）とは片方向です。Softbody は Collider に押し返されますが、Rigidbody を押し動かしません。</li>
+        <li>押し返す相手は動的な Rigidbody だけです。静的な Collider は Softbody を押し返すだけで動きません。</li>
         <li>Softbody どうしはぶつかりません。</li>
       </ul>
     </div>
@@ -86,8 +89,7 @@ if (found.Succeeded)
     <h3>落ちてつぶれるゼリー</h3>
     <ol class="steps">
       <li>丸みのある閉じたモデル（球、カプセル、角を丸めた箱など）を Mesh Renderer で置きます。</li>
-      <li><b>Convex Collider</b> を付け、頂点の元をメッシュにします（CPU メッシュを用意するため）。</li>
-      <li><b>Physics &gt; XPBD有限要素Softbody</b> を付けます。</li>
+            <li><b>Physics &gt; XPBD有限要素Softbody</b> を付けます。</li>
       <li>下に床（Box Collider）を置いて実行します。<b>状態</b> が「XPBD有限要素Softbodyを実行中です。」になれば動いています。</li>
       <li>柔らかすぎるときは <b>ヤング率</b> を上げ、揺れが長いときは <b>速度の減衰</b> を上げます。</li>
     </ol>

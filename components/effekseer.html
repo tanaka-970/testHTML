@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
     <h1>Effekseer Emitter と エフェクト作成ウィンドウ</h1>
-    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8（ループ再生・C# の型・ビルド時の状態表示を追加）</p>
 
     <p>無料のエフェクト作成ツール <b>Effekseer</b> で作った <code>.efkefc</code> を、GameObject の位置で再生するコンポーネントと、作成・試し再生のウィンドウです。エンジンには Effekseer 1.80.7 の DirectX 12 用の再生部分が入っています。エフェクトの編集そのものは、別のアプリの Effekseer Editor で行います。</p>
 
@@ -65,7 +65,8 @@
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>Effekseer Effect</td><td><code>effect</code></td><td>アセット（Effekseer Effect）</td><td>（空）</td><td></td><td>再生する <code>.efkefc</code></td></tr>
       <tr><td>開始時に再生</td><td><code>play_on_start</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オンの間、エフェクトを出します。<b>オフにすると止まります</b></td></tr>
-      <tr><td>再生速度</td><td><code>playback_speed</code></td><td>小数</td><td>1</td><td>0.01〜10</td><td></td></tr>
+      <tr><td>ループ再生</td><td><code>loop</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>再生が終わったら、次のフレームで最初から出し直します。ループしないエフェクトでも出し続けられます</td></tr>
+      <tr><td>再生速度</td><td><code>playback_speed</code></td><td>小数</td><td>1</td><td>0.01〜10</td><td>1 でそのまま、2 で倍速、0.5 でゆっくり再生します。</td></tr>
       <tr><td>スケール</td><td><code>scale</code></td><td>小数</td><td>1</td><td>0.001〜100</td><td>GameObject の拡大率にさらに掛けます</td></tr>
     </table>
     </div>
@@ -74,7 +75,7 @@
     <p>Emitter が「出す状態」になった瞬間に 1 回再生します。ループしないエフェクトは、終わったらそのまま消えたままです。もう一度出すには、いったん「出さない状態」にしてから戻します。</p>
     <ul>
       <li>出さない状態：GameObject を非アクティブにする、Emitter を無効にする、<b>開始時に再生</b> をオフにする、エフェクトを差し替える</li>
-      <li>C# からは、GameObject の <code>SetActive(false)</code> → 次のフレームで <code>SetActive(true)</code> とします（Effekseer Emitter の C# の型はまだありません）。ScriptBehaviour からは、<code>play_on_start</code> を false → true と書き換えても出し直せます（<a href="../csharp/api-components.html#generic">型の無い部品をさわる</a>）</li>
+      <li>C# からは、MonoBehaviour で <code>GetComponent&lt;EffekseerEmitter&gt;()</code> を取り、<code>Play()</code> で出し直し、<code>Stop()</code> で止めます。ほかに <code>playbackSpeed</code>、<code>scale</code>、<code>loop</code>、読取のみの <code>isPlaying</code>・<code>status</code> があります</li>
     </ul>
 <pre><code>using System.Collections;
 using ReplayEngine;
@@ -96,7 +97,7 @@ public class HitEffect : MonoBehaviour
 
     <div class="warning"><strong>制限</strong>
       <ul>
-        <li>Win32 の構成、または準備（SetupEffekseer.ps1）をしていないビルドでは何も出ません。</li>
+        <li>Win32 の構成、または準備（SetupEffekseer.ps1）をしていないビルドでは何も出ません。x64 でビルドすると、出力に「RePlay Effekseer runtime: ENABLED」か、無効の警告が毎回出るので、そこで確かめられます。msbuild に <code>/p:ReplayAutoSetupEffekseer=true</code> を付けると、ビルドの前に準備を自動で行います（そのビルドでは無効のままで、もう一度ビルドすると有効になります）。</li>
         <li>Effekseer の再生部分は DirectX 12 用だけです。</li>
         <li>エフェクトのファイルの置き場所は <code>resources/Effects</code> の中にしてください。テクスチャなどはエフェクトからの相対パスで読みます。</li>
       </ul>

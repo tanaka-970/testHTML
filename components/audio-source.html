@@ -46,7 +46,7 @@
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>Clip Path</td><td><code>clip_path</code></td><td>文字</td><td>（空）</td><td></td><td>鳴らす WAV ファイルの場所。プロジェクトのフォルダからの相対パスで書きます（例：<code>resources/Sounds/jump.wav</code>）</td></tr>
       <tr><td>Loop</td><td><code>loop</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>最後まで鳴ったら最初から繰り返すかどうか</td></tr>
-      <tr><td>Volume</td><td><code>volume</code></td><td>小数</td><td>1</td><td>0〜4</td><td>音量の倍率</td></tr>
+      <tr><td>Volume</td><td><code>volume</code></td><td>小数</td><td>1</td><td>0〜4</td><td>音量の倍率。1 で素材の音量どおり、0 で無音、0.5 で半分の大きさになります。</td></tr>
       <tr><td>Pitch</td><td><code>pitch</code></td><td>小数</td><td>1</td><td>0.25〜4</td><td>再生の速さ（音の高さ）。2 で 2 倍の速さ・1 オクターブ高く、0.5 で半分の速さ・低くなります</td></tr>
       <tr><td>Play On Start</td><td><code>play_on_start</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>ゲームの実行を始めたとき（またはこのコンポーネントが有効になったとき）に自動で鳴らすかどうか</td></tr>
       <tr><td>Spatial</td><td><code>spatial</code></td><td>選択</td><td>2D</td><td>2D / 3D</td><td>2D は距離に関係なく同じ音量で鳴ります。3D は <a href="audio-listener.html">Audio Listener</a> との距離と左右の位置で聞こえ方が変わります</td></tr>

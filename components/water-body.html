@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Water Body</div>
     <h1>Water Body（水域）</h1>
-    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（泡と入水のしぶきを追記）</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8（Mesh の形・流体の波・着水の粒を追加）</p>
 
     <p>海（Ocean）や湖（Lake）の水面を作る部品です。波の動き、光の反射、水を通した屈折、泡、水中に入ったときの画面の色までをこの 1 つで持ちます。水面の高さや流れを物理の側から調べる用途にも使われ、<a href="physics.html#buoyancy">Buoyancy</a> を付けた物体はこの水面に浮きます。</p>
 
@@ -63,7 +63,8 @@
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>種類</td><td><code>kind</code></td><td>選択</td><td>Ocean</td><td></td><td>Ocean か Lake を選びます</td></tr>
-      <tr><td>Lake Shape</td><td><code>shape</code></td><td>選択</td><td>Box</td><td></td><td>Lake のときの水の形です。Box（箱形）か Sphere（球形）</td></tr>
+      <tr><td>Lake Shape</td><td><code>shape</code></td><td>選択</td><td>Box</td><td></td><td>Lake のときの水の形です。Box（箱形）、Sphere（球形）、<b>Mesh</b>（下の Water Mesh のモデルの形）</td></tr>
+      <tr><td>Water Mesh</td><td><code>mesh_asset</code></td><td>アセット（モデル）</td><td>（空）</td><td></td><td>Lake Shape が Mesh のとき、水として描くモデル。水面の高さの問い合わせ（浮力など）も、このモデルの三角形の形を使います</td></tr>
       <tr><td>Lake Extent</td><td><code>extent</code></td><td>3 つの数</td><td>100, 1, 100</td><td></td><td>Lake の大きさです。X・Y・Z（横・深さ・奥行き）の順に入れます</td></tr>
       <tr><td>Ocean Extent</td><td><code>ocean_extent</code></td><td>小数</td><td>750</td><td>16〜100000</td><td>Ocean の水面の広がりです</td></tr>
       <tr><td>Grid Resolution</td><td><code>grid_resolution</code></td><td>整数</td><td>96</td><td>8〜256</td><td>水面の細かさ（網目の数）です。大きいと波が滑らかになり、重くなります</td></tr>
@@ -79,9 +80,10 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
-      <tr><td>Wave Source</td><td><code>wave_source</code></td><td>選択</td><td>Gerstner</td><td></td><td>波の作り方です。<b>None</b> は波なし（平らな水面）、<b>Gerstner</b> は計算で波を作ります。<b>Texture (reserved)</b> は将来用に予約されていて、今は使えません</td></tr>
+      <tr><td>Wave Source</td><td><code>wave_source</code></td><td>選択</td><td>Gerstner</td><td></td><td>波の作り方です。<b>None</b> は波なし（平らな水面）、<b>Gerstner</b> は計算で波を作ります。<b>Texture (reserved)</b> は将来用に予約されていて、今は使えません。<b>Fluid Simulation</b> は Lake Extent の範囲を Grid Resolution（最大 128）の網目で解く浅い水の流体で、物が着水すると波が立ち、その高さと流れが浮力・水中判定に使われます</td></tr>
+      <tr><td>流体の平均深さ・流体の重力・流体の減衰</td><td><code>simulation_depth</code>、<code>simulation_gravity</code>、<code>simulation_damping</code></td><td>小数</td><td>1、9.81、0.8</td><td>0.01〜100、0.01〜100、0〜20</td><td>Fluid Simulation のときの波の伝わり方。深いほど・重力が大きいほど波が速く進み、減衰が大きいほど早く静まります</td></tr>
       <tr><td>Wave Count</td><td><code>wave_count</code></td><td>整数</td><td>4</td><td>0〜8</td><td>重ねる波の数です。下の Wave 1〜8 のうち、この数だけが使われます</td></tr>
-      <tr><td>Wave Scale</td><td><code>wave_scale</code></td><td>小数</td><td>1</td><td>0〜8</td><td>波全体の高さの倍率です</td></tr>
+      <tr><td>Wave Scale</td><td><code>wave_scale</code></td><td>小数</td><td>1</td><td>0〜8</td><td>波全体の高さの倍率です。0 で平らになり、上げるほど荒れた海になります（波長は変わりません）。</td></tr>
       <tr><td>Time Scale</td><td><code>time_scale</code></td><td>小数</td><td>1</td><td>−4〜4</td><td>波の進む速さです。マイナスにすると逆向きに進みます</td></tr>
       <tr><td>Wave 1〜8 Amplitude</td><td><code>wave0_amplitude</code> 〜 <code>wave7_amplitude</code></td><td>小数</td><td>0.32 / 0.18 / 0.10 / 0.06 / 0.035 / 0.025 / 0.018 / 0.012</td><td>0〜20</td><td>各波の高さ（振れ幅）です。番号が大きいほど細かく小さな波が既定です</td></tr>
       <tr><td>Wave 1〜8 Wavelength</td><td><code>wave0_wavelength</code> 〜 <code>wave7_wavelength</code></td><td>小数</td><td>12 / 6.5 / 3.2 / 1.7 / 0.95 / 0.62 / 0.41 / 0.28</td><td>0.1〜500</td><td>各波の波長（山から山までの長さ）です。大きいとゆったりした波になります</td></tr>
@@ -97,8 +99,8 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
-      <tr><td>Shallow Color</td><td><code>shallow_color</code></td><td>色</td><td>R 13, G 107, B 133</td><td></td><td>浅いところの水の色</td></tr>
-      <tr><td>Deep Color</td><td><code>deep_color</code></td><td>色</td><td>R 1, G 14, B 28</td><td></td><td>深いところの水の色</td></tr>
+      <tr><td>Shallow Color</td><td><code>shallow_color</code></td><td>色</td><td>R 13, G 107, B 133</td><td></td><td>浅いところ（水底や岸が近い所）の水の色。明るい色にすると、浅瀬が透き通って見えます。</td></tr>
+      <tr><td>Deep Color</td><td><code>deep_color</code></td><td>色</td><td>R 1, G 14, B 28</td><td></td><td>深いところの水の色。暗い色にすると、深い所ほど暗く沈んだ水になります。</td></tr>
       <tr><td>Foam Color</td><td><code>foam_color</code></td><td>色</td><td>R 235, G 250, B 255</td><td></td><td>波頭や岸辺にできる泡の色</td></tr>
       <tr><td>Roughness</td><td><code>roughness</code></td><td>小数</td><td>0.08</td><td>0〜1</td><td>水面のざらつきです。小さいほど鏡のように映り、大きいとぼやけます</td></tr>
       <tr><td>Refraction</td><td><code>refraction_strength</code></td><td>小数</td><td>0.055</td><td>0〜0.5</td><td>水の中の物が曲がって見える強さです</td></tr>
@@ -124,6 +126,7 @@
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>説明</th></tr>
       <tr><td>Gameplay Query</td><td><code>query_enabled</code></td><td>オン・オフ</td><td>オン</td><td>物理などが「この位置の水面の高さ・流れ」を調べられるようにします</td></tr>
       <tr><td>Allow Buoyancy</td><td><code>allow_buoyancy</code></td><td>オン・オフ</td><td>オン</td><td>Buoyancy を付けた物体をこの水で浮かせるかどうか。Gameplay Query もオンである必要があります</td></tr>
+      <tr><td>着水のしぶきと泡の粒</td><td><code>splash_particles</code></td><td>オン・オフ</td><td>オン</td><td>物や <a href="strand-physics.html">ワイヤー・ホース</a> が水面に入った瞬間に、しぶきと水面に広がる泡の粒を Particle Emitter で出します</td></tr>
     </table>
     </div>
 
@@ -138,7 +141,7 @@
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>Underwater</td><td><code>underwater_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>水中の表現を使うかどうか</td></tr>
-      <tr><td>Underwater Color</td><td><code>underwater_color</code></td><td>色</td><td>R 4, G 23, B 33</td><td></td><td>水中の霧の色</td></tr>
+      <tr><td>Underwater Color</td><td><code>underwater_color</code></td><td>色</td><td>R 4, G 23, B 33</td><td></td><td>カメラが水中に入ったときの霧の色。濃い色ほど水中が見通しにくく感じます。</td></tr>
       <tr><td>Underwater Density</td><td><code>underwater_density</code></td><td>小数</td><td>0.08</td><td>0〜5</td><td>水中の霧の濃さ。大きいと遠くが見えなくなります</td></tr>
       <tr><td>Underwater Distortion</td><td><code>underwater_distortion</code></td><td>小数</td><td>0.012</td><td>0〜1</td><td>水中の画面のゆらぎの強さ</td></tr>
       <tr><td>Underwater TAA Reactive</td><td><code>underwater_reactive</code></td><td>小数</td><td>0.35</td><td>0〜1</td><td>水中で残像（TAA）を抑える強さ。ぶれや残像が気になるときに上げます</td></tr>
@@ -156,6 +159,7 @@
     <ul>
       <li>波が物に当たる所に、泡の模様が自動で出ます。設定はありません。</li>
       <li><a href="physics.html#buoyancy">Buoyancy</a> を付けた Rigidbody が水に入ると、その位置に入水のしぶき（泡の輪）が出ます。速く落ちるほど強くなります。同時に表示できるのは 4 か所までで、古いものから入れ替わります。</li>
+      <li>水面には <a href="effect-stacks.html">Model Effect Stack</a> も掛けられます（切り抜きで合成します）。</li>
       <li>空の雲の影と、雲・月の映り込みが水面に出ます。細かいさざ波、深さによる色の変化、遠くの泡の見え方も改善されました。</li>
     </ul>
 

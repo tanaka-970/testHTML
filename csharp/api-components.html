@@ -241,15 +241,26 @@ public void AddScore(int value)
     </table>
     </div>
 
-    <h2 id="new-physics">ホース・膨張（2026-10-03 追加）</h2>
+    <h2 id="new-physics">物理・膨張・カメラなどの型（2026-10-03〜10-06 追加）</h2>
+    <p>どれも MonoBehaviour から <code>GetComponent&lt;型&gt;()</code> で取り出します。メンバーの意味は、リンク先の部品のページのプロパティ表と同じです。</p>
     <div class="table-wrap">
     <table>
-      <tr><th>型</th><th>使える場所</th><th>主なメンバー</th></tr>
-      <tr><td><code>HosePhysics</code></td><td>MonoBehaviour（<code>GetComponent&lt;HosePhysics&gt;()</code>）</td><td><code>paidOutLength</code>、<code>maximumLength</code>、<code>overstretched</code>、<code>distanceCompliance</code>、<code>solverIterations</code>、<code>damping</code>（<a href="../components/strand-physics.html#csharp">説明</a>）</td></tr>
-      <tr><td><code>InflationComponent</code>、<code>InflationRegionComponent</code>、<code>AirSourceComponent</code>、<code>AirConnectionComponent</code></td><td>ScriptBehaviour（<code>GetComponent&lt;T&gt;()</code>）</td><td><code>RequestLeakAt</code>、<code>RequestDamage</code>、<code>RequestDeflation</code>、<code>RequestRuptureNow</code>、<code>State</code>、<code>Connected</code> など（<a href="../components/inflation.html#csharp">説明</a>）</td></tr>
+      <tr><th>型</th><th>部品</th><th>主なメンバー</th></tr>
+      <tr><td><code>HosePhysics</code></td><td><a href="../components/strand-physics.html#hose">XPBDホース物理</a></td><td><code>paidOutLength</code>、<code>maximumLength</code>、<code>overstretched</code>、<code>endAnchor</code>、<code>endOffset</code>、<code>waterDrag</code>、<code>waterBuoyancy</code></td></tr>
+      <tr><td><code>WirePhysics</code></td><td><a href="../components/strand-physics.html#wire">ワイヤー物理</a></td><td><code>segmentCount</code>、<code>slack</code>、<code>pullBodies</code>、<code>maximumPullForce</code>、<code>currentTension</code>、<code>ResetSimulation()</code></td></tr>
+      <tr><td><code>HairPhysics</code></td><td><a href="../components/strand-physics.html#hair">ヘア物理</a></td><td><code>gravityScale</code>、<code>damping</code>、<code>stiffness</code>、<code>wind</code>、<code>ResetSimulation()</code></td></tr>
+      <tr><td><code>HoseReel</code></td><td><a href="../components/strand-physics.html#reel">ホースリール</a></td><td><code>mode</code>（<code>ReelMode</code>）、<code>lineSpeed</code>、<code>drumRadius</code></td></tr>
+      <tr><td><code>ClothPhysics</code></td><td><a href="../components/cloth.html">XPBD布物理</a></td><td><code>stretchStiffness</code>、<code>bendStiffness</code>、<code>windDrag</code>、<code>wind</code>、<code>pinAxis</code></td></tr>
+      <tr><td><code>WindField</code></td><td><a href="../components/wind.html">風場</a></td><td><code>direction</code>、<code>speed</code>、<code>influenceRadius</code>、<code>gustStrength</code>、<code>enabledInPlay</code></td></tr>
+      <tr><td><code>SoftBody</code></td><td><a href="../components/soft-body.html">XPBD有限要素Softbody</a></td><td><code>youngsModulus</code>、<code>rigidbodyCoupling</code>、<code>ApplyImpulse(位置, 力積, 範囲)</code>、<code>ResetSimulation()</code></td></tr>
+      <tr><td><code>PhysicsJoint</code></td><td><a href="../components/physics-joint.html">Physics Joint</a></td><td><code>jointKind</code>、<code>connectedBody</code>、<code>breakForce</code>、<code>broken</code>。切れると同じ GameObject へ <code>OnJointBreak</code></td></tr>
+      <tr><td><code>Inflation</code>、<code>AirSource</code>、<code>AirConnection</code>、<code>InflationRegion</code></td><td><a href="../components/inflation.html">膨張</a></td><td><code>airAmount</code>、<code>internalPressure</code>、<code>state</code>、<code>RequestRupture()</code>、<code>connected</code>。破裂すると同じ GameObject へ <code>OnInflationRuptured</code></td></tr>
+      <tr><td><code>EquipmentAttachment</code>、<code>AnchorProjectile</code></td><td><a href="../components/equipment.html">装備・射出アンカー</a></td><td><code>AttachToSocket</code>、<code>Launch(向き, 速さ)</code>、<code>Detach()</code>、<code>Remount()</code>。命中・切り離しで <code>OnAnchorAttached</code>・<code>OnAnchorDetached</code></td></tr>
+      <tr><td><code>OrbitCamera</code></td><td><a href="../components/orbit-camera.html">Orbit Camera</a></td><td><code>distance</code>、<code>yaw</code>、<code>pitch</code>、<code>inputEnabled</code>、<code>padRotationSpeed</code></td></tr>
+      <tr><td><code>EffekseerEmitter</code></td><td><a href="../components/effekseer.html">Effekseer Emitter</a></td><td><code>Play()</code>、<code>Stop()</code>、<code>loop</code>、<code>isPlaying</code></td></tr>
     </table>
     </div>
-    <p>ワイヤー物理、ヘア物理、ホースリール、Softbody、Physics Joint、装備ソケット・装備アタッチ・射出アンカー、Orbit Camera、Effekseer Emitter には、まだ C# の型がありません。</p>
+    <p>ScriptBehaviour では、これまでどおり <code>InflationComponent</code> などの型も使えます。型の無い部品（髪・ワイヤー用の衝突形状など）は、下の方法で内部名からさわります。</p>
 
     <h3 id="generic">型の無い部品をさわる（ScriptBehaviour）</h3>
     <p>ScriptBehaviour では、コンポーネントを <b>型の内部名</b> で探し、プロパティを <b>内部名</b> で読み書きできます。内部名は各ページのプロパティ表と、<a href="../windows/validation.html">Validation と Diagnostics</a> の一覧で分かります。型の内部名は、コンポーネントのクラス名（<code>SoftBodyComponent</code>、<code>OrbitCameraComponent</code>、<code>PhysicsJointComponent</code>、<code>EffekseerEmitterComponent</code>、<code>HoseReelComponent</code>、<code>WirePhysicsComponent</code>、<code>EquipmentAttachmentComponent</code> など）です。</p>

@@ -2,7 +2,8 @@
 window.DOCS_TOC = [
   { title: "はじめに", children: [
     { title: "このドキュメントについて", href: "index.html", summary: "ドキュメントの読み方と対象バージョン" },
-    { title: "更新内容と評価（10/03）", href: "changes.html", summary: "9/28〜10/03 に増えた機能と、ゲーム制作にそのまま使えるかの評価", keywords: "更新 変更 新機能 評価 使い勝手 ホース 膨張 Softbody Joint 射出アンカー Orbit Camera Effekseer 太陽光条 Unity 互換 Euler 度 Translate timeScale Invoke 足りないもの" }
+    { title: "更新履歴", href: "changes.html", summary: "更新ごとに何が変わったか、確認状況、直したページ", keywords: "更新履歴 変更履歴 changelog 何が変わった 新機能 確認済み 膨張 風船 破裂 破片 浮く ホース 巻き取り チューブ ヒットストップ" },
+    { title: "更新内容と評価（10/03）", href: "changes/2026-10-03.html", summary: "9/28〜10/03 に増えた機能と、ゲーム制作にそのまま使えるかの評価", keywords: "更新 変更 新機能 評価 使い勝手 ホース 膨張 Softbody Joint 射出アンカー Orbit Camera Effekseer 太陽光条 Unity 互換 Euler 度 Translate timeScale Invoke 足りないもの" }
   ]},
   { title: "エディターの基本", children: [
     { title: "メニューバー", href: "editor/menu-bar.html", summary: "File、Edit、作成、カメラ、UI、Window、実行、Help の各項目", keywords: "New Empty Scene Save Undo Redo 保存 元に戻す 実行 停止 一時停止 Workspace 見た目 プリセット カメラ 移動速度" },
@@ -46,12 +47,14 @@ window.DOCS_TOC = [
     { title: "Physics", children: [
       { title: "Physics Joint", href: "components/physics-joint.html", summary: "剛体を固定・ヒンジ・スライダー・スプリングでつなぐ", keywords: "ジョイント Joint 固定 ヒンジ 蝶番 扉 スライダー スプリング ばね 振り子 アンカー 軸 可動範囲 下限 上限 周波数 減衰比 PhysX" },
       { title: "XPBD有限要素Softbody", href: "components/soft-body.html", summary: "ゼリーのように変形する柔らかい物", keywords: "ソフトボディ Softbody 軟体 ゼリー スライム 有限要素 四面体 XPBD ヤング率 ポアソン比 密度 衝撃 CPU メッシュ" },
-      { title: "ワイヤー・ヘア・ホース物理", href: "components/strand-physics.html", summary: "ロープ、髪の揺れ、太さのある管、ホースリール、髪用の衝突形状", keywords: "ワイヤー ロープ 紐 ケーブル ヘア 髪 揺れ ボーン ホース XPBD チューブ リール 巻き取り 繰り出し 衝突形状 球 カプセル HosePhysics paidOutLength StrandShowcase" },
+      { title: "XPBD布物理", href: "components/cloth.html", summary: "旗・カーテン・マントを風と当たり判定で揺らす", keywords: "布 クロス Cloth 旗 カーテン マント のれん XPBD 固定する辺 面密度 伸びにくさ 曲げにくさ 風 ClothPhysics" },
+      { title: "風場", href: "components/wind.html", summary: "布・Softbody・ワイヤー・Rigidbody に同じ風を吹かせる", keywords: "風 風場 Wind Zone 突風 扇風機 送風 風速 影響半径 減衰 WindField wind_response wind_drag" },
+      { title: "ワイヤー・ヘア・ホース物理", href: "components/strand-physics.html", summary: "ロープ、髪の揺れ、太さのある管、ホースリール、髪用の衝突形状", keywords: "ワイヤー ロープ 紐 ケーブル ヘア 髪 揺れ ボーン ホース XPBD チューブ リール 巻き取り 繰り出し 衝突形状 球 カプセル HosePhysics paidOutLength endAnchor endOffset StrandShowcase" },
       { title: "装備ソケット・装備アタッチ・射出アンカー", href: "components/equipment.html", summary: "武器を手やソケットに持たせる、撃って刺さるアンカー", keywords: "装備 ソケット アタッチ 武器 手 ボーン 持たせる 射出アンカー フック 銛 グラップル 刺さる Launch" },
       { title: "物理（Rigidbody と Collider）", href: "components/physics.html", summary: "剛体、球・箱・カプセル・メッシュの当たり判定、レイヤー、トリガー、衝突イベント", keywords: "ATLAS_PHYSICS アトラス 物理エンジン PhysX 物理 Rigidbody リジッドボディ 剛体 Collider コライダー 当たり判定 Sphere Box Capsule Mesh Convex 凸包 Buoyancy 浮力 静的 キネマティック 動的 質量 重力 摩擦 反発 固定 停止 CCD レイヤー マスク トリガー TriggerEnter CollisionEnter AddForce Teleport" }
     ]},
     { title: "Inflation", children: [
-      { title: "膨張（空気・圧力・破裂）", href: "components/inflation.html", summary: "空気供給元・空気接続・膨張対象・膨張区画と膨張プロファイル", keywords: "膨張 空気 圧力 内圧 破裂 漏れ ダメージ 風船 浮き輪 ボンベ 空気入れ 空気供給元 空気接続 膨張対象 膨張区画 膨張プロファイル replayinflationprofile XPBD ケージ 浮力 揚力 反発 InflationComponent RequestLeakAt" }
+      { title: "膨張（空気・圧力・破裂）", href: "components/inflation.html", summary: "空気供給元・空気接続・膨張対象・膨張区画と膨張プロファイル", keywords: "膨張 空気 圧力 内圧 破裂 漏れ ダメージ 風船 浮き輪 ボンベ 空気入れ 空気供給元 空気接続 膨張対象 膨張区画 膨張プロファイル replayinflationprofile XPBD ケージ 浮力 揚力 反発 InflationComponent RequestLeakAt 浮く高さ 破片 膜片 固さ 厚み 中身 液体 粉 閃光 裂け目 OnInflationRuptured Inflation AirConnection" }
     ]},
     { title: "水・環境", children: [
       { title: "Water Body（水域）", href: "components/water-body.html", summary: "海・湖の水面。波、反射、屈折、泡、水中の表現、浮力との連携", keywords: "水 海 湖 Ocean Lake Water Body 波 Gerstner 泡 Foam 屈折 反射 水中 Underwater 浮力 Gameplay Query Allow Buoyancy" },
@@ -68,7 +71,7 @@ window.DOCS_TOC = [
       { title: "地形（Landscape）", href: "components/landscape.html", summary: "地面の作成、スカルプト、面の加工、描画と当たり判定", keywords: "地形 ランドスケープ Landscape Ground Renderer Collider スカルプト ブラシ 盛り上げる 掘り下げる なめらか 平ら でこぼこ 細かく トポロジー 押し出し 穴 トンネル 洞窟 辺をつなぐ 再生成 ロード範囲 区画" }
     ]},
     { title: "Lighting", children: [
-      { title: "ライト（Directional / Point / Spot）", href: "components/lights.html", summary: "3 種類のライトのプロパティと使い方、影の設定", keywords: "Directional Light Point Light Spot Light 平行光源 点光源 スポットライト 影 シャドウ バイアス 強さ 範囲 角度 影の光源半径 半影 柔らかい影" }
+      { title: "ライト（Directional / Point / Spot / Rect）", href: "components/lights.html", summary: "4 種類のライトのプロパティと使い方、影の設定", keywords: "Directional Light Point Light Spot Light Rect Light 矩形ライト 面光源 平行光源 点光源 スポットライト 影 シャドウ バイアス 強さ 範囲 角度 影の光源半径 半影 柔らかい影" }
     ]},
     { title: "Camera", children: [
       { title: "Camera", href: "components/camera.html", summary: "ゲーム中の視点。投影方式、クリップ、優先度、分割表示", keywords: "カメラ 視野角 FOV Orthographic Perspective Near Far 優先度 分割表示 ビューポート 画面分割" },

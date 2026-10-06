@@ -24,7 +24,7 @@
     <table>
       <tr><th>コンポーネント</th><th>コンポーネントを追加での場所</th><th>効果をかける相手</th><th>1 つの GameObject に</th></tr>
       <tr><td>Screen Effect Stack</td><td>Rendering &gt; Screen Effect Stack</td><td>3D の画面全体（UI にはかかりません）</td><td>1 つだけ</td></tr>
-      <tr><td>Model Effect Stack</td><td>Rendering &gt; Model Effect Stack</td><td>その GameObject のモデルだけ</td><td>いくつでも</td></tr>
+      <tr><td>Model Effect Stack</td><td>Rendering &gt; Model Effect Stack</td><td>その GameObject のモデル・<a href="water-body.html">Water Body</a>・<a href="lines.html">3D ライン</a></td><td>いくつでも</td></tr>
       <tr><td>Effect Stack（UI）</td><td>UI &gt; Effect Stack</td><td>その UI 要素（Rect Transform が必要です）</td><td>1 つだけ</td></tr>
     </table>
     </div>
@@ -94,7 +94,7 @@
       <tr><td>Preset を使用</td><td><code>use_preset</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>Screen Effect Stack と同じ</td></tr>
       <tr><td>Effect Preset</td><td><code>effect_preset</code></td><td>アセット（Effect Preset）</td><td>（空）</td><td></td><td>Screen Effect Stack と同じ</td></tr>
       <tr><td>Effect 数</td><td><code>effect_count</code></td><td>整数</td><td>0</td><td>0〜16</td><td>Screen Effect Stack と同じ</td></tr>
-      <tr><td>対象</td><td><code>target_slot_mode</code></td><td>選択</td><td>モデル全体</td><td></td><td>モデル全体、マテリアルスロット</td></tr>
+      <tr><td>対象</td><td><code>target_slot_mode</code></td><td>選択</td><td>全体</td><td></td><td>全体、マテリアルスロット。Water Body と 3D ラインのマテリアルスロットは 0 番だけです</td></tr>
       <tr><td>マテリアルスロット</td><td><code>target_slot_index</code></td><td>選択</td><td>0 番</td><td></td><td>対象がマテリアルスロットのときに効果をかける部分。メッシュの描画コンポーネントの<a href="mesh-renderers.html#slots">スロット</a>の名前で選びます（名前が無いものは「番号 番」）。「Effect Stack / 対象」の見出しの中にあります</td></tr>
       <tr><td>深度モード</td><td><code>depth_mode</code></td><td>選択</td><td>Preserve Depth</td><td></td><td>Preserve Depth は手前の物に隠れる、Overlay は手前の物より上に重ねて表示します</td></tr>
       <tr><td>合成方法</td><td><code>extract_mode</code></td><td>選択</td><td>自動</td><td></td><td>自動、その場、切り抜き（下を見てください）</td></tr>
@@ -116,7 +116,7 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
-      <tr><td>有効</td><td><code>enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>効果をかけるかどうか</td></tr>
+      <tr><td>有効</td><td><code>enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オフにすると、効果を消して元の画面に戻します（設定は残ります）。</td></tr>
       <tr><td>適用対象</td><td><code>target_scope</code></td><td>選択</td><td>自分だけ</td><td></td><td>自分だけ、子階層をまとめる (Precompose)。まとめると、この GameObject と子をすべて 1 枚に描いてから、効果を 1 回だけかけます</td></tr>
       <tr><td>背景を取り込む</td><td><code>capture_backdrop</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>この要素より前に描かれた画面も効果の材料に含めます。Screen Space Overlay の、回転していない Image と Text でだけ使えます</td></tr>
       <tr><td>Preset を使用</td><td><code>use_preset</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>Screen Effect Stack と同じ</td></tr>

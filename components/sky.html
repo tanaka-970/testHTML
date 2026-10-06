@@ -48,28 +48,28 @@
       <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td>-100〜100</td><td>空が複数あるときに、どれを使うかを決めます</td></tr>
       <tr><td>空を表示</td><td><code>sky_enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オフにすると、この空は使われません</td></tr>
       <tr><td>空の回転 (度)</td><td><code>rotation_degrees</code></td><td>小数</td><td>0</td><td></td><td>空を縦の軸のまわりに回します。太陽や山の向きを合わせるときに使います</td></tr>
-      <tr><td>空の強さ</td><td><code>intensity</code></td><td>小数</td><td>1</td><td>0〜16</td><td>空の明るさの倍率</td></tr>
+      <tr><td>空の強さ</td><td><code>intensity</code></td><td>小数</td><td>1</td><td>0〜16</td><td>空の明るさの倍率。上げると空と、空からの環境光が明るくなり、下げると夕暮れ・夜のように暗くなります。</td></tr>
       <tr><td>トゥーンへの環境光</td><td><code>toon_environment</code></td><td>小数</td><td>0</td><td>0〜4</td><td>トゥーンの影になった側に、空の色をどれだけ乗せるか。0 なら乗せません</td></tr>
       <tr><td>時間帯</td><td><code>time</code></td><td>小数</td><td>0</td><td>0〜1</td><td>時間帯キーフレームのどこを表示するか</td></tr>
       <tr><td>時間の進行速度</td><td><code>time_speed</code></td><td>小数</td><td>0</td><td>-10〜10</td><td>ゲームの実行中に、1 秒ごとに 時間帯 を進める量。1 を超えたら 0 に戻ります。マイナスなら逆に進みます</td></tr>
-      <tr><td>雲を表示</td><td><code>clouds_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>2 層の雲を重ねます</td></tr>
+      <tr><td>雲を表示</td><td><code>clouds_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると 2 層の雲を重ねます。オフにすると雲の無い空になります。</td></tr>
       <tr><td>雲1の速度</td><td><code>cloud_layer1_speed</code></td><td>2 つの小数</td><td>0.003, 0</td><td>-1〜1</td><td>1 層目の雲が流れる速さと向き</td></tr>
       <tr><td>雲1の細かさ</td><td><code>cloud_layer1_scale</code></td><td>小数</td><td>3.5</td><td>0.1〜32</td><td>大きいほど雲の模様が細かくなります</td></tr>
-      <tr><td>雲1の濃さ</td><td><code>cloud_layer1_density</code></td><td>小数</td><td>0.45</td><td>0〜1</td><td>雲の量</td></tr>
+      <tr><td>雲1の濃さ</td><td><code>cloud_layer1_density</code></td><td>小数</td><td>0.45</td><td>0〜1</td><td>1 層目の雲の量。0 で雲が無く、上げるほど空を覆う雲が増えて厚くなります。</td></tr>
       <tr><td>雲1の色</td><td><code>cloud_layer1_color</code></td><td>色</td><td>白（不透明度 0.75）</td><td></td><td>1 層目の雲の色。不透明度で雲の透け具合が変わります</td></tr>
       <tr><td>雲2の速度</td><td><code>cloud_layer2_speed</code></td><td>2 つの小数</td><td>-0.0015, 0.001</td><td>-1〜1</td><td>2 層目の雲が流れる速さと向き</td></tr>
-      <tr><td>雲2の細かさ</td><td><code>cloud_layer2_scale</code></td><td>小数</td><td>7</td><td>0.1〜32</td><td>2 層目の模様の細かさ</td></tr>
-      <tr><td>雲2の濃さ</td><td><code>cloud_layer2_density</code></td><td>小数</td><td>0.28</td><td>0〜1</td><td>2 層目の雲の量</td></tr>
-      <tr><td>雲2の色</td><td><code>cloud_layer2_color</code></td><td>色</td><td>薄い青（不透明度 0.55）</td><td></td><td>2 層目の雲の色</td></tr>
-      <tr><td>星を表示</td><td><code>stars_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>星を重ねます</td></tr>
-      <tr><td>星の密度</td><td><code>star_density</code></td><td>小数</td><td>0.35</td><td>0〜1</td><td>星の多さ</td></tr>
-      <tr><td>星の強さ</td><td><code>star_intensity</code></td><td>小数</td><td>2</td><td>0〜32</td><td>星の明るさ</td></tr>
-      <tr><td>星の色</td><td><code>star_color</code></td><td>色</td><td>薄い橙</td><td></td><td>星の色</td></tr>
-      <tr><td>月を表示</td><td><code>moon_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>月を重ねます</td></tr>
+      <tr><td>雲2の細かさ</td><td><code>cloud_layer2_scale</code></td><td>小数</td><td>7</td><td>0.1〜32</td><td>2 層目の模様の細かさ。上げるほど小さな雲がたくさん、下げるほど大きな雲になります。</td></tr>
+      <tr><td>雲2の濃さ</td><td><code>cloud_layer2_density</code></td><td>小数</td><td>0.28</td><td>0〜1</td><td>2 層目の雲の量。0 で 2 層目が消え、上げるほど増えます。</td></tr>
+      <tr><td>雲2の色</td><td><code>cloud_layer2_color</code></td><td>色</td><td>薄い青（不透明度 0.55）</td><td></td><td>2 層目の雲の色。夕焼けなら橙、曇天なら灰色にします。</td></tr>
+      <tr><td>星を表示</td><td><code>stars_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると星を重ねます。昼の明るい空ではほとんど見えません。</td></tr>
+      <tr><td>星の密度</td><td><code>star_density</code></td><td>小数</td><td>0.35</td><td>0〜1</td><td>星の数。上げるほど細かい星が増えます。</td></tr>
+      <tr><td>星の強さ</td><td><code>star_intensity</code></td><td>小数</td><td>2</td><td>0〜32</td><td>星の明るさ。上げるほどはっきり光ります。</td></tr>
+      <tr><td>星の色</td><td><code>star_color</code></td><td>色</td><td>薄い橙</td><td></td><td>星の色。白で普通の星、青白くすると冷たい夜空になります。</td></tr>
+      <tr><td>月を表示</td><td><code>moon_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると月を重ねます。</td></tr>
       <tr><td>月の方向</td><td><code>moon_direction</code></td><td>3 つの小数</td><td>0.35, 0.25, 0.9</td><td>-1〜1</td><td>月が見える方向。長さは関係なく、向きだけが使われます。すべて 0 のときは 0, 0, 1 の方向になります</td></tr>
-      <tr><td>月の大きさ</td><td><code>moon_size</code></td><td>小数</td><td>0.04</td><td>0.001〜0.5</td><td>月の見かけの大きさ</td></tr>
-      <tr><td>月の強さ</td><td><code>moon_intensity</code></td><td>小数</td><td>5</td><td>0〜32</td><td>月の明るさ</td></tr>
-      <tr><td>月の色</td><td><code>moon_color</code></td><td>色</td><td>薄い黄</td><td></td><td>月の色</td></tr>
+      <tr><td>月の大きさ</td><td><code>moon_size</code></td><td>小数</td><td>0.04</td><td>0.001〜0.5</td><td>月の見かけの大きさ。上げるほど大きく見えます。</td></tr>
+      <tr><td>月の強さ</td><td><code>moon_intensity</code></td><td>小数</td><td>5</td><td>0〜32</td><td>月の明るさ。上げるほど明るく光ります。</td></tr>
+      <tr><td>月の色</td><td><code>moon_color</code></td><td>色</td><td>薄い黄</td><td></td><td>月の色。黄色っぽくすると暖かい月、赤くすると赤い月になります。</td></tr>
     </table>
     </div>
 

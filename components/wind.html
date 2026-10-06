@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>風場 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Physics</div>
+    <h1>風場</h1>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8</p>
+
+    <p>シーンに風を吹かせるコンポーネントです。1 つ置くと、布・Softbody・ワイヤー・ホース・ヘア・Rigidbody が同じ風を受けます。シーン全体に吹かせることも、置いた場所のまわりだけに吹かせることもできます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>旗・カーテン・髪・ロープを、同じ向きの風でまとめて揺らしたいとき</li>
+      <li>扇風機や送風口のまわりだけ、物を吹き飛ばしたいとき</li>
+      <li>ときどき強く吹く突風を入れたいとき</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Physics &gt; 風場</td></tr>
+      <tr><td>個数</td><td>1 つの GameObject に複数付けられます。シーン内のすべての風場の風が足し合わされます</td></tr>
+      <tr><td>風の向き</td><td>付けた GameObject のローカル軸で指定します。GameObject を回すと風向きも回ります</td></tr>
+    </table>
+    </div>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>風向き（ローカル）</td><td><code>direction</code></td><td>3 つの小数</td><td>1, 0, 0</td><td></td><td>風の吹く向き。GameObject の回転を反映します</td></tr>
+      <tr><td>風速</td><td><code>speed</code></td><td>小数</td><td><b>0</b></td><td>-500〜500</td><td>風の速さ（m/秒）。<b>既定 0 なので、置いただけでは吹きません</b>。マイナスで逆向き</td></tr>
+      <tr><td>影響半径</td><td><code>influence_radius</code></td><td>小数</td><td>0</td><td>0〜100000</td><td>0 ならシーン全体。正の値なら、GameObject の位置を中心にこの半径の中だけで吹きます</td></tr>
+      <tr><td>風の減衰</td><td><code>falloff</code></td><td>小数</td><td>1</td><td>0.1〜8</td><td>影響半径があるとき、中心から離れるほど弱くなる度合い。風速 ×（1 − 距離 ÷ 半径）の「減衰」乗です</td></tr>
+      <tr><td>突風の強さ</td><td><code>gust_strength</code></td><td>小数</td><td>0</td><td>0〜1</td><td>風速を ±この割合で揺らします（0.4 なら 0.6〜1.4 倍）</td></tr>
+      <tr><td>突風の頻度</td><td><code>gust_frequency</code></td><td>小数</td><td>0.2</td><td>0〜20</td><td>1 秒あたりの強弱の回数。場所によって少しずつ時間がずれるので、波が通り抜けるように揺れます</td></tr>
+      <tr><td>突風の位相</td><td><code>gust_phase</code></td><td>小数</td><td>0</td><td>-1000〜1000</td><td>複数の風場の強弱をずらすときに使います</td></tr>
+      <tr><td>Play中に有効</td><td><code>enabled_in_play</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オフにすると風を止めます（スイッチに使えます）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="receivers">風を受ける部品</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>部品</th><th>受け方を決める項目</th><th>既定</th></tr>
+      <tr><td><a href="cloth.html">XPBD布物理</a></td><td>風の受けやすさ（<code>wind_drag</code>）</td><td>1.5（受ける）</td></tr>
+      <tr><td><a href="soft-body.html">XPBD有限要素Softbody</a></td><td>風の受けやすさ（<code>wind_drag</code>）</td><td>1.5（受ける）</td></tr>
+      <tr><td><a href="strand-physics.html">ワイヤー・ヘア・ホース物理</a></td><td>風の受けやすさ（<code>wind_drag</code>）</td><td>1（受ける）</td></tr>
+      <tr><td><a href="physics.html#rigidbody">Rigidbody</a></td><td>風の影響（<code>wind_response</code>）</td><td><b>0（受けない）</b>。1 秒あたりに風の速さへ近づく割合で、風速と自分の速さの差に比例して押されます。PhysX のときだけ</td></tr>
+    </table>
+    </div>
+
+    <h2 id="csharp">スクリプトから使う（C#）</h2>
+    <p>MonoBehaviour では <code>GetComponent&lt;WindField&gt;()</code> で取り出せます。メンバーは <code>direction</code>、<code>speed</code>、<code>influenceRadius</code>、<code>falloff</code>、<code>gustStrength</code>、<code>gustFrequency</code>、<code>gustPhase</code>、<code>enabledInPlay</code> です。</p>
+<pre><code>using ReplayEngine;
+
+public sealed class FanSwitch : MonoBehaviour
+{
+    WindField? fan;
+
+    void Start() =&gt; fan = GetComponent&lt;WindField&gt;();
+
+    void Update()
+    {
+        // F1 で扇風機の入り切り
+        if (fan != null &amp;&amp; Input.GetKeyDown(KeyCode.F1)) fan.enabledInPlay = !fan.enabledInPlay;
+    }
+}</code></pre>
+
+    <div class="warning" id="limits"><strong>制限</strong>
+      <ul>
+        <li>パーティクル（Particle Emitter）と Effekseer のエフェクトは風場の影響を受けません。</li>
+        <li>壁の陰でも風は弱まりません（障害物で遮られません）。</li>
+      </ul>
+    </div>
+
+    <h2 id="howto">使い方の例</h2>
+    <h3>送風口のまわりだけ物を吹き飛ばす</h3>
+    <ol class="steps">
+      <li>送風口の GameObject に <b>Physics &gt; 風場</b> を付け、<b>風向き</b> を吹き出す向きに、<b>風速</b> を 12、<b>影響半径</b> を 4 にします。</li>
+      <li>飛ばしたい物の Rigidbody の <b>風の影響</b> を 1〜3 にします。</li>
+      <li>実行すると、送風口に近い物ほど強く押し流されます。</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="cloth.html">XPBD布物理</a></li>
+      <li><a href="strand-physics.html">ワイヤー・ヘア・ホース物理</a></li>
+      <li><a href="physics.html#rigidbody">Rigidbody</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

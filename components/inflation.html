@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Inflation</div>
     <h1>膨張（空気・圧力・破裂）</h1>
-    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8 ＋ まだコミットしていない変更（<a href="../changes.html#2026-10-06">10/06 の更新</a>）</p>
 
     <p>物に空気を送り込んで膨らませ、内圧で弾み方や浮き方を変え、漏れ・ダメージ・圧力の上がりすぎで破裂させる 4 つのコンポーネントと、設定をまとめる <b>膨張プロファイル</b> Asset です。破壊系の <a href="destruction-reference.html#balloon">風船</a> とは別の仕組みです。</p>
 
@@ -27,6 +27,8 @@
       <li>膨らんだ物を、刺す・撃つ・押しつぶすなどで破裂させたいとき</li>
       <li>空気の量で、弾み方・浮き方・動きにくさを変えたいとき</li>
       <li>1 つの物の中に、別々に空気が入る部屋（区画）を作りたいとき</li>
+      <li>膨らませた物を浮かせて、ある高さで漂わせたいとき</li>
+      <li>割れた瞬間に、膜の破片・中身（液体や粉）・光で「割れた」と伝えたいとき</li>
     </ul>
 
     <h2 id="parts">部品の関係</h2>
@@ -40,7 +42,7 @@
     </table>
     </div>
     <p>空気は <b>空気供給元 → 空気接続 → 膨張対象（または膨張区画）</b> と流れます。流れる量は、供給元の出力圧力と対象の内圧の差、通気係数、最大流量で決まります。ホースの見た目（<a href="strand-physics.html#hose">XPBDホース物理</a>）と空気の流れは別々に計算します。</p>
-    <div class="note"><strong>計算方式</strong>膨張対象の <b>計算方式</b> は 2 つあります。<b>簡易</b>（既定）は、体積の比に合わせてモデルの見た目の大きさを変えます。<b>XPBD変形</b> は、メッシュから「ケージ」を作って表面を実際に変形させ、壁に当たると逃げるように膨らみます。XPBD変形には CPU 側のメッシュが必要です（<a href="#limits">制限</a>）。</div>
+    <div class="note"><strong>計算方式</strong>膨張対象の <b>計算方式</b> は 2 つあります。<b>簡易</b>（既定）は、体積の比に合わせてモデルの見た目の大きさを変えます。<b>XPBD変形</b> は、メッシュを包む「ケージ」を作り、元の形のまま均一に大きくなるように表面を変形させます。動的な Rigidbody が付いているときは、床や壁との押し合いは Rigidbody の当たり判定が受け持ち、表面は触れた面で潰れません。Rigidbody が無い・静的なときだけ、表面そのものが壁に当たって押し返されます（<a href="#limits">制限</a>）。</div>
 
     <h2 id="target">膨張対象</h2>
     <p><b>Inflation &gt; 膨張対象</b>。物理の反応（弾み・揚力）を使うときは、動的な <a href="physics.html#rigidbody">Rigidbody</a> と Collider も付けます。</p>
@@ -49,13 +51,13 @@
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>膨張プロファイル</td><td><code>inflation_profile</code></td><td>アセット</td><td>（空）</td><td></td><td>設定すると、<a href="#profile">プロファイル</a>の値がこのコンポーネントの値を上書きします</td></tr>
-      <tr><td>計算方式</td><td><code>backend</code></td><td>選択</td><td>簡易</td><td>簡易・XPBD変形</td><td></td></tr>
-      <tr><td>空気量</td><td><code>air_amount</code></td><td>小数</td><td>0</td><td>0〜10億</td><td>開始時の空気の量</td></tr>
+      <tr><td>計算方式</td><td><code>backend</code></td><td>選択</td><td>簡易</td><td>簡易・XPBD変形</td><td><b>簡易</b> は見た目の大きさだけを体積に合わせて拡大し、軽く動きます。<b>XPBD変形</b> は表面を包むケージを変形させるので、形の揺れや膨らみの途中の変化が出ますが重くなります。</td></tr>
+      <tr><td>空気量</td><td><code>air_amount</code></td><td>小数</td><td>0</td><td>0〜10億</td><td>開始時の空気の量。0 ならしぼんだ状態で始まり、入れておくと最初から膨らんだ状態で始まります。</td></tr>
       <tr><td>初期体積</td><td><code>rest_volume</code></td><td>小数</td><td>1</td><td>0.00001〜</td><td>空気が 0 のときの体積</td></tr>
       <tr><td>気体の膨張しやすさ</td><td><code>gas_compliance</code></td><td>小数</td><td>0.25</td><td>0〜100000</td><td>大きいほど少ない空気で大きく膨らみます</td></tr>
-      <tr><td>圧力倍率</td><td><code>pressure_scale</code></td><td>小数</td><td>4</td><td>0〜100000</td><td></td></tr>
-      <tr><td>外気圧</td><td><code>ambient_pressure</code></td><td>小数</td><td>1</td><td>0〜100000</td><td></td></tr>
-      <tr><td>圧力上限</td><td><code>maximum_pressure</code></td><td>小数</td><td>12</td><td>0〜1000000</td><td></td></tr>
+      <tr><td>圧力倍率</td><td><code>pressure_scale</code></td><td>小数</td><td>4</td><td>0〜100000</td><td>内圧は「圧力倍率 × 空気量 ÷ 体積 − 外気圧」で決まります。上げるほど少ない空気で内圧が上がり、早く破裂し、供給元の出力圧力に早く追いついて空気が入らなくなります。</td></tr>
+      <tr><td>外気圧</td><td><code>ambient_pressure</code></td><td>小数</td><td>1</td><td>0〜100000</td><td>内圧から引く値。上げるほど、空気を入れても内圧が上がり始めるのが遅くなります。</td></tr>
+      <tr><td>圧力上限</td><td><code>maximum_pressure</code></td><td>小数</td><td>12</td><td>0〜1000000</td><td>内圧はこの値で頭打ちになります。<b>破裂圧力より低くすると、圧力では破裂しなくなります</b>。</td></tr>
       <tr><td>最大体積倍率</td><td><code>maximum_inflation_ratio</code></td><td>小数</td><td>3</td><td>1〜100</td><td>初期体積の何倍まで膨らむか</td></tr>
       <tr><td>伸張開始倍率</td><td><code>stretch_threshold</code></td><td>小数</td><td>1.25</td><td>1〜100</td><td>この倍率を超えると「伸張」状態になります</td></tr>
     </table>
@@ -65,24 +67,42 @@
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>危険圧力</td><td><code>critical_pressure</code></td><td>小数</td><td>7</td><td>0〜1000000</td><td>これを超えると「危険」状態</td></tr>
-      <tr><td>破裂圧力</td><td><code>rupture_pressure</code></td><td>小数</td><td>10</td><td>0〜1000000</td><td>これを超えると破裂</td></tr>
+      <tr><td>破裂圧力</td><td><code>rupture_pressure</code></td><td>小数</td><td>10</td><td>0〜1000000</td><td>内圧がこれ以上になると破裂します。下げるほど少ない空気で割れ、上げるほど大きく膨らむまで耐えます。</td></tr>
       <tr><td>破裂伸張率</td><td><code>rupture_strain</code></td><td>小数</td><td>1</td><td>0〜100</td><td>表面の伸びがこれを超えると破裂</td></tr>
       <tr><td>素材強度</td><td><code>material_strength</code></td><td>小数</td><td>1</td><td>0.01〜10000</td><td>大きいほどダメージで割れにくくなります</td></tr>
-      <tr><td>ダメージ感度</td><td><code>damage_sensitivity</code></td><td>小数</td><td>1</td><td>0〜10000</td><td></td></tr>
+      <tr><td>ダメージ感度</td><td><code>damage_sensitivity</code></td><td>小数</td><td>1</td><td>0〜10000</td><td>受けたダメージを弱点として数える倍率。上げるほど少ないダメージで割れやすくなり、0 ならダメージでは割れません。</td></tr>
       <tr><td>複合破損しきい値</td><td><code>failure_threshold</code></td><td>小数</td><td>1</td><td>0.01〜10000</td><td>圧力・伸び・蓄積ダメージを合わせた「複合破損スコア」がこれを超えると破裂</td></tr>
       <tr><td>漏れへの強さ</td><td><code>leak_resistance</code></td><td>小数</td><td>1</td><td>0.01〜100000</td><td>大きいほど穴から抜ける空気が少なくなります</td></tr>
-      <tr><td>破裂範囲・破裂の押し出し・破裂ダメージ</td><td><code>rupture_blast_radius</code>、<code>rupture_blast_impulse</code>、<code>rupture_damage</code></td><td>小数</td><td>2.5、4、10</td><td></td><td>破裂したとき周りに与える爆風。破壊系の「破壊する側」の爆発と同じ処理で、Destructible にダメージ、Rigidbody に押し出しを与えます（自分と風船は対象外）</td></tr>
+      <tr><td>破裂範囲・破裂の押し出し・破裂ダメージ</td><td><code>rupture_blast_radius</code>、<code>rupture_blast_impulse</code>、<code>rupture_damage</code></td><td>小数</td><td>2.5、4、10</td><td></td><td>破裂したとき周りに与える爆風。破壊系の「破壊する側」の爆発と同じ処理で、Destructible にダメージ、Rigidbody に押し出しを与えます（自分・飛び散った膜片・風船は対象外）</td></tr>
     </table>
     </div>
+    <h3 id="burst">破裂の見た目</h3>
+    <p>破裂すると、膨らんだ今の表面を切り分けた<b>膜片</b>が飛び散り、本体は消えます。膜片は元のマテリアル・色のまま物理で床に落ち、しばらく残ってから薄くなって消えます。Mesh・Skinned・Primitive のどのモデルでも、今の形から作ります。同時に、粒子・カメラの揺れ（膨らんでいた大きさに比例）・衝撃波・閃光が出ます。</p>
+    <p>膜片は<b>裂け目の起点</b>から遠ざかる向きへ、起点に近いほど速く飛びます。起点は、穴や傷があればそこ、なければ空気の入口（<a href="#connection">空気接続</a>の注入アンカーが刺さった所など）、どちらもなければ一番伸びた所です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>破裂の破片数</td><td><code>rupture_scrap_count</code></td><td>整数</td><td>10</td><td>0〜64</td><td>飛び散る膜片の数。0 なら膜片を出しません</td></tr>
+      <tr><td>破片が残る秒数</td><td><code>rupture_scrap_lifetime</code></td><td>小数</td><td>8</td><td>0.1〜30</td><td>膜片が消え始めるまでの秒数</td></tr>
+      <tr><td>破片の固さ</td><td><code>rupture_scrap_stiffness</code></td><td>小数</td><td>0.15</td><td>0〜1</td><td>0 に近いほど柔らかいゴム（強く縮れて丸まり、空気に煽られてひらひら舞い、弾まない）。1 に近いほど硬い板（形を保ってまっすぐ飛び、床で弾む）</td></tr>
+      <tr><td>殻の厚み</td><td><code>rupture_shell_thickness</code></td><td>小数</td><td>0</td><td>0〜1（m）</td><td>0 なら薄い膜。値を入れると膜片を内側へ押し出し、裏面と切り口のある厚い塊にします。厚いほど重くなります（皮の厚い敵、膨らませた壁など）</td></tr>
+      <tr><td>破裂の中身</td><td><code>rupture_content</code></td><td>選択</td><td>空気</td><td>空気・液体・粉・爆発</td><td>空気以外を選ぶと、しぶき・粉煙・爆発の演出を重ねて出します</td></tr>
+      <tr><td>中身の色</td><td><code>rupture_content_color</code></td><td>色</td><td>白</td><td></td><td>液体・粉・爆発の演出の色</td></tr>
+      <tr><td>子を中身として残す</td><td><code>rupture_release_children</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、子の GameObject を切り離してその場に残します（中に入れた鍵、敵の核など）。見た目用の子パーツも残るので、そういう子がある物ではオフのままにします</td></tr>
+      <tr><td>破裂の閃光</td><td><code>rupture_flash_intensity</code></td><td>小数</td><td>6</td><td>0〜100</td><td>割れた瞬間に出す、本体の色を帯びた光の強さ。約 0.2 秒で消えます。0 で出しません</td></tr>
+    </table>
+    </div>
+
     <h3>物理の反応</h3>
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>物理応答を適用</td><td><code>apply_physics_response</code></td><td>オン・オフ</td><td>オン</td><td></td><td>内圧に合わせて Rigidbody の反発や揚力を変えます（動的な Rigidbody のときだけ）</td></tr>
       <tr><td>体積浮力</td><td><code>buoyancy_scale</code></td><td>小数</td><td>0</td><td>0〜100000</td><td>体積に比例して上向きの力</td></tr>
-      <tr><td>空中揚力</td><td><code>air_lift</code></td><td>小数</td><td>0</td><td>0〜1000000</td><td>空気の量に応じた上向きの力</td></tr>
+      <tr><td>空中揚力</td><td><code>air_lift</code></td><td>小数</td><td>0</td><td>0〜1000000</td><td>膨張倍率に応じた上向きの力（倍率 − 1 に比例）</td></tr>
+      <tr><td>浮く高さの上限</td><td><code>float_height</code></td><td>小数</td><td>0</td><td>0〜10000</td><td>0 より大きいと、開始位置からこの高さへ近づくほど浮力（体積浮力＋空中揚力）を弱めます。浮力と重さが釣り合う高さでふわふわ漂い、これより上には上がりません。0 なら弱めません</td></tr>
       <tr><td>低圧・中圧・高圧の反発</td><td><code>bounce_low</code>、<code>bounce_peak</code>、<code>bounce_high</code></td><td>小数</td><td>0、0.55、0.25</td><td>0〜1</td><td>圧力ごとの弾み方。ほどよい圧力で一番よく弾む、という設定ができます</td></tr>
-      <tr><td>張りの強さ</td><td><code>stiffness_scale</code></td><td>小数</td><td>1</td><td>0〜10000</td><td></td></tr>
+      <tr><td>張りの強さ</td><td><code>stiffness_scale</code></td><td>小数</td><td>1</td><td>0〜10000</td><td>膨らむほど Rigidbody の移動の減衰を最大「0.1 × この値」だけ足します。上げるほど、膨らんだ物の動きが鈍くなります。0 なら変わりません。</td></tr>
       <tr><td>移動抵抗</td><td><code>movement_resistance</code></td><td>小数</td><td>0</td><td>0〜1</td><td>膨らむほど動きにくくする割合。結果は読取のみの「移動速度倍率」に出ます</td></tr>
     </table>
     </div>
@@ -90,14 +110,16 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
-      <tr><td>ケージ細分化</td><td><code>cage_subdivisions</code></td><td>整数</td><td>3</td><td>0〜3</td><td>変形に使う網の細かさ</td></tr>
-      <tr><td>XPBD反復回数</td><td><code>solver_iterations</code></td><td>整数</td><td>6</td><td>1〜16</td><td></td></tr>
-      <tr><td>伸長・面積・曲げ・体積制約の柔らかさ</td><td><code>stretch_compliance</code>、<code>area_compliance</code>、<code>bend_compliance</code>、<code>volume_compliance</code></td><td>小数</td><td>0.0001、0.001、0.01、0.00001</td><td>0〜100000</td><td>大きいほど伸びやすく・曲がりやすくなります</td></tr>
-      <tr><td>ケージ衝突半径</td><td><code>cage_collision_radius</code></td><td>小数</td><td>0.015</td><td>0〜10</td><td></td></tr>
-      <tr><td>注入口付近の膨張</td><td><code>injection_influence</code></td><td>小数</td><td>0.35</td><td>0〜10</td><td>空気の入口の近くを先に膨らませる強さ</td></tr>
-      <tr><td>内圧の外向き力</td><td><code>outward_pressure_strength</code></td><td>小数</td><td>0.3</td><td>0〜100</td><td></td></tr>
-      <tr><td>ワールド衝突を有効化</td><td><code>cage_world_collision</code></td><td>オン・オフ</td><td>オン</td><td></td><td>壁に当たったところを押し返し、別の方向へ膨らませます</td></tr>
-      <tr><td>変形に合わせて衝突形状を更新</td><td><code>update_collision_proxy</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>同じ GameObject の Convex Collider（頂点の元を「コード指定」）を、変形した形に作り直します</td></tr>
+      <tr><td>ケージ細分化</td><td><code>cage_subdivisions</code></td><td>整数</td><td>3</td><td>0〜3</td><td>変形に使う網の細かさ。0〜3 で網の点が 12・42・162・642 個になります。上げるほど元の形に沿ってなめらかに変形し、重くなります。</td></tr>
+      <tr><td>XPBD反復回数</td><td><code>solver_iterations</code></td><td>整数</td><td>6</td><td>1〜16</td><td>1 回の計算で形を整える回数。上げるほど形が崩れにくく安定し、重くなります。</td></tr>
+      <tr><td>伸長・面積・体積制約の柔らかさ</td><td><code>stretch_compliance</code>、<code>area_compliance</code>、<code>volume_compliance</code></td><td>小数</td><td>0.0001、0.001、0.00001</td><td>0〜100000</td><td>大きいほど伸びやすくなります。どれも膨らむ倍率に合わせて基準の長さ・面積を広げるので、膨らみを押し戻しません</td></tr>
+      <tr><td>曲げの柔らかさ</td><td><code>bend_compliance</code></td><td>小数</td><td>0.01</td><td>0〜100000</td><td>今は使われていません（古いシーンを読むために残っている項目）</td></tr>
+      <tr><td>ケージ衝突半径</td><td><code>cage_collision_radius</code></td><td>小数</td><td>0.015</td><td>0〜10</td><td>表面の点を壁に当てるときの太さ。上げるほど壁から離れた所で止まり、めり込みが減ります（動的な Rigidbody では使われません）。</td></tr>
+      <tr><td>注入口付近の膨張</td><td><code>injection_influence</code></td><td>小数</td><td>0.35</td><td>0〜10</td><td>今は使われていません（古いシーンを読むために残っている項目）。圧力は入口によらず全体へ均等にかかります</td></tr>
+      <tr><td>内圧の外向き力</td><td><code>outward_pressure_strength</code></td><td>小数</td><td>0.3</td><td>0〜100</td><td>内圧に比例して表面を外へ押す強さ。上げるほど膨らむ動きが速く、ぷるんと揺れやすくなります。</td></tr>
+      <tr><td>ワールド衝突を有効化</td><td><code>cage_world_collision</code></td><td>オン・オフ</td><td>オン</td><td></td><td>表面が壁に当たったところを押し返します。<b>動的な Rigidbody が付いているときは使われません</b>（押し合いは Rigidbody の当たり判定が受け持ち、形が偏らないようにするため）</td></tr>
+      <tr><td>変形に合わせて衝突形状を更新</td><td><code>update_collision_proxy</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>同じ GameObject の Convex Collider を、膨らんだ形に作り直します。頂点の元が「メッシュ」などでも、膨らんでいる間は自動でケージの形に切り替え、空気が抜けると元の設定に戻します</td></tr>
+      <tr><td>簡易膨張で当たり判定も広げる</td><td><code>simple_scale_colliders</code></td><td>オン・オフ</td><td>オン</td><td></td><td>計算方式が簡易のとき、見た目と同じ倍率で Box・Sphere・Capsule Collider も広げます</td></tr>
       <tr><td>衝突形状の更新間隔・最小変位</td><td><code>collision_proxy_update_interval</code>、<code>collision_proxy_minimum_displacement</code></td><td>小数</td><td>0.25、0.05</td><td></td><td>作り直しの頻度（秒）と、作り直す最小の形の変化</td></tr>
     </table>
     </div>
@@ -118,9 +140,9 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
-      <tr><td>残り空気量</td><td><code>available_air</code></td><td>小数</td><td>100</td><td>0〜10億</td><td>送った分だけ減ります</td></tr>
+      <tr><td>残り空気量</td><td><code>available_air</code></td><td>小数</td><td>100</td><td>0〜10億</td><td>送った分だけ減り、0 になると空気が出なくなります。<b>無限供給</b> をオンにすると減りません。</td></tr>
       <tr><td>出力圧力</td><td><code>output_pressure</code></td><td>小数</td><td>4</td><td>0〜1000000</td><td>対象の内圧がこれ以上になると、空気は流れなくなります</td></tr>
-      <tr><td>最大流量</td><td><code>max_flow_rate</code></td><td>小数</td><td>8</td><td>0〜1000000</td><td>1 秒あたりに出せる量</td></tr>
+      <tr><td>最大流量</td><td><code>max_flow_rate</code></td><td>小数</td><td>8</td><td>0〜1000000</td><td>1 秒あたりに出せる空気の上限。上げるほど速く膨らませられます。</td></tr>
       <tr><td>無限供給</td><td><code>unlimited_supply</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンなら残り空気量が減りません</td></tr>
       <tr><td>供給を有効化</td><td><code>enabled</code></td><td>オン・オフ</td><td>オン</td><td></td><td>空気入れのスイッチに使います</td></tr>
     </table>
@@ -135,10 +157,10 @@
       <tr><td>注入アンカー（任意）</td><td><code>anchor</code></td><td>GameObject</td><td>（空）</td><td></td><td>空気の入口として使う <a href="equipment.html#anchor">射出アンカー</a>。アンカーが刺さった位置から空気が入ります</td></tr>
       <tr><td>注入位置（対象ローカル）</td><td><code>injection_position</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>アンカーを使わないときの入口</td></tr>
       <tr><td>通気係数</td><td><code>conductance</code></td><td>小数</td><td>2</td><td>0〜100000</td><td>圧力差 1 あたりの流れやすさ</td></tr>
-      <tr><td>最大流量</td><td><code>max_flow_rate</code></td><td>小数</td><td>8</td><td>0〜1000000</td><td></td></tr>
-      <tr><td>接続効率</td><td><code>efficiency</code></td><td>小数</td><td>1</td><td>0〜1</td><td>途中で失われない割合</td></tr>
+      <tr><td>最大流量</td><td><code>max_flow_rate</code></td><td>小数</td><td>8</td><td>0〜1000000</td><td>この管で 1 秒あたりに送れる空気の上限。供給元の最大流量と小さい方が使われます。上げるほど速く膨らみます。</td></tr>
+      <tr><td>接続効率</td><td><code>efficiency</code></td><td>小数</td><td>1</td><td>0〜1</td><td>流れる量に掛ける倍率。下げるほど同じ圧力差でもゆっくり膨らみます（供給元の空気が余計に減ることはありません）。0 で流れません。</td></tr>
       <tr><td>アンカー抜去時に漏れを作成</td><td><code>leak_on_anchor_detach</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>アンカーが抜けたら、その位置に穴をあけます</td></tr>
-      <tr><td>抜去漏れの大きさ</td><td><code>anchor_detach_leak_severity</code></td><td>小数</td><td>0.25</td><td>0〜1</td><td></td></tr>
+      <tr><td>抜去漏れの大きさ</td><td><code>anchor_detach_leak_severity</code></td><td>小数</td><td>0.25</td><td>0〜1</td><td>アンカーが抜けたときにあける穴の大きさ。上げるほど空気が速く抜けます。</td></tr>
       <tr><td>室間の圧力伝播</td><td><code>pressure_propagation</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>膨張区画どうしをつなぎ、圧力をならします</td></tr>
       <tr><td>接続中</td><td><code>connected</code></td><td>オン・オフ</td><td><b>オフ</b></td><td></td><td><b>オンにしないと空気は流れません</b>。バルブ・引き金に使います</td></tr>
       <tr><td>現在流量・圧力差・状態</td><td><code>flow_rate</code>、<code>pressure_difference</code>、<code>status</code></td><td>読取のみ（実行中）</td><td></td><td></td><td></td></tr>
@@ -151,12 +173,12 @@
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>親の膨張対象</td><td><code>inflation_owner</code></td><td>GameObject</td><td>（空）</td><td></td><td>膨張対象を持つ GameObject</td></tr>
-      <tr><td>区画番号</td><td><code>region_id</code></td><td>整数</td><td>0</td><td>0〜65535</td><td></td></tr>
-      <tr><td>空気量・区画の初期体積</td><td><code>air_amount</code>、<code>rest_volume</code></td><td>小数</td><td>0、0.25</td><td></td><td></td></tr>
-      <tr><td>区画の膨張しやすさ・圧力倍率・外気圧・圧力上限</td><td><code>gas_compliance</code>、<code>pressure_scale</code>、<code>ambient_pressure</code>、<code>maximum_pressure</code></td><td>小数</td><td>0.25、4、1、12</td><td></td><td>膨張対象と同じ意味</td></tr>
-      <tr><td>区画の最大体積倍率</td><td><code>maximum_volume_ratio</code></td><td>小数</td><td>3</td><td>1〜100</td><td></td></tr>
-      <tr><td>漏れへの強さ・漏れの大きさ</td><td><code>leak_resistance</code>、<code>requested_leak_severity</code></td><td>小数</td><td>1、0.25</td><td></td><td></td></tr>
-      <tr><td>漏れを作成・区画の空気を抜く</td><td><code>request_leak</code>、<code>request_deflate</code></td><td>実行中の操作</td><td></td><td></td><td></td></tr>
+      <tr><td>区画番号</td><td><code>region_id</code></td><td>整数</td><td>0</td><td>0〜65535</td><td>エンジンは使いません。スクリプトで区画を見分けるための番号です。</td></tr>
+      <tr><td>空気量・区画の初期体積</td><td><code>air_amount</code>、<code>rest_volume</code></td><td>小数</td><td>0、0.25</td><td></td><td>空気量は開始時の空気。初期体積は空気が 0 のときの区画の大きさで、大きいほど同じ空気量でも内圧が上がりにくくなります。</td></tr>
+      <tr><td>区画の膨張しやすさ・圧力倍率・外気圧・圧力上限</td><td><code>gas_compliance</code>、<code>pressure_scale</code>、<code>ambient_pressure</code>、<code>maximum_pressure</code></td><td>小数</td><td>0.25、4、1、12</td><td></td><td>膨張対象と同じ意味です。膨張しやすさを上げると少ない空気で区画が大きくなり、圧力倍率を上げると内圧が上がりやすくなります。</td></tr>
+      <tr><td>区画の最大体積倍率</td><td><code>maximum_volume_ratio</code></td><td>小数</td><td>3</td><td>1〜100</td><td>区画が初期体積の何倍まで膨らむか。上限に達すると、それ以上は大きくならず内圧だけが上がります。</td></tr>
+      <tr><td>漏れへの強さ・漏れの大きさ</td><td><code>leak_resistance</code>、<code>requested_leak_severity</code></td><td>小数</td><td>1、0.25</td><td></td><td>漏れへの強さを上げるほど、穴から空気がゆっくり抜けます。漏れの大きさは「漏れを作成」であける穴の大きさ（0〜1）です。</td></tr>
+      <tr><td>漏れを作成・区画の空気を抜く</td><td><code>request_leak</code>、<code>request_deflate</code></td><td>実行中の操作</td><td></td><td></td><td>実行中にオンにすると 1 回だけ実行し、自動でオフに戻ります。漏れを作成は穴をあけ、区画の空気を抜くは空気を 0 にします。</td></tr>
       <tr><td>区画圧力・区画体積・区画の漏れ量・区画の状態</td><td></td><td>読取のみ（実行中）</td><td></td><td></td><td></td></tr>
     </table>
     </div>
@@ -171,36 +193,42 @@
     <div class="warning"><strong>注意</strong>プロファイルを設定すると、膨張対象の同じ名前の値はプロファイルの値で上書きされます（空気量・初期体積は上書きしません）。実行中はプロファイルを編集できず、変更は次に実行したときに反映されます。新しく作ったプロファイルの計算方式は <b>XPBD変形</b> です。</div>
 
     <h2 id="csharp">スクリプトから使う（C#）</h2>
-    <p><a href="../csharp/script-behaviour.html">ScriptBehaviour</a> の <code>GetComponent&lt;T&gt;()</code> で、<code>InflationComponent</code>、<code>InflationRegionComponent</code>、<code>AirSourceComponent</code>、<code>AirConnectionComponent</code> を取れます（MonoBehaviour からは取れません）。プロパティ名は内部名をパスカルケースにしたものです（<code>air_amount</code> → <code>AirAmount</code>）。</p>
+    <p>MonoBehaviour では <code>GetComponent&lt;Inflation&gt;()</code>・<code>GetComponent&lt;AirSource&gt;()</code>・<code>GetComponent&lt;AirConnection&gt;()</code>・<code>GetComponent&lt;InflationRegion&gt;()</code> で取り出せます。</p>
     <div class="table-wrap">
     <table>
-      <tr><th>メンバー（InflationComponent）</th><th>働き</th></tr>
-      <tr><td><code>RequestLeakAt(位置, 大きさ = 0.25f)</code></td><td>ワールド座標の位置に穴をあけます</td></tr>
-      <tr><td><code>RequestDamage(位置, 量, 範囲 = 0.25f)</code></td><td>ダメージを与えます</td></tr>
-      <tr><td><code>RequestDeflation()</code>、<code>RequestRuptureNow()</code></td><td>空気を抜く、すぐ破裂させる</td></tr>
-      <tr><td><code>State</code></td><td>0 通常、1 膨張中、2 伸張、3 危険、4 漏れ、5 破裂</td></tr>
-      <tr><td><code>InternalPressure</code>、<code>InflationRatio</code>、<code>CriticalFactor</code>、<code>MovementSpeedMultiplier</code></td><td>現在圧力、膨張倍率、危険度、移動速度倍率</td></tr>
-      <tr><td><code>Profile</code></td><td>膨張プロファイル（<code>AssetReference&lt;InflationProfileAsset&gt;</code>）</td></tr>
+      <tr><th>型</th><th>メンバー</th><th>説明</th></tr>
+      <tr><td><code>Inflation</code></td><td><code>airAmount</code>、<code>restVolume</code>、<code>rupturePressure</code>、<code>maximumInflationRatio</code></td><td>読み書きできる値</td></tr>
+      <tr><td><code>Inflation</code></td><td><code>internalPressure</code>、<code>currentVolume</code>、<code>inflationRatio</code>、<code>leakRate</code>、<code>movementSpeedMultiplier</code>、<code>state</code>、<code>status</code></td><td>読取のみ。<code>state</code> は <code>InflationState</code>（Normal・Inflating・Stretched・Critical・Leaking・Ruptured）</td></tr>
+      <tr><td><code>Inflation</code></td><td><code>RequestLeakAt(位置, 大きさ = 0.25f)</code>、<code>RequestDamage(位置, 量, 範囲 = 0.25f)</code>、<code>RequestDeflation()</code>、<code>RequestRupture()</code></td><td>穴をあける・ダメージ・空気を抜く・すぐ破裂させる</td></tr>
+      <tr><td><code>AirSource</code></td><td><code>availableAir</code>、<code>outputPressure</code>、<code>maxFlowRate</code>、<code>unlimitedSupply</code>、<code>supplying</code></td><td><code>supplying</code> は供給の入り切り（Component の有効・無効とは別）</td></tr>
+      <tr><td><code>AirConnection</code></td><td><code>source</code>、<code>target</code>、<code>anchor</code>、<code>injectionPosition</code>、<code>connected</code>、<code>conductance</code>、<code>maxFlowRate</code></td><td>実行中に送り先を照準の相手へ差し替えられます</td></tr>
+      <tr><td><code>AirConnection</code></td><td><code>flowRate</code>、<code>pressureDifference</code>、<code>status</code></td><td>読取のみ</td></tr>
     </table>
     </div>
 <pre><code>using ReplayEngine;
 
-public sealed class Pump : ScriptBehaviour
+public sealed class Pump : MonoBehaviour
 {
-    public override void Update(float deltaTime)
+    AirConnection? hose;
+
+    void Start() =&gt; hose = GetComponent&lt;AirConnection&gt;();
+
+    void Update()
     {
         // 空気接続を同じ GameObject に付けておき、Space の間だけ送る
-        if (TryGetComponent(out AirConnectionComponent hose))
-            hose.Connected = Input.GetKey(KeyCode.Space);
+        if (hose != null) hose.connected = Input.GetKey(KeyCode.Space);
     }
 }</code></pre>
-    <div class="note"><strong>破裂を知る</strong>破裂したことを知らせるイベント（風船の <code>OnBalloonPopped</code> のようなもの）はありません。<code>State == 5</code> になったかを毎フレーム調べてください。</div>
+    <h3 id="ruptured-event">破裂を知る</h3>
+    <p>膨張対象と<b>同じ GameObject</b> に付けたスクリプトに、破裂した瞬間 <code>OnInflationRuptured(InflationRupturedInfo info)</code> が届きます。<code>info</code> には破裂した位置 <code>WorldPosition</code>・向き <code>Normal</code>・内圧 <code>Pressure</code>・体積 <code>Volume</code> が入っています。別の GameObject のスクリプトから知りたいときは、<code>Inflation</code> を覚えておき、<code>state == InflationState.Ruptured</code> になったか、破裂で本体が消えて <code>== null</code> になったかを調べます。</p>
+    <p>ScriptBehaviour からは、これまでどおり <code>InflationComponent</code> などで、内部名をパスカルケースにした名前（<code>air_amount</code> → <code>AirAmount</code>、<code>float_height</code> → <code>FloatHeight</code>）を読み書きできます。</p>
 
-    <div class="warning" id="limits"><strong>制限</strong>
+<div class="warning" id="limits"><strong>制限</strong>
       <ul>
-        <li><b>XPBD変形</b> には同じ GameObject の Mesh Renderer と、CPU 側のメッシュ（Runtime Mesh、Sliceable、または Convex Collider が持つメッシュ）が必要です。Mesh Renderer だけではケージが作れず「XPBDケージを準備できていません」と出ます。頂点は 250,000 まで。</li>
-        <li><b>簡易</b> は見た目の大きさを変えるだけで、Collider の大きさは変わりません。当たり判定も膨らませるときは XPBD変形 ＋ Convex Collider ＋「変形に合わせて衝突形状を更新」を使います。</li>
-        <li>破裂で起きるのは、周りへの爆風（Destructible へのダメージと押し出し。風船には効きません）と、空気が抜けることだけです。メッシュが破片になって飛ぶ演出は付きません。見た目を割るときは破壊系の部品と組み合わせます。</li>
+        <li><b>XPBD変形</b> には同じ GameObject の Mesh・Skinned・Primitive のどれかの Renderer が必要です。メッシュは実行開始時に読み込むので、最初の数フレームは「XPBD膨張の CPU メッシュを Renderer から読み込み中です」と出ることがあります。頂点は 250,000 まで。</li>
+        <li><b>簡易</b> で広がる当たり判定は Box・Sphere・Capsule Collider です。Convex・Mesh Collider まで膨らませるときは XPBD変形 ＋ Convex Collider ＋「変形に合わせて衝突形状を更新」を使います。</li>
+        <li>破裂すると本体の GameObject は消えます（子も一緒に消えます。残したい子は「子を中身として残す」をオン）。刺さっていた射出アンカーは、固定先が消えたので切り離しになります。</li>
+        <li>破裂音はまだ付きません。</li>
       </ul>
     </div>
 

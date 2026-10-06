@@ -43,7 +43,7 @@
     <div class="table-wrap">
     <table>
       <tr><th>作りたいもの</th><th>壊される側に付ける</th><th>壊す側に付ける</th></tr>
-      <tr><td>剣で切れる物</td><td>Mesh Renderer（モデル）＋ <b>Sliceable</b></td><td>刃の GameObject に <b>斬撃</b>。振るときにスクリプトで <code>BeginSwing()</code></td></tr>
+      <tr><td>剣で切れる物</td><td>Mesh・Skinned・Primitive のどれかの Renderer ＋ <b>Sliceable</b></td><td>刃の GameObject に <b>斬撃</b>。振るときにスクリプトで <code>BeginSwing()</code></td></tr>
       <tr><td>爆弾で崩れる壁</td><td>Mesh Renderer ＋ Box Collider ＋ <b>Destructible</b>（Destruction Asset を割り当て）</td><td>Rigidbody ＋ Collider ＋ <b>破壊する側</b>（接触時に爆発）</td></tr>
       <tr><td>物をぶつけると壊れる像</td><td>Mesh Renderer ＋ Collider ＋ <b>Destructible</b>（衝突で壊れる）</td><td>重めの Rigidbody ＋ Collider。確実に壊したいなら <b>破壊する側</b> も</td></tr>
       <tr><td>浮かぶ風船</td><td>Sphere などの形 ＋ Rigidbody（動的）＋ Sphere Collider ＋ <b>風船</b></td><td>斬撃、破壊する側、爆発、ぶつかる物のどれか</td></tr>
@@ -59,7 +59,7 @@
       <li>切る・割る物は<b>モデルファイル</b>（<code>.glb</code> など）で用意し、プロジェクトパネルからシーンビューへドラッグして置きます。Mesh Renderer の付いた GameObject ができます。</li>
       <li>床から少し浮かせて置き、シーンのカメラから見える位置にします。</li>
     </ol>
-    <div class="warning"><strong>Cube や Sphere（Primitive Mesh Renderer）は切れません・割れません</strong>Sliceable と Destructible は、Mesh Renderer か Skinned Mesh Renderer の形しか扱えません。階層パネルの「作成」で作った Cube に付けても「SliceableにはStatic MeshまたはSkinned Meshを1つ設定してください。」となります。箱で試したいときは、Blender などで箱のモデルを作って <code>.glb</code> で書き出してください。風船は Primitive の Sphere で作れます。</div>
+    <div class="note"><strong>Cube や Sphere（Primitive Mesh Renderer）も切れます・割れます</strong>Sliceable・Destructible・斬撃・破片の発光は、Mesh・Skinned・Primitive のどの Renderer でも使えます。Primitive は描画側が書き出した形を使うので、付けた直後は「描画側のPrimitive Mesh形状の書き出しを待っています。」と出ることがあります。切った後の破片は普通のメッシュに置き換わります。</div>
     <div class="note"><strong>ボロノイ分割には「閉じたメッシュ」が要る</strong>Destructible 用に細かく割るボロノイ分割は、穴のない閉じた形（箱、岩、柱など）しか割れません。キャラクターのモデルは服のすき間などで閉じていないことが多いので、試すときは単純な形を使います。平面で 2 つに切るだけ（Sliceable）なら、閉じていないモデルも切れます。</div>
 
     <h2 id="try-slice">試し方 1：Sliceable をエディターだけで切る</h2>
@@ -235,12 +235,12 @@ public class BreakAfterDelay : ScriptBehaviour
     <div class="table-wrap">
     <table>
       <tr><th>症状・出る文</th><th>確かめること</th></tr>
-      <tr><td>「SliceableにはStatic MeshまたはSkinned Meshを1つ設定してください。」</td><td>Primitive Mesh Renderer（Cube など）には使えません。Mesh Renderer か Skinned Mesh Renderer の<b>どちらか 1 つだけ</b>を付けます。</td></tr>
+      <tr><td>「SliceableにはStatic Mesh・Skinned Mesh・Primitive Meshのどれかを1つ設定してください。」</td><td>Mesh・Skinned・Primitive の Renderer のうち<b>どれか 1 つだけ</b>を付けます（2 つ以上付いているときも出ます）。</td></tr>
       <tr><td>「描画側のStatic Mesh読み込みを待っています。」</td><td>モデルの読み込み中です。少し待ってからもう一度。</td></tr>
       <tr><td>「切断エネルギーがCut resistanceに達していません。」</td><td>斬撃なら刃を速く振るか切断エネルギー倍率を上げる。スクリプトなら <code>Slice()</code> の切断エネルギーを上げる。または切断抵抗（破壊材質があればそちら）を下げる。</td></tr>
       <tr><td>「切断Cooldown中です。」「Max fragment countに達しました。」</td><td>切断Cooldown（0.15 秒）を待つ。破片の数が最大破片数（32）に達しています。</td></tr>
       <tr><td>「Runtime切断のConvex Physicsには ATLAS_PHYSICS backendが必要です。」</td><td>破片の当たり判定を実行中に作るため、物理エンジンが ATLAS_PHYSICS のシーンで、実行中に試します。編集中には切れません。</td></tr>
-      <tr><td>「DestructibleにはMeshRendererが必要です。」</td><td>Destructible は Mesh Renderer のモデルにだけ使えます。</td></tr>
+      <tr><td>「DestructibleにはMesh・Skinned・PrimitiveのいずれかのRendererが必要です。」</td><td>同じ GameObject に Renderer を付けます。</td></tr>
       <tr><td>「指定した破壊材質Assetを解決できません。…」</td><td>破壊材質のファイルが消えたか移動しています。割り当て直します。</td></tr>
       <tr><td>ボロノイ分割のボタンが押せない</td><td>対象に Sliceable を一時的に付けます。</td></tr>
       <tr><td>「分割失敗: …」</td><td>閉じていないメッシュです。穴のない単純な形で試します。</td></tr>

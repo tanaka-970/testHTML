@@ -48,7 +48,7 @@
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>ドラッグ 1 目盛りの量</th><th>説明</th></tr>
       <tr><td>位置</td><td><code>position</code></td><td>X Y Z</td><td>0, 0, 0</td><td>0.05</td><td>親から見た位置。親がいなければシーンの座標</td></tr>
       <tr><td>回転 (度)</td><td><code>rotation</code></td><td>X Y Z</td><td>0, 0, 0</td><td>0.5</td><td>親から見た回転。X・Y・Z 軸まわりの角度を度で入れます</td></tr>
-      <tr><td>拡大率</td><td><code>scale</code></td><td>X Y Z</td><td>1, 1, 1</td><td>0.01</td><td>親から見た大きさの倍率</td></tr>
+      <tr><td>拡大率</td><td><code>scale</code></td><td>X Y Z</td><td>1, 1, 1</td><td>0.01</td><td>親から見た大きさの倍率。1 でそのまま、2 で 2 倍。X・Y・Z を別々の値にすると、その向きだけ伸び縮みします。子も一緒に大きくなります。</td></tr>
     </table>
     </div>
     <p>インスペクターの値は、どれも<b>親から見た値</b>（ローカルの値）です。GameObject を別の GameObject の子にすると、親の位置・回転・大きさに合わせて一緒に動きます。</p>

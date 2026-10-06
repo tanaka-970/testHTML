@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Physics</div>
     <h1>物理（Rigidbody と Collider）</h1>
-    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（Convex Collider・計算間隔の記述を更新）</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8（Rigidbody の風・描画の補間、Collider の元にできる Renderer を追加）</p>
 
     <p>物が落ちる、ぶつかって止まる、跳ね返る、といった動きを作るコンポーネントです。2 種類の役割があります。</p>
     <div class="note"><strong>物理エンジン ATLAS_PHYSICS</strong>このエンジンの物理は <b>ATLAS_PHYSICS</b> が計算します。中身は NVIDIA PhysX を土台にしています。エディターの診断画面やコンソールのメッセージにも、この名前で表示されます。</div>
@@ -66,12 +66,14 @@
       <tr><td>移動の減衰</td><td><code>linear_damping</code></td><td>小数</td><td>0.05</td><td>0〜10</td><td>大きいほど、移動の速さが早く落ちます（空気抵抗のようなもの）</td></tr>
       <tr><td>回転の減衰</td><td><code>angular_damping</code></td><td>小数</td><td>0.05</td><td>0〜10</td><td>大きいほど、回転が早く止まります</td></tr>
       <tr><td>重力の倍率</td><td><code>gravity_scale</code></td><td>小数</td><td>1</td><td>-10〜10</td><td>重力に掛ける倍率。0 で重力なし、マイナスで上へ落ちます</td></tr>
+      <tr><td>風の影響</td><td><code>wind_response</code></td><td>小数</td><td>0</td><td>0〜40</td><td><a href="wind.html">風場</a> の風に押される強さ。1 秒あたりに風の速さへ近づく割合です。0 なら風を受けません（PhysX のときだけ）</td></tr>
       <tr><td>反発</td><td><code>restitution</code></td><td>小数</td><td>0</td><td>0〜1</td><td>跳ね返りやすさ。0 で跳ねず、1 でほぼ同じ勢いで跳ね返ります</td></tr>
       <tr><td>摩擦</td><td><code>friction</code></td><td>小数</td><td>0.5</td><td>0〜2</td><td>滑りにくさ。0 でつるつる滑ります</td></tr>
       <tr><td>位置を固定</td><td><code>freeze_position</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>X・Y・Z のうち 0.5 以上にした軸の方向へは動かなくなります。たとえば 0, 1, 0 で上下に動かなくなります</td></tr>
       <tr><td>回転を固定</td><td><code>freeze_rotation</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>X・Y・Z のうち 0.5 以上にした軸のまわりには回らなくなります</td></tr>
       <tr><td>停止状態で開始</td><td><code>start_asleep</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、力を加えられるまで止まった状態で始まります</td></tr>
       <tr><td>高速移動の貫通対策</td><td><code>use_ccd</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、毎回、動いた道筋に沿って当たりを調べ、最初に当たった物で止まります。オフでも、1 回の計算で自分の大きさ以上動くときは同じ調べ方に切り替わります</td></tr>
+      <tr><td>描画の補間</td><td><code>interpolate</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>物理の計算（固定刻み）と画面の更新の周期がずれてカクつくとき、直近 2 回の物理の結果の間をなめらかにつないで描きます。カメラが追う物やプレイヤーに使います</td></tr>
       <tr><td>移動速度</td><td><code>linear_velocity</code></td><td>3 つの小数（読み取り専用）</td><td></td><td></td><td>今の移動の速さ。実行中だけ変わり、保存されません</td></tr>
       <tr><td>回転速度</td><td><code>angular_velocity</code></td><td>3 つの小数（読み取り専用）</td><td></td><td></td><td>今の回転の速さ。実行中だけ変わり、保存されません</td></tr>
       <tr><td>停止中</td><td><code>is_sleeping</code></td><td>オン・オフ（読み取り専用）</td><td></td><td></td><td>止まっていて計算を休んでいるか（<a href="#sleep">停止</a>）</td></tr>
@@ -84,7 +86,7 @@
     <table>
       <tr><th>種別</th><th>動き</th><th>使う場面</th></tr>
       <tr><td>静的</td><td>動きません。ほかの物がぶつかると止められます</td><td>動かない障害物</td></tr>
-      <tr><td>キネマティック</td><td>重力や衝突では動きません。Transform の位置（Motion やスクリプトで動かした位置）に従います。ぶつかった動的な物を押しのけます</td><td>動く床、エレベーター</td></tr>
+      <tr><td>キネマティック</td><td>重力や衝突では動きません。Transform の位置（Motion やスクリプトで動かした位置）に従います。ぶつかった動的な物を押しのけます。C# の <code>MovePosition</code>・<code>MoveRotation</code> で動かすと、次の物理の計算で目標の位置へ移り、そのときの速さも付くので、上に乗った物を一緒に運びます</td><td>動く床、エレベーター</td></tr>
       <tr><td>動的</td><td>重力、力、衝突で動きます</td><td>落ちる箱、転がるボール</td></tr>
     </table>
     </div>
@@ -118,7 +120,7 @@
     </div>
 
     <h3 id="csharp">C# スクリプトから操作する</h3>
-    <p>C# では <code>RigidbodyComponent</code> 型で操作します。</p>
+    <p>MonoBehaviour では Unity と同じ書き方の <code>Rigidbody</code>（<code>GetComponent&lt;Rigidbody&gt;()</code>。<code>AddForce</code>・<code>velocity</code>・<code>MovePosition</code> など）を使えます（<a href="../csharp/api-components.html#rigidbody">C# のコンポーネント API</a>）。ScriptBehaviour では <code>RigidbodyComponent</code> 型で操作します。</p>
     <div class="table-wrap">
     <table>
       <tr><th>メンバー</th><th>働き</th></tr>
@@ -199,7 +201,7 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
-      <tr><td>メッシュの取得元</td><td><code>mesh_source</code></td><td>選択</td><td>Renderer のメッシュ</td><td></td><td>Renderer のメッシュ：同じ GameObject の Mesh Renderer、無ければ Skinned Mesh Renderer の <b>メッシュ</b> を使います（Primitive Mesh Renderer の形は使えません）。衝突専用メッシュ：下の欄のモデルを使います</td></tr>
+      <tr><td>メッシュの取得元</td><td><code>mesh_source</code></td><td>選択</td><td>Renderer のメッシュ</td><td></td><td>Renderer のメッシュ：同じ GameObject の Mesh・Skinned・Primitive のどれかの Renderer のメッシュを使います（実行中に作り替えたメッシュも使えます）。衝突専用メッシュ：下の欄のモデルを使います</td></tr>
       <tr><td>衝突専用メッシュ</td><td><code>mesh_asset</code></td><td>アセット（モデル）</td><td>（空）</td><td></td><td>当たり判定だけに使う、三角形の少ないモデル</td></tr>
       <tr><td>セルサイズ</td><td><code>cook_cell_size</code></td><td>小数</td><td>4</td><td>0.05〜100</td><td>当たりを速く調べるための区切りの大きさ。小さいほど速く調べられますが、メモリを多く使います</td></tr>
       <tr><td>両面に当たる</td><td><code>double_sided</code></td><td>オン・オフ</td><td>オン</td><td></td><td>この版では、オフにしても当たり方は変わりません（常に両面に当たります）</td></tr>
@@ -232,7 +234,7 @@
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>複合凸の分割数</td><td><code>mesh_partition_count</code></td><td>整数</td><td>1</td><td>1〜16</td><td>頂点の元が Mesh Renderer のとき、メッシュをこの数の凸の部品に分けます。2 以上にすると、へこみのある形もへこみを残せます</td></tr>
       <tr><td>複合凸のパーツ番号</td><td><code>mesh_partition_index</code></td><td>整数</td><td>0</td><td>0〜15</td><td>分けた部品のうち、この Collider が受け持つ番号。同じ GameObject に、分割数が同じ Convex Collider を部品の数だけ付け、番号を 0, 1, 2… と振ると、1 つの動く剛体の当たり判定としてまとまります</td></tr>
-      <tr><td>頂点の元</td><td><code>vertex_source</code></td><td>選択</td><td>コードから渡す</td><td>コードから渡す・同じ GameObject の Mesh Renderer・同じ GameObject の Primitive Mesh Renderer</td><td>凸包の元にする点</td></tr>
+      <tr><td>頂点の元</td><td><code>vertex_source</code></td><td>選択</td><td>コードから渡す</td><td>コードから渡す・同じ GameObject の Mesh Renderer・同じ GameObject の Primitive Mesh Renderer</td><td>凸包の元にする点。「Mesh Renderer」を選ぶと、Mesh Renderer が無いときは Skinned Mesh Renderer の今の姿勢から作ります</td></tr>
       <tr><td>Hull 頂点上限</td><td><code>vertex_limit</code></td><td>整数</td><td>64</td><td>4〜255</td><td>できあがる凸包の頂点数の上限です。大きいほど元の形に近くなり、小さいほど計算が軽くなります。値を変えると、凸包を作り直します</td></tr>
     </table>
     </div>

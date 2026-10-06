@@ -35,8 +35,8 @@
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>説明</th></tr>
       <tr><td>ソケット名</td><td><code>socket_name</code></td><td>文字</td><td>Socket</td><td>装備アタッチから指定する名前</td></tr>
       <tr><td>ローカル位置</td><td><code>local_position</code></td><td>3 つの小数</td><td>0, 0, 0</td><td>この GameObject から見た位置</td></tr>
-      <tr><td>ローカル回転（ラジアン）</td><td><code>local_rotation</code></td><td>3 つの小数</td><td>0, 0, 0</td><td>向き。<b>度ではなくラジアン</b>です（90 度 ≒ 1.5708）</td></tr>
-      <tr><td>ローカル拡縮</td><td><code>local_scale</code></td><td>3 つの小数</td><td>1, 1, 1</td><td></td></tr>
+      <tr><td>ローカル回転</td><td><code>local_rotation_degrees</code>（保存は <code>local_rotation</code>）</td><td>3 つの小数</td><td>0, 0, 0</td><td>ソケットの向き。インスペクターでは<b>度</b>で表示・編集します（ファイルにはラジアンで保存されます）。X・Y・Z の順に、その軸まわりに回った向きになります</td></tr>
+      <tr><td>ローカル拡縮</td><td><code>local_scale</code></td><td>3 つの小数</td><td>1, 1, 1</td><td>ソケットに付けた物の大きさの倍率。1, 1, 1 でそのまま、2 で 2 倍の大きさになります。</td></tr>
     </table>
     </div>
 
@@ -45,10 +45,10 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>説明</th></tr>
-      <tr><td>装着先</td><td><code>target</code></td><td>GameObject</td><td>（空）</td><td>キャラクターなど</td></tr>
+      <tr><td>装着先</td><td><code>target</code></td><td>GameObject</td><td>（空）</td><td>付ける相手の GameObject（キャラクターなど）。空なら付きません。実行中に変えると付け替わります。</td></tr>
       <tr><td>ソケット名</td><td><code>socket_name</code></td><td>文字</td><td>（空）</td><td>装着先の装備ソケットの名前</td></tr>
       <tr><td>ボーン名</td><td><code>bone_name</code></td><td>文字</td><td>（空）</td><td>装着先のスキンモデルのボーン名。入れるとソケットの代わりにボーンに付きます</td></tr>
-      <tr><td>装着位置・装着回転（ラジアン）・装着拡縮</td><td><code>local_position</code>、<code>local_rotation</code>、<code>local_scale</code></td><td>3 つの小数</td><td>0、0、1</td><td>ソケット（ボーン）から見たずれ</td></tr>
+      <tr><td>装着位置・装着回転（インスペクターでは度）・装着拡縮</td><td><code>local_position</code>、<code>local_rotation</code>、<code>local_scale</code></td><td>3 つの小数</td><td>0、0、1</td><td>ソケット（ボーン）から見たずれ。位置を変えると持つ場所が、回転を変えると持つ向きが、拡縮を変えると持たせた物の大きさが変わります</td></tr>
       <tr><td>状態</td><td><code>status</code></td><td>文字（読取のみ）</td><td></td><td>「指定した名前のソケットが見つかりません。」「指定したボーンがモデルに見つかりません。」「ボーン姿勢を待っています。」など</td></tr>
     </table>
     </div>
@@ -62,12 +62,12 @@
       <tr><td>シーン開始時の状態</td><td><code>initial_state</code></td><td>選択</td><td>装着中</td><td>装着中・飛行中・命中物へ固定・切り離し</td><td>「飛行中」は速度が無いため、開始時に「切り離し」に戻ります</td></tr>
       <tr><td>装着先・装着ソケット名・装着ボーン名</td><td><code>mounted_target</code>、<code>mounted_socket</code>、<code>mounted_bone</code></td><td>GameObject、文字</td><td>（空）</td><td></td><td>撃つ前に付いている場所（銃口など）。装着中は自動で装備アタッチが付きます</td></tr>
       <tr><td>固定先・固定位置・固定回転（ラジアン）・固定時の拡縮・固定面の法線</td><td><code>attached_target</code> ほか</td><td>GameObject、3 つの小数</td><td>（空）、0、0、1、0,1,0</td><td></td><td>刺さった相手と、相手から見た位置。「命中物へ固定」で始めるときに使います</td></tr>
-      <tr><td>飛行中の重力</td><td><code>gravity</code></td><td>3 つの小数</td><td>0, -9.80665, 0</td><td></td><td></td></tr>
-      <tr><td>掃引半径</td><td><code>projectile_radius</code></td><td>小数</td><td>0.04</td><td>0.0001〜5</td><td>当たりを調べる球の半径</td></tr>
-      <tr><td>飛行距離上限・飛行時間上限</td><td><code>maximum_flight_distance</code>、<code>maximum_flight_time</code></td><td>小数</td><td>1000、30</td><td></td><td>超えると切り離し</td></tr>
+      <tr><td>飛行中の重力</td><td><code>gravity</code></td><td>3 つの小数</td><td>0, -9.80665, 0</td><td></td><td>飛んでいる間にかかる加速度（m/秒²）。既定は地球の重力で、放物線を描いて落ちます。0, 0, 0 にするとまっすぐ飛びます。</td></tr>
+      <tr><td>掃引半径</td><td><code>projectile_radius</code></td><td>小数</td><td>0.04</td><td>0.0001〜5</td><td>当たりを調べる球の半径。大きくするほど細い物にも当たりやすくなり、すき間を抜けにくくなります。</td></tr>
+      <tr><td>飛行距離上限・飛行時間上限</td><td><code>maximum_flight_distance</code>、<code>maximum_flight_time</code></td><td>小数</td><td>1000、30</td><td></td><td>どちらかを超えると何にも刺さらずに切り離しになります。短くすると射程が短くなります。</td></tr>
       <tr><td>表面からのずらし</td><td><code>surface_offset</code></td><td>小数</td><td>0.002</td><td>-1〜1</td><td>刺さる位置を表面から浮かせる量</td></tr>
       <tr><td>命中物へ追従固定</td><td><code>attach_to_hit_object</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オフなら当たった位置で止まるだけ</td></tr>
-      <tr><td>衝突レイヤー</td><td><code>collision_mask</code></td><td>レイヤー</td><td>すべて</td><td></td><td></td></tr>
+      <tr><td>衝突レイヤー</td><td><code>collision_mask</code></td><td>レイヤー</td><td>すべて</td><td></td><td>刺さる相手のレイヤー。外したレイヤーの物はすり抜けて飛びます（撃った本人を外すなど）。</td></tr>
       <tr><td>発射の向き（ローカル）</td><td><code>launch_direction</code></td><td>3 つの小数</td><td>0, 0, 1</td><td></td><td>「発射を実行」で使う向き。アンカーのローカル座標で指定します（保存しません）</td></tr>
       <tr><td>発射の速さ</td><td><code>launch_speed</code></td><td>小数</td><td>40</td><td>0.01〜1000</td><td>「発射を実行」で使う速さ（m/s、保存しません）</td></tr>
       <tr><td>発射を実行</td><td><code>request_launch</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>実行中にオンにすると、次の LateUpdate で一度だけ発射して自動でオフに戻ります</td></tr>
@@ -106,7 +106,7 @@
     <ol class="steps">
       <li>剣の GameObject に <b>Physics &gt; 装備アタッチ</b> を付けます。</li>
       <li><b>装着先</b> にキャラクター（Skinned Mesh Renderer の GameObject）を入れ、<b>ボーン名</b> に右手のボーン名を入れます。</li>
-      <li>実行して、手の中で向きがずれていれば <b>装着回転（ラジアン）</b> と <b>装着位置</b> で合わせます。</li>
+      <li>実行して、手の中で向きがずれていれば <b>装着回転</b>（度）と <b>装着位置</b> で合わせます。</li>
     </ol>
     <h3>背中に「Back」という場所を作って盾を付ける</h3>
     <ol class="steps">

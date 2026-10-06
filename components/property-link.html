@@ -45,10 +45,10 @@
       <tr><td>接続元プロパティ</td><td><code>source_property</code></td><td>文字</td><td>（空）</td><td></td><td>読み取るプロパティの<b>内部名</b></td></tr>
       <tr><td>接続先 Component</td><td><code>target_object</code></td><td>コンポーネントの参照</td><td>（未設定）</td><td></td><td>値を書き込むコンポーネント</td></tr>
       <tr><td>接続先プロパティ</td><td><code>target_property</code></td><td>文字</td><td>（空）</td><td></td><td>書き込むプロパティの<b>内部名</b></td></tr>
-      <tr><td>元の最小値</td><td><code>source_min</code></td><td>小数</td><td>0</td><td></td><td>読み取る値の範囲の下限</td></tr>
-      <tr><td>元の最大値</td><td><code>source_max</code></td><td>小数</td><td>1</td><td></td><td>読み取る値の範囲の上限</td></tr>
-      <tr><td>先の最小値</td><td><code>target_min</code></td><td>小数</td><td>0</td><td></td><td>書き込む値の範囲の下限</td></tr>
-      <tr><td>先の最大値</td><td><code>target_max</code></td><td>小数</td><td>1</td><td></td><td>書き込む値の範囲の上限</td></tr>
+      <tr><td>元の最小値</td><td><code>source_min</code></td><td>小数</td><td>0</td><td></td><td>読み取る値の範囲の下限。元の値がこの値のとき、先には「先の最小値」が書き込まれます。</td></tr>
+      <tr><td>元の最大値</td><td><code>source_max</code></td><td>小数</td><td>1</td><td></td><td>読み取る値の範囲の上限。元の値がこの値のとき、先には「先の最大値」が書き込まれます。その間は比例して決まります。</td></tr>
+      <tr><td>先の最小値</td><td><code>target_min</code></td><td>小数</td><td>0</td><td></td><td>書き込む値の範囲の下限。最小と最大を入れ替えると、元の値が増えるほど先の値が減る逆の動きになります。</td></tr>
+      <tr><td>先の最大値</td><td><code>target_max</code></td><td>小数</td><td>1</td><td></td><td>書き込む値の範囲の上限。</td></tr>
       <tr><td>反転</td><td><code>invert</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、元の値が大きいほど先の値が小さくなります</td></tr>
       <tr><td>範囲内に制限</td><td><code>clamp</code></td><td>オン・オフ</td><td>オン</td><td></td><td>元の値が範囲の外にあっても、先の値を先の範囲の中に収めます</td></tr>
       <tr><td>イージング</td><td><code>easing</code></td><td>選択</td><td>Linear</td><td></td><td>変換のカーブ。Linear（まっすぐ）、Step、EaseInQuad、EaseOutQuad、EaseInOutQuad、EaseInCubic、EaseOutCubic、EaseInOutCubic、EaseInBack、EaseOutBack、EaseInOutBack、EaseInElastic、EaseOutElastic、EaseInOutElastic、CustomBezier</td></tr>

@@ -17,9 +17,9 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Physics</div>
     <h1>ワイヤー・ヘア・ホース物理</h1>
-    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8</p>
 
-    <p>ひも状のものを揺らす 5 つのコンポーネントです。<b>ワイヤー物理</b> と <b>XPBDホース物理</b> は 3D ラインの点列をロープやホースとして動かし、<b>ヘア物理</b> はスキンモデルの髪ボーンを揺らします。<b>髪・ワイヤー用の衝突形状</b> は髪とワイヤーだけを押し返す球・カプセル、<b>ホースリール</b> はホースの繰り出しと巻き取りです。どれも実行中だけ計算し、停止すると実行前の形へ戻ります。</p>
+    <p>ひも状のものを揺らす 5 つのコンポーネントです。<b>ワイヤー物理</b> と <b>XPBDホース物理</b> は 3D ラインの点列（またはメッシュ）をロープやホースとして動かし、<b>ヘア物理</b> はスキンモデルの髪ボーン（または骨の無いメッシュ全体）を揺らします。どれも <a href="wind.html">風場</a> の風を受け、<a href="water-body.html">Water Body</a> の水の中では抵抗と浮力を受けます。<b>髪・ワイヤー用の衝突形状</b> は髪とワイヤーだけを押し返す球・カプセル、<b>ホースリール</b> はホースの繰り出しと巻き取りです。どれも実行中だけ計算し、停止すると実行前の形へ戻ります。</p>
 
     <h2 id="when">こんなときに使う</h2>
     <ul>
@@ -45,7 +45,7 @@
     <table>
       <tr><th>項目</th><th>内容</th></tr>
       <tr><td>コンポーネントを追加での場所</td><td>Physics &gt; ワイヤー物理</td></tr>
-      <tr><td>必須</td><td>Line Renderer（3D ライン）。追加すると一緒に付きます</td></tr>
+      <tr><td>形の元</td><td>同じ GameObject の Line Renderer（3D ライン、推奨）か、Mesh・Skinned・Primitive のどれかの Renderer。Line Renderer なら点列をそのまま動かし、メッシュならメッシュの長い軸に沿って点列を作り、その点列に合わせてメッシュを曲げます。部品は自動では付きません</td></tr>
       <tr><td>点</td><td>3D ラインに 2 点以上。閉じたラインは使えません。点はこの GameObject のローカル座標です</td></tr>
       <tr><td>上限</td><td>1 本 129 点まで（途中の分割数 128）</td></tr>
     </table>
@@ -54,10 +54,11 @@
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>計算品質</td><td><code>quality</code></td><td>選択</td><td>標準</td><td>軽量・標準・高精度</td><td>反復回数の目安。高精度ほど伸びにくく、重くなります</td></tr>
-      <tr><td>重力の倍率</td><td><code>gravity_scale</code></td><td>小数</td><td>1</td><td>-5〜5</td><td>マイナスで上へ浮きます</td></tr>
+      <tr><td>重力の倍率</td><td><code>gravity_scale</code></td><td>小数</td><td>1</td><td>-5〜5</td><td>重力に掛ける倍率。1 で通常、0 で重力なし（その場に浮く）、マイナスで上へ落ちます。</td></tr>
       <tr><td>揺れの減衰</td><td><code>damping</code></td><td>小数</td><td>3</td><td>0〜40</td><td>大きいほど早く揺れが収まります</td></tr>
       <tr><td>元の形へ戻る強さ</td><td><code>stiffness</code></td><td>小数</td><td>0</td><td>0〜1</td><td>0 で柔らかいロープ、上げると元の経路に戻ろうとするケーブル</td></tr>
-      <tr><td>風の加速度</td><td><code>wind</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>ワールドの向きで常にかかる加速度</td></tr>
+      <tr><td>風の加速度</td><td><code>wind</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>風場とは別に、常にかける加速度（ワールドの向き、m/秒²）。0, 0, 0 で何もかかりません。値を大きくするほどその向きへ強く流されます。</td></tr>
+      <tr><td>風の受けやすさ</td><td><code>wind_drag</code></td><td>小数</td><td>1</td><td>0〜40</td><td><a href="wind.html">風場</a> の風に流される度合い。0 なら風場を無視します</td></tr>
       <tr><td>衝突の太さ</td><td><code>particle_radius</code></td><td>小数</td><td>0.025</td><td>0.0001〜1</td><td>当たり判定の半径。見た目の太さ（3D ライン側）とは別です</td></tr>
       <tr><td>シーンの物体にも当てる</td><td><code>world_collision</code></td><td>オン・オフ</td><td>オン</td><td></td><td>シーンの Collider に当てます。オフの方が軽くなります。専用の衝突形状は常に当たります</td></tr>
       <tr><td>当たるレイヤー</td><td><code>collision_mask</code></td><td>レイヤー</td><td>すべて</td><td></td><td>シーンの Collider のうち当てるレイヤー</td></tr>
@@ -65,9 +66,12 @@
       <tr><td>途中の分割数</td><td><code>segment_count</code></td><td>整数</td><td>24</td><td>2〜128</td><td>物理で計算する点の数。細かい角に沿わせるなら増やします</td></tr>
       <tr><td>始点を固定・終点を固定</td><td><code>pin_start</code>、<code>pin_end</code></td><td>オン・オフ</td><td>オン、オフ</td><td></td><td>両端を吊るすなら両方オン</td></tr>
       <tr><td>始点の固定先・終点の固定先</td><td><code>start_anchor</code>、<code>end_anchor</code></td><td>GameObject</td><td>（空）</td><td></td><td>追従させる GameObject。空ならラインの元の端</td></tr>
-      <tr><td>始点（終点）の固定先からの位置</td><td><code>start_offset</code>、<code>end_offset</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>固定先のローカル座標</td></tr>
+      <tr><td>始点（終点）の固定先からの位置</td><td><code>start_offset</code>、<code>end_offset</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>固定先のローカル座標。固定先の GameObject の中心から、端をどれだけずらして付けるか。固定先が回転・拡大すると、ずらす向きと量も一緒に変わります。</td></tr>
       <tr><td>長さの余裕</td><td><code>slack</code></td><td>小数</td><td>1.05</td><td>1〜4</td><td>1 は元の長さ。1.05〜1.3 でたるみます。両端を離しすぎると張り切ります</td></tr>
-      <tr><td>状態</td><td><code>status</code></td><td>文字（読取のみ）</td><td></td><td></td><td>設定が正しくないときの理由が出ます</td></tr>
+      <tr><td>水の抗力・水の浮力</td><td><code>water_drag</code>、<code>water_buoyancy</code></td><td>小数</td><td>3、0.15</td><td>0〜40、0〜2</td><td>Water Body の水に入った部分にかかる抵抗と浮力。浮力は重力に対する割合です</td></tr>
+      <tr><td>剛体を引く</td><td><code>pull_bodies</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>両端の固定先が動的な Rigidbody のとき、全長を超えて離れた分だけ引き戻します（ロープで物を吊る・つなぐ）</td></tr>
+      <tr><td>張力の上限（N）</td><td><code>maximum_pull_force</code></td><td>小数</td><td>2000</td><td>0〜1000000</td><td>「剛体を引く」で出す力の上限</td></tr>
+      <tr><td>現在の張力・状態</td><td><code>current_tension</code>、<code>status</code></td><td>読取のみ</td><td></td><td></td><td>状態には、設定が正しくないときの理由が出ます</td></tr>
     </table>
     </div>
 
@@ -76,7 +80,7 @@
     <table>
       <tr><th>項目</th><th>内容</th></tr>
       <tr><td>コンポーネントを追加での場所</td><td>Physics &gt; ヘア物理</td></tr>
-      <tr><td>必須</td><td>Skinned Mesh Renderer。髪ボーンとウェイトを持つモデルが必要です（ボーンを自動では作りません）</td></tr>
+      <tr><td>形の元</td><td>Skinned Mesh Renderer（推奨）。髪ボーンとウェイトを持つモデルでは、そのボーンを揺らします（ボーンを自動では作りません）。骨の無い Mesh・Primitive の Renderer に付けると、メッシュ全体を根元固定の 1 束として揺らします</td></tr>
       <tr><td>上限</td><td>1 キャラクターの髪は合計 2048 点まで。衝突形状は 128 個まで候補にします</td></tr>
     </table>
     </div>
@@ -86,7 +90,7 @@
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>根元ボーン名</td><td><code>root_bones</code></td><td>文字</td><td>（空）</td><td></td><td>髪束の先頭のボーン名。複数はカンマ区切り。インスペクターの「根元ボーンを選んで追加」からも選べます。頭本体のボーンは選ばないでください</td></tr>
       <tr><td>自動検索する文字</td><td><code>name_filter</code></td><td>文字</td><td>hair,Hair,髪</td><td></td><td>根元ボーン名が空のときだけ、この文字を含むボーンを探します。大文字・小文字を区別します</td></tr>
-      <tr><td>髪束の上限</td><td><code>maximum_chains</code></td><td>整数</td><td>16</td><td>1〜64</td><td></td></tr>
+      <tr><td>髪束の上限</td><td><code>maximum_chains</code></td><td>整数</td><td>16</td><td>1〜64</td><td>揺らす髪束の数の上限。根元ボーンがこれより多いと、超えた分は揺れません。上げるほど多くの束が揺れ、重くなります。</td></tr>
       <tr><td>1束のボーン上限</td><td><code>maximum_segments</code></td><td>整数</td><td>24</td><td>1〜64</td><td>超えた先のボーンは、最後に計算したボーンに付いて動きます</td></tr>
       <tr><td>何フレームごとに計算</td><td><code>update_interval</code></td><td>整数</td><td>1</td><td>1〜4</td><td>2 にすると計算が半分になります。距離による自動切り替えはありません</td></tr>
       <tr><td>末端ボーンの先の長さ</td><td><code>tip_length</code></td><td>小数</td><td>0.08</td><td>0.001〜100</td><td>毛先の回転を出すための長さ（モデルの座標）</td></tr>
@@ -104,9 +108,9 @@
       <tr><td>形状</td><td><code>shape</code></td><td>選択</td><td>カプセル</td><td>球・カプセル</td><td>頭は球、肩や腕はカプセルが目安</td></tr>
       <tr><td>追従するボーン名</td><td><code>bone_name</code></td><td>文字</td><td>（空）</td><td></td><td>同じ GameObject のスキンモデルのボーン。空なら GameObject に追従。見つからない名前の形状は使われません</td></tr>
       <tr><td>中心の位置</td><td><code>center</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>ボーン（または GameObject）の座標</td></tr>
-      <tr><td>半径</td><td><code>radius</code></td><td>小数</td><td>0.15</td><td>0.001〜1000</td><td></td></tr>
-      <tr><td>カプセルの全長</td><td><code>height</code></td><td>小数</td><td>0.5</td><td>0.001〜1000</td><td></td></tr>
-      <tr><td>カプセルの向き</td><td><code>axis</code></td><td>選択</td><td>Y</td><td>X・Y・Z</td><td></td></tr>
+      <tr><td>半径</td><td><code>radius</code></td><td>小数</td><td>0.15</td><td>0.001〜1000</td><td>球・カプセルの太さ。大きくするほど、髪やワイヤーが手前で押し返されます（頭に埋まるときは上げます）。</td></tr>
+      <tr><td>カプセルの全長</td><td><code>height</code></td><td>小数</td><td>0.5</td><td>0.001〜1000</td><td>両端の丸い部分を含めた長さ。長くすると、腕や胴の広い範囲を押し返します。</td></tr>
+      <tr><td>カプセルの向き</td><td><code>axis</code></td><td>選択</td><td>Y</td><td>X・Y・Z</td><td>カプセルを伸ばす軸（ボーンまたは GameObject のローカル軸）。腕の向きに合わせます。</td></tr>
       <tr><td>シーンビューで形状を表示</td><td><code>debug_draw</code></td><td>オン・オフ</td><td>オン</td><td></td><td>シーンビューの「コライダー」がオンのとき桃色で表示</td></tr>
     </table>
     </div>
@@ -116,8 +120,8 @@
     <table>
       <tr><th>項目</th><th>内容</th></tr>
       <tr><td>コンポーネントを追加での場所</td><td>Physics &gt; XPBDホース物理</td></tr>
-      <tr><td>必須</td><td>Line Renderer（開いたラインに 2 点以上）</td></tr>
-      <tr><td>見た目</td><td>ラインの点列から管（チューブ）を作って描きます。3D ラインの「GPUで頂点生成」がオンなら、曲線と断面を GPU で作ります</td></tr>
+      <tr><td>形の元</td><td>Line Renderer（開いたラインに 2 点以上、推奨）か、Mesh・Skinned・Primitive のどれかの Renderer（ワイヤー物理と同じく、メッシュを点列に沿って曲げます）</td></tr>
+      <tr><td>見た目</td><td>Line Renderer のときは、点列から管（チューブ）を作って描きます。3D ラインの「GPUで頂点生成」がオンなら、曲線と断面を GPU で作ります。不透明な色のチューブは不透明物として描くので、空を背景にしても消えません（<a href="lines.html#limits">3D ライン</a>）</td></tr>
       <tr><td>計算</td><td>固定刻みの XPBD。断面の向き・曲げ・ねじれも計算します（PositionBasedDynamics の Cosserat ロッド）</td></tr>
     </table>
     </div>
@@ -125,27 +129,29 @@
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>始点の固定先・終点の固定先</td><td><code>start_anchor</code>、<code>end_anchor</code></td><td>GameObject</td><td>（空）</td><td></td><td>端を付ける GameObject</td></tr>
-      <tr><td>始点の固定位置・終点の固定位置</td><td><code>start_offset</code>、<code>end_offset</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>固定先のローカル座標</td></tr>
-      <tr><td>物理分割数</td><td><code>segment_count</code></td><td>整数</td><td>32</td><td>2〜128</td><td></td></tr>
+      <tr><td>始点の固定位置・終点の固定位置</td><td><code>start_offset</code>、<code>end_offset</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>固定先のローカル座標。固定先の GameObject の中心から、端をどれだけずらして付けるか。固定先が回転・拡大すると、ずらす向きと量も一緒に変わります。</td></tr>
+      <tr><td>物理分割数</td><td><code>segment_count</code></td><td>整数</td><td>32</td><td>2〜128</td><td>ホースを何区間に分けて計算するか。増やすほど細かく曲がり、壁の角にも沿いますが、重くなります。</td></tr>
       <tr><td>チューブ断面数</td><td><code>tube_sides</code></td><td>整数</td><td>10</td><td>3〜24</td><td>断面の角の数。多いほど丸く見えます</td></tr>
-      <tr><td>チューブ半径</td><td><code>tube_radius</code></td><td>小数</td><td>0.025</td><td>0.001〜2</td><td>見た目の太さ</td></tr>
+      <tr><td>チューブ半径</td><td><code>tube_radius</code></td><td>小数</td><td>0.025</td><td>0.001〜2</td><td>見た目の太さ（m）。当たり判定の太さは「衝突半径」で別に決めます。</td></tr>
       <tr><td>拘束反復回数</td><td><code>solver_iterations</code></td><td>整数</td><td>8</td><td>1〜32</td><td>多いほど伸びにくく、重くなります</td></tr>
       <tr><td>最大固定刻み回数</td><td><code>maximum_substeps</code></td><td>整数</td><td>8</td><td>1〜16</td><td>重いフレームで 1 フレームに進める刻みの上限</td></tr>
       <tr><td>繰り出し長さ</td><td><code>paid_out_length</code></td><td>小数</td><td>0</td><td>0〜1000</td><td>0 なら端点間の距離 × 自動長さの余裕。正の値ならその長さ（リールや C# から変えます）</td></tr>
-      <tr><td>ホース長の上限</td><td><code>maximum_length</code></td><td>小数</td><td>30</td><td>0.01〜1000</td><td></td></tr>
-      <tr><td>自動長さの余裕</td><td><code>slack</code></td><td>小数</td><td>1.08</td><td>1〜4</td><td></td></tr>
+      <tr><td>ホース長の上限</td><td><code>maximum_length</code></td><td>小数</td><td>30</td><td>0.01〜1000</td><td>これより長くは伸びません。両端がこれより離れると「長さの限界を超過」になり、ホースはピンと張ったままになります。</td></tr>
+      <tr><td>自動長さの余裕</td><td><code>slack</code></td><td>小数</td><td>1.08</td><td>1〜4</td><td>繰り出し長さが 0 のとき、ホースの長さを「端点間の距離 × この値」にします。1 でピンと張り、上げるほどたるみます。</td></tr>
       <tr><td>伸縮の柔らかさ</td><td><code>distance_compliance</code></td><td>小数</td><td>0.000001</td><td>0〜0.1</td><td>0 に近いほど伸びません</td></tr>
-      <tr><td>曲げの柔らかさ</td><td><code>bend_compliance</code></td><td>小数</td><td>0.25</td><td>0〜1</td><td>中心線の曲げやすさ</td></tr>
+      <tr><td>曲げの柔らかさ</td><td><code>bend_compliance</code></td><td>小数</td><td>0.25</td><td>0〜1</td><td>中心線の曲げやすさ。0 に近いほど曲がりにくい硬いホース、上げるほど柔らかく垂れ下がります。</td></tr>
       <tr><td>ロッドのせん断剛性</td><td><code>rod_shear_stiffness</code></td><td>小数</td><td>0.35</td><td>0〜1</td><td>断面の向きと中心線のずれを抑えます</td></tr>
       <tr><td>断面の曲げ剛性</td><td><code>rod_bend_stiffness</code></td><td>小数</td><td>0.025</td><td>0〜1</td><td>隣り合う断面の相対回転を抑えます</td></tr>
       <tr><td>断面のねじり剛性</td><td><code>rod_twist_stiffness</code></td><td>小数</td><td>0.01</td><td>0〜1</td><td>軸まわりのねじれを抑えます。管のテクスチャの向きにも反映されます</td></tr>
-      <tr><td>重力の倍率</td><td><code>gravity_scale</code></td><td>小数</td><td>1</td><td>-10〜10</td><td></td></tr>
-      <tr><td>速度の減衰</td><td><code>damping</code></td><td>小数</td><td>0.015</td><td>0〜40</td><td></td></tr>
-      <tr><td>風の加速度</td><td><code>wind</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td></td></tr>
-      <tr><td>衝突半径</td><td><code>particle_radius</code></td><td>小数</td><td>0.025</td><td>0.0001〜2</td><td></td></tr>
-      <tr><td>シーンの Collider と衝突</td><td><code>world_collision</code></td><td>オン・オフ</td><td>オン</td><td></td><td></td></tr>
-      <tr><td>衝突レイヤー</td><td><code>collision_mask</code></td><td>レイヤー</td><td>すべて</td><td></td><td></td></tr>
-      <tr><td>ワープ時に姿勢を戻す距離</td><td><code>teleport_reset_distance</code></td><td>小数</td><td>3</td><td>0.01〜1000</td><td></td></tr>
+      <tr><td>重力の倍率</td><td><code>gravity_scale</code></td><td>小数</td><td>1</td><td>-10〜10</td><td>重力に掛ける倍率。1 で通常、0 で重力なし（その場に浮く）、マイナスで上へ落ちます。</td></tr>
+      <tr><td>速度の減衰</td><td><code>damping</code></td><td>小数</td><td>0.015</td><td>0〜40</td><td>大きいほど揺れが早く収まり、0 に近いほど長く揺れ続けます。</td></tr>
+      <tr><td>風の加速度</td><td><code>wind</code></td><td>3 つの小数</td><td>0, 0, 0</td><td></td><td>風場とは別に、このホースにだけ常にかける加速度（ワールドの向き、m/秒²）。0, 0, 0 で何もかかりません。</td></tr>
+      <tr><td>風の受けやすさ</td><td><code>wind_drag</code></td><td>小数</td><td>1</td><td>0〜40</td><td><a href="wind.html">風場</a> の風に流される度合い</td></tr>
+      <tr><td>水の抗力・水の浮力</td><td><code>water_drag</code>、<code>water_buoyancy</code></td><td>小数</td><td>3、0.15</td><td>0〜40、0〜2</td><td>Water Body の水に入った部分にかかる抵抗と浮力。水に入るとしぶきも出ます</td></tr>
+      <tr><td>衝突半径</td><td><code>particle_radius</code></td><td>小数</td><td>0.025</td><td>0.0001〜2</td><td>当たり判定の太さ。大きくするほど壁から離れた所で止まり、すり抜けにくくなります。見た目の太さ（チューブ半径）と合わせるのが目安です。</td></tr>
+      <tr><td>シーンの Collider と衝突</td><td><code>world_collision</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オンにするとシーンの Collider に当たって止まります。オフにすると通り抜けますが、計算は軽くなります。</td></tr>
+      <tr><td>衝突レイヤー</td><td><code>collision_mask</code></td><td>レイヤー</td><td>すべて</td><td></td><td>当たる相手のレイヤー。外したレイヤーの Collider はすり抜けます。</td></tr>
+      <tr><td>ワープ時に姿勢を戻す距離</td><td><code>teleport_reset_distance</code></td><td>小数</td><td>3</td><td>0.01〜1000</td><td>端が 1 フレームでこれ以上動いたら、瞬間移動とみなしてホースの形を作り直します。小さすぎると速く動いただけで形がリセットされます。</td></tr>
       <tr><td>計算中の点数・最大伸び率・長さの限界を超過・状態</td><td><code>runtime_points</code>、<code>current_tension</code>、<code>overstretched</code>、<code>status</code></td><td>読取のみ</td><td></td><td></td><td>実行中の様子。両端がホース長の上限より離れると「長さの限界を超過」がオンになります</td></tr>
     </table>
     </div>
@@ -157,22 +163,24 @@
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>操作するホース</td><td><code>hose</code></td><td>GameObject</td><td>（空）</td><td></td><td>XPBDホース物理を持つ GameObject。未設定だと動きません</td></tr>
       <tr><td>回転するドラム</td><td><code>drum</code></td><td>GameObject</td><td>（空）</td><td></td><td>空ならこの GameObject を回します。ホースの端点を持つ GameObject のときは別のものを指定します</td></tr>
-      <tr><td>動作</td><td><code>mode</code></td><td>選択</td><td>停止</td><td>停止・繰り出す・巻き取る</td><td></td></tr>
+      <tr><td>動作</td><td><code>mode</code></td><td>選択</td><td>停止</td><td>停止・繰り出す・巻き取る</td><td>停止で長さが止まり、繰り出すで「ホース速度」ずつ伸び、巻き取るで縮みます。</td></tr>
       <tr><td>ホース速度</td><td><code>line_speed</code></td><td>小数</td><td>1.5</td><td>0〜100</td><td>1 秒に伸び縮みする長さ</td></tr>
       <tr><td>ドラム半径</td><td><code>drum_radius</code></td><td>小数</td><td>0.15</td><td>0.001〜10</td><td>回転の速さの計算に使います</td></tr>
-      <tr><td>回転軸</td><td><code>spin_axis</code></td><td>選択</td><td>Z</td><td>X・Y・Z</td><td></td></tr>
+      <tr><td>回転軸</td><td><code>spin_axis</code></td><td>選択</td><td>Z</td><td>X・Y・Z</td><td>ドラムを回す軸（ドラムのローカル軸）。ホースの出る向きに合わせます。</td></tr>
       <tr><td>ドラム角度・状態</td><td><code>drum_angle</code>、<code>status</code></td><td>読取のみ</td><td></td><td></td><td></td></tr>
     </table>
     </div>
 
     <h2 id="csharp">スクリプトから使う（C#）</h2>
-    <p>C# から触れるのは <b>XPBDホース物理</b> だけです（MonoBehaviour から <code>GetComponent&lt;HosePhysics&gt;()</code>）。ワイヤー物理・ヘア物理・衝突形状・ホースリールの型はまだありませんが、ScriptBehaviour からはプロパティを内部名で読み書きできます（<a href="../csharp/api-components.html#generic">型の無い部品をさわる</a>。例：ホースリールの <code>mode</code> を 1 にして繰り出す）。</p>
+    <p>MonoBehaviour から <code>GetComponent&lt;HosePhysics&gt;()</code>・<code>GetComponent&lt;WirePhysics&gt;()</code> で取り出せます。<code>WirePhysics</code> のメンバーは <code>segmentCount</code>、<code>gravityScale</code>、<code>damping</code>、<code>stiffness</code>、<code>wind</code>、<code>slack</code>、<code>waterDrag</code>、<code>waterBuoyancy</code>、<code>pullBodies</code>、<code>maximumPullForce</code>、<code>currentTension</code>（読取のみ）、<code>status</code>（読取のみ）、<code>ResetSimulation()</code> です。<code>HairPhysics</code>（<code>gravityScale</code>、<code>damping</code>、<code>stiffness</code>、<code>wind</code>、<code>runtimePoints</code>、<code>ResetSimulation()</code>）と <code>HoseReel</code>（<code>mode</code> は <code>ReelMode</code>、<code>lineSpeed</code>、<code>drumRadius</code>、<code>status</code>）もあります。衝突形状の型はまだありませんが、ScriptBehaviour からはプロパティを内部名で読み書きできます（<a href="../csharp/api-components.html#generic">型の無い部品をさわる</a>。例：ホースリールの <code>mode</code> を 1 にして繰り出す）。</p>
     <div class="table-wrap">
     <table>
       <tr><th>メンバー</th><th>働き</th></tr>
       <tr><td><code>paidOutLength</code></td><td>繰り出し長さ。0.001〜<code>maximumLength</code> に収めて設定します</td></tr>
       <tr><td><code>maximumLength</code></td><td>ホース長の上限（0.001〜1000）</td></tr>
       <tr><td><code>overstretched</code></td><td>長さの限界を超えているか（読取のみ）</td></tr>
+      <tr><td><code>waterDrag</code>、<code>waterBuoyancy</code></td><td>水の抗力・水の浮力</td></tr>
+      <tr><td><code>endAnchor</code>、<code>endOffset</code></td><td>終点を付ける GameObject と、その GameObject の座標系での取り付け位置（<code>end_anchor</code>・<code>end_offset</code>）。射出したフックのモデルの柄尻に結ぶ、など実行中に付け先を変えるときに使います。変えるとホースの形を作り直すので、毎フレーム書き換えないでください</td></tr>
       <tr><td><code>distanceCompliance</code>、<code>solverIterations</code>、<code>damping</code></td><td>伸縮の柔らかさ、拘束反復回数、速度の減衰</td></tr>
     </table>
     </div>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
-<title>ライト（Directional / Point / Spot） - RePlayEngine ドキュメント</title>
+<title>ライト（Directional / Point / Spot / Rect Light） - RePlayEngine ドキュメント</title>
 <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body data-root="../">
@@ -16,16 +16,17 @@
   <nav class="side-nav" aria-label="目次"></nav>
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Lighting</div>
-    <h1>ライト（Directional Light / Point Light / Spot Light）</h1>
-    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（Point / Spot に影の光源半径を追加）</p>
+    <h1>ライト（Directional / Point / Spot / Rect Light）</h1>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8（Rect Light を追加）</p>
 
-    <p>シーンを照らす光のコンポーネントです。3 種類あり、照らし方が違います。ライトが 1 つも無いシーンでは、物がほとんど暗く見えます。</p>
+    <p>シーンを照らす光のコンポーネントです。4 種類あり、照らし方が違います。ライトが 1 つも無いシーンでは、物がほとんど暗く見えます。</p>
     <div class="table-wrap">
     <table>
       <tr><th>種類</th><th>照らし方</th><th>使う Transform</th><th>影の既定</th></tr>
       <tr><td id="directional">Directional Light</td><td>太陽のように、シーン全体を同じ向きから照らします</td><td>回転（向き）だけ</td><td>オン</td></tr>
       <tr><td id="point">Point Light</td><td>電球のように、1 点から全方向を照らします。離れるほど暗くなります</td><td>位置</td><td>オフ</td></tr>
       <tr><td id="spot">Spot Light</td><td>懐中電灯のように、円錐の形に照らします</td><td>位置と回転</td><td>オフ</td></tr>
+      <tr><td id="rect">Rect Light</td><td>蛍光灯のパネルや窓のように、長方形の面から前方を照らします</td><td>位置と回転</td><td>オフ</td></tr>
     </table>
     </div>
     <p>どれも <b>コンポーネントを追加 &gt; Lighting</b> にあります。</p>
@@ -35,6 +36,7 @@
       <li>シーン全体が暗いので、太陽の光で明るくしたいとき（Directional Light）</li>
       <li>電球やたいまつのように、まわりだけを照らしたいとき（Point Light）</li>
       <li>懐中電灯やスポットライトのように、一方向を照らしたいとき（Spot Light）</li>
+      <li>天井の照明パネル、窓から差す光、モニターの光のように、面から柔らかく照らしたいとき（Rect Light）</li>
       <li>物の影を地面に落としたいとき</li>
     </ul>
 
@@ -42,13 +44,13 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
-      <tr><td>色</td><td><code>color</code></td><td>色</td><td>白</td><td></td><td>光の色</td></tr>
-      <tr><td>強さ</td><td><code>intensity</code></td><td>小数</td><td>3</td><td>0〜100</td><td>明るさ</td></tr>
-      <tr><td>影を落とす</td><td><code>cast_shadows</code></td><td>オン・オフ</td><td>オン</td><td></td><td>この光で影を作るかどうか</td></tr>
-      <tr><td>影の濃さ</td><td><code>shadow_strength</code></td><td>小数</td><td>1</td><td>0〜1</td><td>影の暗さ。0 で影が見えなくなります</td></tr>
+      <tr><td>色</td><td><code>color</code></td><td>色</td><td>白</td><td></td><td>光の色。照らされた物がこの色を帯びます。白なら物の色のまま照らします。</td></tr>
+      <tr><td>強さ</td><td><code>intensity</code></td><td>小数</td><td>3</td><td>0〜100</td><td>明るさ。0 で消え、値に比例して明るくなります（2 倍にすると照らされた所が 2 倍明るくなります）。</td></tr>
+      <tr><td>影を落とす</td><td><code>cast_shadows</code></td><td>オン・オフ</td><td>オン</td><td></td><td>この光で影を作るかどうか。オフにすると、物の足元の影が消えて床から浮いて見えます。</td></tr>
+      <tr><td>影の濃さ</td><td><code>shadow_strength</code></td><td>小数</td><td>1</td><td>0〜1</td><td>影の暗さ。1 で光が完全にさえぎられた暗い影、0.5 で半分の濃さ、0 で影が見えなくなります。</td></tr>
       <tr><td>深度バイアス (m)</td><td><code>shadow_depth_bias</code></td><td>小数</td><td>0.02</td><td>0〜0.5</td><td>影の縞模様（影のちらつき）を抑えるためのずらし量</td></tr>
       <tr><td>法線バイアス</td><td><code>shadow_normal_bias</code></td><td>小数</td><td>1.4</td><td>0〜6</td><td>面の向きに沿って影をずらす量。縞模様が出るときに上げます</td></tr>
-      <tr><td>影の最遠距離</td><td><code>shadow_distance</code></td><td>小数</td><td>120</td><td>1〜2000</td><td>影を描く最大の距離</td></tr>
+      <tr><td>影の最遠距離</td><td><code>shadow_distance</code></td><td>小数</td><td>120</td><td>1〜2000</td><td>カメラからこの距離までの物だけ影を描きます。広げると遠くの物にも影が出ますが、同じ影の解像度を広い範囲に使うので、近くの影が粗くなりやすくなります。</td></tr>
       <tr><td>Volumetric 強度</td><td><code>volumetric_intensity</code></td><td>小数</td><td>0</td><td>0〜16</td><td>光が空気中の霧・もやに当たって見える「光の筋」の強さ。0 なら出ません（既定）。<a href="environment-volumes.html#local-fog">Local Fog Volume</a> などの霧と組み合わせると、光の筋が見えます</td></tr>
     </table>
     </div>
@@ -58,11 +60,11 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
-      <tr><td>色</td><td><code>color</code></td><td>色</td><td>淡い橙（1, 0.9, 0.75）</td><td></td><td>光の色</td></tr>
-      <tr><td>強さ</td><td><code>intensity</code></td><td>小数</td><td>2</td><td>0〜100</td><td>明るさ</td></tr>
-      <tr><td>範囲</td><td><code>range</code></td><td>小数</td><td>10</td><td>0.01〜10000</td><td>光が届く距離</td></tr>
+      <tr><td>色</td><td><code>color</code></td><td>色</td><td>淡い橙（1, 0.9, 0.75）</td><td></td><td>光の色。照らされた物がこの色を帯びます。白なら物の色のまま照らします。</td></tr>
+      <tr><td>強さ</td><td><code>intensity</code></td><td>小数</td><td>2</td><td>0〜100</td><td>明るさ。0 で消え、値に比例して明るくなります（2 倍にすると照らされた所が 2 倍明るくなります）。</td></tr>
+      <tr><td>範囲</td><td><code>range</code></td><td>小数</td><td>10</td><td>0.01〜10000</td><td>光が届く距離。端へ向かうほど暗くなり、外側は照らされません。広げると遠くまで照らし、明るさがゆるやかに減ります。</td></tr>
       <tr><td>影を落とす</td><td><code>cast_shadows</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>影を作るかどうか。全方向の影を描くため処理が重く、既定はオフです</td></tr>
-      <tr><td>影の濃さ</td><td><code>shadow_strength</code></td><td>小数</td><td>1</td><td>0〜1</td><td>影の暗さ</td></tr>
+      <tr><td>影の濃さ</td><td><code>shadow_strength</code></td><td>小数</td><td>1</td><td>0〜1</td><td>影の暗さ。1 で光が完全にさえぎられた暗い影、0.5 で半分の濃さ、0 で影が見えなくなります。</td></tr>
       <tr><td>深度バイアス (m)</td><td><code>shadow_depth_bias</code></td><td>小数</td><td>0.02</td><td>0〜0.5</td><td>影のちらつきを抑えるずらし量。影の計算では 0.05 より大きい値は 0.05 として扱うので、0.05 を超えても効き方は変わりません</td></tr>
       <tr><td>法線バイアス</td><td><code>shadow_normal_bias</code></td><td>小数</td><td>1.5</td><td>0〜6</td><td>面の向きに沿って影をずらす量</td></tr>
       <tr><td>影のニア</td><td><code>shadow_near_plane</code></td><td>小数</td><td>0.15</td><td>0.01〜10</td><td>ライトからこれより近い物は影を作りません</td></tr>
@@ -75,13 +77,13 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
-      <tr><td>色</td><td><code>color</code></td><td>色</td><td>淡い黄（1, 0.95, 0.85）</td><td></td><td>光の色</td></tr>
-      <tr><td>強さ</td><td><code>intensity</code></td><td>小数</td><td>2</td><td>0〜100</td><td>明るさ</td></tr>
-      <tr><td>範囲</td><td><code>range</code></td><td>小数</td><td>12</td><td>0.01〜10000</td><td>光が届く距離</td></tr>
+      <tr><td>色</td><td><code>color</code></td><td>色</td><td>淡い黄（1, 0.95, 0.85）</td><td></td><td>光の色。照らされた物がこの色を帯びます。白なら物の色のまま照らします。</td></tr>
+      <tr><td>強さ</td><td><code>intensity</code></td><td>小数</td><td>2</td><td>0〜100</td><td>明るさ。0 で消え、値に比例して明るくなります（2 倍にすると照らされた所が 2 倍明るくなります）。</td></tr>
+      <tr><td>範囲</td><td><code>range</code></td><td>小数</td><td>12</td><td>0.01〜10000</td><td>光が届く距離。端へ向かうほど暗くなり、外側は照らされません。広げると遠くまで照らし、明るさがゆるやかに減ります。</td></tr>
       <tr><td>内側角度</td><td><code>inner_angle_degrees</code></td><td>小数</td><td>25</td><td>0.1〜179</td><td>しっかり明るく照らす円錐の角度</td></tr>
       <tr><td>外側角度</td><td><code>outer_angle_degrees</code></td><td>小数</td><td>40</td><td>0.1〜179</td><td>光が届く円錐の角度。内側から外側にかけて少しずつ暗くなります</td></tr>
-      <tr><td>影を落とす</td><td><code>cast_shadows</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>影を作るかどうか</td></tr>
-      <tr><td>影の濃さ</td><td><code>shadow_strength</code></td><td>小数</td><td>1</td><td>0〜1</td><td>影の暗さ</td></tr>
+      <tr><td>影を落とす</td><td><code>cast_shadows</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、照らされた物の後ろに影ができます。影の枠（最大 4 枚）が足りないときは、影なしで光ります。</td></tr>
+      <tr><td>影の濃さ</td><td><code>shadow_strength</code></td><td>小数</td><td>1</td><td>0〜1</td><td>影の暗さ。1 で光が完全にさえぎられた暗い影、0.5 で半分の濃さ、0 で影が見えなくなります。</td></tr>
       <tr><td>深度バイアス (m)</td><td><code>shadow_depth_bias</code></td><td>小数</td><td>0.02</td><td>0〜0.5</td><td>影のちらつきを抑えるずらし量。影の計算では 0.05 より大きい値は 0.05 として扱うので、0.05 を超えても効き方は変わりません</td></tr>
       <tr><td>法線バイアス</td><td><code>shadow_normal_bias</code></td><td>小数</td><td>1.5</td><td>0〜6</td><td>面の向きに沿って影をずらす量</td></tr>
       <tr><td>影のニア</td><td><code>shadow_near_plane</code></td><td>小数</td><td>0.15</td><td>0.01〜10</td><td>ライトからこれより近い物は影を作りません</td></tr>
@@ -89,6 +91,24 @@
       <tr><td>Volumetric 強度</td><td><code>volumetric_intensity</code></td><td>小数</td><td>0</td><td>0〜16</td><td>光が空気中の霧・もやに当たって見える「光の筋」の強さ。0 なら出ません（既定）。<a href="environment-volumes.html#local-fog">Local Fog Volume</a> などの霧と組み合わせると、光の筋が見えます</td></tr>
     </table>
     </div>
+
+    <h2 id="rect-props">Rect Light のプロパティ</h2>
+    <p>Transform の前方（ローカルの +Z）へ、<b>幅 × 高さ</b> の長方形の面から照らします。面の裏側は照らしません。面の光なので、同じ明るさの Spot Light より影のふちが柔らかくなります（短い辺の半分を光源の半径として扱います）。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>色</td><td><code>color</code></td><td>色</td><td>淡い黄（1, 0.95, 0.85）</td><td></td><td>光の色。照らされた物がこの色を帯びます。白なら物の色のまま照らします。</td></tr>
+      <tr><td>強さ</td><td><code>intensity</code></td><td>小数</td><td>2</td><td>0〜100</td><td>明るさ。0 で消え、値に比例して明るくなります（2 倍にすると照らされた所が 2 倍明るくなります）。</td></tr>
+      <tr><td>範囲</td><td><code>range</code></td><td>小数</td><td>10</td><td>0.01〜10000</td><td>光が届く距離。端へ向かうほど暗くなり、外側は照らされません。広げると遠くまで照らし、明るさがゆるやかに減ります。</td></tr>
+      <tr><td>幅・高さ</td><td><code>width</code>、<code>height</code></td><td>小数</td><td>1、0.5</td><td>0.01〜100</td><td>光る面の大きさ（m）。大きいほど広い面から照らすので、光が回り込んで柔らかくなり、影のふちもぼけます。</td></tr>
+      <tr><td>Volumetric 強度</td><td><code>volumetric_intensity</code></td><td>小数</td><td>0</td><td>0〜100</td><td>霧・もやに当たって見える光の筋の強さ。0 なら出ません</td></tr>
+      <tr><td>影を落とす</td><td><code>cast_shadows</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>Spot Light と同じ影の枠（最大 4 枚）を使います。枠が足りないと影なしで光ります</td></tr>
+      <tr><td>影の濃さ</td><td><code>shadow_strength</code></td><td>小数</td><td>1</td><td>0〜1</td><td>影の暗さ。1 で光が完全にさえぎられた暗い影、0.5 で半分の濃さ、0 で影が見えなくなります。</td></tr>
+      <tr><td>深度バイアス (m)・法線バイアス</td><td><code>shadow_depth_bias</code>、<code>shadow_normal_bias</code></td><td>小数</td><td>0.02、1.5</td><td>0〜0.5、0〜6</td><td>影のちらつきを抑えるずらし量</td></tr>
+      <tr><td>影のニア</td><td><code>shadow_near_plane</code></td><td>小数</td><td>0.1</td><td>0.01〜10</td><td>ライトからこれより近い物は影を作りません</td></tr>
+    </table>
+    </div>
+    <p>Rect Light の光は、<a href="environment-volumes.html#probe-gi">局所光の間接反射（プローブ GI）</a> にも入ります。</p>
 
     <div class="note"><strong>ライトの数の上限</strong>ゲームの描画に使われるのは、Point Light が 8 個、Spot Light が 4 個までです。シーンの中で先に見つかったものから使われ、あふれたライトは光りません（Validation に「GPUへ送れるPoint/Spot Light数を超えています。」と出ます）。影を落とすライトはさらに枠が決まっていて、枠が足りないライトは影なしで光ります。</div>
 
@@ -124,7 +144,8 @@
 
     <h2 id="tips">影が見えないときは</h2>
     <ul>
-      <li>ライトの <b>影を落とす</b> がオンか確かめます（Point Light と Spot Light は既定でオフです）。</li>
+      <li>ライトの <b>影を落とす</b> がオンか確かめます（Point・Spot・Rect Light は既定でオフです）。</li>
+      <li>足元の小さな接地影が足りないときは、<a href="post-process-volume.html#contact-shadows">コンタクトシャドウ</a>（Directional Light の影を補う）を使います。</li>
       <li>影を受ける側・落とす側のモデルの設定（Mesh Renderer などの影の設定）も確かめます。</li>
       <li>ライトの <b>強さ</b> が弱いと、影ができていても周りとの差が小さく見えにくくなります。</li>
     </ul>

@@ -95,9 +95,9 @@
       <tr><td>加速度</td><td><code>acceleration</code></td><td>小数</td><td>30</td><td>0〜120</td><td>最高速度に達するまでの勢いです。大きいほど素早く走り出します</td></tr>
       <tr><td>減速度</td><td><code>deceleration</code></td><td>小数</td><td>20</td><td>0〜120</td><td>入力をやめたときに止まる勢いです。小さいと滑って止まります</td></tr>
       <tr><td>空中制御</td><td><code>air_control</code></td><td>小数</td><td>0.35</td><td>0〜1</td><td>空中での方向転換のしやすさ。0 で空中は曲がれず、1 で地上と同じです</td></tr>
-      <tr><td>重力</td><td><code>gravity</code></td><td>小数</td><td>18</td><td>0〜100</td><td>下向きの加速度</td></tr>
-      <tr><td>ジャンプ力</td><td><code>jump_power</code></td><td>小数</td><td>8</td><td>0〜50</td><td>ジャンプの初速</td></tr>
-      <tr><td>最大落下速度</td><td><code>maximum_fall_speed</code></td><td>小数</td><td>55</td><td>0〜200</td><td>落下の速さの上限</td></tr>
+      <tr><td>重力</td><td><code>gravity</code></td><td>小数</td><td>18</td><td>0〜100</td><td>下向きの加速度（m/秒²）。上げるほど速く落ち、ジャンプが低く短くなります。下げるとふわっとした月面のような動きになります。</td></tr>
+      <tr><td>ジャンプ力</td><td><code>jump_power</code></td><td>小数</td><td>8</td><td>0〜50</td><td>ジャンプした瞬間の上向きの速さ。上げるほど高く跳びます（高さはおおよそ速さの 2 乗に比例します）。</td></tr>
+      <tr><td>最大落下速度</td><td><code>maximum_fall_speed</code></td><td>小数</td><td>55</td><td>0〜200</td><td>落ちる速さの上限。下げるほど、高い所から落ちてもゆっくり落ちます。</td></tr>
       <tr><td>ジャンプ要求</td><td><code>jump_requested</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、次の更新で 1 回だけジャンプして自動でオフに戻ります。C# からは <code>RequestJump = true</code> で跳ばせます</td></tr>
       <tr><td>地形が無い時の床の高さ</td><td><code>fallback_ground_y</code></td><td>小数</td><td>0</td><td></td><td>足元に地面の Collider が無いときに、床とみなす高さ（Y）です</td></tr>
       <tr><td>奥行きを固定</td><td><code>lock_plane_z</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>横スクロール用。毎回 Z の速度をゼロにし、位置を次の「固定する奥行き」へ戻します</td></tr>
@@ -166,7 +166,7 @@
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>最大体力</td><td><code>max_health</code></td><td>整数</td><td>100</td><td>1〜100000</td><td>体力の上限。下げると、現在体力も上限に合わせて減ります</td></tr>
-      <tr><td>現在体力</td><td><code>current_health</code></td><td>整数</td><td>100</td><td>0〜100000</td><td>いまの体力</td></tr>
+      <tr><td>現在体力</td><td><code>current_health</code></td><td>整数</td><td>100</td><td>0〜100000</td><td>いまの体力。開始時の値として使えます。ダメージで減って 0 になると倒れた扱いになり、回復では最大体力を超えません。</td></tr>
       <tr><td>無敵</td><td><code>invulnerable</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンだとダメージを受けません</td></tr>
     </table>
     </div>
@@ -182,7 +182,7 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>説明</th></tr>
-      <tr><td>スポーンID</td><td><code>spawn_id</code></td><td>整数</td><td>0</td><td>この地点を見分ける番号</td></tr>
+      <tr><td>スポーンID</td><td><code>spawn_id</code></td><td>整数</td><td>0</td><td>この地点を見分ける番号。複数の Spawn Point があるとき、スクリプトから番号で開始・復帰地点を選びます。</td></tr>
       <tr><td>チーム</td><td><code>team</code></td><td>整数</td><td>0</td><td>この地点を使うチームの番号</td></tr>
       <tr><td>優先度</td><td><code>priority</code></td><td>整数</td><td>0</td><td>Spawn Point が複数あるとき、<b>数の大きい方が使われます</b>。同じ数なら先に登録されたものが残ります</td></tr>
       <tr><td>Scene Viewに表示</td><td><code>debug_draw</code></td><td>オン・オフ</td><td>オン</td><td>シーンビューに位置の目印を描きます</td></tr>
@@ -219,7 +219,7 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>説明</th></tr>
-      <tr><td>ゴールID</td><td><code>goal_id</code></td><td>整数</td><td>0</td><td>見分ける番号</td></tr>
+      <tr><td>ゴールID</td><td><code>goal_id</code></td><td>整数</td><td>0</td><td>このゴールを見分ける番号。ゴールが複数あるとき、どれに着いたかをスクリプトで見分けます。</td></tr>
       <tr><td>反応する対象</td><td><code>target_mask</code></td><td>レイヤーの選択</td><td>すべて</td><td>反応させる相手のレイヤー</td></tr>
       <tr><td>一度だけ</td><td><code>one_shot</code></td><td>オン・オフ</td><td>オン</td><td>オンだと、一度だけ反応します</td></tr>
       <tr><td>完了イベント</td><td><code>completion_event</code></td><td>文字列</td><td>GoalReached</td><td>ゴールしたときに発行するシーン切り替えのイベント名。空欄にすると発行しません</td></tr>
@@ -262,7 +262,7 @@
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>射出方向</td><td><code>direction</code></td><td>3 つの数</td><td>0, 1, 0</td><td></td><td>飛ばす向き。長さは関係なく、向きだけが使われます（0, 0, 0 だと飛びません）</td></tr>
-      <tr><td>力</td><td><code>force</code></td><td>小数</td><td>12</td><td>0〜1000</td><td>飛ばす勢い（速さ）</td></tr>
+      <tr><td>力</td><td><code>force</code></td><td>小数</td><td>12</td><td>0〜1000</td><td>乗った物を飛ばす勢い（速さ）。上げるほど高く・遠くへ飛びます。</td></tr>
       <tr><td>反応する対象</td><td><code>target_mask</code></td><td>レイヤーの選択</td><td>すべて</td><td></td><td>反応させる相手のレイヤー</td></tr>
       <tr><td>一度だけ</td><td><code>one_shot</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンだと、一度使われると二度と働きません</td></tr>
       <tr><td>再使用待ち時間 (秒)</td><td><code>cooldown</code></td><td>小数</td><td>0.5</td><td>0〜60</td><td>同じ相手に、続けて飛ばさない待ち時間</td></tr>
@@ -275,7 +275,7 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
-      <tr><td>ダメージ</td><td><code>damage</code></td><td>整数</td><td>10</td><td>0〜1000000</td><td>1 回あたりのダメージ</td></tr>
+      <tr><td>ダメージ</td><td><code>damage</code></td><td>整数</td><td>10</td><td>0〜1000000</td><td>1 回あたりに減らす体力。「間隔」ごとにこの量が減ります。</td></tr>
       <tr><td>間隔 (秒)</td><td><code>interval</code></td><td>小数</td><td>1</td><td>0〜60</td><td>入ったときに 1 回、中にいる間は、この間隔ごとにダメージ</td></tr>
       <tr><td>反応する対象</td><td><code>target_mask</code></td><td>レイヤーの選択</td><td>すべて</td><td></td><td>反応させる相手のレイヤー</td></tr>
       <tr><td>一度だけ</td><td><code>one_shot</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンだと、同じ相手には最初の 1 回だけダメージを与えます</td></tr>
@@ -329,9 +329,9 @@
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>索敵対象</td><td><code>target</code></td><td>GameObject の参照</td><td>（空）</td><td></td><td>追いかける相手。<b>空なら、Player Controller を持つ有効な GameObject を自動で探します</b></td></tr>
       <tr><td>巡回ウェイポイント</td><td><code>patrol_waypoints</code></td><td>GameObject の一覧</td><td>0 件</td><td></td><td>巡回する地点。0 件なら待機します。無効な参照は読み飛ばします</td></tr>
-      <tr><td>索敵距離</td><td><code>detection_range</code></td><td>小数</td><td>12</td><td>0.05〜10000</td><td>対象に気づく距離</td></tr>
+      <tr><td>索敵距離</td><td><code>detection_range</code></td><td>小数</td><td>12</td><td>0.05〜10000</td><td>この距離より近づくと対象に気づいて追いかけます。広げるほど遠くから気づきます。</td></tr>
       <tr><td>視野角（度）</td><td><code>field_of_view_degrees</code></td><td>小数</td><td>120</td><td>0〜360</td><td>前方どれだけの角度を見えるとするか。360 で背後も見えます</td></tr>
-      <tr><td>攻撃距離</td><td><code>attack_range</code></td><td>小数</td><td>1.5</td><td>0.05〜10000</td><td>攻撃を始める距離</td></tr>
+      <tr><td>攻撃距離</td><td><code>attack_range</code></td><td>小数</td><td>1.5</td><td>0.05〜10000</td><td>この距離まで近づくと攻撃を始めます。広げるほど離れた所から攻撃します。</td></tr>
       <tr><td>見失い猶予（秒）</td><td><code>lose_sight_delay</code></td><td>小数</td><td>2</td><td>0〜120</td><td>対象が見えなくなってから、あきらめるまでの時間</td></tr>
       <tr><td>目の高さ</td><td><code>eye_height</code></td><td>小数</td><td>1.2</td><td>−100〜100</td><td>視線を出す高さ（足元から）</td></tr>
       <tr><td>対象を見る高さ</td><td><code>target_height</code></td><td>小数</td><td>1</td><td>−100〜100</td><td>対象のどの高さへ視線を向けるか</td></tr>
@@ -339,8 +339,8 @@
       <tr><td>視線マスク</td><td><code>visibility_mask</code></td><td>レイヤーの選択</td><td>すべて</td><td></td><td>視線を遮る物のレイヤー。壁などが含まれていると、壁の向こうは見えません</td></tr>
       <tr><td>攻撃中だけ Damage Area を有効化</td><td><code>attack_controls_damage_area</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オフは「触れたらダメージ」型で、Damage Area には一切触れません。オンだと、下の Windup → Active → Recovery のうち、Active の間だけ Damage Area を有効にします</td></tr>
       <tr><td>攻撃 Windup（秒）</td><td><code>attack_windup_seconds</code></td><td>小数</td><td>0.3</td><td>0〜30</td><td>攻撃の前ぶり（構え）の長さ</td></tr>
-      <tr><td>攻撃 Active（秒）</td><td><code>attack_active_seconds</code></td><td>小数</td><td>0.2</td><td>0〜30</td><td>ダメージが出る時間</td></tr>
-      <tr><td>攻撃 Recovery（秒）</td><td><code>attack_recovery_seconds</code></td><td>小数</td><td>0.5</td><td>0〜30</td><td>攻撃後のすきの長さ</td></tr>
+      <tr><td>攻撃 Active（秒）</td><td><code>attack_active_seconds</code></td><td>小数</td><td>0.2</td><td>0〜30</td><td>攻撃が当たる（ダメージが出る）時間。長くするほど当たりやすくなります。</td></tr>
+      <tr><td>攻撃 Recovery（秒）</td><td><code>attack_recovery_seconds</code></td><td>小数</td><td>0.5</td><td>0〜30</td><td>攻撃の後、次の行動までのすき。長くするほどプレイヤーが反撃しやすくなります。</td></tr>
       <tr><td>Scene View デバッグ表示</td><td><code>debug_draw</code></td><td>オン・オフ</td><td>オン</td><td></td><td>索敵距離・視野などをシーンビューに描きます</td></tr>
       <tr><td>現在の状態</td><td><code>current_state</code></td><td>表示のみ</td><td></td><td></td><td>実行中の状態（Idle など）を表示します</td></tr>
       <tr><td>攻撃段階</td><td><code>attack_phase</code></td><td>表示のみ</td><td></td><td></td><td>攻撃中の段階（Windup / Active / Recovery）を表示します</td></tr>
