@@ -107,6 +107,20 @@
       <li>C# スクリプトで、爆発したときに <code>Emit(100)</code> を呼びます。</li>
     </ol>
 
+    <h2 id="tutorial-new-scene">新規シーンから作る：発生形状を比べる</h2>
+    <p>以下は新規シーンで空の GameObject を作り、Particle Emitter を追加した実画面です。Emitter の「発生形状」を切り替えて、点・球・箱の3パターンを確認できます。撮影時は発生量 200/秒、寿命 1.5 秒、初速 2、各半径 0.25 の設定です。同じ色・速度・重力のため形状差は小さく見えます。見た目を大きく変えるには、発生方向・拡散角・重力・寿命・色を合わせて調整してください。</p>
+    <ol class="steps">
+      <li>File &gt; New Empty Scene で新規シーンを開きます。</li>
+      <li>Hierarchy の「+作成」で空の GameObject を置き、Inspector の「コンポーネントを追加」から Rendering &gt; Particle Emitter を追加します。</li>
+      <li>Inspector の「発生形状」を「点」「球」「箱」に切り替え、Viewport で流れ方を見比べます。</li>
+      <li>発生量/秒、寿命、初速を調整して密度と勢いを整えます。火花は短い寿命・高い初速・広い拡散角、煙は低い初速・長い寿命・上向きの発生方向が出発点です。</li>
+      <li>重力・抵抗・開始色・終了色を調整します。煙のように浮かせるには重力を弱めるか負にし、終了色の Alpha を 0 にします。</li>
+    </ol>
+    <div class="table-wrap"><table><tr><th>パターン</th><th>形状</th><th>画面</th></tr>
+      <tr><td>点から上へ出す噴き上がり</td><td>点</td><td><img src="../images/components/particle-tutorial/01-point-fountain.jpg" alt="新規シーンで Particle Emitter の形状を点にした画面" loading="lazy" style="max-width:100%;height:auto"></td></tr>
+      <tr><td>球の中心から広げる</td><td>球</td><td><img src="../images/components/particle-tutorial/02-sphere-burst.jpg" alt="新規シーンで Particle Emitter の形状を球にした画面" loading="lazy" style="max-width:100%;height:auto"></td></tr>
+      <tr><td>箱の範囲から散らす</td><td>箱</td><td><img src="../images/components/particle-tutorial/03-box-scatter.jpg" alt="新規シーンで Particle Emitter の形状を箱にした画面" loading="lazy" style="max-width:100%;height:auto"></td></tr>
+    </table></div>
     <h2>関連項目</h2>
     <ul>
       <li><a href="lines.html">3D ラインと軌跡</a></li>

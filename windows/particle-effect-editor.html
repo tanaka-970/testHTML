@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / Particle Editor</div>
     <h1>Particle Editor：基本・応用・ノード操作</h1>
-    <p class="meta">実機操作：3dgp Release / 2026-10-10。スクリーンショットは Snipping Tool ではなく、対象ウィンドウを直接キャプチャ。</p>
+    <p class="meta">3dgp Release / 2026-10-10。Release版を起動して操作し、Runtime画像とエディタ画面を撮影しました。</p>
 
     <p>選択中の GameObject に付いた Particle Emitter を、Scene View で見ながら調整するエディターです。Effekseer Emitter や Effect Stack とは別の仕組みなので、既存のエフェクトを置き換えず併用できます。</p>
 
@@ -26,12 +26,18 @@
       <li>Hierarchy で Particle Emitter を付けたい GameObject を選びます。Scene View から選んでも構いません。</li>
       <li><b>Window &gt; パーティクルエディタ</b>を開きます。</li>
       <li>Emitter がまだなければ <b>Emitter を追加</b>を押します。既に付いている場合は、その設定が表示されます。</li>
-      <li><b>広い滝 / Niagara</b>、<b>火花</b>、<b>渦</b>のいずれかを選びます。設定はその場で変わり、Scene View に反映されます。</li>
-      <li><b>テスト発生</b>で一度だけ粒を出し、<b>粒子を消去</b>でプレビューを片付けます。</li>
+      <li>滝など水面へ落とす例では、<b>+作成 &gt; Water &gt; Lake</b>で WaterBody を追加します。</li>
+      <li>Particle Editor の <b>広い噴流</b>、<b>火花</b>、<b>渦</b>のいずれかを選びます。設定は選択中の Emitter に反映されます。</li>
+      <li>Water ノードを選び、水面との相互作用で <b>着水エフェクト</b>を設定します。</li>
+      <li><b>テスト発生</b>で確認し、<b>粒子を消去</b>でプレビューを片付けます。</li>
     </ol>
     <figure>
-      <img src="../images/windows/particle-editor-basics.jpg" alt="実機のParticle Editor。GameObject 3に対しNiagara、火花、渦のプリセットとSpawn設定を表示">
-      <figcaption>実機：Particle Editor の基本画面。選択中の GameObject とプリセット、Spawn の値が同時に見えます。</figcaption>
+      <img src="../images/windows/particle-editor-wide-preset-release-20261010.jpg" alt="Release版で広い噴流プリセットを適用したParticle Editor">
+      <figcaption>実機：広い噴流を選ぶと Emitter の発生量が 900/s に変わりました。水面の白い点はテスト発生後の着水表現です。</figcaption>
+    </figure>
+    <figure>
+      <img src="../images/windows/particle-node-workflow-20261010.gif" alt="新規シーンでEmitter、Spawn、Water、Appearance、Rendererを順に操作する画面キャプチャ">
+      <figcaption>新規シーンのノード操作を画面キャプチャ6枚でつないだGIFです。連続録画ではなく、操作の順序を示す画像アニメーションです。</figcaption>
     </figure>
 
     <h2 id="modules">応用：モジュールを順に調整する</h2>
@@ -46,8 +52,8 @@
       <tr><td>Simulation</td><td>CPU / GPU シミュレーションや同時粒子数</td><td>多数の粒では GPU 駆動が向きます。対応する Water 連携など個別機能の条件も確認してください。</td></tr>
     </table></div>
     <figure>
-      <img src="../images/windows/particle-editor-appearance.jpg" alt="実機のParticle EditorでAppearanceを開き、サイズと不透明度のカーブを表示">
-      <figcaption>実機：Appearance のサイズ・アルファカーブ、色、発光の設定欄。</figcaption>
+      <img src="../images/windows/particle-node-editor-appearance-release-20261010.jpg" alt="Release版のParticle EditorでAppearanceノードを選択">
+      <figcaption>実機：Appearance を選択すると、下部に開始サイズなどの値が表示されます。</figcaption>
     </figure>
 
     <h2 id="presets">プリセット3種の使い分け</h2>
@@ -58,26 +64,47 @@
       <tr><td>渦</td><td>広めの球から出し、渦や乱流で回り込ませる構成</td><td>発生量 420/s、寿命 2.5 秒、初速 0.65、球半径 0.9。</td></tr>
     </table></div>
     <div class="image-grid">
-      <figure><img src="../images/windows/particle-editor-niagara.jpg" alt="実機でNiagaraプリセットを選択"><figcaption>広い滝 / Niagara</figcaption></figure>
-      <figure><img src="../images/windows/particle-editor-spark.jpg" alt="実機で火花プリセットを選択"><figcaption>火花</figcaption></figure>
-      <figure><img src="../images/windows/particle-editor-vortex.jpg" alt="実機で渦プリセットを選択"><figcaption>渦</figcaption></figure>
+      <figure><img src="../images/windows/particle-editor-wide-preset-release-20261010.jpg" alt="広い噴流プリセットの実機設定"><figcaption>広い噴流：実機で 900/s を確認</figcaption></figure>
+      <figure><img src="../images/windows/particle-node-editor-spark-release-20261010.jpg" alt="火花プリセットを選択した実機設定"><figcaption>火花：実機で 180/s を確認</figcaption></figure>
+      <figure><img src="../images/windows/particle-runtime-vortex.png" alt="渦のRuntime実行例"><figcaption>渦：サンプルシーンの Runtime 描画</figcaption></figure>
+    </div>
+    <figure>
+      <img src="../images/windows/particle-scene-runtime-20261010.png" alt="ReleaseビルドでParticleGalleryシーンを描画したRuntimeキャプチャ。滝、火花、渦を並べて表示">
+      <figcaption>2026-10-10のReleaseビルドで ParticleGallery を描画したRuntime画像。これはエディタUIの撮影ではなく、シーン描画の確認です。</figcaption>
+    </figure>
+    <h3>サンプルシーン別の実行画像</h3>
+    <p>各画像は Release 実行ファイルでサンプルシーンを読み込み、60フレーム実行した時点の画面です。エフェクトの形と色の違いを見比べられます。GPU粒子の間接描画をフレーム計測へ加算する修正後、ParticleGallery は終了コード0、最大 objects=7 / components=14 / draw_calls=5、追加5シーンはそれぞれ終了コード0、最大 objects=3 / draw_calls=1 を確認しました。</p>
+    <figure>
+      <img src="../images/windows/particle-scene-gallery-20261010.gif" alt="ParticleGallery、火の粉、雪、火花、渦、滝状粒子のRuntime画像を切り替えるGIF">
+      <figcaption>6つの実行画像を切り替えるGIFです。各画像は個別シーンを実行して撮影した静止画で、連続録画ではありません。</figcaption>
+    </figure>
+    <div class="note"><strong>水の見た目について</strong>WideWaterfall は水面に粒子を流す表現で、流体シミュレーションそのものではありません。今回の画像は粒子・WaterBody連携の動作確認用で、実物の水の透明感や複雑な泡まで表すものではありません。</div>
+    <div class="image-grid">
+      <figure><img src="../images/windows/particle-runtime-embersmoke.png" alt="EmberSmokeシーンのオレンジ色の煙と火の粉"><figcaption>EmberSmoke：上昇する火の粉と煙</figcaption></figure>
+      <figure><img src="../images/windows/particle-runtime-snowfall.png" alt="Snowfallシーンの広がる雪粒"><figcaption>Snowfall：広い範囲に流れる雪</figcaption></figure>
+      <figure><img src="../images/windows/particle-runtime-sparkfountain.png" alt="SparkFountainシーンの火花噴水"><figcaption>SparkFountain：上向きに飛び散る火花</figcaption></figure>
+      <figure><img src="../images/windows/particle-runtime-vortex.png" alt="Vortexシーンの青紫色の渦"><figcaption>Vortex：中心に集まる渦</figcaption></figure>
+      <figure><img src="../images/windows/particle-runtime-widewaterfall.png" alt="WideWaterfallシーンの幅広い水流"><figcaption>WideWaterfall：横幅のある滝状の粒子</figcaption></figure>
     </div>
 
-    <h2 id="nodes">ノード操作：できることと制限</h2>
-    <p>ソースコードには、粒子の処理順を示す6つの固定ノードがあります。ノードを選ぶと対応する設定欄へ切り替える設計です。</p>
+    <h2 id="nodes">ノード編集画面</h2>
+    <p>Hierarchyで対象GameObjectを選択し、<b>Window &gt; パーティクルエディタ</b>を開くと、そのGameObjectのEmitter設定とノードグラフを編集できます。Emitterが付いていない場合は「Emitter を追加」を使います。編集は選択中のGameObjectに保存されます。</p>
     <figure>
-      <img src="../images/windows/particle-module-pipeline.svg" alt="EmitterからSpawn、Update、Water、Appearance、Rendererへつながる固定ノードの模式図">
-      <figcaption>ソース上のノード構成を図にしたもの。実機スクリーンショットではありません。</figcaption>
+      <img src="../images/windows/particle-node-editor-connected-release-20261010.jpg" alt="Release版Particle EditorのEmitter、Spawn、Update、Water、Appearance、Rendererノード画面">
+      <figcaption>実機：ノードを選択すると対象モジュールの編集欄に切り替わります。</figcaption>
     </figure>
-    <ol>
-      <li><b>Emitter</b>で位置・回転・上限を扱います。</li>
-      <li><b>Spawn</b>で形状・発生量・初速を調整します。</li>
-      <li><b>Update</b>で力・乱流・渦を調整します。</li>
-      <li><b>Water</b>で水面の反射・着水イベントを扱います。</li>
-      <li><b>Appearance</b>で色・サイズ・カーブを整えます。</li>
-      <li><b>Renderer</b>で画像・合成を指定します。</li>
-    </ol>
-    <p><b>実機での注意：</b>今回操作した Release（更新日時 2026-10-09 21:48）の画面にはこのキャンバスが出ず、プリセットとモジュール設定までしか表示されませんでした。追加・削除・並べ替え・配線変更も、確認したソースにはありません。ノード図は実装コードに基づく説明で、ユーザー操作を撮影したものではありません。更新版での表示・クリック操作はまだ確認できていません。</p>
+    <div class="table-wrap"><table>
+      <tr><th>操作</th><th>手順</th><th>結果</th></tr>
+      <tr><td>設定を開く</td><td>GameObjectを選択し、Window &gt; パーティクルエディタ。複数EmitterはEmitter Stackから選びます。</td><td>グラフと選択中モジュールのプロパティが表示されます。</td></tr>
+      <tr><td>パラメータ編集</td><td>グラフのノードをクリックし、下のInspector欄を変更します。</td><td>Emitter、Spawn、Update、Water、Appearance、Rendererの項目に切り替わります。</td></tr>
+      <tr><td>ノード配置</td><td>ノードをドラッグします。</td><td>配置が保存されます。シーンのUndo/Redo履歴にも記録されます。</td></tr>
+      <tr><td>ノード追加</td><td>「ノードを追加」から未配置のモジュールを選びます。</td><td>Spawn、Update、Water、Appearance、Rendererを追加できます。Emitterは入口として残します。</td></tr>
+      <tr><td>配線</td><td>接続元ノードを選択して「配線モード」を押し、後段ノードをクリックします。「配線キャンセル」で中止できます。既存配線を同じ操作でクリックすると切断します。</td><td>Emitterから到達できる接続済みモジュールだけが評価対象になります。逆方向の配線は作れません。</td></tr>
+      <tr><td>ノード削除</td><td>削除したいノードをクリックして「選択ノードを削除」を押します。</td><td>ノードとその入出力配線が消えます。Emitterは削除できません。</td></tr>
+      <tr><td>取り消し</td><td>エディタのUndo / Redoを使います。</td><td>追加、削除、接続、配置とコンポーネント設定が編集履歴に入ります。</td></tr>
+    </table></div>
+    <p>初期状態は Emitter → Spawn → Update → Water → Appearance → Renderer です。任意のスクリプトノードや同種ノードを何個も置く汎用グラフではなく、既存のParticle Emitter機能をノードで組み替える編集画面です。段階を飛ばす場合は、上流のノードから飛び先へ接続し、その配線を切る場合は同じ接続操作を繰り返します。切れた段階より下流は実行されません。</p>
+    <p><b>実機検証の範囲：</b>Release版を起動し、新規シーンで WaterBody と Particle Emitter を作成して操作しました。Emitter、Spawn、Water、Appearance、Renderer の選択、Appearance ノードの削除と追加、Water→Appearance→Renderer の配線、配線モードの開始と解除を確認しています。ノードのドラッグと Undo/Redo は未確認です。初期ウィンドウ幅では右側の操作ボタンが見切れるため、Particle Editor の右端をドラッグして広げてください。</p>
 
     <h2 id="save">保存と併用</h2>
     <ul>
@@ -87,7 +114,7 @@
     </ul>
 
     <h2 id="recording">記録方法</h2>
-    <p>画像は computer-use の対象ウィンドウ直接キャプチャで取得しました。Snipping Tool の選択範囲操作は使っていません。この環境では継続録画の機能が使えなかったため、動画として偽装せず、各プリセットの実機画像で記録しています。</p>
+    <p>操作順を示す GIF は、Release版を実際に操作して撮影した6枚の画面キャプチャから作成しています。連続録画の MP4 はこの環境の画面録画アプリから取得できていないため未収録です。Runtime画像はRelease実行ファイルで各サンプルシーンを実行して撮影しました。</p>
 
     <h2>関連項目</h2>
     <ul>
