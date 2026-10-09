@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Particle Editor 実機リファレンス - RePlayEngine</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / Particle Editor</div>
+    <h1>Particle Editor：基本・応用・ノード操作</h1>
+    <p class="meta">実機操作：3dgp Release / 2026-10-10。スクリーンショットは Snipping Tool ではなく、対象ウィンドウを直接キャプチャ。</p>
+
+    <p>選択中の GameObject に付いた Particle Emitter を、Scene View で見ながら調整するエディターです。Effekseer Emitter や Effect Stack とは別の仕組みなので、既存のエフェクトを置き換えず併用できます。</p>
+
+    <h2 id="start">基本：初めての粒子を出す</h2>
+    <ol>
+      <li>Hierarchy で Particle Emitter を付けたい GameObject を選びます。Scene View から選んでも構いません。</li>
+      <li><b>Window &gt; パーティクルエディタ</b>を開きます。</li>
+      <li>Emitter がまだなければ <b>Emitter を追加</b>を押します。既に付いている場合は、その設定が表示されます。</li>
+      <li><b>広い滝 / Niagara</b>、<b>火花</b>、<b>渦</b>のいずれかを選びます。設定はその場で変わり、Scene View に反映されます。</li>
+      <li><b>テスト発生</b>で一度だけ粒を出し、<b>粒子を消去</b>でプレビューを片付けます。</li>
+    </ol>
+    <figure>
+      <img src="../images/windows/particle-editor-basics.jpg" alt="実機のParticle Editor。GameObject 3に対しNiagara、火花、渦のプリセットとSpawn設定を表示">
+      <figcaption>実機：Particle Editor の基本画面。選択中の GameObject とプリセット、Spawn の値が同時に見えます。</figcaption>
+    </figure>
+
+    <h2 id="modules">応用：モジュールを順に調整する</h2>
+    <p>値を変えると選択中の Emitter に反映されます。まずプリセットを選び、見た目が近い状態から少しずつ調整すると作業しやすくなります。</p>
+    <div class="table-wrap"><table>
+      <tr><th>モジュール</th><th>調整内容</th><th>使い方の目安</th></tr>
+      <tr><td>Spawn</td><td>発生の有効・無効、毎秒の数、寿命、初速、形状、半径・箱の大きさ、方向、拡散、ばらつき</td><td>滝の幅は発生箱の横幅、粒の密度は発生量、流れる長さは寿命と初速から合わせます。</td></tr>
+      <tr><td>Update / Forces</td><td>重力、抵抗、風、乱流、渦</td><td>上向きの細流には負の重力、広がりには乱流、回り込みには渦を少量ずつ足します。</td></tr>
+      <tr><td>Water</td><td>水面との反射や着水イベント</td><td>WaterBody と併用する機能です。水面のない位置で効果が出ない場合は、水面側の配置と範囲を先に確認します。</td></tr>
+      <tr><td>Appearance</td><td>開始・終了サイズ、サイズカーブ、開始・終了色、不透明度カーブ、回転速度、発光</td><td>透明感は色のアルファと寿命末尾のアルファを調整します。大きさを寿命で変えると粒の消え方が滑らかになります。</td></tr>
+      <tr><td>Renderer</td><td>スプライト画像や合成モード</td><td>画像なしなら標準粒子で形を確認し、必要な場合にスプライトを追加します。</td></tr>
+      <tr><td>Simulation</td><td>CPU / GPU シミュレーションや同時粒子数</td><td>多数の粒では GPU 駆動が向きます。対応する Water 連携など個別機能の条件も確認してください。</td></tr>
+    </table></div>
+    <figure>
+      <img src="../images/windows/particle-editor-appearance.jpg" alt="実機のParticle EditorでAppearanceを開き、サイズと不透明度のカーブを表示">
+      <figcaption>実機：Appearance のサイズ・アルファカーブ、色、発光の設定欄。</figcaption>
+    </figure>
+
+    <h2 id="presets">プリセット3種の使い分け</h2>
+    <div class="table-wrap"><table>
+      <tr><th>例</th><th>向く形</th><th>実機で確認した値の例</th></tr>
+      <tr><td>広い滝 / Niagara</td><td>横に広い発生面から下向きに流す構成</td><td>発生量 900/s、寿命 1.8 秒、初速 0.35、箱幅 2.4、拡散角 0.06。</td></tr>
+      <tr><td>火花</td><td>短命で速い粒を球状に飛ばす構成</td><td>発生量 180/s、寿命 0.7 秒、初速 4.0、球半径 0.12。</td></tr>
+      <tr><td>渦</td><td>広めの球から出し、渦や乱流で回り込ませる構成</td><td>発生量 420/s、寿命 2.5 秒、初速 0.65、球半径 0.9。</td></tr>
+    </table></div>
+    <div class="image-grid">
+      <figure><img src="../images/windows/particle-editor-niagara.jpg" alt="実機でNiagaraプリセットを選択"><figcaption>広い滝 / Niagara</figcaption></figure>
+      <figure><img src="../images/windows/particle-editor-spark.jpg" alt="実機で火花プリセットを選択"><figcaption>火花</figcaption></figure>
+      <figure><img src="../images/windows/particle-editor-vortex.jpg" alt="実機で渦プリセットを選択"><figcaption>渦</figcaption></figure>
+    </div>
+
+    <h2 id="nodes">ノード操作：できることと制限</h2>
+    <p>ソースコードには、粒子の処理順を示す6つの固定ノードがあります。ノードを選ぶと対応する設定欄へ切り替える設計です。</p>
+    <figure>
+      <img src="../images/windows/particle-module-pipeline.svg" alt="EmitterからSpawn、Update、Water、Appearance、Rendererへつながる固定ノードの模式図">
+      <figcaption>ソース上のノード構成を図にしたもの。実機スクリーンショットではありません。</figcaption>
+    </figure>
+    <ol>
+      <li><b>Emitter</b>で位置・回転・上限を扱います。</li>
+      <li><b>Spawn</b>で形状・発生量・初速を調整します。</li>
+      <li><b>Update</b>で力・乱流・渦を調整します。</li>
+      <li><b>Water</b>で水面の反射・着水イベントを扱います。</li>
+      <li><b>Appearance</b>で色・サイズ・カーブを整えます。</li>
+      <li><b>Renderer</b>で画像・合成を指定します。</li>
+    </ol>
+    <p><b>実機での注意：</b>今回操作した Release（更新日時 2026-10-09 21:48）の画面にはこのキャンバスが出ず、プリセットとモジュール設定までしか表示されませんでした。追加・削除・並べ替え・配線変更も、確認したソースにはありません。ノード図は実装コードに基づく説明で、ユーザー操作を撮影したものではありません。更新版での表示・クリック操作はまだ確認できていません。</p>
+
+    <h2 id="save">保存と併用</h2>
+    <ul>
+      <li>値を変更したら、いつものシーン保存で .replayscene に保存します。プリセットは選択中 Emitter の設定値を書き換えます。</li>
+      <li>一度の効果に複数の形を重ねたい場合は、同じ GameObject に複数の Particle Emitter を付けて使います。</li>
+      <li>既存の Effekseer Emitter や Screen / Model / UI Effect Stack は別機能としてそのまま併用できます。</li>
+    </ul>
+
+    <h2 id="recording">記録方法</h2>
+    <p>画像は computer-use の対象ウィンドウ直接キャプチャで取得しました。Snipping Tool の選択範囲操作は使っていません。この環境では継続録画の機能が使えなかったため、動画として偽装せず、各プリセットの実機画像で記録しています。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../components/particle-emitter.html">Particle Emitter のプロパティと制限</a></li>
+      <li><a href="../components/effekseer.html">Effekseer Emitter</a></li>
+      <li><a href="../components/effect-stacks.html">Effect Stack と Effect Preset</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>
