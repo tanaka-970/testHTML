@@ -56,6 +56,8 @@
       <tr><td>発生方向</td><td><code>direction</code></td><td>3 つの小数</td><td>0, 1, 0</td><td></td><td>粒が飛ぶ中心の向き。GameObject の回転に合わせて向きが変わります</td></tr>
       <tr><td>拡散角</td><td><code>cone_angle</code></td><td>小数</td><td>0.4</td><td>0〜3.14159</td><td>発生方向からどれだけ広がって飛ぶか（ラジアン）。0 でまっすぐ、1.57 で半球、3.14 で全方向</td></tr>
       <tr><td>画像</td><td><code>sprite</code></td><td>アセット（画像）</td><td>（空）</td><td></td><td>粒に貼る画像。空なら白い四角です</td></tr>
+      <tr><td>Material / Shader Graph</td><td><code>material_asset</code></td><td>アセット（Material）</td><td>（空）</td><td></td><td>Particle Renderer に Material を使います。Shader Composer の Surface グラフを Material から指定すると、色・発光・不透明度の計算を再利用できます</td></tr>
+      <tr><td>形状</td><td><code>render_mode</code></td><td>選択</td><td>円形粒子</td><td></td><td>円形粒子、速度ストリーク、連続水幕を選びます。連続水幕は幅のある透明メッシュで水流を描き、水面衝突と着水泡を併用できます</td></tr>
       <tr><td>合成</td><td><code>blend_mode</code></td><td>選択</td><td>加算</td><td></td><td>通常、加算、乗算、スクリーン。加算にすると、粒が重なった所が明るく光ります。炎や火花向きです</td></tr>
       <tr><td>最大数</td><td><code>max_particles</code></td><td>整数</td><td>10000</td><td>1〜65536</td><td>同時に存在できる粒の数。超える分は出ません。入力は 65536 までで、GPU駆動では 65536、CPU では 10000 で打ち切ります</td></tr>
       <tr><td>GPU駆動</td><td><code>gpu_simulation</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>粒の発生・移動・寿命・描画を GPU で行います。粒が多いときに軽くなります。画像を設定すれば GPU駆動でも粒に貼られます。画像が空なら丸い形の粒になります（<a href="#gpu">下を見てください</a>）</td></tr>

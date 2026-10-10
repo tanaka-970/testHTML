@@ -48,9 +48,17 @@
       <tr><td>Update / Forces</td><td>重力、抵抗、風、乱流、渦</td><td>上向きの細流には負の重力、広がりには乱流、回り込みには渦を少量ずつ足します。</td></tr>
       <tr><td>Water</td><td>水面との反射や着水イベント</td><td>WaterBody と併用する機能です。水面のない位置で効果が出ない場合は、水面側の配置と範囲を先に確認します。</td></tr>
       <tr><td>Appearance</td><td>開始・終了サイズ、サイズカーブ、開始・終了色、不透明度カーブ、回転速度、発光</td><td>透明感は色のアルファと寿命末尾のアルファを調整します。大きさを寿命で変えると粒の消え方が滑らかになります。</td></tr>
-      <tr><td>Renderer</td><td>スプライト画像や合成モード</td><td>画像なしなら標準粒子で形を確認し、必要な場合にスプライトを追加します。</td></tr>
+      <tr><td>Renderer</td><td>スプライト画像、Material / Shader Graph、合成モード、形状（円形粒子 / 速度ストリーク / 連続水幕）</td><td>Surface Material を割り当てると既存の Shader Composer で色・発光・不透明度を調整できます。</td></tr>
       <tr><td>Simulation</td><td>CPU / GPU シミュレーションや同時粒子数</td><td>多数の粒では GPU 駆動が向きます。対応する Water 連携など個別機能の条件も確認してください。</td></tr>
     </table></div>
+    <h3 id="material">既存の Shader Composer Material を使う</h3>
+    <ol>
+      <li>Shader Composer で <b>Surface</b> グラフを作り、Base Color・Emission・Opacity を接続して保存します。</li>
+      <li>Material を作成し、その Shader 欄で作った Surface グラフを選びます。</li>
+      <li>Particle Editor の Renderer ノードを選び、<b>Material / Shader Graph</b> にその Material を割り当てます。</li>
+      <li>Appearance の開始色・終了色とアルファカーブはグラフ出力へ乗算されます。粒子グラフは発生・力・水連携を、Shader Composer は材質の見た目を担当します。</li>
+    </ol>
+    <p>Water ドメインは WaterBody 用です。粒子や連続水幕には Surface ドメインの Material を使います。Material を空にした既存シーンは従来どおりの標準描画です。</p>
     <figure>
       <img src="../images/windows/particle-node-editor-appearance-release-20261010.jpg" alt="Release版のParticle EditorでAppearanceノードを選択">
       <figcaption>実機：Appearance を選択すると、下部に開始サイズなどの値が表示されます。</figcaption>
