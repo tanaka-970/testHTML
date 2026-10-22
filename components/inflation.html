@@ -215,6 +215,33 @@
     <p>C# では MonoBehaviour から <code>GetComponent&lt;SurfaceInflation&gt;()</code> で取り出し、<code>fullAir</code>、<code>spread</code>、<code>maximumHeight</code>、<code>ruptureEnabled</code>、<code>deflateRate</code>、読取のみの <code>bumpCount</code>・<code>highestBump</code>・<code>status</code> を使えます。</p>
     <div class="note"><strong>膨張対象と一緒に付けない</strong>同じ GameObject に <a href="#target">膨張対象</a> があると、空気はそちらへ送られ、局所膨張は使われません。地面には局所膨張だけを付けます。</div>
 
+    <h2 id="grip">フックの爪で握る・押しつぶす（デモ、2026-10-13 更新）</h2>
+    <p>Inflate のデモ（<code>resources/Game/Inflate/Inflate_NativeDemo</code>）では、銃から撃ったフックの爪（<code>resources/WeaponModel/Hook.glb</code>、上に 3 本・下に 1 本）が、刺さった物をつかみます。爪の 4 本の指は FABRIK の IK で曲がり、関節を外へ反らせて指先だけを食い込ませます。風船なら、指先の所がへこんで陰ができ、膨らむほど深く食い込みます。破裂した瞬間には、指を一気に握り込みます。</p>
+    <ul>
+      <li>握る位置は、フックが<b>実際に刺さった点</b>です。当たり判定が見た目より大きい相手（箱の当たり判定・全身の凸包のキャラクターなど）でも、撃った向きの先にある見た目の面を握ります。</li>
+      <li>握った瞬間の向きを相手に固定するので、握った後に手の向きが変わったり、相手が回ったりしません。</li>
+      <li>触れる面が無い所（脚の間など）では、指を閉じきらず、開いた形のままにします。</li>
+    </ul>
+    <figure>
+      <img src="../images/components/inflation-grip.png" alt="爪が風船をつかんでいる">
+      <figcaption>フックが風船に刺さり、膨らませている途中。指の関節が外へ反り、指先が表面に食い込んでいます。</figcaption>
+    </figure>
+    <p>設定は、デモの <code>InflationDemoController</code>（プレイヤーの GameObject）のインスペクターにあります。長さはすべて指の長さ（第 1 関節から指先）に対する割合です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>見出し</th><th>表示名</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>ツメで握る</td><td>手のひらと表面のすき間</td><td>0.08</td><td>付け根を表面からこれだけ離して置く。小さいほど深く抱え込む</td></tr>
+      <tr><td>ツメで握る</td><td>指先と表面のすき間</td><td>−0.02</td><td>指先を表面のこの距離で止める。マイナスで指先が食い込む</td></tr>
+      <tr><td>ツメで握る</td><td>指を開ける最大角度・指を閉じる最大角度（度）</td><td>50・60</td><td>大きい物・小さい物を握るとき、指先が表面に届くまで開く・閉じる上限</td></tr>
+      <tr><td>ツメで握る</td><td>指先を置く横の距離</td><td>0.65</td><td>大きい物では、指先を手のひらからこの距離だけ横の表面へ置く。小さいほど関節が高く反る</td></tr>
+      <tr><td>ツメで握る</td><td>ツメと指が表面へ沿う速さ</td><td>18</td><td>大きいほど素早く表面に沿う</td></tr>
+      <tr><td>風船を押しつぶす</td><td>指先で押し込む深さ・へこませる範囲</td><td>0.18・0.3</td><td>指先が表面へ沈む深さと、へこみの広さ</td></tr>
+      <tr><td>風船を押しつぶす</td><td>食い込みが最大になる膨張率</td><td>4</td><td>膨らみ始めは浅く、この膨張率まで膨らむと最も深く食い込む</td></tr>
+      <tr><td>割れた瞬間の握りつぶし</td><td>握りつぶす時間（実時間の秒）・閉じる角度（度）・握り込む勢い</td><td>0.35・75・45</td><td>破裂した瞬間に指を握り込む時間・角度・速さ。ヒットストップ中も実時間で動く</td></tr>
+    </table>
+    </div>
+    <p>この握り方は、爪の GLB に入れた指の骨（<code>ClawTop</code>・<code>ClawLeft</code>・<code>ClawRight</code>・<code>ClawBottom</code> の <code>_Proximal</code>〜<code>_Tip</code>）と、フックのメッシュに付けた 4 つの FABRIK IK（起点は各指の <code>_Proximal</code>）で動いています。FABRIK IK は、曲げ向きの目印（ポール）があるとき、ポール側へ膨らんだ円弧から解き始めるので、目標が近くても関節がジグザグに折れません。</p>
+
     <h2 id="profile">膨張プロファイル（.replayinflationprofile）</h2>
     <p>素材（ゴム、ビニールなど）ごとの圧力・破裂・物理反応・XPBD の設定をまとめた Asset です。同じ素材の物にまとめて使えます。</p>
     <ol class="steps">
@@ -232,6 +259,8 @@
       <tr><td><code>Inflation</code></td><td><code>airAmount</code>、<code>restVolume</code>、<code>rupturePressure</code>、<code>maximumInflationRatio</code></td><td>読み書きできる値</td></tr>
       <tr><td><code>Inflation</code></td><td><code>internalPressure</code>、<code>currentVolume</code>、<code>inflationRatio</code>、<code>leakRate</code>、<code>movementSpeedMultiplier</code>、<code>state</code>、<code>status</code></td><td>読取のみ。<code>state</code> は <code>InflationState</code>（Normal・Inflating・Stretched・Critical・Leaking・Ruptured）</td></tr>
       <tr><td><code>Inflation</code></td><td><code>RequestLeakAt(位置, 大きさ = 0.25f)</code>、<code>RequestDamage(位置, 量, 範囲 = 0.25f)</code>、<code>RequestDeflation()</code>、<code>RequestRupture()</code></td><td>穴をあける・ダメージ・空気を抜く・すぐ破裂させる</td></tr>
+      <tr><td><code>Inflation</code></td><td><code>PressAt(番号, 位置, 押し込む向きと深さ, 半径)</code>（2026-10-11 追加）</td><td>指などで押している所を番号ごとに渡し、見た目の表面をへこませます（XPBD変形・形状膨張）。押している間は毎フレーム呼び続けます。0.1 秒呼ばないと離したとみなします。押し込む向きはワールド座標で、ベクトルの長さが深さです</td></tr>
+      <tr><td><code>Inflation</code></td><td><code>RaycastSurface(始点, 向き, 最大距離, out 当たった点, out 法線)</code>（2026-10-12 追加）</td><td>今の見た目の表面（XPBD変形では押したへこみを除いた形、形状膨張では膨らんだ形）にレイを当てます。当たり判定は膨らむのに遅れて更新されるので、膨らんでいる物の表面に物を沿わせたいときに使います。当たれば <code>true</code></td></tr>
       <tr><td><code>AirSource</code></td><td><code>availableAir</code>、<code>outputPressure</code>、<code>maxFlowRate</code>、<code>unlimitedSupply</code>、<code>supplying</code></td><td><code>supplying</code> は供給の入り切り（Component の有効・無効とは別）</td></tr>
       <tr><td><code>AirConnection</code></td><td><code>source</code>、<code>target</code>、<code>anchor</code>、<code>injectionPosition</code>、<code>connected</code>、<code>conductance</code>、<code>maxFlowRate</code></td><td>実行中に送り先を照準の相手へ差し替えられます</td></tr>
       <tr><td><code>AirConnection</code></td><td><code>flowRate</code>、<code>pressureDifference</code>、<code>status</code></td><td>読取のみ</td></tr>

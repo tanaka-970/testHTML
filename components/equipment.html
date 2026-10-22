@@ -77,6 +77,9 @@
     </div>
     <p id="anchor-limit">発射・切り離し・付け直しは、実行中であればインスペクターの <b>発射を実行</b> か、C# の <code>Launch</code>・<code>Detach</code>・<code>Remount</code> で行えます（下の「スクリプトから使う」）。止まっているとき（編集中）に呼ぶと <code>UnsupportedOperation</code> が返り、何もしません。命中すると <code>OnAnchorAttached</code>、切り離されると <code>OnAnchorDetached</code> が届きます。</p>
 
+    <h3 id="anchor-survive">刺さった相手が壊れたとき（2026-10-12 更新）</h3>
+    <p>刺さった相手が破裂したり、破棄されたり、残骸になって縮んだりしても、フックは一緒に消えず、その場の位置と向きを保って残ります（「切り離し」になり、<code>OnAnchorDetached</code> が届きます）。以前は、残骸の縮小に引きずられて消えたり、半回転したりすることがありました。</p>
+
     <h2 id="csharp">スクリプトから使う（C#）</h2>
     <p>MonoBehaviour では <code>GetComponent&lt;EquipmentAttachment&gt;()</code>・<code>GetComponent&lt;AnchorProjectile&gt;()</code> で取り出せます。どの操作も実行中だけ受け付け、結果を <code>RuntimeStatus</code> で返します。</p>
     <div class="table-wrap">

@@ -42,7 +42,12 @@ window.DOCS_TOC = [
       { title: "Effect Stack と Effect Preset", href: "components/effect-stacks.html", summary: "Screen / Model / UI の Effect Stack、適用範囲、Effect Preset", keywords: "エフェクト Screen Effect Stack Model Effect Stack UI Effect Stack Effect Preset replayeffect 適用範囲 マスク 投げ縄 Rendering Layer 背景だけ 空だけ 切り抜き Overlay はみ出し Precompose 背景を取り込む カスタムシェーダー" },
       { title: "エフェクトの種類", href: "components/effect-kinds.html", summary: "86 種類のエフェクトと種類ごとの項目", keywords: "ぼかし 発光 色調補正 ノイズ 揺れ マスク ワイプ ディゾルブ 歪み 色収差 網点 ブラー ビネット 光条 レンズ ポスタライズ 二値化 カラーランプ レベル補正 色温度 エッジ 輪郭線 ブラシストローク モザイク グリッチ CRT VHS レターボックス LUT トーンカーブ ドロップシャドウ ホログラム 集中線 レンズフレア 玉ボケ チルトシフト" },
       { title: "Normal Adjust", href: "components/normal-adjust.html", summary: "陰影に使う法線を球の向きへ寄せる", keywords: "ノーマルアジャスト 法線 陰影 トゥーン 球 Blend Radius Falloff Bone スロット" },
-      { title: "Effekseer Emitter", href: "components/effekseer.html", summary: "Effekseer のエフェクト（.efkefc）の再生と、作成・プレビューのウィンドウ", keywords: "Effekseer エフェクシア efkefc エフェクト 再生 Emitter 開始時に再生 再生速度 スケール SetupEffekseer プレビュー Effekseer FX GPU粒子" }
+      { title: "Effekseer Emitter", href: "components/effekseer.html", summary: "Effekseer のエフェクト（.efkefc）の再生と、作成・プレビューのウィンドウ", keywords: "Effekseer エフェクシア efkefc エフェクト 再生 Emitter 開始時に再生 再生速度 スケール SetupEffekseer プレビュー Effekseer FX GPU粒子" },
+      { title: "手続き空と体積雲（Cloud Volume・Cloud Scatter）", href: "components/clouds.html", summary: "画像なしの空、入道雲、置ける雲と雲の群れ、見本シーン", keywords: "手続き空 プロシージャル 大気散乱 雲 体積雲 積乱雲 入道雲 かなとこ 雲海 霧 笠雲 天候 雨 夕焼け 夜 Cloud Volume Cloud Scatter ProceduralSky" },
+      { title: "ツタ（Ivy Generator）", href: "components/ivy.html", summary: "モデルや地形にツタを生やす。垂れ下がり・壁・地面、なぞって道筋", keywords: "ツタ アイビー Ivy 蔦 植物 葉 茎 垂れ下がり 壁 廃墟 ブラシ なぞる 成長 膨張 追従" },
+      { title: "デカール・面テクスチャ・電光掲示板", href: "components/decals.html", summary: "画像を面へ投影、選んだ面に貼る、流れる文字と LED", keywords: "デカール 投影デカール 落書き 血痕 銃痕 面テクスチャ領域 UV Surface Paint 看板 モニター 電光掲示板 LED 流れる文字 MSDF Flipbook スクロール" },
+      { title: "ワールド文字（World Text）", href: "components/world-text.html", summary: "3D 空間に置く文字。ビルボード、縁取り、影", keywords: "ワールド文字 World Text 3D テキスト 看板 名前 頭上 ビルボード MSDF フォント" },
+      { title: "Layered Scene Compositor（UI と 3D の重ね順）", href: "components/layered-compositor.html", summary: "背景 UI・3D・前景 UI を好きな順に重ねる。Layer Composition Stack", keywords: "レイヤー 合成 重ね順 Layer Composition Stack replaylayerstack Scene Underlay Scene Overlay Canvas 前景 Rendering Layer 設定画面" }
     ]},
     { title: "Physics", children: [
       { title: "Physics Joint", href: "components/physics-joint.html", summary: "剛体を固定・ヒンジ・スライダー・スプリングでつなぐ", keywords: "ジョイント Joint 固定 ヒンジ 蝶番 扉 スライダー スプリング ばね 振り子 アンカー 軸 可動範囲 下限 上限 周波数 減衰比 PhysX" },
@@ -57,7 +62,8 @@ window.DOCS_TOC = [
       { title: "膨張（空気・圧力・破裂）", href: "components/inflation.html", summary: "空気供給元・空気接続・膨張対象・膨張区画と膨張プロファイル", keywords: "膨張 空気 圧力 内圧 破裂 漏れ ダメージ 風船 浮き輪 ボンベ 空気入れ 空気供給元 空気接続 膨張対象 膨張区画 膨張プロファイル replayinflationprofile XPBD ケージ 浮力 揚力 反発 InflationComponent RequestLeakAt 浮く高さ 破片 膜片 固さ 厚み 中身 液体 粉 閃光 裂け目 OnInflationRuptured Inflation AirConnection 局所膨張 地面 壁 盛り上げる 盛り上がり 丘 SurfaceInflation" }
     ]},
     { title: "水・環境", children: [
-      { title: "Water Body（水域）", href: "components/water-body.html", summary: "海・湖の水面。波、反射、屈折、泡、水中の表現、浮力との連携", keywords: "水 海 湖 Ocean Lake Water Body 波 Gerstner 泡 Foam 屈折 反射 水中 Underwater 浮力 Gameplay Query Allow Buoyancy" },
+      { title: "Water Body（水域）", href: "components/water-body.html", summary: "海・湖の水面。波、反射、屈折、泡、水中の表現、浮力との連携", keywords: "水 海 湖 Ocean Lake Water Body 波 Gerstner 泡 Foam 屈折 反射 水中 Underwater 浮力 Gameplay Query Allow Buoyancy FFT FFT海洋 風速 吹送距離 白波 GPU浅水波 流体密度" },
+      { title: "PBF 流体（しぶき・放水・水たまり）", href: "components/pbf-fluid.html", summary: "水に粒子の流体を足す。着水のしぶき、放水、局所 PBF とのハイブリッド、イベント式の波紋", keywords: "PBF 流体 粒子 Fluid しぶき 飛沫 泡 放水 排出 SSFR イベント式 波紋 局所PBF ハイブリッド 浅水波 GPU流体 スリープ 水面再構成 PbfFluidComponent" },
       { title: "局所霧・Reflection Probe・Probe GI", href: "components/environment-volumes.html", summary: "範囲の中だけに効く霧、反射、間接光", keywords: "Local Fog Volume 局所霧 霧 Reflection Probe 反射 SSR Box Projection 再キャプチャ Probe GI Volume 間接光 GI Bake Baked Realtime DDGI バウンス" }
     ]},
     { title: "Gameplay", children: [
@@ -68,7 +74,9 @@ window.DOCS_TOC = [
       { title: "破壊系リファレンス", href: "components/destruction-reference.html", summary: "破壊系 6 部品・破壊材質・Destruction Editor の全項目と既定値、何が何に効くか、C# API、上限、検証", keywords: "リファレンス 破壊 表 既定値 範囲 内部名 Sliceable Destructible 斬撃 風船 破壊する側 破片の寿命 破壊材質 replaydestruction replaydestructionmaterial Slice ApplyRadialDamage BeginSwing EndSwing Explode Pop AddPressure OnBalloonPopped RequestCameraShake RequestShockwave ScriptBehaviour MonoBehaviour validate-destruction" }
     ]},
     { title: "Landscape", children: [
-      { title: "地形（Landscape）", href: "components/landscape.html", summary: "地面の作成、スカルプト、面の加工、描画と当たり判定", keywords: "地形 ランドスケープ Landscape Ground Renderer Collider スカルプト ブラシ 盛り上げる 掘り下げる なめらか 平ら でこぼこ 細かく トポロジー 押し出し 穴 トンネル 洞窟 辺をつなぐ 再生成 ロード範囲 区画" }
+      { title: "地形（Landscape）", href: "components/landscape.html", summary: "地面の作成、スカルプト、面の加工、描画と当たり判定", keywords: "地形 ランドスケープ Landscape Ground Renderer Collider スカルプト ブラシ 盛り上げる 掘り下げる なめらか 平ら でこぼこ 細かく トポロジー 押し出し 穴 トンネル 洞窟 辺をつなぐ 再生成 ロード範囲 区画" },
+      { title: "草（Grass Procedural・Grass Brush）", href: "components/grass.html", summary: "地面に草を自動で生やす。塗って増やす・消す、風と衝撃波の揺れ", keywords: "草 Grass Procedural Grass Brush 草原 密度 マスク replaygrass 塗る 消す 風 風向 風の強さ 風場 衝撃波 葉 株 根元 先端 透過光" },
+      { title: "川（River）", href: "components/river.html", summary: "地形の中心線から川の水面を作る。流れで物を押す、滝としぶき", keywords: "川 River 水 流れ 滝 しぶき 中心線 ハイトフィールド 川底 押し流す" }
     ]},
     { title: "Lighting", children: [
       { title: "ライト（Directional / Point / Spot / Rect）", href: "components/lights.html", summary: "4 種類のライトのプロパティと使い方、影の設定", keywords: "Directional Light Point Light Spot Light Rect Light 矩形ライト 面光源 平行光源 点光源 スポットライト 影 シャドウ バイアス 強さ 範囲 角度 影の光源半径 半影 柔らかい影" }
@@ -114,6 +122,7 @@ window.DOCS_TOC = [
     { title: "Shader Composer", href: "windows/shader-composer.html", summary: "ノードをつないで Unlit のシェーダーを作るウィンドウ（Surface / Layer / PostProcess）", keywords: "Shader Composer シェーダー ノード グラフ replayshadergraph HLSL 生成 コンパイル Surface Layer PostProcess Unlit マテリアルプロパティ Float Property Color Property Texture Property UV Time Normal View Direction Add Multiply Lerp Saturate Power Fresnel UV Scroll Noise Dissolve Rotate UV Polar UV Remap Smoothstep Step Split Component Combine RGBA Gradient Surface Output Layer Output 自動保存 Generate Preview" },
     { title: "ゲームを書き出す", href: "windows/export-game.html", summary: "エディターなしで起動できるゲームのフォルダーを書き出すダイアログ", keywords: "ゲームを書き出す 書き出し エクスポート export standalone 配布 exe replaygame ゲーム名 書き出し先 最初の Scene Saved Build 上書き ShaderCache ScriptCatalog replaypack Release 除外 LOCALAPPDATA" },
     { title: "Motion Workspace", href: "windows/motion-workspace.html", summary: "モーションのトラック、キー、イージング、タイムライン、グラフエディター、プレビュー、コンポジション", keywords: "Motion Workspace モーション replaymotion replaycomp コンポジション Composition トラック キー イージング Easing CustomBezier PresetCurve EaseInPower Step タイムライン グラフエディター 速度グラフ プレビュー 復元 Wiggle 揺れ ループ 往復 オフセット継続 式 エクスプレッション バインド起点 イベントトラック ブレンドモード Override Additive Multiply Blend 時間リマップ 時間スケール フレーム吸着 FPS ショートカット 自動スムーズ 不透明度フェード Motion リグ" },
+    { title: "Presentation Workspace（メニュー・起動ロゴ・ロード画面）", href: "windows/presentation-workspace.html", summary: "本編と別の 3D・UI・カメラで見せる画面を作り、ID で開く", keywords: "Presentation ポーズメニュー メニュー 起動ロゴ ロード画面 ワイプ テンプレート Presentation Director Prefab Cinematic Menu Flow replaymenuflow" },
     { title: "UI Workspace", href: "windows/ui-workspace.html", summary: "UI の配置・リサイズ・回転、UI 階層、UI インスペクター、図形マスクの編集", keywords: "UI Workspace UI 階層 UI インスペクター シーンビュー 解像度 拡大 グリッド リサイズ ハンドル 回転 Shift Alt 描画順 最前面 最背面 図形で切り抜いたImage 図形イメージ UI図形イメージ マスク枠 全体の拡大率 自由図形 頂点 Pin Track Matte アンカー 左上 中央 全体 Motion を作成" },
     { title: "Particle Editor：基本・応用・ノード操作", href: "windows/particle-effect-editor.html", summary: "実機画像つきでプリセット、粒子設定、固定ノードの構成を解説", keywords: "Particle Editor パーティクル Niagara 火花 渦 ノード Spawn Update Water Appearance Renderer" },
     { title: "イージングカーブ ウィンドウ", href: "windows/easing-curve.html", summary: "サンプルと制御点でカーブを描き、モーションに使う", keywords: "イージング カーブ easing replayeasing サンプル 制御点 フリーハンド 再近似 プリセット サンプルへ焼く オーバーシュート 速度グラフ 挙動プレビュー PresetCurve 時間リマップ Time Remap EaseOutBack Elastic" },

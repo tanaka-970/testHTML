@@ -32,7 +32,8 @@
       <tr><td>Rendering</td><td><a href="mesh-renderers.html">Skinned Mesh Renderer</a></td><td>骨で動くモデルを表示する</td><td>なし</td><td>新リポジトリで骨 256 本の上限を解除、ウェイト 4 本超・複数モーフに対応。ビルドのみ確認</td></tr>
       <tr><td>Rendering</td><td><a href="animator.html">Animator</a></td><td>アニメーションの状態と切り替えを管理する</td><td>なし</td><td></td></tr>
       <tr><td>Rendering</td><td><a href="post-process-volume.html">Post Process Volume</a></td><td>ブルームや色補正など、画面全体の仕上げの設定</td><td>あり（4 枚）</td><td></td></tr>
-      <tr><td>Rendering</td><td><a href="water-body.html">Water Body</a></td><td>海・湖の水面（波、反射、屈折、泡、水中の表現）</td><td>あり（8 枚）</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="water-body.html">Water Body</a></td><td>海・湖の水面（波、反射、屈折、泡、水中の表現、FFT 海洋）</td><td>あり（9 枚）</td><td></td></tr>
+      <tr><td>Physics</td><td><a href="pbf-fluid.html">PBF 流体</a></td><td>水に粒子の流体を足す（しぶき、放水、ハイブリッド、イベント式）</td><td>あり（4 枚）</td><td></td></tr>
       <tr><td>Rendering</td><td><a href="environment-volumes.html#local-fog">Local Fog Volume</a></td><td>範囲の中だけに霧を足す</td><td>あり（6 枚）</td><td></td></tr>
       <tr><td>Rendering</td><td><a href="environment-volumes.html#reflection-probe">Reflection Probe</a></td><td>範囲の中に、周りの景色の映り込みを足す</td><td>あり（6 枚）</td><td></td></tr>
       <tr><td>Rendering</td><td><a href="environment-volumes.html#probe-gi">Probe GI Volume</a></td><td>範囲の中の間接光（回り込む光）を計算する</td><td>あり（6 枚）</td><td></td></tr>
@@ -40,6 +41,16 @@
       <tr><td>Rendering</td><td><a href="effect-stacks.html#screen">Screen Effect Stack</a></td><td>3D の画面全体にエフェクトを重ねる</td><td>なし</td><td></td></tr>
       <tr><td>Rendering</td><td><a href="effect-stacks.html#model">Model Effect Stack</a></td><td>モデルの見た目にエフェクトを重ねる</td><td>なし</td><td></td></tr>
       <tr><td>Rendering</td><td><a href="normal-adjust.html">Normal Adjust</a></td><td>モデルの法線を寄せて陰影の出方を整える</td><td>なし</td><td></td></tr>
+      <tr><td>Rendering</td><td><a href="clouds.html#volume">Cloud Volume</a></td><td>立体の雲を 1 つ置く</td><td>なし</td><td>2026-10-22 新規。コードから記載</td></tr>
+      <tr><td>Rendering</td><td><a href="clouds.html#scatter">Cloud Scatter</a></td><td>雲の群れをシードから配置する</td><td>なし</td><td>2026-10-22 新規。コードから記載</td></tr>
+      <tr><td>Rendering</td><td><a href="ivy.html">ツタ</a></td><td>表面にツタを生やす</td><td>なし</td><td>2026-10-22 新規。C# あり。コードから記載</td></tr>
+      <tr><td>Rendering</td><td><a href="decals.html#decal">投影デカール</a></td><td>画像を面へ投影する</td><td>なし</td><td>2026-10-22 新規。コードから記載</td></tr>
+      <tr><td>Rendering</td><td><a href="decals.html#region">面テクスチャ領域</a></td><td>選んだ面だけに画像を貼る</td><td>なし</td><td>2026-10-22 新規。C# あり。コードから記載</td></tr>
+      <tr><td>Rendering</td><td><a href="decals.html#display">表示内容アニメーション / LED</a></td><td>貼った画像を動かす・電光掲示板</td><td>なし</td><td>2026-10-22 新規。C# あり。コードから記載</td></tr>
+      <tr><td>Rendering</td><td><a href="world-text.html">ワールド文字</a></td><td>3D 空間に文字を置く</td><td>なし</td><td>2026-10-22 新規。C# あり。コードから記載</td></tr>
+      <tr><td>Rendering</td><td><a href="layered-compositor.html">Layered Scene Compositor</a></td><td>UI と 3D の重ね順を決める</td><td>なし</td><td>2026-10-22 新規。コードから記載</td></tr>
+      <tr><td>Landscape</td><td><a href="river.html">River</a></td><td>地形に沿った川の水面</td><td>なし</td><td>2026-10-22 新規。コードから記載</td></tr>
+      <tr><td>UI</td><td><a href="../windows/presentation-workspace.html#director">Presentation Director</a></td><td>メニュー・ロゴ・ロード画面を ID で開閉する</td><td>なし</td><td>2026-10-22 新規。C# からの呼び出しはまだ無い</td></tr>
       <tr><td>Rendering</td><td><a href="particle-emitter.html#tutorial-new-scene">Particle Emitter</a></td><td>小さな粒を出す（煙、火花など）</td><td>画面 3 枚</td><td>新規シーンで点・球・箱の発生形状を比較</td></tr>
       <tr><td>Rendering</td><td><a href="lines.html">3D ライン</a></td><td>点をつないだ線や帯を描く</td><td>なし</td><td></td></tr>
       <tr><td>Rendering</td><td><a href="lines.html#trail">軌跡</a></td><td>動いた跡を線として残す</td><td>なし</td><td></td></tr>
@@ -86,6 +97,8 @@
       <tr><td>Destruction</td><td><a href="destruction-reference.html#debris">破片の寿命</a></td><td>破片を時間・静止・シーン内の数の上限で片付ける</td><td>なし</td><td>Sliceable / Destructible の破片に自動で付く</td></tr>
       <tr><td>Destruction</td><td><a href="destruction-reference.html#showcase">破壊比較・自動再生</a></td><td>見本シーンで壊れ方を順に見せる</td><td>なし</td><td>新規。見本用（決まった名前の GameObject にだけ効く）</td></tr>
       <tr><td>Landscape</td><td><a href="landscape.html#landscape">Landscape</a></td><td>地形の形のデータ</td><td>なし</td><td></td></tr>
+      <tr><td>Landscape</td><td><a href="grass.html#prop-procedural">Grass Procedural</a></td><td>地面に草を自動で生やす（風・衝撃波で揺れる）</td><td>あり（1 枚）</td><td></td></tr>
+      <tr><td>Landscape</td><td><a href="grass.html#prop-brush">Grass Brush</a></td><td>塗った場所へ草を増やす・消す（密度マスク）</td><td>なし</td><td></td></tr>
       <tr><td>Landscape</td><td><a href="landscape.html#renderer">Landscape Renderer</a></td><td>地形を表示する</td><td>なし</td><td></td></tr>
       <tr><td>Landscape</td><td><a href="landscape.html#collider">Landscape Collider</a></td><td>地形の当たり判定</td><td>なし</td><td></td></tr>
       <tr><td>UI</td><td><a href="effect-stacks.html#ui">Effect Stack</a></td><td>UI にエフェクトを重ねる</td><td>なし</td><td></td></tr>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>草（Grass Procedural・Grass Brush） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / 草</div>
+    <h1>草（Grass Procedural・Grass Brush）</h1>
+    <p class="meta">対象：ブランチ sinotake_test / コミット 880398d5</p>
+
+    <p>地面（<a href="landscape.html">ランドスケープ</a>）や、普通のモデル・基本形状の表面に、草を自動で生やす部品と、生える場所をブラシで塗って決める部品です。草は風に揺れ、風船の破裂の衝撃波でもなびきます。</p>
+    <div class="note"><strong>2026-10-22 の変更（コミット d7164091、コードから書いた内容）</strong>草は Landscape 専用ではなくなりました。同じ GameObject の <b>Mesh Renderer・Primitive Mesh Renderer・Landscape</b> のどれにでも生やせます。コンポーネントを追加での分類は <b>Rendering</b> に移りました。メッシュに塗るときは、マスクの範囲はモデルの UV（0〜1）になります（UV が重なっている形では、重なった面が塗りを共有します）。遠くの草を間引く LOD と、草むらのまだら（群生）も増えました（<a href="#prop-new">下の表</a>）。</div>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>草原を作りたい。地面に生えるだけでよい</li>
+      <li>道の上は草を消し、花壇の所だけ草を濃くしたい</li>
+      <li>風が吹いている感じや、爆発の衝撃で草がなびく様子を見せたい</li>
+    </ul>
+
+    <h2 id="overview">概要</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>部品</th><th>役割</th></tr>
+      <tr><td><b>Grass Procedural</b></td><td>同じ GameObject の Landscape の表面へ、決めた密度で草を自動で生やします。高さ・幅・色・風の揺れを決めます</td></tr>
+      <tr><td><b>Grass Brush</b></td><td>シーンビューで塗った場所へ草を増やす・消すための「密度マスク」（<code>.replaygrass</code> ファイル）の場所と範囲を持ちます。Grass Procedural と一緒に使います</td></tr>
+    </table>
+    </div>
+    <p>地面の三角形の大きさにかかわらず、1 平方メートルあたりの株の数がそろうように生えます。1 株からは放射状に数枚の葉が出ます。</p>
+    <figure>
+      <img src="../images/components/grass/grass-field.png" alt="地形に生えた草">
+      <figcaption><code>resources/Game/Inflate/Inflate_PbfLandscapeFull</code> を実行して 240 フレーム後。地面一面に草が生えています。</figcaption>
+    </figure>
+
+    <h2 id="create">草を生やす</h2>
+    <ol class="steps">
+      <li>Landscape の付いた GameObject（地面）を選ぶ</li>
+      <li>インスペクターの「コンポーネントを追加」から <b>Grass Procedural</b>（Rendering の分類。10/13 時点では Landscape の分類）を付ける。これだけで地面一面に草が生えます</li>
+      <li>「株の密度」「草の高さ」「草の幅」「根元の色」「先端の色」で見た目を合わせる</li>
+    </ol>
+
+    <h2 id="brush">塗って草を増やす・消す（Grass Brush）</h2>
+    <ol class="steps">
+      <li>先にシーンを保存しておく（マスクのファイルの保存先がシーンのフォルダから決まるため）</li>
+      <li>地面と Grass Procedural を選んだ状態で、シーンビューの上に出る「草のマスク」の行から <b>Grass Brush を追加</b> を押す</li>
+      <li><b>マスクを作成</b> を押す。作るときの中身は「全面（密度 1）」「空（密度 0）」などから選べます。範囲は地面の境界から自動で決まります</li>
+      <li><b>草を塗る</b> を押して、シーンビューで<b>左ドラッグ</b>して塗る。「塗る（草を増やす）」「消す（草を減らす）」「値で置き換え」を選べます。<b>Shift</b> を押している間は塗る・消すが入れ替わります。半径・硬さ・不透明度・値はブラシの行で変えます</li>
+      <li>塗るときの草の長さも決められます。塗った場所はその長さを保ちます（あとから「草の高さ」を変えても、塗った場所は変わりません）。オフなら密度だけを塗ります</li>
+      <li><b>保存</b> でマスクのファイルへ書き出す。<b>Esc</b> で草のブラシを終わる。Ctrl・Alt を押しながらのドラッグはカメラ操作です</li>
+    </ol>
+    <p>マスクの解像度は 256・512・1024 から選べます（1024 は Undo のメモリが大きくなります）。同じ名前のファイルがあるときは、上書きを防ぐために作成しません。<b>作り直す</b> は中身を作り直し、<b>再読込</b> はファイルから読み直します。<b>塗った長さをリセット</b> は、ブラシで塗った長さの記録をすべて消します。</p>
+
+    <h2 id="wind">風と衝撃波</h2>
+    <ul>
+      <li>「風向 X / Z」と「風の強さ」で、草全体がその向きへ揺れます。</li>
+      <li>シーンに<a href="wind.html">風場（Wind Zone）</a>があると、その風速も「風場の影響」の分だけ揺れに足されます。</li>
+      <li>風船などの<a href="inflation.html">膨張対象</a>が破裂すると、その衝撃波で周りの草が外側へなびきます（設定は不要です）。</li>
+    </ul>
+
+    <h2 id="properties">プロパティ</h2>
+    <h3 id="prop-procedural">Grass Procedural</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>表示</td><td><code>visible</code></td><td>オン</td><td></td><td>草を描くかどうか</td></tr>
+      <tr><td>株の密度</td><td><code>density</code></td><td>8</td><td>0.1〜100</td><td>1 平方メートルあたりの目標株数。三角形の大きさにかかわらず株の密度がそろう</td></tr>
+      <tr><td>分割数の上限</td><td><code>max_subdivision</code></td><td>16</td><td>1〜64</td><td>1 三角形あたりの分割数の上限。本数は最大でこの 2 乗になるので、重さの上限になる</td></tr>
+      <tr><td>草の高さ</td><td><code>blade_height</code></td><td>1.098</td><td>0.05〜10</td><td>ブラシで塗っていない草の最大の長さ。実際の長さは「長さの乱数幅」の分だけ短くなる</td></tr>
+      <tr><td>長さの倍率</td><td><code>length_multiplier</code></td><td>1</td><td>0〜10</td><td>今生えているすべての草の長さに掛ける。ブラシで塗った草にも掛かる</td></tr>
+      <tr><td>長さの乱数幅</td><td><code>length_random_range</code></td><td>0.8</td><td>0〜1</td><td>塗っていない草の長さを、1 本ごとに草の高さの (1 − 幅)〜1 倍にする。0 ならすべて同じ高さ</td></tr>
+      <tr><td>草の幅</td><td><code>blade_width</code></td><td>0.254</td><td>0.01〜2</td><td>葉の幅</td></tr>
+      <tr><td>ノイズシード</td><td><code>noise_seed_multiplier</code></td><td>1.741</td><td>0.01〜100</td><td>高さ・幅・風のまとまりを決めるノイズの倍率。変えると草の並びが変わる</td></tr>
+      <tr><td>風向 X・風向 Z</td><td><code>wind_direction_x</code>、<code>wind_direction_z</code></td><td>1・0.25</td><td>−1〜1</td><td>風の向き</td></tr>
+      <tr><td>風の強さ</td><td><code>wind_strength</code></td><td>0.35</td><td>0〜2</td><td>草丈に対する、横方向の最大のしなり。0 で風を止める</td></tr>
+      <tr><td>風場の影響</td><td><code>wind_zone_influence</code></td><td>0.08</td><td>0〜1</td><td>シーンの風場の風速を、草の揺れへ足す強さ。0 で風場を無視する</td></tr>
+      <tr><td>1株の葉数</td><td><code>leaves_per_clump</code></td><td>3</td><td>1〜5</td><td>1 株から放射状に生やす葉の数。増やすと厚みが増す</td></tr>
+      <tr><td>根元の色・先端の色</td><td><code>root_color</code>、<code>tip_color</code></td><td>濃い緑・明るい黄緑</td><td></td><td>根元から先端へ向かう色の変化</td></tr>
+      <tr><td>影を受ける</td><td><code>receive_shadow</code></td><td>オン</td><td></td><td>ほかの物の影を草に落とす</td></tr>
+      <tr><td>葉の透過光</td><td><code>translucency</code></td><td>0.35</td><td>0〜1</td><td>葉の裏から光が透けて明るく見える強さ</td></tr>
+      <tr><td>株の上向き法線</td><td><code>normal_blend</code></td><td>0.2</td><td>0〜1</td><td>光の当たり方を、葉の向きと真上のどちらに寄せるか。上げると株全体がやわらかく明るくなる</td></tr>
+      <tr><td>葉の粗さ</td><td><code>roughness</code></td><td>0.7</td><td>0.05〜1</td><td>小さいほどつやが出る</td></tr>
+      <tr><td>根元の環境光</td><td><code>root_ambient_occlusion</code></td><td>0.6</td><td>0〜1</td><td>根元を暗くして、草むらの奥行きを出す強さ</td></tr>
+      <tr><td>描画レイヤー</td><td><code>rendering_layer</code></td><td>0</td><td>0〜31</td><td>カメラの描画レイヤーで、映す・映さないを分けるとき</td></tr>
+    </table>
+    </div>
+
+    <h3 id="prop-new">Grass Procedural に増えた項目（2026-10-22）</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>LOD開始距離</td><td><code>lod_start_distance</code></td><td>0〜10000</td><td>カメラからこれより遠い草を、描画距離に向けて間引き始める</td></tr>
+      <tr><td>描画距離</td><td><code>draw_distance</code></td><td>0〜10000</td><td>これより遠い草は描かない。手前で縮めて消すので境目は目立たない。0 なら無制限</td></tr>
+      <tr><td>遠景で残す割合</td><td><code>far_density_ratio</code></td><td>0.01〜1</td><td>描画距離の手前で残す株の割合。間引いた分は葉を太くして密度感を保つ</td></tr>
+      <tr><td>群生の強さ</td><td><code>clump_strength</code></td><td>0〜1</td><td>Perlin Noise で草むらと地肌をまだらに分ける強さ。0 なら一様。株の総数はほぼ変わらない</td></tr>
+      <tr><td>群生の大きさ</td><td><code>clump_size</code></td><td>0.5〜500</td><td>草むら 1 つのおおよその大きさ (m)</td></tr>
+      <tr><td>高さのムラ</td><td><code>height_variation</code></td><td>0〜1</td><td>草むらの中心ほど高く、まばらな所ほど低くする。ブラシで長さを塗った草には掛からない</td></tr>
+    </table>
+    </div>
+    <p>ハイトフィールドの地形では、地形のペイントモードの「草を生やすレイヤー」で、草の生える地表レイヤーを決められます（<a href="landscape.html#hf-modes">地形の編集モード</a>）。</p>
+
+    <h3 id="prop-brush">Grass Brush</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>マスクのファイル</td><td><code>mask_file</code></td><td>空</td><td>密度マスク（<code>.replaygrass</code>）のパス。シーンのあるフォルダからの相対パス。空ならマスクなし</td></tr>
+      <tr><td>未ペイント部</td><td><code>fill_mode</code></td><td>全面に生やす</td><td><b>全面に生やす</b>は、全体に生えた状態から塗って増やす・消す。<b>マスクのみ</b>は、塗った所だけに生える</td></tr>
+      <tr><td>範囲の最小 X / Z、範囲の大きさ X / Z</td><td><code>mask_min_x</code> など</td><td>0</td><td>マスクが覆う範囲（地面のローカル座標）。マスクを作ったときの地形の境界で、通常は編集しない。大きさが 0 だと描画はマスクを使わない</td></tr>
+    </table>
+    </div>
+
+    <h2 id="speed">重さの目安</h2>
+    <ul>
+      <li>本数は「株の密度 × 面積」で増えます。広い地面では密度を下げ、「分割数の上限」で上限を抑えます。</li>
+      <li>「1株の葉数」を増やすと、本数は同じでも描く葉の数が増えます。</li>
+    </ul>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="landscape.html">ランドスケープ</a>（草を生やす地面）</li>
+      <li><a href="wind.html">風場</a>（草の揺れに足す風）</li>
+      <li><a href="inflation.html">膨張</a>（破裂の衝撃波で草がなびく）</li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

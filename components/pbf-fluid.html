@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>PBF 流体 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / PBF 流体</div>
+    <h1>PBF 流体</h1>
+    <p class="meta">対象：ブランチ sinotake_test / コミット 880398d5</p>
+
+    <p>水に粒子の流体を足して、物が飛び込んだときのしぶき・水の盛り上がり・流れ込みを、その場で計算して見せる部品です。<a href="water-body.html">Water Body（水域）</a>と同じ GameObject に付けて使います。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>風船や敵が水に落ちたときに、本物の水のようなしぶきと波を出したい</li>
+      <li>放水口から水を流して、地形のくぼみに水がたまる様子を見せたい</li>
+      <li>広い湖や海はそのままの見た目で軽く保ちつつ、着水した所だけ派手に水を跳ねさせたい</li>
+    </ul>
+
+    <h2 id="overview">概要</h2>
+    <p>PBF（Position Based Fluids）は、水を小さな粒の集まりとして計算する方法です。粒どうしが押し合って密度を一定に保つので、水がこぼれる・たまる・跳ねる動きが自然に出ます。この部品は、計算した粒から水面を作り、同じ GameObject の Water Body の描画・浮力・水中判定に渡します。</p>
+    <p>使い方は、目的に合わせて次の 3 通りから選びます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>やり方</th><th>設定</th><th>向いている場面</th><th>重さ</th></tr>
+      <tr><td><b>全体を粒で計算</b></td><td>水面効果モード＝PBF 粒子シミュレーション、Water Body の Wave Source＝Fluid Simulation</td><td>水槽・小さな池など、狭い範囲の水全体を本物らしく動かす</td><td>重い（粒の数に比例）</td></tr>
+      <tr><td><b>局所 PBF ＋ GPU 浅水波（ハイブリッド）</b></td><td>「局所PBF粒子のみ」をオン、Water Body の「GPU 浅水波」をオン、Wave Source＝Fluid Simulation</td><td>広い湖。普段は軽い浅水波で波を伝え、着水点の周りだけ粒で計算する</td><td>中くらい</td></tr>
+      <tr><td><b>イベント式の波紋としぶき</b></td><td>水面効果モード＝イベント式の波紋としぶき</td><td>海や大きな湖。いつもの水面はそのまま描き、物が当たった瞬間だけ波紋と飛沫を出す</td><td>軽い（当たったときだけ計算）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="demo">デモシーン</h2>
+    <p>どれも <code>resources/Game/Inflate/</code> にあります。開いて実行（F5）すると、それぞれの組み合わせの動きを確かめられます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>シーン</th><th>見られるもの</th></tr>
+      <tr><td><code>Inflate_PbfImpactDemo</code></td><td>全体を粒で計算した水に物が落ちる、基本の着水</td></tr>
+      <tr><td><code>Inflate_HybridShallowLocalPbf</code></td><td>GPU 浅水波の湖に、局所 PBF の放水を組み合わせたハイブリッド</td></tr>
+      <tr><td><code>Inflate_EventDrivenWater</code> / <code>Inflate_EventDrivenContacts</code></td><td>イベント式。Gerstner 波の水面に、当たった所だけ波紋と飛沫</td></tr>
+      <tr><td><code>Inflate_EventDrivenSplashStress</code></td><td>イベント式で大量に着水させる負荷確認（FFT 海洋＋SSFR の飛沫）</td></tr>
+      <tr><td><code>Inflate_FftOcean</code></td><td>FFT 海洋（風速と吹送距離から作る海の波）とイベント式の飛沫</td></tr>
+      <tr><td><code>Inflate_PbfLandscapeFull</code> / <code>Inflate_PbfLandscapePerf</code></td><td>地形の上に放水して水をためる。Perf は広い水で速さを測る用</td></tr>
+    </table>
+    </div>
+    <figure>
+      <img src="../images/components/fluid/pbf-impact.png" alt="PBF の着水デモ">
+      <figcaption>Inflate_PbfImpactDemo を実行して 240 フレーム後の画面。</figcaption>
+    </figure>
+    <figure>
+      <img src="../images/components/fluid/hybrid.png" alt="GPU 浅水波と局所 PBF のハイブリッド">
+      <figcaption>Inflate_HybridShallowLocalPbf を実行して 240 フレーム後。広い湖は GPU 浅水波で波を伝え、放水点の周りだけを粒で計算します。</figcaption>
+    </figure>
+    <figure>
+      <img src="../images/components/fluid/event-driven.png" alt="イベント式の波紋としぶき">
+      <figcaption>Inflate_EventDrivenWater。いつもの水面のまま、当たった所だけ波紋と飛沫を出します。</figcaption>
+    </figure>
+    <figure>
+      <img src="../images/components/fluid/landscape.png" alt="地形への放水">
+      <figcaption>Inflate_PbfLandscapeFull を実行して 240 フレーム後。草の地形の上にある放水点（キャラクターの足もと）から水を出し始めたところです。初期水量はオフなので、放水した分だけ水が増えていきます。</figcaption>
+    </figure>
+
+    <h2 id="create">水に PBF 流体を付ける</h2>
+    <ol class="steps">
+      <li>Water Body の付いた GameObject を選ぶ（無ければ先に<a href="water-body.html#create">水を作る</a>）</li>
+      <li>インスペクターの「コンポーネントを追加」から <b>PBF 流体</b>（Physics の分類）を付ける</li>
+      <li>上の表から使い方を選び、「水面効果モード」と Water Body の Wave Source を合わせる</li>
+      <li>「流体の半幅 X / Z」と「流体の深さ」で、粒で計算する範囲を水の大きさに合わせる</li>
+      <li>実行（F5）して、物を落として確かめる。重いときは<a href="#speed">速さの調整</a>を見る</li>
+    </ol>
+
+    <h2 id="properties">プロパティ</h2>
+    <p>インスペクターに出る順に、まとまりごとに並べています。</p>
+
+    <h3 id="prop-mode">水面効果モードとイベント式</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>水面効果モード</td><td>PBF 粒子シミュレーション</td><td>選択</td><td><b>PBF 粒子シミュレーション</b>は水を粒で計算します。<b>イベント式の波紋としぶき</b>は Water Body の普段の描画を保ったまま、衝撃があったときだけ波紋と飛沫を更新します</td></tr>
+      <tr><td>イベント時 PBF 粒子上限</td><td>2048</td><td>64〜2048</td><td>イベント式で、1 回の着水に使う粒の上限</td></tr>
+      <tr><td>イベント飛沫の計算品質</td><td>高品質</td><td>軽量（最大 256 粒）／標準（最大 768 粒）／高品質（最大 2048 粒）</td><td>イベント式の局所 PBF の粒の数だけを制限します。描画の品質には影響しません</td></tr>
+      <tr><td>飛沫乱数シード（0=自動）</td><td>0</td><td>0〜</td><td>飛沫の散り方の乱数。0 なら毎回変わる</td></tr>
+      <tr><td>飛沫の不規則さ</td><td>0.7</td><td>0〜1</td><td>大きいほど飛沫の形がばらつく</td></tr>
+      <tr><td>斜め着水の前方偏り</td><td>0.65</td><td>0〜1</td><td>斜めに飛び込んだとき、進む向きへ飛沫を偏らせる強さ</td></tr>
+      <tr><td>飛沫の広がり倍率・飛沫の発生量倍率</td><td>1.0・2.5</td><td>0.2〜3・0〜6</td><td>飛沫の広がる範囲と量</td></tr>
+      <tr><td>飛沫描画方式（0:従来 1:SSFR）</td><td>1</td><td>0〜1</td><td>1 の SSFR は、粒を画面上で溶け合わせて一続きの液体に見せる描き方です</td></tr>
+      <tr><td>SSFR画質・融合の滑らかさ・描画粒子上限</td><td>0・2・2048</td><td>0〜2・1〜3・32〜4096</td><td>SSFR の画質（0:軽量 1:標準 2:高）、粒どうしをなめらかにつなぐ強さ、描く粒の上限</td></tr>
+      <tr><td>SSFR光吸収・屈折の強さ・縁の反射・反射ハイライト・粒子の液体密度</td><td>3.0・0.012・0.85・0.22・1.0</td><td>0〜30・0〜0.1・0〜3・0〜3・0.05〜8</td><td>SSFR の液体の見た目。吸収が大きいほど厚い所が濃く、屈折が大きいほど奥がゆがんで見える</td></tr>
+    </table>
+    </div>
+
+    <h3 id="prop-sim">計算と衝突</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>実行中に計算</td><td>オン</td><td></td><td>オフにすると実行中も粒を動かさない</td></tr>
+      <tr><td>シーン物体と衝突</td><td>オン</td><td></td><td>粒がシーンの物（球・箱・カプセルなど）に当たる</td></tr>
+      <tr><td>高速粒子の連続衝突</td><td>オン</td><td></td><td>球・箱・カプセルとの相対的な動きを追って、1 回の計算の間に粒がすり抜けるのを防ぐ</td></tr>
+      <tr><td>障害物更新間隔</td><td>0</td><td>0〜0.5 秒</td><td>0 なら毎回、正の値なら衝突形状を作り直す回数を減らして軽くする</td></tr>
+      <tr><td>GPUで流体を計算</td><td>オフ</td><td></td><td>対応する範囲を GPU で計算します。障害物がある場合や失敗したときは、理由を「状態」に出して CPU へ戻ります</td></tr>
+      <tr><td>GPU静止粒子スリープ</td><td>オン</td><td></td><td>動いている粒とその周りだけを GPU で計算し、止まった粒は休ませる</td></tr>
+      <tr><td>GPU起床速度しきい値・GPU起床障害物余白</td><td>0.32・0.25</td><td>0.001〜10・0〜10</td><td>休んでいる粒を起こす速さの目安と、障害物の周りで起こす範囲</td></tr>
+      <tr><td>CPU計算を並列化</td><td>オン</td><td></td><td>CPU で計算するとき、共通のジョブシステムで複数のコアを使う</td></tr>
+      <tr><td>CPU粒子同期間隔</td><td>1</td><td>1〜16 フレーム</td><td>GPU で計算した粒を CPU へ読み戻す間隔。大きいほど軽い</td></tr>
+      <tr><td>粒子間隔・平滑化距離</td><td>0.22・0.38</td><td>0.05〜10</td><td>粒の細かさと、粒が影響し合う距離。間隔を小さくするほど細かく、重くなる</td></tr>
+      <tr><td>基準密度・粒子質量（0=間隔から自動）</td><td>1000・0</td><td></td><td>水の密度。Water Body の「流体密度」と合わせると、粒の計算と浮力が同じ密度になる</td></tr>
+      <tr><td>粘性・重力・反発・時間倍率・反復回数</td><td>0.035・9.80665・0.02・1・4</td><td>0〜1・0〜100・0〜1・0〜4・1〜12</td><td>水のねばり、重力、壁で跳ね返る強さ、時間の速さ、1 回の計算の正確さ</td></tr>
+      <tr><td>最大粒子数</td><td>6000</td><td>1〜262144</td><td>粒の数の上限</td></tr>
+      <tr><td>流体の半幅 X・半幅 Z・深さ</td><td>3・3・1.5</td><td></td><td>粒で計算する範囲（GameObject の位置が中心）</td></tr>
+      <tr><td>初期水量を生成（OFF=局所PBF）</td><td>オン</td><td></td><td>始めから範囲を水で満たす。オフなら放水した分だけになる</td></tr>
+      <tr><td>上面を開放する</td><td>オン</td><td></td><td>範囲の上を開けて、しぶきが上へ飛び出せるようにする</td></tr>
+    </table>
+    </div>
+
+    <h3 id="prop-local">局所 PBF（ハイブリッド）</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>局所PBF粒子のみ</td><td>オフ</td><td></td><td>粒を局所の範囲だけに限り、Water Body の浅水波へ着水の衝撃を返す。広い湖で使う</td></tr>
+      <tr><td>局所水塊を初期生成</td><td>オン</td><td></td><td>局所の範囲に、始めから水の塊を置く</td></tr>
+      <tr><td>局所中心を放水点へ追従</td><td>オン</td><td></td><td>局所の範囲の中心を、放水している所へ合わせて動かす</td></tr>
+      <tr><td>局所領域の中心・半幅・深さ</td><td>(0,0,0)・12・2</td><td>半幅 1〜100、深さ 0.1〜100</td><td>粒で計算する局所の範囲</td></tr>
+      <tr><td>局所粒子の上限</td><td>32768</td><td>2000〜50000</td><td>局所の範囲で使う粒の上限</td></tr>
+      <tr><td>飛沫の GPU インスタンス描画</td><td>オフ</td><td></td><td>飛沫を GPU でまとめて描き、たくさんの飛沫を軽く出す</td></tr>
+    </table>
+    </div>
+
+    <h3 id="prop-surface">水面の作り方</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>表面解像度</td><td>48</td><td>8〜128</td><td>粒から作る水面の細かさ</td></tr>
+      <tr><td>水面再構成間隔</td><td>0</td><td>0〜1 秒</td><td>水面を作り直す間隔。0 なら毎フレーム</td></tr>
+      <tr><td>粒子密度から3D水面を再構成</td><td>オン</td><td></td><td>粒の密度から立体の水面を作る。こぼれた水や水柱も面になる</td></tr>
+      <tr><td>軽量な高さ場水面・GPU生成の高さ場水面</td><td>オフ・オフ</td><td></td><td>水面を「場所ごとの高さ」だけで作る軽い方法。GPU 生成は GPU で作る</td></tr>
+      <tr><td>GPU水面を自動選択</td><td>オン</td><td></td><td>GPU で計算しているときは、GPU 生成の水面を自動で使う</td></tr>
+      <tr><td>水面の密度しきい値</td><td>1.15</td><td>0.05〜16</td><td>どれだけ粒が集まったら水面とみなすか</td></tr>
+    </table>
+    </div>
+
+    <h3 id="prop-splash">飛沫と泡</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>飛沫と泡を生成</td><td>オン</td><td></td><td>速く動く粒から飛沫を、水面の荒れた所に泡を出す</td></tr>
+      <tr><td>物理粒子を表示</td><td>オフ</td><td></td><td>計算に使っている粒をそのまま表示する（調整用）</td></tr>
+      <tr><td>飛沫の発生量・飛沫を生む速度</td><td>4・1.5</td><td>0〜100・0.1〜100</td><td>飛沫の量と、どれだけ速い粒から飛沫を出すか</td></tr>
+      <tr><td>飛沫の半径・飛沫の寿命・泡の寿命</td><td>0.025・1.2・4</td><td></td><td>飛沫の大きさと、飛沫・泡が消えるまでの秒数</td></tr>
+      <tr><td>飛沫と泡の上限・泡判定の粒子上限</td><td>2048・8192</td><td></td><td>同時に出す飛沫と泡の数、泡を出すか調べる粒の数の上限</td></tr>
+    </table>
+    </div>
+
+    <h3 id="prop-emit">放水と排出</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>名前</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>粒子を連続発生・発生粒子数／秒</td><td>オフ・200</td><td>放水口のように、毎秒この数の粒を出し続ける</td></tr>
+      <tr><td>発生位置・発生領域のサイズ・初速度（ローカル）</td><td>(0,0.25,0)・(0.5,0.1,0.5)・(0,−1,0)</td><td>放水する場所・大きさ・向きと速さ</td></tr>
+      <tr><td>排出領域を有効化・排出中心・排出領域の半幅</td><td>オフ・(0,−0.8,0)・(0.25,0.25,0.25)</td><td>この箱に入った粒を消す。放水し続けても水があふれないようにする</td></tr>
+    </table>
+    </div>
+
+    <h3 id="prop-status">実行中の表示（読み取り専用）</h3>
+    <p>実行中のインスペクターに、<b>実行時の粒子数</b>・<b>平均密度</b>・<b>直近の計算刻み数</b>・<b>状態</b>が出ます。GPU で計算できずに CPU へ戻ったときは、その理由が「状態」に出ます。</p>
+
+    <h2 id="speed">速さの調整</h2>
+    <ul>
+      <li>まず「GPUで流体を計算」と「GPU静止粒子スリープ」をオンにする</li>
+      <li>広い水は全体を粒で計算せず、ハイブリッドかイベント式を使う</li>
+      <li>「粒子間隔」を大きくすると粒が減り、ぐっと軽くなる（細かさは落ちる）</li>
+      <li>「CPU粒子同期間隔」と「水面再構成間隔」を上げると、読み戻しと水面作りの回数が減る</li>
+      <li>FPS を正しく測るときは、環境変数 <code>REPLAY_PROFILE_REAL_TIME=1</code> を付けて <code>Inflate_PbfLandscapePerf</code> で測る（付けないと 60 付近で頭打ちになる）</li>
+    </ul>
+
+    <div class="warning"><strong>制限</strong>GPU での計算は、障害物があると一部 CPU へ戻ることがあります（理由は「状態」に出ます）。粒の数を大きくすると、GPU で計算していても飛沫・水面作り・読み戻しで重くなります。全体を粒で計算するのは、狭い範囲の水に向いた使い方です。</div>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="water-body.html">Water Body（水域）</a>（Wave Source、FFT 海洋、GPU 浅水波）</li>
+      <li><a href="inflation.html">膨張</a>（風船が水に落ちたときの浮力）</li>
+      <li><a href="landscape.html">ランドスケープ</a>（地形へ放水して水をためる）</li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

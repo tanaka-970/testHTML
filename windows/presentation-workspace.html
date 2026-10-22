@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Presentation Workspace（メニュー・起動ロゴ・ロード画面） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / ウィンドウ / Presentation Workspace</div>
+    <h1>Presentation Workspace（メニュー・起動ロゴ・ロード画面）</h1>
+    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（コードから書いた内容。実機での確認はまだ）</p>
+
+    <p>ポーズメニュー、起動ロゴ、ロード画面、画面全体のワイプなど、<b>ゲーム本編とは別の 3D モデル・UI・カメラ</b>で見せる画面（Presentation）を作る作業場です。1 つの Presentation は「識別子（ID）＋専用の 3D モデルのルート＋UI のルート＋必要なら Motion Composition」でできていて、ゲーム側は ID で呼び出すだけです。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>ポーズ中に、キャラクターの 3D モデルが回るメニュー画面を出したい</li>
+      <li>起動時のロゴ画面や、シーン切り替えのロード画面を作りたい</li>
+      <li>画面全体をワイプして切り替える演出を作りたい</li>
+      <li>作ったメニューを別のシーンでも使い回したい</li>
+    </ul>
+
+    <h2 id="open">開き方</h2>
+    <p>メニューバーの <b>Window</b> の下の方にある Workspace の一覧から <b>Presentation Workspaceへ</b> を選びます。「Presentation 一覧」「Presentation 設定」「Presentation タイムライン」と Game View が並びます。</p>
+
+    <h2 id="create">テンプレートから作る</h2>
+    <ol class="steps">
+      <li>「Presentation 一覧」の「作成テンプレート」で種類を選ぶ</li>
+      <li><b>+ テンプレートから作成</b> を押す。Presentation Director の付いた GameObject、3D モデルのルート、専用カメラ、UI のルートが作られ、同時に <code>&lt;ID&gt;Timeline</code> という Motion Composition も作られて割り当てられます</li>
+      <li>文字や 3D モデルを差し替える（「UIを編集」で UI Workspace、「完成画面を見る」で仕上がりを確認）</li>
+      <li>「Presentation タイムライン」で <b>+ Motion/Precompレイヤー</b> を足して、開くときの動きを付ける。キーの細かい編集は「キー編集を開く」で Motion Workspace から行います</li>
+      <li><b>▶ 表示</b>・<b>■ 閉じる</b> で、F5 で実行しなくてもエディター上で開閉を確かめられます</li>
+    </ol>
+    <div class="table-wrap">
+    <table>
+      <tr><th>作成テンプレート</th><th>付く ID</th><th>中身</th></tr>
+      <tr><td>3Dキャラクターメニュー</td><td><code>PauseMenu</code></td><td>専用カメラで映す 3D モデル＋背景 UI＋前景のメニュー UI</td></tr>
+      <tr><td>起動ロゴ</td><td><code>BootLogo</code></td><td>全面の背景と「YOUR LOGO」「PRESENTS」の文字</td></tr>
+      <tr><td>ロード画面</td><td><code>LoadingScreen</code></td><td>「PLEASE WAIT」の文字、ロードバー（Progress Track / Progress Fill）、ヒント文</td></tr>
+      <tr><td>全面ワイプ</td><td><code>Transition</code></td><td>画面全体を覆うワイプの形</td></tr>
+      <tr><td>空のUI</td><td><code>UIOverlay</code></td><td>UI のルートだけ</td></tr>
+    </table>
+    </div>
+    <p>同じ ID が既にあるときは、末尾に 2、3… を付けた ID になります。ID が重複すると呼び出し（Play）が失敗するので、「詳細設定（識別子・描画順・解像度）」で直します。</p>
+
+    <h2 id="reuse">再利用・起動ロゴ・ロード画面として保存</h2>
+    <p>「再利用 / ロゴ / ロード画面」の欄で、選んだ Presentation だけを書き出します。保存先は <code>resources/Presentations/</code> です。</p>
+    <ul>
+      <li><b>Prefabとして保存（他のSceneで再利用）</b>：<code>Prefab_&lt;ID&gt;.replayprefab</code>。別のシーンでは「既存Prefabから再利用」の <b>Presentation Prefabを配置</b> で置けます</li>
+      <li><b>起動ロゴSceneとして保存・設定</b>：<code>BootLogo_&lt;ID&gt;.replayscene</code> を作り、Project Settings の起動ロゴに自動で登録します（見本：<code>resources/Presentations/BootLogo_BootLogo.replayscene</code>）</li>
+      <li><b>ロード画面Sceneとして保存・設定</b>：<code>Loading_&lt;ID&gt;.replayscene</code> を作り、ロード画面に自動で登録します</li>
+    </ul>
+    <p>同じ名前のファイルがあるときは上書きせず、<code>_2</code> などを付けて保存します。背景・文字・ロードバーはウィンドウの縦横比に合わせて伸び縮みします。</p>
+
+    <h2 id="camera-ui">3D モデルを UI の中に表示する</h2>
+    <p>既定では 3D は画面全体に合成されます。メニューの枠の中だけにモデルを出したいときは、「3DカメラをUI画像として描画」をオンにし、<b>+ カメラ映像のUIImageを作成</b> を押します。UI Image の <code>Presentation Camera Output</code> に Director が入り、専用カメラの映像がその画像に映ります。解像度は「カメラ映像の解像度」（0.25〜1、既定 0.5 で画素数は 1/4）。</p>
+
+    <h2 id="director">Presentation Director の項目</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>Presentation ID</td><td><code>presentation_id</code></td><td>PauseMenu</td><td>呼び出しに使う識別子</td></tr>
+      <tr><td>Presentation 3D Root</td><td><code>model_root</code></td><td>—</td><td>この画面専用の 3D モデルの親。ゲーム本編の階層とは別にする</td></tr>
+      <tr><td>Presentation Camera</td><td><code>camera</code></td><td>—</td><td>専用カメラ（Camera が付いていること）</td></tr>
+      <tr><td>Background UI (Behind 3D)</td><td><code>background_ui_root</code></td><td>—</td><td>3D の後ろに描く Canvas</td></tr>
+      <tr><td>Presentation UI Root</td><td><code>ui_root</code></td><td>—</td><td>3D の手前に描く Canvas</td></tr>
+      <tr><td>Presentation Draw Order</td><td><code>render_order</code></td><td>0</td><td>小さいものから先に合成</td></tr>
+      <tr><td>3D Camera To UI Texture・3D Camera Output Scale</td><td><code>camera_output_to_ui</code>・<code>camera_output_resolution_scale</code></td><td>オフ・0.5</td><td>上の「3D モデルを UI の中に表示する」</td></tr>
+      <tr><td>Composition Player・Animation Composition</td><td><code>composition_player</code>・<code>composition</code></td><td>—</td><td>開閉の動き</td></tr>
+      <tr><td>Transition Duration</td><td><code>transition_duration</code></td><td>0.4</td><td>開閉にかかる秒数</td></tr>
+      <tr><td>Visible On Start</td><td><code>show_on_start</code></td><td>オフ</td><td>シーン開始時から表示する</td></tr>
+      <tr><td>Use Unscaled Time</td><td><code>ignore_time_scale</code></td><td>オン</td><td>ポーズ（timeScale 0）中でも動かす</td></tr>
+      <tr><td>Progress・Error</td><td>—</td><td>—</td><td>実行中の進み具合とエラー（読み取り専用）</td></tr>
+    </table>
+    </div>
+    <div class="warning"><strong>置き場所</strong>Director の GameObject は、3D Root と UI Root の<b>外</b>に置き、常に有効にしておきます。Composition Player も同じく Root の外に置きます。Root の中に置くと、閉じたときに自分ごと非表示になります。</div>
+
+    <h2 id="call">ゲームから呼び出す</h2>
+    <p>C++ からは ID を渡すだけです（Presentation 設定に呼び出し例が表示されます）。</p>
+<pre><code>ReplayEngine::Presentation::Play(scene, "PauseMenu");
+ReplayEngine::Presentation::TransitionTo(scene, "LoadingScreen");
+ReplayEngine::Presentation::Close(scene, "PauseMenu");
+ReplayEngine::Presentation::CloseAll(scene);</code></pre>
+    <div class="warning"><strong>制限</strong>2026-10-22 時点では C# 用の呼び出しはまだありません。C# から開くときは、Director の <code>show_on_start</code> を使うか、C++ 側で上の関数を呼びます。</div>
+
+    <h2 id="legacy">Cinematic Menu Flow（旧方式）</h2>
+    <p>Project の <b>Create &gt; Data &gt; Cinematic Menu Flow</b> で作る <code>.replaymenuflow</code> と、Cinematic Menu Controller による「状態から状態への遷移」の方式もあります。ボタン名を押すと Composition を再生して次の状態へ移り、最後にシーン読み込みや終了ができます。<b>互換のためだけに残っている</b>ので、新しいメニューは Presentation で作ってください（Controller はコンポーネントの追加一覧に出ません）。見本：<code>resources/Samples/LayeredCompositor/PUFF_PUNK_Menu.replaymenuflow</code>。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../components/layered-compositor.html">Layered Scene Compositor</a>（UI と 3D の重ね順）</li>
+      <li><a href="motion-workspace.html">Motion Workspace</a>（キーの編集）</li>
+      <li><a href="ui-workspace.html">UI Workspace</a></li>
+      <li><a href="../components/motion-players.html">Composition Player</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

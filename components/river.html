@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>川（River） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Landscape</div>
+    <h1>川（River）</h1>
+    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（コードから書いた内容。実機での確認はまだ）</p>
+
+    <p>地形の上に引いた中心線に沿って、地形の形から川の水面を作るコンポーネントです。坂では流れが速くなり、段差では滝になります。流れで物やプレイヤーを押し流したり、障害物や滝つぼにしぶきを出したりできます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>谷に沿って流れる川を置きたい。水面の高さを手で合わせたくない</li>
+      <li>川に落ちた箱やプレイヤーを流したい</li>
+      <li>段差のある所を滝にして、滝つぼにしぶきを出したい</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Landscape &gt; River。1 つの GameObject に何本でも付けられます</td></tr>
+      <tr><td>必要なもの</td><td>同じ GameObject の <a href="landscape.html">Landscape</a>（地形モード：<b>ハイトフィールド</b>）。中心線は地形のローカル座標で保存します</td></tr>
+      <tr><td>必要な素材</td><td><b>なし</b>。水面・泡・しぶきはすべて組み込みのシェーダーと粒子で描きます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="create">川を引く</h2>
+    <ol class="steps">
+      <li>ハイトフィールドの地形を選び、シーンビュー上の地形の編集用の行で、編集モードを <b>川</b> にする</li>
+      <li><b>川を追加</b> を押す。River コンポーネントが付き、「River 1」のような名前が付きます</li>
+      <li>シーンビューで地形を<b>クリック</b>すると、そこへ中心線の点を足します。上流から下流へ順にクリックします</li>
+      <li>まとめて描きたいときは <b>ドラッグで線を描く</b> をオンにして、地形の上を左ドラッグします。点はセルの 2 倍（最低 2m）ごとに置かれます</li>
+      <li>点を直すときは、既存の点の近く（画面で 12 ピクセル以内）をクリックしてドラッグします。選んだ点は <b>Delete</b> キー、または <b>選択点を削除</b> で消せます</li>
+      <li>「選択した点」で点を選び、「点の幅」で川幅を点ごとに変えます（上限は「最大幅」）</li>
+      <li>必要なら <b>川底を整える</b> を押す。中心線の周りの地形を、水深の分だけ掘り下げます（Undo で戻せます）</li>
+    </ol>
+    <p>流れの向きは中心線の順です。逆にしたいときは「流れを反転」をオンにします。川が複数あるときは、「川」の選択欄で編集する川を切り替えます。</p>
+
+    <h2 id="flow">流れでものを押す</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>流れの力</th><th>動き</th></tr>
+      <tr><td>オフ（見た目だけ）</td><td>水面が流れて見えるだけ。既定</td></tr>
+      <tr><td>物だけ</td><td>水に入った Rigidbody を流れの向きへ押す。強さは「剛体を流す強さ」</td></tr>
+      <tr><td>物とプレイヤー</td><td>上に加えてプレイヤー（Character Motor）も押す。強さは「プレイヤーへの流れの強さ」</td></tr>
+    </table>
+    </div>
+    <p>浮力を持たない Rigidbody は「浮力なしの剛体にも力を加える」がオンのときだけ押されます。滝の所では「滝で下へ押す力」で下向きにも押します。</p>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>川の名前</td><td><code>river_name</code></td><td>River</td><td></td><td>編集画面の選択欄に出る名前</td></tr>
+      <tr><td>水面を表示</td><td><code>visible</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>幅の上限 (m)</td><td><code>maximum_width</code></td><td>16</td><td>0.5〜256</td><td>点ごとの幅の上限</td></tr>
+      <tr><td>水深 (m)</td><td><code>water_depth</code></td><td>0.8</td><td>0.05〜100</td><td>川底を整えるときに掘る深さにも使う</td></tr>
+      <tr><td>流れの速さ (m/s)</td><td><code>flow_speed</code></td><td>1.5</td><td>0〜40</td><td>平らな所での流速</td></tr>
+      <tr><td>勾配による加速</td><td><code>slope_speed_multiplier</code></td><td>2</td><td>0〜20</td><td>坂で速くなる強さ</td></tr>
+      <tr><td>流れを反転</td><td><code>reverse_flow</code></td><td>オフ</td><td></td><td></td></tr>
+      <tr><td>流れの力</td><td><code>flow_mode</code></td><td>オフ</td><td></td><td>上の表</td></tr>
+      <tr><td>剛体を流す強さ</td><td><code>flow_force</code></td><td>1</td><td>0〜100</td><td></td></tr>
+      <tr><td>浮力なしの剛体にも力を加える</td><td><code>flow_unbuoyant_rigidbodies</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>プレイヤーへの流れの強さ</td><td><code>player_flow_strength</code></td><td>1</td><td>0〜4</td><td></td></tr>
+      <tr><td>滝で下へ押す力</td><td><code>waterfall_downward_force</code></td><td>10</td><td>0〜100</td><td></td></tr>
+      <tr><td>浅瀬の色・深瀬の色・泡の色</td><td><code>shallow_color</code> など</td><td>青緑・紺・白</td><td></td><td></td></tr>
+      <tr><td>泡の強さ</td><td><code>foam_strength</code></td><td>1.25</td><td>0〜4</td><td></td></tr>
+      <tr><td>水面の粗さ・屈折の強さ・反射の強さ</td><td><code>roughness</code> など</td><td>0.16・0.045・0.8</td><td></td><td></td></tr>
+      <tr><td>近距離の浅水波シミュレーション</td><td><code>shallow_simulation_enabled</code></td><td>オン</td><td></td><td>カメラの近くだけ、物が入ったときの波紋を計算する</td></tr>
+      <tr><td>浅水波の半範囲 (m)・解像度</td><td><code>shallow_simulation_half_extent</code>・<code>..._resolution</code></td><td>20・64</td><td>5〜100・16〜256</td><td>広く・細かくするほど重い</td></tr>
+      <tr><td>障害物のしぶき・滝つぼのしぶき</td><td><code>obstacle_splashes</code>・<code>waterfall_splashes</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>しぶき粒子の上限</td><td><code>maximum_splash_particles</code></td><td>256</td><td>0〜4096</td><td></td></tr>
+      <tr><td>しぶきの強さ</td><td><code>splash_strength</code></td><td>0.75</td><td>0〜3</td><td></td></tr>
+      <tr><td>しぶきを出す距離</td><td><code>splash_maximum_camera_distance</code></td><td>80</td><td>0〜1000</td><td>カメラからこれより遠い所ではしぶきを出さない</td></tr>
+    </table>
+    </div>
+
+    <div class="warning"><strong>注意</strong>中心線は地形に合わせて自動では動きません。地形をスカルプトし直したら、点を置き直すか「川底を整える」を押し直します。</div>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="landscape.html">地形</a>（ハイトフィールドの作り方）</li>
+      <li><a href="water-body.html">Water Body</a>（海・湖）</li>
+      <li><a href="physics.html">物理</a>（流される Rigidbody）</li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

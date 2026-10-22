@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>Layered Scene Compositor（UI と 3D の重ね順） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+    <h1>Layered Scene Compositor（UI と 3D の重ね順）</h1>
+    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（コードから書いた内容。実機での確認はまだ）</p>
+
+    <p>「背景の UI → 3D のキャラクター → 手前の UI」のように、UI と 3D を好きな順番で重ねる仕組みです。重ね順は <b>Layer Composition Stack</b>（<code>.replaylayerstack</code>）というアセットに書き、シーンの <b>Layered Scene Compositor</b> がそれを使って合成します。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>設定画面で、黄色い背景グラフィックの上にキャラクターの 3D モデルを立たせ、さらにその上に文字とボタンを出したい</li>
+      <li>特定の 3D モデルだけを、背景の物に隠されずに一番手前に出したい</li>
+      <li>World Space の Canvas を 3D の物と前後関係つきで描きたい</li>
+    </ul>
+
+    <h2 id="samples">見本（素材）</h2>
+    <p><code>resources/Samples/LayeredCompositor/</code> に完成例があります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ファイル</th><th>内容</th></tr>
+      <tr><td><code>Rena_Settings.replayscene</code> と <code>Rena_Settings.replaylayerstack</code></td><td>設定画面。4 層：Scene Base（3D）→ Yellow Graphic Background（Screen UI）→ Rena 3D Foreground（3D Layer）→ Settings Text and Controls（Screen UI）。操作は Settings Demo Controller</td></tr>
+      <tr><td><code>PuffPunk_Settings.replayscene</code></td><td>別デザインの設定画面</td></tr>
+      <tr><td><code>PUFF_PUNK_LayeredMenu.replayscene</code>・<code>PUFF_PUNK_Menu.replaylayerstack</code></td><td>タイトルメニュー</td></tr>
+      <tr><td><code>PUFF_PUNK_TitleToSettings.replaycomp</code>・<code>PUFF_PUNK_CameraReveal.replaymotion</code></td><td>タイトルから設定へ移る演出の Composition と Motion</td></tr>
+    </table>
+    </div>
+
+    <h2 id="create">作り方</h2>
+    <ol class="steps">
+      <li>Project で <b>Create &gt; Data &gt; Layer Composition Stack</b> を選んでアセットを作る。作るとそのまま「Layer Composition Stack」パネルが開きます（あとから開くときは Project でアセットを開く）</li>
+      <li><b>シーンに適用 / Apply to Scene</b> を押す。シーンに Layered Scene Compositor が無ければ GameObject ごと作られ、このアセットがつながります</li>
+      <li><b>+ Screen UI</b>・<b>+ World UI</b>・<b>+ 3D Layer</b> で層を足す。パネルは<b>上が奥、下が手前</b>です。<b>↑ 奥へ</b>・<b>↓ 手前へ</b> で並べ替えます</li>
+      <li>UI の層では「所属Canvas」の一覧で、その層に描く Canvas にチェックを入れる。チェックした Canvas は合成段階が「Scene Overlay」になり、層の ID でつながるので並べ替えても外れません</li>
+      <li>3D の層では、手前に出したいモデルの Mesh Renderer の <code>rendering_layer</code> 番号にチェックを入れる。モデルを選んで <b>選択3DのRendering Layerを追加</b> を押しても入ります</li>
+      <li><b>Save</b> で保存し、シーンも保存する。<b>Validate</b> で設定の誤りを確かめられます</li>
+    </ol>
+
+    <h3 id="kinds">層の種類と設定</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>種類</th><th>中身</th></tr>
+      <tr><td>Scene3D</td><td>普通のシーン全体</td></tr>
+      <tr><td>Scene3DLayer</td><td>選んだ Rendering Layer の 3D だけ</td></tr>
+      <tr><td>ScreenUI</td><td>Screen Space の Canvas</td></tr>
+      <tr><td>WorldUI</td><td>World Space の Canvas</td></tr>
+    </table>
+    </div>
+    <ul>
+      <li><b>Depth Policy</b>（3D 層）：<b>Scene Depth</b> は普通のシーンで見えている部分だけを手前へ戻し、照明・影・ポスト効果を保ちます。<b>Force Foreground</b> は選んだ 3D を別に描き、背景に隠れた部分も表示します</li>
+      <li><b>Opacity</b>：層の不透明度。<b>Blend</b>：Alpha／Additive／Multiply</li>
+    </ul>
+
+    <h2 id="props">Layered Scene Compositor の項目</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>有効</td><td><code>enabled</code></td><td>オン</td><td>シーンに 1 つだけ有効にする（適用ボタンは他を自動でオフにする）</td></tr>
+      <tr><td>Layer Composition Stack</td><td><code>layer_stack</code></td><td>空</td><td>使う重ね順のアセット</td></tr>
+      <tr><td>Foreground Rendering Layer Mask</td><td><code>foreground_layer_mask</code></td><td>0</td><td>前面へ戻す Rendering Layer のビット。0 は前景の抜き出しなし</td></tr>
+      <tr><td>Coverage 品質</td><td><code>quality_mode</code></td><td>標準</td><td>標準／高品質。前景の縁の抜き出し精度</td></tr>
+      <tr><td>半透明の扱い</td><td><code>transparent_policy</code></td><td>Blend を除外</td><td>半透明の物を前景に含めるか</td></tr>
+      <tr><td>診断表示</td><td><code>debug_view</code></td><td>なし</td><td>Foreground Coverage で抜き出した範囲を表示</td></tr>
+    </table>
+    </div>
+
+    <h2 id="canvas">Canvas に増えた項目</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>説明</th></tr>
+      <tr><td>合成段階</td><td><code>composite_stage</code></td><td>従来の最前面／Scene Underlay（前景 3D の後ろ）／Scene Overlay（前景 3D の手前）</td></tr>
+      <tr><td>World Space 深度</td><td><code>depth_mode</code></td><td>無効／深度テストのみ／深度テストと書き込み。World Space の Canvas だけ</td></tr>
+      <tr><td>合成スタック順</td><td><code>composite_order</code></td><td>Stack の Order で所属を決める旧方式。-1 は使わない</td></tr>
+      <tr><td>合成レイヤーID</td><td><code>composite_layer_id</code></td><td>パネルのチェックで入る。0 は Order 指定</td></tr>
+    </table>
+    </div>
+    <p>Camera には「<b>Presentation Camera Only</b>」（<code>presentation_only</code>）が増えました。オンのカメラは <a href="../windows/presentation-workspace.html">Presentation</a> 専用になり、ゲームの視点には使われません。</p>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../windows/presentation-workspace.html">Presentation Workspace</a>（メニュー・ロゴ・ロード画面）</li>
+      <li><a href="ui-layout.html">Canvas と Rect Transform</a></li>
+      <li><a href="mesh-renderers.html">メッシュの描画</a>（Rendering Layer）</li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

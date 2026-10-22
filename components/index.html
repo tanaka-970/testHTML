@@ -55,7 +55,8 @@
       <tr><td><a href="mesh-renderers.html">Skinned Mesh Renderer</a></td><td>骨で動くモデルを表示する</td></tr>
       <tr><td><a href="animator.html">Animator</a></td><td>アニメーションの状態と切り替えを管理する</td></tr>
       <tr><td><a href="post-process-volume.html">Post Process Volume</a></td><td>ブルームや色補正など、画面全体の仕上げの設定</td></tr>
-      <tr><td><a href="water-body.html">Water Body</a></td><td>海・湖の水面（波、反射、屈折、泡、水中の表現）</td></tr>
+      <tr><td><a href="water-body.html">Water Body</a></td><td>海・湖の水面（波、反射、屈折、泡、水中の表現、FFT 海洋）</td></tr>
+      <tr><td><a href="pbf-fluid.html">PBF 流体</a></td><td>水に粒子の流体を足す（着水のしぶき、放水、ハイブリッド、イベント式の波紋）</td></tr>
       <tr><td><a href="environment-volumes.html#local-fog">Local Fog Volume</a></td><td>範囲の中だけに霧を足す</td></tr>
       <tr><td><a href="environment-volumes.html#reflection-probe">Reflection Probe</a></td><td>範囲の中に、周りの景色の映り込みを足す</td></tr>
       <tr><td><a href="environment-volumes.html#probe-gi">Probe GI Volume</a></td><td>範囲の中の間接光（回り込む光）を計算する</td></tr>
@@ -67,6 +68,14 @@
       <tr><td><a href="lines.html">3D ライン</a></td><td>点をつないだ線や帯を描く</td></tr>
       <tr><td><a href="lines.html#trail">軌跡</a></td><td>動いた跡を線として残す</td></tr>
       <tr><td><a href="effekseer.html">Effekseer Emitter</a></td><td>Effekseer で作ったエフェクト（.efkefc）を再生する（新規）</td></tr>
+      <tr><td><a href="clouds.html#volume">Cloud Volume</a></td><td>立体の雲を 1 つ置く（積乱雲・積雲・雲海・霧・笠雲）（2026-10-22 新規）</td></tr>
+      <tr><td><a href="clouds.html#scatter">Cloud Scatter</a></td><td>雲の群れをシードから配置する（2026-10-22 新規）</td></tr>
+      <tr><td><a href="ivy.html">ツタ</a></td><td>モデル・地形の表面にツタを生やす。垂れ下がり・壁面・地面（2026-10-22 新規）</td></tr>
+      <tr><td><a href="decals.html#decal">投影デカール</a></td><td>画像を面へ投影して重ねる。寿命とフェード（2026-10-22 新規）</td></tr>
+      <tr><td><a href="decals.html#region">面テクスチャ領域</a></td><td>モデルの選んだ面だけに画像を貼る（2026-10-22 新規）</td></tr>
+      <tr><td><a href="decals.html#display">表示内容アニメーション / LED</a></td><td>貼った画像を流す・コマ送り・流れる文字・LED の電光掲示板（2026-10-22 新規）</td></tr>
+      <tr><td><a href="world-text.html">ワールド文字</a></td><td>3D 空間に文字を置く（2026-10-22 新規）</td></tr>
+      <tr><td><a href="layered-compositor.html">Layered Scene Compositor</a></td><td>UI と 3D を好きな順番で重ねる（2026-10-22 新規）</td></tr>
     </table>
     </div>
 
@@ -161,6 +170,9 @@
       <tr><td><a href="landscape.html#landscape">Landscape</a></td><td>地形の形のデータ</td></tr>
       <tr><td><a href="landscape.html#renderer">Landscape Renderer</a></td><td>地形を表示する</td></tr>
       <tr><td><a href="landscape.html#collider">Landscape Collider</a></td><td>地形の当たり判定</td></tr>
+      <tr><td><a href="grass.html#prop-procedural">Grass Procedural</a></td><td>地面やモデルに草を自動で生やす（風・衝撃波で揺れる）。2026-10-22 から分類は Rendering</td></tr>
+      <tr><td><a href="grass.html#prop-brush">Grass Brush</a></td><td>塗った場所へ草を増やす・消す（密度マスク）。2026-10-22 から分類は Rendering</td></tr>
+      <tr><td><a href="river.html">River</a></td><td>地形の中心線に沿って川の水面を作る。流れで物を押す（2026-10-22 新規）</td></tr>
     </table>
     </div>
 
@@ -189,6 +201,8 @@
       <tr><td>Language Switch</td><td>表示する言語を切り替える</td></tr>
       <tr><td>Button Property Toggle</td><td>ボタンで別のコンポーネントの設定をオン・オフする</td></tr>
       <tr><td><a href="effect-stacks.html#ui">Effect Stack</a></td><td>UI にエフェクトを重ねる</td></tr>
+      <tr><td><a href="../windows/presentation-workspace.html#director">Presentation Director</a></td><td>メニュー・起動ロゴ・ロード画面などを ID で開閉する（2026-10-22 新規）</td></tr>
+      <tr><td><a href="layered-compositor.html#samples">Settings Demo Controller</a></td><td>Layered Compositor の設定画面サンプルの操作（2026-10-22 新規、見本用）</td></tr>
     </table>
     </div>
 

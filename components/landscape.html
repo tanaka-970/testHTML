@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Landscape</div>
     <h1>地形（Landscape）</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813（2026-10-22 に sinotake_test / d7164091 のハイトフィールドと Renderer の新項目を追記）</p>
 
     <p>シーンビューでブラシを使って盛り上げたり削ったりできる地面を作るコンポーネントです。3 つのコンポーネントを組み合わせて使います。</p>
     <div class="table-wrap">
@@ -120,10 +120,48 @@
     </ol>
     <p>2 本とも選んだあとにクリックすると、1 本目から選び直しになります。<b>辺の選択を消す</b> で選択を消せます。頂点を共有している 2 本の辺はつなげず、「辺をつなげませんでした。頂点を共有しない2本の辺を選んでください」と表示されます。</p>
 
+    <h2 id="heightfield">ハイトフィールドの地形（2026-10-22 追加）</h2>
+    <p class="meta">コードから書いた内容。実機での確認はまだ。</p>
+    <p>Landscape は、今までの<b>メッシュ</b>の地形に加えて、16bit の高さ画像で形を持つ<b>ハイトフィールド</b>の地形に切り替えられるようになりました。広い地形（最大 4033 × 4033 サンプル）を、区画ごとに読み込みながら描けます。既存のシーンはメッシュのまま読み込まれます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th></th><th>メッシュ</th><th>ハイトフィールド</th></tr>
+      <tr><td>形の持ち方</td><td>自由な三角形（シーンファイルの中）</td><td>格子の高さ（別ファイル <code>.rplheight</code>）</td></tr>
+      <tr><td>張り出し・トンネル</td><td>作れる（トポロジー）</td><td>作れない。代わりに穴を開けられる</td></tr>
+      <tr><td>使える編集モード</td><td>スカルプト・トポロジー</td><td>スカルプト・ペイント・スプライン・管理・川</td></tr>
+      <tr><td>向く地形</td><td>小さな地面、洞窟</td><td>山・谷・島などの広い地形</td></tr>
+    </table>
+    </div>
+
+    <h3 id="hf-create">ハイトフィールドにする</h3>
+    <ol class="steps">
+      <li>Landscape の「地形モード」を <b>ハイトフィールド</b> にする</li>
+      <li>「ハイトフィールド解像度」（既定 1009、上限 4033）と「ハイトフィールドセルサイズ」（既定 1m）で、新しい地形の大きさを決める。1009 × 1m なら約 1km 四方です</li>
+      <li>形は「ハイトフィールドアセット」の <code>.rplheight</code> に保存されます。PNG16 / RAW16 の高さ画像の読み込み・書き出しにも対応しています</li>
+      <li>あとから大きさを変えるときは、編集モード <b>管理</b> の「既存地形の解像度を変更」で <b>この解像度へリサンプル</b> を押す（変更前の状態は Undo とバックアップに残ります）</li>
+    </ol>
+    <p><b>見本の素材：</b><code>resources/Landscape/Heightfields/</code> に <code>TITLE_LOOK_29.rplheight</code>、<code>ocean_10.rplheight</code>、<code>title2_1.rplheight</code>、<code>uyu_1.rplheight</code> があり、それぞれ <code>resources/TITLE_LOOK.replayscene</code>、<code>ocean.replayscene</code>、<code>title2.replayscene</code>、<code>uyu.replayscene</code> で使われています。</p>
+
+    <h3 id="hf-modes">編集モード</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>モード</th><th>できること</th></tr>
+      <tr><td>スカルプト</td><td>盛り上げる・掘り下げる・なめらかにする・平らにする・ノイズ に加えて、<b>坂を整える</b>、<b>段々を作る</b>（「段差」で高さ）、<b>浸食（GPU）</b>（雨で削られたような谷筋）、<b>地形スタンプ</b>・<b>スタンプをコピー</b>・<b>スタンプを貼り付け</b>（形を写して別の場所へ押す）</td></tr>
+      <tr><td>ペイント</td><td>地表レイヤー（草地・土・岩など）を塗る・消す、<b>穴を開ける</b>・<b>穴を埋める</b>。「地表レイヤー追加」でレイヤーを足し、「選択レイヤーの重み画像を書き出し／読み込み」で塗った範囲を画像でやり取りできます。「草を生やすレイヤー」で<a href="grass.html">草</a>の生える所を決めます</td></tr>
+      <tr><td>スプライン</td><td><b>道を追加</b> で道の線を引き、地形を道に沿って平らにします。「スプライン名」「スプライン色」、川用の「川底の深さ」</td></tr>
+      <tr><td>管理</td><td>解像度の変更、<b>非破壊の編集レイヤー</b>（「編集レイヤー追加」で、元の形を残したまま重ねて編集できる）</td></tr>
+      <tr><td>川</td><td><a href="river.html">川（River）</a>の中心線を引く</td></tr>
+    </table>
+    </div>
+
     <h2 id="landscape">Landscape</h2>
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>地形モード</td><td><code>landscape_mode</code></td><td>選択</td><td>メッシュ</td><td></td><td>メッシュ／ハイトフィールド（2026-10-22 追加）</td></tr>
+      <tr><td>ハイトフィールドアセット</td><td><code>heightfield_asset</code></td><td>アセットのパス</td><td>（空）</td><td></td><td><code>.rplheight</code> のパス</td></tr>
+      <tr><td>ハイトフィールド解像度</td><td><code>heightfield_resolution</code></td><td>整数</td><td>1009</td><td>2〜4033</td><td>新しく作る地形のサンプル数。既存の地形はリサンプルするまで変わらない</td></tr>
+      <tr><td>ハイトフィールドセルサイズ</td><td><code>heightfield_cell_size</code></td><td>小数</td><td>1</td><td>0.05〜100</td><td>サンプルの間隔 (m)</td></tr>
       <tr><td>新規解像度</td><td><code>default_resolution</code></td><td>整数</td><td>33</td><td>2〜513</td><td>平面を作り直すときの、1 辺の頂点の数。今の地形は変わりません</td></tr>
       <tr><td>作成元モデル</td><td><code>source_model_asset</code></td><td>アセット（モデル）</td><td>（空）</td><td></td><td>地形の形のもとにするモデル</td></tr>
       <tr><td>新規セルサイズ</td><td><code>default_cell_size</code></td><td>小数</td><td>2</td><td>0.05〜100</td><td>平面を作り直すときの頂点の間隔</td></tr>
@@ -145,7 +183,7 @@
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>範囲</th><th>説明</th></tr>
       <tr><td>色</td><td><code>tint</code></td><td>色</td><td></td><td>地形の色。Landscape Ground で作ったときは緑色です</td></tr>
       <tr><td>ベースカラーテクスチャ</td><td><code>base_color_texture</code></td><td>アセット（画像）</td><td></td><td>地形に貼る画像。空なら色だけで表示します</td></tr>
-      <tr><td>タイリング</td><td><code>uv_tiling</code></td><td>小数</td><td>0.0001〜10000</td><td>画像を繰り返す倍率。上げるほど模様が細かく何度も繰り返され、下げるほど大きく引き伸ばされます。</td></tr>
+      <tr><td>画像1枚の大きさ (m)</td><td><code>texture_tile_size_m</code></td><td>小数</td><td>0.0001〜10000</td><td>地形に貼る画像 1 枚の幅をメートルで指定します（既定 4m）。2026-10-22 から、以前の「タイリング」（<code>uv_tiling</code>、倍率）はこの値に置き換わって隠れました。保存される値は <code>uv_tiling</code> のままです</td></tr>
       <tr><td>ロード範囲</td><td><code>load_range</code></td><td>小数</td><td>0〜1000000</td><td>カメラからこの距離より遠い部分を表示しません。0 なら距離に関係なく全部表示します（<a href="#chunks">下を見てください</a>）</td></tr>
       <tr><td>表示</td><td><code>visible</code></td><td>オン・オフ</td><td></td><td>オフにすると表示しません</td></tr>
       <tr><td>影を落とす</td><td><code>cast_shadow</code></td><td>オン・オフ</td><td></td><td>ほかの物に影を落とします</td></tr>
@@ -153,6 +191,22 @@
       <tr><td>両面描画</td><td><code>double_sided</code></td><td>オン・オフ</td><td></td><td>オンにすると面の裏側も表示します。下から見上げても地形が消えなくなります。</td></tr>
     </table>
     </div>
+    <h3 id="renderer-new">2026-10-22 に増えた項目（Landscape Renderer）</h3>
+    <p><b>素材：</b>色の画像（ベースカラー）に加えて、法線・粗さ・金属度・AO・高さの画像、または R=AO / G=粗さ / B=金属 を 1 枚にまとめた ORM 画像を使えます。どれも無くても「市松模様」や「崖・苔・雪」の色分けだけで見た目を作れます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>分類</th><th>表示名（内部名）</th><th>既定値</th></tr>
+      <tr><td>画像</td><td>法線マップ（<code>normal_texture</code>）・粗さマップ・金属度マップ・AO マップ・ORM マップ・高さマップ（<code>height_texture</code>）</td><td>空</td></tr>
+      <tr><td>画像なしの見た目</td><td>市松模様 (標準グレー)（<code>checkerboard_enabled</code>）・市松模様 1マスの幅 (m)</td><td>オフ・1</td></tr>
+      <tr><td>PBR</td><td>PBR 数値設定を有効化（<code>pbr_enabled</code>）・粗さ・金属度・環境遮蔽・法線の強さ・法線の Y を反転 (DirectX)</td><td>オフ・0.8・0・1・1・オフ</td></tr>
+      <tr><td>貼り方</td><td>テクスチャ回転（度）・オフセット U / V・トライプラナー投影（<code>triplanar_enabled</code>。急な斜面で画像が伸びない）・投影開始の傾斜角・高さブレンド強さ・高さブレンド幅・マクロ変化の強さ・周波数（遠くで繰り返し模様を目立たなくする）</td><td>0・0・オン・45°・0.5・8・0・0.013</td></tr>
+      <tr><td>色分け</td><td>崖の岩色・岩色になる傾斜・苔の強さ・苔の高さ下限・雪の強さ・雪の高さ下限・雪の高さ範囲・岩色・苔色・雪色</td><td>0.5・0.78・0.12・−32・0.2・150・120</td></tr>
+      <tr><td>外周</td><td>外周壁を生成（<code>outer_wall_enabled</code>）・外周壁の深さ・底面を閉じる（地形の端を壁で閉じ、断面を見せない）</td><td>オフ・64・オフ</td></tr>
+      <tr><td>岩</td><td>岩を配置（<code>rocks_enabled</code>）・岩の間隔・岩の大きさ・岩を置く最大法線Y</td><td>オフ・32・1.5・0.82</td></tr>
+      <tr><td>読み込み</td><td>常駐チャンク上限（<code>max_resident_chunks</code>）・先読み時間・先読み距離上限・地形メッシュ転送上限/フレーム・GPU 地形カリングを使う・ストリーミング統計を表示</td><td>1024・0.75 秒・128・1・オン・オフ</td></tr>
+    </table>
+    </div>
+
     <h3 id="chunks">ロード範囲と区画</h3>
     <p>地形は、頂点がおよそ 2048 個ずつになるように、縦横の区画（最大 32 × 32）に分けて表示されます。<b>ロード範囲</b> は区画ごとに判定し、区画の端がカメラから範囲より遠いと、その区画を表示しません。一度表示した区画は、範囲より少し遠くなるまで表示を続けます。</p>
     <div class="note"><strong>小さな地形は 1 区画です</strong>Landscape Ground で作った 33 × 33 の地面は頂点が 1089 個なので、全体で 1 区画です。この大きさでは、<b>ロード範囲</b> を設定すると、地面全体が一度に表示されたり消えたりします。</div>

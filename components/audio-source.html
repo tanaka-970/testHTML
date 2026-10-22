@@ -93,6 +93,22 @@
       <li>コンポーネントを無効にしたり、ゲームを停止したりすると、鳴っている音は止まります。</li>
     </ul>
 
+    <h2 id="cri">CRI Audio Source・CRI Audio Listener（開発中、2026-10-13 追加）</h2>
+    <p>CRI ADX のサウンドを鳴らす部品です。WAV を直接鳴らす Audio Source とは別の部品で、<b>すでに読み込み済みのキューシート</b>の中から、キュー名を指定して再生します。聞く位置は CRI Audio Listener（Transform の位置と回転を使う）です。</p>
+    <div class="warning"><strong>制限</strong>チームで開発中の部品です。CRI ADX LE のライブラリ（<code>ThirdParty\CRI\libs\x64\cri_ware_pcx64_le_import.lib</code> と <code>cri_ware_pcx64_le.dll</code>）が無い環境では、音を鳴らさない版でビルドされます（ビルド時に警告が出ます）。CRI ADX LE SDK の <code>pc\libs\x64</code> から 2 つのファイルをこのフォルダへ置くと有効になります。キューシートの読み込み方法は、まだ整備中です。</div>
+    <div class="table-wrap">
+    <table>
+      <tr><th>部品</th><th>表示名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>CRI Audio Source</td><td>Cue Name</td><td>空</td><td></td><td>キューシートの中のキュー名</td></tr>
+      <tr><td>CRI Audio Source</td><td>Loop・Play On Start</td><td>オフ・オフ</td><td></td><td>くり返し再生、ゲーム開始時に自動で鳴らす</td></tr>
+      <tr><td>CRI Audio Source</td><td>Volume・Pitch</td><td>1・1</td><td>0〜4・0.25〜4</td><td>音量と音の高さ</td></tr>
+      <tr><td>CRI Audio Source</td><td>Spatial</td><td>2D</td><td>2D／3D</td><td>3D にすると、Listener との距離と向きで聞こえ方が変わる</td></tr>
+      <tr><td>CRI Audio Source</td><td>Min Distance・Max Distance</td><td>1・1</td><td>0〜100000・0.001〜100000</td><td>3D のとき、音が小さくなり始める距離と聞こえなくなる距離</td></tr>
+      <tr><td>CRI Audio Source</td><td>再生中（読み取り専用）</td><td></td><td></td><td>今鳴っているかどうか</td></tr>
+      <tr><td>CRI Audio Listener</td><td>優先度</td><td></td><td>−100〜100</td><td>Listener が複数あるとき、どれを使うか</td></tr>
+    </table>
+    </div>
+
     <h2>関連項目</h2>
     <ul>
       <li><a href="audio-listener.html">Audio Listener</a></li>

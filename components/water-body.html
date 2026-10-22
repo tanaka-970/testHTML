@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Water Body</div>
     <h1>Water Body（水域）</h1>
-    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8（Mesh の形・流体の波・着水の粒を追加）</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット 880398d5（FFT 海洋・GPU 浅水波・流体密度を追加）</p>
 
     <p>海（Ocean）や湖（Lake）の水面を作る部品です。波の動き、光の反射、水を通した屈折、泡、水中に入ったときの画面の色までをこの 1 つで持ちます。水面の高さや流れを物理の側から調べる用途にも使われ、<a href="physics.html#buoyancy">Buoyancy</a> を付けた物体はこの水面に浮きます。</p>
 
@@ -66,10 +66,15 @@
       <tr><td>Lake Shape</td><td><code>shape</code></td><td>選択</td><td>Box</td><td></td><td>Lake のときの水の形です。Box（箱形）、Sphere（球形）、<b>Mesh</b>（下の Water Mesh のモデルの形）</td></tr>
       <tr><td>Water Mesh</td><td><code>mesh_asset</code></td><td>アセット（モデル）</td><td>（空）</td><td></td><td>Lake Shape が Mesh のとき、水として描くモデル。水面の高さの問い合わせ（浮力など）も、このモデルの三角形の形を使います</td></tr>
       <tr><td>Lake Extent</td><td><code>extent</code></td><td>3 つの数</td><td>100, 1, 100</td><td></td><td>Lake の大きさです。X・Y・Z（横・深さ・奥行き）の順に入れます</td></tr>
-      <tr><td>Ocean Extent</td><td><code>ocean_extent</code></td><td>小数</td><td>750</td><td>16〜100000</td><td>Ocean の水面の広がりです</td></tr>
+      <tr><td>Ocean 範囲 X 半径 / 円形時の半径</td><td><code>ocean_extent</code></td><td>小数</td><td>750</td><td>16〜100000</td><td>Ocean の水面の広がりです（2026-10-22 から表示名が変わりました。旧名 Ocean Extent）</td></tr>
+      <tr><td>Ocean 範囲 Z 半径（0 は X と同じ）</td><td><code>ocean_extent_z</code></td><td>小数</td><td>0</td><td>0〜100000</td><td>長方形の海の奥行き。0 なら X と同じ（2026-10-22 追加）</td></tr>
+      <tr><td>Ocean 範囲形状</td><td><code>ocean_shape</code></td><td>選択</td><td>長方形</td><td></td><td>長方形／円（2026-10-22 追加）</td></tr>
+      <tr><td>海の縁のブレンド幅（範囲に対する割合）</td><td><code>ocean_seam_blend</code></td><td>小数</td><td>0.1</td><td>0〜0.5</td><td>範囲の縁で、波・法線・泡を遠景の海へ滑らかにつなぐ幅。最小 3m（2026-10-22 追加）</td></tr>
+      <tr><td>遠景の海を描く・遠景の海の範囲</td><td><code>ocean_far_distance</code>・<code>ocean_far_extent</code></td><td>オン・オフ／小数</td><td>オン・50000</td><td>1000〜1000000</td><td>範囲の外に、水平線まで続く軽い海を描く（2026-10-22 追加）</td></tr>
       <tr><td>Grid Resolution</td><td><code>grid_resolution</code></td><td>整数</td><td>96</td><td>8〜256</td><td>水面の細かさ（網目の数）です。大きいと波が滑らかになり、重くなります</td></tr>
     </table>
     </div>
+    <p>2026-10-22 から、インスペクターは今の設定で使わない項目を隠します（例：Ocean なら Lake の項目、Wave Source が FFT 以外なら FFT の項目、水中の表現がオフなら水中の項目）。項目が見当たらないときは、種類と Wave Source を先に確かめてください。川は <a href="river.html">River</a> を使います。</p>
 
     <h3 id="prop-wave">波</h3>
     <figure>
@@ -80,8 +85,10 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
-      <tr><td>Wave Source</td><td><code>wave_source</code></td><td>選択</td><td>Gerstner</td><td></td><td>波の作り方です。<b>None</b> は波なし（平らな水面）、<b>Gerstner</b> は計算で波を作ります。<b>Texture (reserved)</b> は将来用に予約されていて、今は使えません。<b>Fluid Simulation</b> は Lake Extent の範囲を Grid Resolution（最大 128）の網目で解く浅い水の流体で、物が着水すると波が立ち、その高さと流れが浮力・水中判定に使われます</td></tr>
+      <tr><td>Wave Source</td><td><code>wave_source</code></td><td>選択</td><td>Gerstner</td><td></td><td>波の作り方です。<b>None</b> は波なし（平らな水面）、<b>Gerstner</b> は計算で波を作ります。<b>Texture (reserved)</b> は将来用に予約されていて、今は使えません。<b>Fluid Simulation</b> は Lake Extent の範囲を Grid Resolution（最大 128）の網目で解く浅い水の流体で、物が着水すると波が立ち、その高さと流れが浮力・水中判定に使われます。<b>FFT海洋</b>（2026-10-13 追加）は、風速と吹送距離から本物の海の波の統計を作り、大小の波を重ねます（下の<a href="#fft">FFT 海洋</a>）</td></tr>
       <tr><td>流体の平均深さ・流体の重力・流体の減衰</td><td><code>simulation_depth</code>、<code>simulation_gravity</code>、<code>simulation_damping</code></td><td>小数</td><td>1、9.81、0.8</td><td>0.01〜100、0.01〜100、0〜20</td><td>Fluid Simulation のときの波の伝わり方。深いほど・重力が大きいほど波が速く進み、減衰が大きいほど早く静まります</td></tr>
+      <tr><td>GPU 浅水波</td><td><code>gpu_shallow_solver</code></td><td>オン／オフ</td><td>オフ</td><td></td><td>Fluid Simulation の浅水波を GPU（DX12 のコンピュート）で計算します。オフなら今までの CPU の計算です。広い湖を軽く動かしたいとき、<a href="pbf-fluid.html">PBF 流体</a>の局所 PBF と組み合わせます</td></tr>
+      <tr><td>流体密度 (kg/m³)</td><td><code>fluid_density</code></td><td>小数</td><td>1000</td><td>0.01〜1000000</td><td>浮力の計算に使う水の密度。PBF 流体の「基準密度」と同じ値にすると、粒の計算と浮力がそろいます</td></tr>
       <tr><td>Wave Count</td><td><code>wave_count</code></td><td>整数</td><td>4</td><td>0〜8</td><td>重ねる波の数です。下の Wave 1〜8 のうち、この数だけが使われます</td></tr>
       <tr><td>Wave Scale</td><td><code>wave_scale</code></td><td>小数</td><td>1</td><td>0〜8</td><td>波全体の高さの倍率です。0 で平らになり、上げるほど荒れた海になります（波長は変わりません）。</td></tr>
       <tr><td>Time Scale</td><td><code>time_scale</code></td><td>小数</td><td>1</td><td>−4〜4</td><td>波の進む速さです。マイナスにすると逆向きに進みます</td></tr>
@@ -89,6 +96,27 @@
       <tr><td>Wave 1〜8 Wavelength</td><td><code>wave0_wavelength</code> 〜 <code>wave7_wavelength</code></td><td>小数</td><td>12 / 6.5 / 3.2 / 1.7 / 0.95 / 0.62 / 0.41 / 0.28</td><td>0.1〜500</td><td>各波の波長（山から山までの長さ）です。大きいとゆったりした波になります</td></tr>
     </table>
     </div>
+
+    <h3 id="fft">FFT 海洋（2026-10-13 追加）</h3>
+    <p>Wave Source を <b>FFT海洋</b> にすると、風の強さと風が吹き続けた距離（吹送距離）から、実際の海と同じ波の大きさの分布を作ります。手で波を 1 本ずつ決める Gerstner と違い、うねりから細かいさざ波までが自然に重なります。</p>
+    <figure>
+      <img src="../images/components/fluid/fft-ocean.png" alt="FFT 海洋">
+      <figcaption><code>resources/Game/Inflate/Inflate_FftOcean</code> を実行して 240 フレーム後。既定に近い穏やかな外洋です。</figcaption>
+    </figure>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>FFT海洋 風速 (m/s)</td><td><code>ocean_wind_speed</code></td><td>7</td><td>0.5〜40</td><td>強いほど波が高く長くなります。7 で穏やかな外洋、15 以上で荒れた海です</td></tr>
+      <tr><td>FFT海洋 風向 (度)</td><td><code>ocean_wind_direction</code></td><td>20</td><td>−360〜360</td><td>波の進む向き</td></tr>
+      <tr><td>FFT海洋 吹送距離 (km)</td><td><code>ocean_fetch_km</code></td><td>120</td><td>0.1〜2000</td><td>風が水面を吹き続けた距離です。短いと湖や湾のような細かい波、長いと外洋のうねりになります</td></tr>
+      <tr><td>FFT海洋 方向のそろい</td><td><code>ocean_directional_spread</code></td><td>8</td><td>0.5〜64</td><td>大きいほど波が風向きにそろい、小さいほど四方へ散ります</td></tr>
+      <tr><td>FFT海洋 波頭の尖り</td><td><code>ocean_choppiness</code></td><td>0.9</td><td>0〜2.5</td><td>波の山をとがらせる強さ。上げすぎると波頭が折り返して見えることがあります</td></tr>
+      <tr><td>FFT海洋 最大区画 (m)</td><td><code>ocean_patch_size</code></td><td>256</td><td>16〜4096</td><td>一番大きい波の区画の一辺です。小さい段は、同じ模様の繰り返しが目立たないよう自動で割り切れない比に分けます</td></tr>
+      <tr><td>FFT海洋 白波の量・白波の消える速さ</td><td><code>ocean_foam_coverage</code>、<code>ocean_foam_decay</code></td><td>0.45・0.9</td><td>0〜1・0〜10</td><td>波頭に出る白い泡の量と、消えるまでの速さ</td></tr>
+      <tr><td>FFT海洋 乱数の種</td><td><code>ocean_seed</code></td><td>1</td><td>0〜100000</td><td>波の模様の乱数。変えると別の海になります</td></tr>
+    </table>
+    </div>
+    <p>物が着水したときのしぶきは、<a href="pbf-fluid.html">PBF 流体</a>の「イベント式の波紋としぶき」と組み合わせて出します。</p>
 
     <h3 id="prop-look">見た目</h3>
     <figure>

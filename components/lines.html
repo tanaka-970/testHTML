@@ -98,6 +98,10 @@
       <tr><td>色</td><td><code>fill_color</code></td><td>色</td><td>白</td><td></td><td>線全体の色。不透明度も効きます</td></tr>
       <tr><td>色 2</td><td><code>fill_color_2</code></td><td>色</td><td>白</td><td></td><td>グラデーションの終わりの色</td></tr>
       <tr><td>塗り方</td><td><code>fill_mode</code></td><td>選択</td><td>単色</td><td></td><td>単色、線形（色 から 色 2 へのグラデーション）</td></tr>
+      <tr><td>4色Gradientを使う</td><td><code>color_gradient_enabled</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>始点・中間 2 点・終点の 4 色で塗る（2026-10-22 追加）</td></tr>
+      <tr><td>中間色 1・中間色 2・中間色の位置</td><td><code>color_middle1</code>・<code>color_middle2</code>・<code>color_key_times</code></td><td>色・色・2 つの小数</td><td></td><td></td><td>4 色グラデーションの中間の色と、線に沿った位置（0〜1）（2026-10-22 追加）</td></tr>
+      <tr><td>幅カーブを使う・幅カーブ 4 点</td><td><code>width_curve_enabled</code>・<code>width_over_length</code></td><td>オン・オフ／4 つの小数</td><td>オフ</td><td>0〜1</td><td>線の始点・1/3・2/3・終点で太さに掛ける倍率。真ん中だけ太い線などに（2026-10-22 追加）</td></tr>
+      <tr><td>始点のねじれ・終点のねじれ（度）</td><td><code>twist_start_degrees</code>・<code>twist_end_degrees</code></td><td>小数</td><td>0</td><td>-720〜720</td><td>帯を線に沿ってねじる（2026-10-22 追加）</td></tr>
       <tr><td>Trim 開始</td><td><code>trim_start</code></td><td>小数</td><td>0</td><td>0〜1</td><td>全長を 0〜1 としたときの描き始めの位置</td></tr>
       <tr><td>Trim 終了</td><td><code>trim_end</code></td><td>小数</td><td>1</td><td>0〜1</td><td>描き終わりの位置（全長を 0〜1 として）。1 で終点まで、0.5 で半分まで描きます。Trim 開始以下にすると何も描きません。</td></tr>
       <tr><td>Trim オフセット</td><td><code>trim_offset</code></td><td>小数</td><td>0</td><td></td><td>描く区間を線に沿ってずらす量</td></tr>

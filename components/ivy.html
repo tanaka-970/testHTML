@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>ツタ（Ivy Generator） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+    <h1>ツタ（Ivy Generator）</h1>
+    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（コードから書いた内容。実機での確認はまだ）</p>
+
+    <p>モデル・基本形状・地形の表面にツタを生やすコンポーネントです。屋上の縁から垂らす、壁を這わせる、地面を這わせる、の 3 通りの生え方があり、茎と葉は 1 つのメッシュにまとめて描きます。膨張などで形が変わっても追従します。コンポーネントを追加の一覧では「<b>ツタ</b>」という名前です。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>廃墟のビルの屋上から、ツタを垂らしたい</li>
+      <li>壁や柱にツタを這わせたい。這わせる道筋はマウスでなぞって決めたい</li>
+      <li>地面に這うツルや、花の混じった草むらを置きたい</li>
+      <li>膨らむ風船や敵にツタを絡ませ、膨らんでもツタが表面に付いたままにしたい</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Rendering &gt; ツタ</td></tr>
+      <tr><td>生やす相手</td><td>同じ GameObject、または「生やす相手」に入れた GameObject の Mesh Renderer・Primitive Mesh Renderer・Skinned Mesh Renderer・Landscape</td></tr>
+      <tr><td>必要な素材</td><td><b>なし</b>。茎も葉も形を計算で作るので、画像やモデルは要りません。葉の形を自分のモデルにしたいときだけ、葉にするモデルを用意します（下の「葉にモデルを使う」）</td></tr>
+      <tr><td>保存されるもの</td><td>設定値、手で置いた種、なぞった線。生成されたメッシュはファイルにならず、読み込み時に作り直されます</td></tr>
+    </table>
+    </div>
+
+    <h2 id="create">ツタを生やす</h2>
+    <ol class="steps">
+      <li>ツタを生やしたい建物・壁・岩などの GameObject を選ぶ（Mesh Renderer か Primitive Mesh Renderer が付いているもの）</li>
+      <li>インスペクターの「コンポーネントを追加」から <b>Rendering &gt; ツタ</b> を付ける。既定は「生成モード：両方」で、上向きの縁から垂れ下がり、壁にも這います</li>
+      <li>「株の密度（本/m）」で本数、「最大成長距離(m)」で 1 本の長さを決める</li>
+      <li>「成長段階」を 0〜1 で動かすと、生えていく途中の姿になります。Motion でキーを打てば、伸びていく演出になります</li>
+      <li>葉の色は「葉A: 色」、茎の色は「茎の色」、先の若葉は「若葉の色」「若葉の範囲」で合わせる</li>
+    </ol>
+    <p>別の GameObject（例：ツタだけを管理する空の GameObject）にツタを付けて、「生やす相手」に建物を入れても構いません。空なら自分自身に生えます。</p>
+
+    <h3 id="modes">生成モード</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>モード</th><th>生え方</th><th>向く場面</th></tr>
+      <tr><td>垂れ下がり</td><td>上向きの面の縁から、重力の向きへ垂れ下がる。「壁から離す距離」「垂れる茎のうねり」が効く</td><td>屋上・ベランダ・崖の上</td></tr>
+      <tr><td>壁面追従</td><td>面に沿って這い上がる・横へ広がる</td><td>ビルの壁・柱・岩肌</td></tr>
+      <tr><td>両方（既定）</td><td>垂れ下がりと壁面追従を両方行う</td><td>まず試すとき</td></tr>
+      <tr><td>地面を這う</td><td>上向きの面に沿って広がる</td><td>地面・床・屋根の上</td></tr>
+    </table>
+    </div>
+
+    <h3 id="landscape">地形（ハイトフィールド）に生やす</h3>
+    <p>ハイトフィールドの <a href="landscape.html">Landscape</a> は広すぎるので、生やす範囲を「ランドスケープの範囲の中心(XZ)」と「ランドスケープの範囲の一辺(m)」（既定 30m）で決めます。範囲の中だけが計算の対象になります。</p>
+
+    <h2 id="brush">なぞって道筋を決める（ブラシ）</h2>
+    <p>自動で置かれる種では狙った所に生えないときは、シーンビューでなぞって決めます。</p>
+    <ol class="steps">
+      <li>ツタの「ブラシ」の分類で「ブラシの種類」を選ぶ
+        <ul>
+          <li><b>なぞった線に沿って這わせる</b>（既定）：なぞった線そのものが茎になります。表面に当たらない所は、カメラに向いた面の上に点を置くので、空中に垂らす線も描けます</li>
+          <li><b>なぞった所に種を置く</b>：なぞった所に「種の間隔(m)」ごとに種を置き、そこから自動で伸びます</li>
+        </ul>
+      </li>
+      <li>「<b>ブラシで種を置く（Shiftで消す、Escで終了）</b>」をオンにする</li>
+      <li>シーンビューで対象の表面を左ドラッグでなぞる。<b>Shift</b> を押しながらなぞると、「消す半径(m)」の中の種と線を消します（線の途中が消えると 2 本に分かれます）</li>
+      <li><b>Esc</b> でブラシを終える。なぞった線と種はシーンに保存されます</li>
+    </ol>
+    <p>数値で直接書くこともできます。種は「手で置く種」に <code>x,y,z; x,y,z</code>、線は「なぞった線」に <code>x,y,z; x,y,z | x,y,z; ...</code>（<code>|</code> で線を区切る）の形で、どちらも生やす相手のローカル座標です。手で置く種が空なら、種は自動で置かれます。</p>
+
+    <h2 id="leaves">葉の種類（葉A・葉B・葉C）</h2>
+    <p>葉は 3 種類まで混ぜられます。既定では葉A（ツタの葉）だけが使われ、葉B（丸）と葉C（花）はオフです。「出現の重み」の比で混ざります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>形</td><td>ツタ・丸・細長・針・花 の 5 種類。形は計算で作るので画像は要りません</td></tr>
+      <tr><td>長さ(m)・幅(m)</td><td>葉 1 枚の大きさ。全体の倍率は「葉の大きさの倍率」</td></tr>
+      <tr><td>切れ込みの数・深さ、ギザギザ、先のとがり、中央の折れ</td><td>輪郭の形。ツタらしい葉は切れ込み 5、深さ 0.35 前後</td></tr>
+      <tr><td>色・色のばらつき</td><td>葉の色と、1 枚ごとにずらす色の幅</td></tr>
+      <tr><td>葉にするモデル（+Xが長さ1m）</td><td>形の代わりに使う GameObject。下を参照</td></tr>
+    </table>
+    </div>
+
+    <h3 id="leaf-model">葉にモデルを使う（素材）</h3>
+    <p>計算の形では物足りないとき、自分で作った葉のモデルを使えます。</p>
+    <ol class="steps">
+      <li>葉 1 枚のモデル（glb など）を用意する。<b>+X 方向が葉の長さ方向で、長さ 1m</b> になるように作る（付け根が原点）</li>
+      <li>そのモデルをシーンに置き、Mesh Renderer で表示できる状態にする（非表示の場所に置いても構いません）</li>
+      <li>「葉A: 葉にするモデル」にその GameObject を入れる。形が読めるまでの間は、組み込みの形で描きます</li>
+    </ol>
+
+    <h2 id="deform">膨張・アニメーションへの追従</h2>
+    <ul>
+      <li>「<b>膨張などの変形に追従する</b>」（既定オン）：<a href="inflation.html">膨張</a>などで表面が動くと、ツタも付いていきます。「変形で作り直す最小の動き(m)」（既定 0.005）より小さい動きでは作り直さないので、少しの揺れでは重くなりません</li>
+      <li>「<b>Skinned のアニメに追従する（重い）</b>」（既定オフ）：骨で動くキャラクターに生やすとき。毎フレーム形を取り直すので重く、必要な所だけオンにします</li>
+    </ul>
+
+    <h2 id="properties">プロパティ（ツタ）</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>使う</td><td><code>enabled</code></td><td>オン</td><td></td><td>描くかどうか</td></tr>
+      <tr><td>生やす相手（空なら自分）</td><td><code>target</code></td><td>空</td><td></td><td>ツタを生やす GameObject</td></tr>
+      <tr><td>生成モード</td><td><code>mode</code></td><td>両方</td><td></td><td>垂れ下がり／壁面追従／両方／地面を這う</td></tr>
+      <tr><td>Seed</td><td><code>seed</code></td><td>1</td><td></td><td>乱数の種。変えると枝分かれや葉の並びが変わる</td></tr>
+      <tr><td>株の密度（本/m）</td><td><code>strand_density</code></td><td>2</td><td>0〜20</td><td>自動で置く種の密度</td></tr>
+      <tr><td>最大成長距離(m)</td><td><code>max_length</code></td><td>4</td><td>0.05〜50</td><td>1 本が伸びる長さ</td></tr>
+      <tr><td>分岐確率</td><td><code>branch_probability</code></td><td>0.35</td><td>0〜1</td><td>節ごとに枝分かれする確率</td></tr>
+      <tr><td>曲がりやすさ</td><td><code>wander</code></td><td>0.35</td><td>0〜2</td><td>茎が左右へ曲がる強さ</td></tr>
+      <tr><td>成長段階</td><td><code>growth</code></td><td>1</td><td>0〜1</td><td>伸びた割合。アニメーションに使える。変えても成長の計算はやり直さないので軽い</td></tr>
+      <tr><td>節の間隔(m)</td><td><code>step</code></td><td>0.08</td><td>0.01〜1</td><td>小さいほど滑らかで重い</td></tr>
+      <tr><td>壁から離す距離(m)</td><td><code>hang_offset</code></td><td>0.04</td><td>0〜1</td><td>垂れる茎を壁から浮かせる距離</td></tr>
+      <tr><td>垂れる茎のうねり</td><td><code>hang_curl</code></td><td>0.4</td><td>0〜2</td><td>垂れ下がる茎の揺らぎ</td></tr>
+      <tr><td>茎の太さ(m)・茎の断面の角数</td><td><code>stem_radius</code>・<code>stem_sides</code></td><td>0.012・5</td><td>0.0005〜0.2・3〜12</td><td>茎の形</td></tr>
+      <tr><td>茎の色</td><td><code>stem_color</code></td><td>茶色</td><td></td><td></td></tr>
+      <tr><td>葉の密度・1mあたりの葉の最大数</td><td><code>leaf_density</code>・<code>leaves_per_meter</code></td><td>0.65・26</td><td>0〜1・0〜200</td><td>葉の多さ</td></tr>
+      <tr><td>葉の大きさの倍率・ばらつき</td><td><code>leaf_scale</code>・<code>leaf_size_variation</code></td><td>1・0.35</td><td></td><td></td></tr>
+      <tr><td>葉の細かさ</td><td><code>leaf_detail</code></td><td>16</td><td>6〜64</td><td>輪郭の点の数。少ないほど軽い</td></tr>
+      <tr><td>葉の向きのばらつき・葉の起き上がり</td><td><code>leaf_angle_variation</code>・<code>leaf_tilt</code></td><td>0.6・0.5</td><td>0〜2</td><td></td></tr>
+      <tr><td>若葉の色・若葉の範囲</td><td><code>young_color</code>・<code>young_amount</code></td><td>黄緑・0.35</td><td></td><td>先端側の葉の色</td></tr>
+      <tr><td>葉の上限・株の上限</td><td><code>max_leaves</code>・<code>max_strands</code></td><td>12000・400</td><td>0〜200000・1〜5000</td><td>重さの上限</td></tr>
+      <tr><td>表面の粗さ・葉脈の濃さ・葉のつや・茎の樹皮の濃さ</td><td><code>roughness</code> など</td><td>0.75・0.35・0.55・0.6</td><td>0〜1</td><td>シェーダーで描く質感</td></tr>
+      <tr><td>影を落とす</td><td><code>cast_shadow</code></td><td>オン</td><td></td><td></td></tr>
+    </table>
+    </div>
+
+    <h2 id="csharp">C# スクリプトから変える</h2>
+    <p><code>IvyGeneratorComponent</code> に <code>Enabled</code>・<code>Mode</code>・<code>Seed</code>・<code>Growth</code>・<code>LeafDensity</code>・<code>MaxLength</code>・<code>BranchProbability</code>・<code>ManualSeeds</code> があります。伸びていく演出は <code>Growth</code> を少しずつ上げます。</p>
+<pre><code>public override void Update(float deltaTime)
+{
+    if (TryGetComponent&lt;IvyGeneratorComponent&gt;(out var ivy))
+        ivy.Growth = Math.Min(1.0f, ivy.Growth + deltaTime * 0.2f);
+}</code></pre>
+
+    <h2 id="speed">重さの目安</h2>
+    <ul>
+      <li>重さは葉の数で決まります。まず「葉の上限」と「葉の細かさ」を下げます。</li>
+      <li>「株の密度」「最大成長距離」「分岐確率」を変えると成長の計算をやり直します。色・成長段階を変えてもやり直しません。</li>
+      <li>Skinned のアニメへの追従は毎フレーム作り直すので、遠くに置くものではオフにします。</li>
+    </ul>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="mesh-renderers.html">メッシュの描画</a>（ツタを生やす相手）</li>
+      <li><a href="landscape.html">地形</a>（地面を這わせる）</li>
+      <li><a href="inflation.html">膨張</a>（膨らむ物への追従）</li>
+      <li><a href="grass.html">草</a>（地面一面の草）</li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

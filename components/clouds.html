@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>手続き空と体積雲（Cloud Volume・Cloud Scatter） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+    <h1>手続き空と体積雲（Cloud Volume・Cloud Scatter）</h1>
+    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（コードから書いた内容。実機での確認はまだ）</p>
+
+    <p>空の画像を使わずに、大気の散乱と立体の雲で空を描く方法です。<a href="sky.html">空</a>コンポーネントの「手続き空を使う」で空全体を描き、<b>Cloud Volume</b> で 1 つの雲を、<b>Cloud Scatter</b> で雲の群れを好きな場所に置きます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>空の画像を用意せずに、晴れ・曇り・雨・夕焼け・夜の空を作りたい</li>
+      <li>遠くに入道雲（積乱雲）をそびえさせたい</li>
+      <li>山にかかる雲、谷にたまる雲海や霧、山頂の笠雲を置きたい</li>
+      <li>雲の影を地形に落としたい</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>部品</th><th>コンポーネントを追加での場所</th><th>役割</th></tr>
+      <tr><td>空（手続き空）</td><td>Rendering &gt; 空</td><td>空全体。大気・空一面の雲・入道雲・星・月・時刻</td></tr>
+      <tr><td>Cloud Volume</td><td>Rendering &gt; Cloud Volume</td><td>雲 1 つ。Transform で移動・回転・拡縮できる</td></tr>
+      <tr><td>Cloud Scatter</td><td>Rendering &gt; Cloud Scatter</td><td>同じシードから毎回同じ配置で作られる雲の群れ</td></tr>
+    </table>
+    </div>
+    <p><b>必要な素材：なし。</b>大気・雲・星・月はすべて計算で描くので、キューブマップや HDR 画像は要りません。</p>
+
+    <h2 id="samples">見本のシーン（素材）</h2>
+    <p>天気ごとの設定済みシーンが <code>resources/Scenes/ProceduralSky/</code> にあります。開いて値を見るのが一番早い方法です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>シーン</th><th>天気</th></tr>
+      <tr><td><code>ProceduralSky_ClearNoon</code></td><td>晴れの昼</td></tr>
+      <tr><td><code>ProceduralSky_CloudFlow</code></td><td>雲が流れる空</td></tr>
+      <tr><td><code>ProceduralSky_Overcast</code></td><td>曇り</td></tr>
+      <tr><td><code>ProceduralSky_Rain</code></td><td>雨雲</td></tr>
+      <tr><td><code>ProceduralSky_Sunset</code></td><td>夕焼け</td></tr>
+      <tr><td><code>ProceduralSky_Night</code></td><td>夜（星と月）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="procedural">手続き空を使う</h2>
+    <ol class="steps">
+      <li>空コンポーネントの付いた GameObject を選ぶ（無ければ Rendering &gt; 空 を付ける）</li>
+      <li>「<b>手続き空を使う</b>」をオンにする。キューブマップ・パノラマは使われなくなります</li>
+      <li>雲を出すときは「雲を表示」をオンにする。「手続き空」の分類の雲の項目が出てきます</li>
+      <li>「雲量」で空を覆う割合、「雲の種類」で層雲（0 寄り）〜積雲・積乱雲（1 寄り）、「降水・荒天」で雨雲の暗さを決める</li>
+      <li>「天候を循環」をオンにすると、晴れ→曇り→雨雲を「天候変化速度」で行き来します</li>
+      <li>「時刻で太陽を動かす」をオンにすると、時間帯で太陽の向きと Directional Light の強さが連動します</li>
+    </ol>
+    <p>手続き空の項目は、オフの機能に関係するものが隠れます（例：雲を表示がオフなら雲の項目は出ません）。</p>
+
+    <h3 id="prop-sky">手続き空の項目（空コンポーネント）</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>手続き空を使う</td><td><code>procedural_sky_enabled</code></td><td>オフ</td><td></td><td>空マップの代わりに大気散乱と体積雲で描く</td></tr>
+      <tr><td>雲量</td><td><code>procedural_cloud_coverage</code></td><td>0.27</td><td>0〜1</td><td></td></tr>
+      <tr><td>雲の種類</td><td><code>procedural_cloud_type</code></td><td>0.561</td><td>0〜1</td><td>低いと層雲、高いと積雲・積乱雲</td></tr>
+      <tr><td>降水・荒天</td><td><code>procedural_weather</code></td><td>0</td><td>0〜1</td><td></td></tr>
+      <tr><td>天候を循環・天候変化速度</td><td><code>procedural_weather_cycle</code>・<code>..._speed</code></td><td>オフ・0.015</td><td>0〜0.5</td><td></td></tr>
+      <tr><td>風向き XZ・風速</td><td><code>procedural_wind_direction</code>・<code>procedural_wind_speed</code></td><td>—・3.5</td><td>0〜100</td><td>雲が流れる向きと速さ</td></tr>
+      <tr><td>雲底高度・雲頂高度</td><td><code>procedural_cloud_base_height</code>・<code>..._top_height</code></td><td>1500・4000</td><td>100〜12000・500〜16000</td><td>雲の層の高さ (m)</td></tr>
+      <tr><td>雲の密度</td><td><code>procedural_cloud_density</code></td><td>1</td><td>0〜3</td><td></td></tr>
+      <tr><td>大気密度・大気の前方散乱</td><td><code>procedural_atmosphere_density</code>・<code>procedural_mie_anisotropy</code></td><td>1・0.76</td><td>0.1〜4・0〜0.95</td><td>空の青さ・太陽の周りのにじみ</td></tr>
+      <tr><td>時刻で太陽を動かす</td><td><code>procedural_drive_sun_from_time</code></td><td>オフ</td><td></td><td></td></tr>
+      <tr><td>星を表示・月を表示</td><td><code>procedural_stars_enabled</code>・<code>procedural_moon_enabled</code></td><td>オン</td><td></td><td></td></tr>
+    </table>
+    </div>
+
+    <h3 id="cumulonimbus">入道雲（空コンポーネントの「入道雲」分類）</h3>
+    <p>「入道雲の量」を 0 より大きくすると、遠景に積乱雲を 1 つ立てます。0 なら出ません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>説明</th></tr>
+      <tr><td>入道雲の量</td><td><code>cumulonimbus_amount</code></td><td>0</td><td>0〜1。1 で濃く大きい</td></tr>
+      <tr><td>位置をシードでランダム化・配置シード</td><td><code>cumulonimbus_random_position</code>・<code>cumulonimbus_seed</code></td><td>オフ・23</td><td>オンなら方角と距離をシードで決める</td></tr>
+      <tr><td>方角（度）・距離（m）</td><td><code>cumulonimbus_direction_degrees</code>・<code>cumulonimbus_distance</code></td><td>25・30000</td><td>ランダム化がオフのときの位置</td></tr>
+      <tr><td>横幅（m）・高さ倍率</td><td><code>cumulonimbus_size</code>・<code>cumulonimbus_height_scale</code></td><td>9000・1.25</td><td></td></tr>
+      <tr><td>かなとこ雲を作る</td><td><code>cumulonimbus_anvil_enabled</code></td><td>オン</td><td>頂上を平たく横へ広げる</td></tr>
+      <tr><td>雲底の暗さ・銀の縁の明るさ</td><td><code>cumulonimbus_base_darkness</code>・<code>cumulonimbus_silver_lining</code></td><td>0.52・0.65</td><td>逆光で縁が光る強さ</td></tr>
+    </table>
+    </div>
+
+    <h2 id="volume">雲を 1 つ置く（Cloud Volume）</h2>
+    <ol class="steps">
+      <li>空の GameObject を作り、Rendering &gt; <b>Cloud Volume</b> を付ける</li>
+      <li>Transform で場所を決める。雲の大きさは「半径サイズ（m）」（既定 420×260×420）に Transform の拡大率を掛けたものです</li>
+      <li>「形の種類」を選ぶ：<b>0 積乱雲</b>、<b>1 積雲群</b>、<b>2 層雲・雲海</b>、<b>3 霧</b>、<b>4 笠雲</b></li>
+      <li>雲海や霧を地面で切りたいときは「地表で切る」をオンにし、「地表の高さ（m）」を合わせる</li>
+      <li>雲の影を地形に落とすときは「地形へ影を落とす」をオンにし、「影の濃さ」を決める</li>
+    </ol>
+    <div class="table-wrap">
+    <table>
+      <tr><th>分類</th><th>表示名（内部名）</th><th>既定値</th></tr>
+      <tr><td>基本</td><td>半径サイズ（<code>size</code>）</td><td>420, 260, 420</td></tr>
+      <tr><td>形</td><td>形の種類（<code>cloud_type</code>）・密度（<code>density</code>）・形の乱れ（<code>noise_scale</code>）・ノイズの細かさ（<code>detail_scale</code>）・縁の柔らかさ（<code>edge_softness</code>）・かなとこ雲を作る（<code>anvil_enabled</code>）</td><td>0・0.82・2.2・7・0.16・オン</td></tr>
+      <tr><td>光</td><td>色（<code>color</code>）・陰影の強さ（<code>shade_strength</code>）・光の透け（<code>light_transmission</code>）</td><td>白・0.72・0.32</td></tr>
+      <tr><td>動き</td><td>風向き XZ（<code>wind_direction</code>）・風速（<code>wind_speed</code>）・形の変化速度（<code>shape_change_speed</code>）</td><td>(1,0)・1.5 m/s・0.035</td></tr>
+      <tr><td>地形</td><td>地表で切る（<code>ground_clip_enabled</code>）・地表の高さ（<code>ground_clip_height</code>）・地表からの高さ（<code>ground_offset</code>）・地形へ影を落とす（<code>cast_terrain_shadow</code>）・影の濃さ（<code>shadow_strength</code>）</td><td>オフ・0・0・オフ・0.55</td></tr>
+    </table>
+    </div>
+
+    <h2 id="scatter">雲の群れを置く（Cloud Scatter）</h2>
+    <p>広い範囲に雲をばらまきます。配置はシードから決まるので、開き直しても同じ並びになります。</p>
+    <ol class="steps">
+      <li>空の GameObject に Rendering &gt; <b>Cloud Scatter</b> を付ける</li>
+      <li>「範囲の形」（0 箱、1 円）と「範囲サイズ（m）」で置く範囲を決める。ハイトフィールドの地形があるなら「範囲を地形全体に合わせる」をオンにするだけでよい</li>
+      <li>「雲の数」（既定 30）、「雲サイズの範囲（m）」、「最小間隔（m）」で密度を決める</li>
+      <li>「種類の割合」は 積雲・入道雲・雲海・霧 の順の比率です（既定 0.46・0.27・0.16・0.07）。笠雲は「笠雲の割合」</li>
+      <li>「高さの基準」（0 ワールド高、1 海面基準、2 地形基準）と「高さの範囲（m）」で高さを決める。「地形に合わせる」をオンにすると、地表から「地表からの高さ」だけ上に置きます</li>
+      <li>並びを変えたいときは「シード」を変える</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="sky.html">空</a>（画像を使う空、時間帯キーフレーム）</li>
+      <li><a href="landscape.html">地形</a>（雲の影を落とす地面）</li>
+      <li><a href="lights.html">ライト</a>（太陽の Directional Light）</li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

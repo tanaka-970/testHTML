@@ -74,6 +74,7 @@
       <tr><td>停止状態で開始</td><td><code>start_asleep</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、力を加えられるまで止まった状態で始まります</td></tr>
       <tr><td>高速移動の貫通対策</td><td><code>use_ccd</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、毎回、動いた道筋に沿って当たりを調べ、最初に当たった物で止まります。オフでも、1 回の計算で自分の大きさ以上動くときは同じ調べ方に切り替わります</td></tr>
       <tr><td>描画の補間</td><td><code>interpolate</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>物理の計算（固定刻み）と画面の更新の周期がずれてカクつくとき、直近 2 回の物理の結果の間をなめらかにつないで描きます。カメラが追う物やプレイヤーに使います</td></tr>
+      <tr><td>開始時の速度（2026-10-13 追加）</td><td><code>initial_linear_velocity</code></td><td>3 つの小数</td><td>(0, 0, 0)</td><td></td><td>実行を始めたときに一度だけ与える初速。実行中の速さは下の「移動速度」に出ます</td></tr>
       <tr><td>移動速度</td><td><code>linear_velocity</code></td><td>3 つの小数（読み取り専用）</td><td></td><td></td><td>今の移動の速さ。実行中だけ変わり、保存されません</td></tr>
       <tr><td>回転速度</td><td><code>angular_velocity</code></td><td>3 つの小数（読み取り専用）</td><td></td><td></td><td>今の回転の速さ。実行中だけ変わり、保存されません</td></tr>
       <tr><td>停止中</td><td><code>is_sleeping</code></td><td>オン・オフ（読み取り専用）</td><td></td><td></td><td>止まっていて計算を休んでいるか（<a href="#sleep">停止</a>）</td></tr>

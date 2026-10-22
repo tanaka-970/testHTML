@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>デカール・面テクスチャ・電光掲示板 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+    <h1>デカール・面テクスチャ・電光掲示板</h1>
+    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（コードから書いた内容。実機での確認はまだ）</p>
+
+    <p>シーンの面に画像を貼る 2 つの方法と、貼った画像を流したりコマ送りしたり、LED の電光掲示板のように見せたりする部品の説明です。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>壁や床に、落書き・血痕・ひび・足跡などの画像を、モデルを作り直さずに重ねたい（<b>投影デカール</b>）</li>
+      <li>看板やモニターなど、モデルの決まった面だけに画像を貼りたい（<b>面テクスチャ領域</b>）</li>
+      <li>ビルの壁の電光掲示板に、流れる文字や LED の粒々を出したい（<b>表示内容アニメーション / LED</b>）</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>部品</th><th>コンポーネントを追加での場所</th><th>貼り方</th><th>必要な素材</th></tr>
+      <tr><td>投影デカール</td><td>Rendering &gt; 投影デカール</td><td>箱の中にある不透明な面へ、上から投影する</td><td>画像（PNG など）。凹凸を付けるなら法線画像も</td></tr>
+      <tr><td>面テクスチャ領域</td><td>Rendering &gt; 面テクスチャ領域</td><td>同じ GameObject のモデルの、選んだ面だけに貼る</td><td>画像（PNG）。面を選ぶための UV Surface Paint</td></tr>
+      <tr><td>表示内容アニメーション / LED</td><td>Rendering &gt; 表示内容アニメーション / LED</td><td>上のどちらかと同じ GameObject に付けて、貼る中身を動かす</td><td>画像モードは上の部品の画像。文字モードはフォント（.ttf / .ttc）。無ければ組み込みのフォント</td></tr>
+    </table>
+    </div>
+
+    <h2 id="decal">投影デカール</h2>
+    <p>GameObject の<b>ローカル −Z 方向</b>へ向けて、画像を箱の範囲に投影します。箱と交わった不透明な面に画像が重なります。</p>
+    <ol class="steps">
+      <li>空の GameObject を作り、Rendering &gt; <b>投影デカール</b> を付ける</li>
+      <li>「画像」に貼りたい画像を入れる。アルファのある PNG なら、透明な所は下の面が見えます</li>
+      <li>GameObject を壁の手前に置き、−Z が壁に向くように回す（床なら真下へ向ける）</li>
+      <li>「投影サイズ」で X/Y を画像の幅と高さ、Z を投影する奥行きにする。奥行きを壁の厚みより大きくすると、裏側の面にも映ります</li>
+      <li>斜めの面に伸びて映るときは「面の向き制限」を上げる。投影方向と向きが合わない面は除外されます</li>
+    </ol>
+    <p>銃痕のように時間で消したいときは「寿命（秒、0は無期限）」に秒数を入れます。最後の「消える時間（秒）」でフェードアウトします。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>有効</td><td><code>enabled</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>画像</td><td><code>texture</code></td><td>空</td><td></td><td>貼る画像</td></tr>
+      <tr><td>法線画像</td><td><code>normal_texture</code></td><td>空</td><td></td><td>凹凸用。空なら平ら</td></tr>
+      <tr><td>投影サイズ</td><td><code>size</code></td><td>1, 1, 0.25</td><td></td><td>X/Y は画像の幅と高さ、Z は投影する奥行き (m)</td></tr>
+      <tr><td>色と不透明度</td><td><code>color</code></td><td>白・1</td><td></td><td>画像の色に掛ける</td></tr>
+      <tr><td>HDR発光</td><td><code>emission</code></td><td>0</td><td>0〜64</td><td>光らせる。Bloom に乗る</td></tr>
+      <tr><td>法線の強さ</td><td><code>normal_strength</code></td><td>1</td><td>0〜1</td><td></td></tr>
+      <tr><td>粗さ</td><td><code>roughness</code></td><td>0.7</td><td>0〜1</td><td></td></tr>
+      <tr><td>面の向き制限</td><td><code>normal_alignment</code></td><td>0.25</td><td>0〜1</td><td>大きいほど正面を向いた面だけに映る</td></tr>
+      <tr><td>寿命（秒、0は無期限）</td><td><code>lifetime</code></td><td>0</td><td>0〜3600</td><td>ゲーム開始からの秒数で消える</td></tr>
+      <tr><td>消える時間（秒）</td><td><code>fade_duration</code></td><td>0.25</td><td>0〜3600</td><td>寿命の最後にフェードする時間</td></tr>
+    </table>
+    </div>
+    <p>粒子が当たった所に跡を残したいときは、<a href="particle-emitter.html#impact">Particle Emitter の衝突デカール</a>を使います（こちらは自動で作られ、上限数を超えると古い物から消えます）。</p>
+
+    <h2 id="region">面テクスチャ領域</h2>
+    <p>モデルの UV を使って、選んだ面の範囲だけに画像を貼ります。どの面に貼るかは <a href="../editor/vertex-paint.html">頂点ペイント</a>パネルの UV 表面ペイントで選びます。</p>
+    <ol class="steps">
+      <li>画像を貼りたいモデル（Mesh Renderer か Skinned Mesh Renderer の付いた GameObject。Primitive Mesh Renderer は対象外）に Rendering &gt; <b>面テクスチャ領域</b> を付け、<code>texture</code> に画像を入れる</li>
+      <li>頂点ペイントのパネルを開き、<b>UV表面ペイント</b>で「面をクリック/ドラッグで選択」をオンにする</li>
+      <li>「UV Surface Layer」で使うチャンネル（R・G・B・A）を選び、貼りたい面をクリック／左ドラッグで選ぶ。<b>Shift+左ドラッグ</b>で外す。<b>UV Clear 0</b> で全部外す</li>
+      <li><b>UV Paintを保存</b> を押す（選んだ範囲はこのファイルに保存されます）</li>
+      <li>面テクスチャ領域の <code>mask_source</code> を、選んだチャンネル（UV Paint R〜A）に合わせる。「全体」ならマスクを使わず全面に貼ります</li>
+      <li>画像の位置は <code>uv_scale</code>・<code>uv_offset</code>・<code>uv_rotation</code>（度）で合わせる</li>
+    </ol>
+    <p>モデルの UV がばらばらで画像が崩れるときは、<code>mapping_mode</code> を「平面投影」にします。<code>plane_origin</code>・<code>plane_rotation</code>（度）・<code>plane_size</code> で決めた板から投影するので、UV に関係なく真っすぐ貼れます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>内部名</th><th>既定値</th><th>説明</th></tr>
+      <tr><td><code>enabled</code></td><td>オン</td><td></td></tr>
+      <tr><td><code>texture</code></td><td>空</td><td>貼る画像</td></tr>
+      <tr><td><code>mask_source</code></td><td>UV Paint R</td><td>全体／UV Paint R／G／B／A。貼る範囲を決めるチャンネル</td></tr>
+      <tr><td><code>mask_invert</code></td><td>オフ</td><td>選んでいない面に貼る</td></tr>
+      <tr><td><code>mapping_mode</code></td><td>モデルUV</td><td>モデルUV／平面投影</td></tr>
+      <tr><td><code>uv_scale</code>・<code>uv_offset</code>・<code>uv_rotation</code></td><td>(1,1)・(0,0)・0</td><td>画像の拡大・移動・回転（度）</td></tr>
+      <tr><td><code>plane_origin</code>・<code>plane_rotation</code>・<code>plane_size</code></td><td>原点・0・(1,1)</td><td>平面投影の板（ローカル座標、度、m）</td></tr>
+      <tr><td><code>color</code>・<code>emission</code></td><td>白・0</td><td>色と発光（0〜64）</td></tr>
+      <tr><td><code>effect_material_slot</code></td><td>31</td><td>Model Effect Stack の効果を貼った画像だけに掛けたいとき、Effect Stack の Material Slot をこの番号に合わせる</td></tr>
+      <tr><td><code>bound_mesh</code>・<code>rebind</code></td><td>自動</td><td>最初に貼ったメッシュを覚える。モデルを差し替えたら <code>rebind</code> をオンにして覚え直す</td></tr>
+    </table>
+    </div>
+
+    <h2 id="display">表示内容アニメーション / LED（電光掲示板）</h2>
+    <p>投影デカールか面テクスチャ領域と<b>同じ GameObject</b>に付けると、貼る画像を動かせます。単体では何も描きません。</p>
+    <h3 id="display-image">画像を流す・コマ送りする（content_mode：画像）</h3>
+    <ul>
+      <li><code>uv_scroll</code>：1 秒あたりに画像をずらす量。横に流すなら X に値を入れる</li>
+      <li><code>uv_scale</code>・<code>uv_offset</code>：画像の拡大と位置</li>
+      <li><code>flipbook_columns</code>・<code>flipbook_rows</code>・<code>flipbook_fps</code>：画像を格子に区切ったコマとして、左上から順に再生する。素材は横×縦にコマを並べた 1 枚の PNG（例：4×4 で 16 コマ）。fps が 0 ならコマ送りしない</li>
+    </ul>
+    <h3 id="display-text">流れる文字を出す（content_mode：MSDF文字）</h3>
+    <ol class="steps">
+      <li><code>content_mode</code> を <b>MSDF文字</b> にする</li>
+      <li><code>text</code> に文字を書く。日本語も使えます</li>
+      <li><code>font</code> にフォントを入れる。<code>resources/fonts/</code> に <code>meiryob.ttc</code>（日本語）、<code>arialbd.ttf</code>、<code>ariblk.ttf</code> が入っています。空なら組み込みのフォントを使います</li>
+      <li><code>text_height</code>（表示の高さに対する文字の高さ、0.1〜1）、<code>text_color</code>、<code>text_scroll_speed</code>（1 秒に流れるピクセル数、既定 32）を決める</li>
+      <li>文字を描く画像の大きさは <code>resolution_width</code>×<code>resolution_height</code>（既定 512×128）。横長の掲示板なら横を大きくする</li>
+    </ol>
+    <h3 id="display-led">LED の粒々にする</h3>
+    <ul>
+      <li><code>led_enabled</code> をオンにすると、画像や文字を LED の粒の並びとして描きます</li>
+      <li><code>led_count</code>：横×縦の粒の数（既定 64×16、最大 512）</li>
+      <li><code>led_shape</code>：円／四角。<code>led_fill</code>：粒の大きさ（0.05〜1）</li>
+      <li><code>led_gap_brightness</code>：粒のすき間の明るさ。<code>led_off_glow</code>：消えている粒のかすかな光</li>
+      <li><code>emission</code>：発光（0〜64）。夜景で光らせるときに上げる</li>
+    </ul>
+
+    <h3 id="csharp">C# スクリプトから変える</h3>
+    <p><code>SurfaceDisplayComponent</code>（<code>ContentMode</code>・<code>Text</code>・<code>TextScrollSpeed</code>・<code>FlipbookFps</code>・<code>LedEnabled</code>・<code>Emission</code>）と <code>ModelTextureRegionComponent</code>（<code>MaskSource</code>・<code>MappingMode</code>・<code>Emission</code>・<code>Texture</code>）があります。</p>
+<pre><code>if (TryGetComponent&lt;SurfaceDisplayComponent&gt;(out var board))
+    board.Text = "STAGE CLEAR";</code></pre>
+
+    <h2 id="howto">使い方の例：ビルの電光掲示板</h2>
+    <ol class="steps">
+      <li>ビルの壁の前に空の GameObject を置き、<b>投影デカール</b>を付けて −Z を壁へ向ける。「投影サイズ」を掲示板の大きさ（例 8, 2, 0.5）にする。画像は空でよい</li>
+      <li>同じ GameObject に <b>表示内容アニメーション / LED</b> を付け、<code>content_mode</code> を MSDF文字、<code>text</code> に流したい文字、<code>font</code> に <code>meiryob.ttc</code> を入れる</li>
+      <li><code>resolution_width</code> を 1024 程度、<code>text_scroll_speed</code> を 60 程度にする</li>
+      <li><code>led_enabled</code> をオン、<code>led_count</code> を 128×24 程度、<code>emission</code> を 4〜8 にする</li>
+    </ol>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="world-text.html">ワールド文字</a>（空間に浮かぶ文字）</li>
+      <li><a href="../editor/vertex-paint.html">頂点ペイント・UV 表面ペイント</a>（面の選び方）</li>
+      <li><a href="effect-stacks.html">Effect Stack</a>（Material Slot）</li>
+      <li><a href="particle-emitter.html#impact">粒子の衝突デカール</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

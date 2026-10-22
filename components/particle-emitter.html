@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
     <h1>Particle Emitter</h1>
-    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8（GPU駆動で画像を貼れるようにした）</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（2026-10-22：タイムライン・Flipbook・リボン・3D 粒子・ライト・衝突デカール・LOD・ひな形を追記。追記分はコードから書いた内容）</p>
 
     <p>小さな粒（パーティクル）をたくさん出すコンポーネントです。火花、煙、光の粒などに使います。粒は常にカメラの方を向いた四角で、画像を貼れます。</p>
 
@@ -57,12 +57,129 @@
       <tr><td>拡散角</td><td><code>cone_angle</code></td><td>小数</td><td>0.4</td><td>0〜3.14159</td><td>発生方向からどれだけ広がって飛ぶか（ラジアン）。0 でまっすぐ、1.57 で半球、3.14 で全方向</td></tr>
       <tr><td>画像</td><td><code>sprite</code></td><td>アセット（画像）</td><td>（空）</td><td></td><td>粒に貼る画像。空なら白い四角です</td></tr>
       <tr><td>Material / Shader Graph</td><td><code>material_asset</code></td><td>アセット（Material）</td><td>（空）</td><td></td><td>Particle Renderer に Material を使います。Shader Composer の Surface グラフを Material から指定すると、色・発光・不透明度の計算を再利用できます</td></tr>
-      <tr><td>形状</td><td><code>render_mode</code></td><td>選択</td><td>円形粒子</td><td></td><td>円形粒子、速度ストリーク、連続水幕を選びます。連続水幕は幅のある透明メッシュで水流を描き、水面衝突と着水泡を併用できます</td></tr>
+      <tr><td>形状</td><td><code>render_mode</code></td><td>選択</td><td>円形粒子</td><td></td><td>円形粒子、速度ストリーク、連続水幕、<b>リボン（CPU更新/GPU形状）</b>、<b>3Dメッシュ粒子（CPU）</b>を選びます。連続水幕は幅のある透明メッシュで水流を描き、水面衝突と着水泡を併用できます。リボンと 3D メッシュ粒子は<a href="#ribbon">下の項目</a>を見てください</td></tr>
       <tr><td>合成</td><td><code>blend_mode</code></td><td>選択</td><td>加算</td><td></td><td>通常、加算、乗算、スクリーン。加算にすると、粒が重なった所が明るく光ります。炎や火花向きです</td></tr>
       <tr><td>最大数</td><td><code>max_particles</code></td><td>整数</td><td>10000</td><td>1〜65536</td><td>同時に存在できる粒の数。超える分は出ません。入力は 65536 までで、GPU駆動では 65536、CPU では 10000 で打ち切ります</td></tr>
       <tr><td>GPU駆動</td><td><code>gpu_simulation</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>粒の発生・移動・寿命・描画を GPU で行います。粒が多いときに軽くなります。画像を設定すれば GPU駆動でも粒に貼られます。画像が空なら丸い形の粒になります（<a href="#gpu">下を見てください</a>）</td></tr>
     </table>
     </div>
+
+    <h3 id="waterfall">滝（連続水幕）の見た目（2026-10-13 追加）</h3>
+    <p>形状を <b>連続水幕</b> にしたときの、滝の水の色・透け方・流れ筋の項目です。円形粒子・速度ストリークのときは使いません。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>滝の浅い色・深い色・泡の色</td><td><code>water_shallow_color</code>、<code>water_deep_color</code>、<code>water_foam_color</code></td><td>青緑・濃い青緑・白</td><td></td><td>水幕の薄い所と厚い所の色、泡の色</td></tr>
+      <tr><td>滝の粗さ</td><td><code>water_roughness</code></td><td>0.52</td><td>0〜1</td><td>小さいほど表面がつるっとして映り込みが鋭くなる</td></tr>
+      <tr><td>滝の反射・滝の屈折・滝の吸収</td><td><code>water_reflection_strength</code>、<code>water_refraction_strength</code>、<code>water_absorption</code></td><td>0.18・0.12・0.12</td><td>0〜2・0〜1・0〜4</td><td>周りの映り込み、奥のゆがみ、厚い所ほど色が濃くなる強さ</td></tr>
+      <tr><td>滝の泡の強さ</td><td><code>water_foam_strength</code></td><td>0.9</td><td>0〜2</td><td>流れ筋と着水の泡の濃さ</td></tr>
+      <tr><td>滝の色グラデーション・上から中間への割合・着水色の開始割合・色変化の分布</td><td><code>water_gradient_strength</code>、<code>water_gradient_top_end</code>、<code>water_gradient_base_start</code>、<code>water_gradient_power</code></td><td>0.48・0.42・0.88・0.9</td><td>0〜1・0.05〜0.9・0.1〜1・0.25〜3</td><td>落ち口から着水点までの色の変わり方。上の割合までが落ち口の色、着水色の開始割合から下が着水の白っぽい色</td></tr>
+      <tr><td>水幕の奥行き</td><td><code>waterfall_curtain_depth</code></td><td>2.75</td><td>0.1〜8</td><td>水幕の厚み</td></tr>
+      <tr><td>流れ筋の数・幅・厚み</td><td><code>waterfall_stream_count</code>、<code>waterfall_stream_width</code>、<code>waterfall_stream_depth</code></td><td>10・0.58・0.30</td><td>1〜16・0.2〜1.6・0.05〜2</td><td>水幕の中を流れる筋の本数・幅・厚み</td></tr>
+      <tr><td>流れの横揺れ・流れの長さのばらつき</td><td><code>waterfall_flow_wander</code>、<code>waterfall_flow_length_variation</code></td><td>0.14・0.34</td><td>0〜1.5・0〜0.8</td><td>流れ筋が左右に揺れる量と、筋ごとの長さの違い</td></tr>
+      <tr><td>水幕のうねり</td><td><code>waterfall_surface_fold</code></td><td>0.72</td><td>0〜2.5</td><td>水幕の表面の波打ち</td></tr>
+      <tr><td>流れ筋の濃さ</td><td><code>waterfall_stream_opacity</code></td><td>0.22</td><td>0.05〜1</td><td>流れ筋の不透明さ</td></tr>
+    </table>
+    </div>
+    <p>粒子と飛沫には Surface Material を、連続水幕には Water Output を持つ Material を割り当てて見た目を差し替えることもできます（<a href="../windows/particle-effect-editor.html#material">Particle Editor の Material</a>）。</p>
+
+    <h2 id="new-1022">2026-10-22 に増えた項目</h2>
+    <p>インスペクターの分類名が日本語になりました（基本・発生・力・運動・外観・カーブ・描画・シミュレーション・水との相互作用・水の描画）。そのうえで、次の分類と項目が増えています。</p>
+
+    <h3 id="spawn-shape">発生形状と表面からの発生（分類：発生）</h3>
+    <ul>
+      <li>「発生形状」に <b>円盤</b>・<b>リング</b>・<b>メッシュ表面 (CPU)</b> が増えました。リングは「リング内側半径」で穴の大きさを決めます</li>
+      <li>メッシュ表面では「表面発生の元モデル」（空なら自分）の表面から出ます。静的・Skinned・内蔵メッシュに対応。「表面法線への噴射方向補間」を 1 にすると表面から外へ噴き出します（空気漏れ・煙向き）</li>
+      <li>Skinned のアニメに合わせるなら「アニメーション姿勢に追従」をオンにし、「姿勢の更新間隔 (フレーム)」（1〜120）で重さを調整します</li>
+    </ul>
+
+    <h3 id="timeline">VFXタイムライン（分類：VFXタイムライン・時間制御）</h3>
+    <p>「タイムラインを使用」をオンにすると、決めた時間だけ発生し、繰り返し、決めた時刻に Burst を出します。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>タイムラインを使用・起動時に再生・ミュート</td><td><code>timeline_enabled</code>・<code>timeline_play_on_start</code>・<code>timeline_muted</code></td><td></td><td></td></tr>
+      <tr><td>開始時刻（秒）・発生時間（秒）</td><td><code>timeline_start</code>・<code>timeline_duration</code></td><td>0〜120</td><td></td></tr>
+      <tr><td>繰り返す・ループ間隔（秒）</td><td><code>timeline_loop</code>・<code>timeline_loop_gap</code></td><td>0〜60</td><td></td></tr>
+      <tr><td>Burst時刻（各ループ内）・Burst粒子数</td><td><code>timeline_burst_time</code>・<code>timeline_burst_count</code></td><td>0〜65536</td><td>1 回だけまとめて出す</td></tr>
+      <tr><td>Burstマーカーデータ</td><td><code>timeline_burst_track_data</code></td><td></td><td>複数の Burst。VFX制作ルームのタイムラインから編集する</td></tr>
+      <tr><td>再生速度</td><td><code>timeline_speed</code></td><td>0〜16</td><td></td></tr>
+      <tr><td>固定乱数Seed</td><td><code>editor_random_seed</code></td><td>0〜</td><td>0 以外にすると、再生のたびに同じ粒の出方になる</td></tr>
+    </table>
+    </div>
+
+    <h3 id="flipbook">Flipbook（コマ送り画像）</h3>
+    <p><b>素材：</b>コマを格子に並べた 1 枚の画像（例：8 列 × 8 行の爆発の連番）。「画像」に入れ、「Flipbookを有効化」をオンにして「列数」「行数」（1〜32）を合わせます。「再生基準」が<b>寿命</b>なら粒の一生で全コマ、<b>FPS</b> なら「再生FPS」で再生します。「開始コマ」「コマをループ」「フレーム間補間」（コマの間をなめらかに）もあります。</p>
+
+    <h3 id="curves">寿命カーブとグラデーション（分類：外観・カーブ／グラデーション）</h3>
+    <ul>
+      <li>サイズ・不透明度・発光（「寿命中の発光カーブ」）・回転（「寿命による追加回転 (rad)」）を、4 点のカーブか、任意個のキー（「〜キー位置」と「〜キー値」を同じ数だけ）で決められます</li>
+      <li>補間は「寿命カーブを滑らかにする」で全体を、各曲線の「〜の補間」（全体設定／線形／滑らか）で個別に決めます</li>
+      <li>「寿命グラデーションを使う」をオンにすると、開始色→中間色1→中間色2→終了色の 4 色、または「任意キー色」と「任意キー位置」（2〜64 個）で色が変わります</li>
+      <li>分類「キラキラ」：「星形スプライト」を <b>4本の光条</b> にすると、画像なしで十字に光る粒になります。「明滅速度 (Hz)」「明滅の強さ」で瞬かせます</li>
+    </ul>
+
+    <h3 id="ribbon">リボンと 3D メッシュ粒子</h3>
+    <ul>
+      <li><b>リボン</b>（形状：リボン）：粒をつないで帯にします。剣の軌跡・レーザー・彗星の尾向き。「リボン始点幅・終点幅 (m)」「リボン始点・終点ねじれ (度)」「幅カーブ」、「途切れ距離 (m)」（これより離れた粒はつながない）、「最大サンプル点数」、「曲線補間」（0〜8）、「UV方式」（全体に伸縮／距離でリピート）、「UVタイル距離」「UVスクロール量」</li>
+      <li><b>3D メッシュ粒子</b>（形状：3Dメッシュ粒子）：粒の代わりに立体を飛ばします。破片・薬莢向き。「3D形状 (0=Cube, 1=Octahedron)」か「複製するメッシュ」（シーンの GameObject のメッシュを使う）。「Mesh初期回転をランダム化」「Mesh角速度のばらつき」「Meshスケールのばらつき」「3Dメッシュ倍率」。遠くは「Mesh描画最大距離 (m)」「最小画面直径 (px)」「画面LODフェード幅 (px)」で描画だけ省きます</li>
+    </ul>
+
+    <h3 id="vfx-material">VFXマテリアル（GPU Sprite 用）</h3>
+    <p>「VFXマテリアルを有効化」をオンにすると、GPU駆動の Sprite に次の効果を掛けられます。共通の設定は「共有VFX Material」（<code>.replayvfxmaterial</code>）に保存して使い回せます。</p>
+    <ul>
+      <li>Soft Particle（深度フェード）：地面との交わりの硬い線を消す。「深度フェード距離(m)」</li>
+      <li>屈折：背景をゆがめる（陽炎・衝撃波）。「屈折強度」（0〜0.1）、「屈折の深度境界(m)」</li>
+      <li>UV：「UV繰り返しXY」「UV移動速度XY」。ノイズ：「ノイズ周波数」「ノイズ移動速度」「ノイズマスク強度」</li>
+      <li>マスク：「マスク形状」（なし・円・菱形・縦帯・輪郭）、「外部マスク画像」と「マスク参照チャンネル」（Alpha・R・G・B・輝度）。<b>素材：</b>白黒のマスク画像</li>
+      <li>Dissolve：「Dissolveを有効化」「Dissolve進行度」「発光縁の幅」「発光縁の輝度」「Dissolve発光色」「寿命中のDissolve 4点」。燃え尽きるように消す</li>
+      <li>「高品質エッジAA」「TAA Reactive Maskの強さ」（TAA で粒が残像になるときに上げる）</li>
+    </ul>
+
+    <h3 id="light">VFX Light（粒で周りを照らす）</h3>
+    <ul>
+      <li>「Emitter Lightを有効化」：Emitter の位置に影なしの Point Light を 1 つ置きます（シーン全体で最大 64 個）。「ライト色」「ライト強度」「ライト範囲」と、「ライト曲線周期」で明滅させる曲線</li>
+      <li>「粒子ライトを有効化」：生きている粒の位置にライトを置きます。「粒子ライト数」（1〜16）、「粒子ライト強度」「粒子ライト範囲」、寿命に合わせたフェード（「寿命によるライト強度」「寿命によるライト範囲」）。明るく目立つ粒から選ばれます</li>
+    </ul>
+
+    <h3 id="impact">衝突と衝突デカール</h3>
+    <ul>
+      <li>分類「衝突」：「GPU固体衝突」で画面の深度に対して粒を跳ね返します。「衝突半径 (m)」「反発係数」「摩擦」</li>
+      <li>分類「水との相互作用」：「GPU水面接触」で GPU 粒子も水面に当たります</li>
+      <li>分類「VFX Impact」：「衝突デカールを出す」で、当たった所に面に沿った跡を残します。<b>素材：</b>跡の画像（「衝突デカール画像」）と、凹凸を付けるなら法線画像。「幅」「奥行き」「寿命」「消失時間」「上限」（1〜256、超えると古い物から消える）。動く物に当たった跡はその物に付いて動きます</li>
+    </ul>
+
+    <h3 id="chain">連鎖（Sub Emitter）とイベント</h3>
+    <p>粒が「固体に当たった」「指定時刻になった」「生まれた」ときに、別の Emitter から子粒子を出します（花火の二段割れ・着弾の火花など）。親と子の Emitter で「VFX 連鎖ルート」に同じ GameObject を入れ、送信側で「固体衝突時に送信」などのチャンネルを決めます。「子粒子数 / イベント」（1〜256）、「最大連鎖世代」（1〜8）、「速度継承割合」、「親粒子の色を掛ける」、「子粒子拡散半径 (m)」、「接触イベント間隔（秒）」。</p>
+
+    <h3 id="lod">軽量化 / LOD</h3>
+    <ul>
+      <li>「距離LODを有効化」：「LOD開始距離」〜「LOD終了距離」で、遠いほど継続発生を「遠距離の発生率」まで減らします。Burst と出ている粒は減らしません</li>
+      <li>「画面サイズLODを有効化」：画面上で小さく見えるときに発生を減らします（半径 px で指定）</li>
+      <li>「CPU粒子の視錐台カリング」：画面外の CPU 粒子は描画の準備をしません（動きは続きます）</li>
+    </ul>
+
+    <h2 id="assets">VFX の素材：ひな形と VFX アセット</h2>
+    <p>エフェクトを一から作らなくても、<b>Window &gt; VFX制作ルーム</b> の「<b>クイック作成（オブジェクト選択不要）</b>」でひな形を選ぶと、GameObject と Emitter（必要なら複数）が作られます。検索欄で名前を絞り込め、☆でお気に入りにできます（「★だけ」で絞り込み）。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>分類</th><th>ひな形</th></tr>
+      <tr><td>基本</td><td>空のVFX、煙、火花、爆発、爆発の煙、爆発の火球、炎、砂塵、落ち葉、風の渦、衝撃波、キラキラ魔法、エネルギー弾、金属破片</td></tr>
+      <tr><td>水・氷</td><td>水しぶき（一式・霧・飛沫）、氷の破裂、氷の破片、氷晶シャワー、氷晶爆発一式、氷晶の守護陣（結晶弾・中心光）</td></tr>
+      <tr><td>電撃</td><td>雷撃、雷撃の火花、電撃アーク（一式・着弾火花）</td></tr>
+      <tr><td>レーザー</td><td>レーザー、赤色・パルス・プラズマ・高輝度レーザー（各着弾火花・外側光・先端火花）、緑色・青色・紫色レーザー（各一式・火花・外側光・先端火花）、氷結レーザー（氷片・凍結波）、荷電粒子砲（着弾火花・衝撃波）</td></tr>
+      <tr><td>武器・攻撃</td><td>銃口エフェクト一式（閃光・煙・火花）、火炎放射（一式・火花）、毒霧（一式）、隕石着弾（火花・煙）、風刃の軌跡</td></tr>
+      <tr><td>魔法・宇宙</td><td>回復オーラ（一式・柔らかな光）、魔法の屈折波、魔法シールド、深淵のポータル（周回粒子・中心光）、星屑の渦、彗星（一式・尾）、太陽フレア（噴出火花・衝撃波）、重力崩壊（落ちる粒子・周回火花）、深淵の星雲（星屑・衝撃波）</td></tr>
+    </table>
+    </div>
+    <p>「一式」は複数の Emitter を組み合わせた完成品です。作ったあとは普通の Emitter と同じように値を変えられます。</p>
+    <h3 id="vfx-asset">VFX アセット（.replayvfx）で保存・再利用</h3>
+    <ul>
+      <li>「VFXアセット (.replayvfx) — 保存・再利用」の欄で、選んだ VFX（複数 Emitter をまとめたもの）を <b>選択VFXを新しいアセットとして保存</b> すると、<code>resources/Effects/VFX/</code> に保存されます</li>
+      <li>「保存済みVFXを選ぶ」で選び、<b>選んだVFXをSceneに配置</b> で別のシーンにも置けます（毎回別のインスタンスになります）</li>
+      <li><b>依存素材込みで配布フォルダーを作成</b>：画像やマテリアルも含めて <code>Saved/VfxPackages/</code> に書き出します。別の PC では <b>VFX配布フォルダーを取り込む</b> で resources へ配置し、Asset Database に登録します</li>
+      <li>Project の <b>Create &gt; Data</b> に「VFX Material」（<code>.replayvfxmaterial</code>）と「VFXノード部品」（<code>.replayvfxgraph</code>。計算グラフの再利用部品）が増えました</li>
+    </ul>
 
     <h2 id="how">粒の動き方</h2>
     <ul>

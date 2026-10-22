@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>ワールド文字（World Text） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+    <h1>ワールド文字（World Text）</h1>
+    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（コードから書いた内容。実機での確認はまだ）</p>
+
+    <p>3D 空間に文字を置くコンポーネントです。大きさはメートルで決め、拡大しても文字の縁がにじまない MSDF 方式で描きます。Canvas を作らずに、看板の文字・頭上の名前・ダメージの数字などを出せます。コンポーネントを追加の一覧では「<b>ワールド文字</b>」です。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>建物の看板や床の案内など、場所に固定した文字を出したい</li>
+      <li>キャラクターの頭上に、いつもカメラを向く名前を出したい</li>
+      <li>壁の向こうでも見える目印の文字を出したい</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>コンポーネントを追加での場所</td><td>Rendering &gt; ワールド文字</td></tr>
+      <tr><td>必要な素材</td><td>フォント（.ttf / .ttc）。<code>resources/fonts/</code> に <code>meiryob.ttc</code>（日本語）、<code>arialbd.ttf</code>、<code>ariblk.ttf</code> があります。空なら組み込みのフォント</td></tr>
+      <tr><td>大きさ</td><td>メートル単位。Transform の拡大率も掛かります</td></tr>
+      <tr><td>C#</td><td><code>WorldTextComponent</code>（<code>Text</code>・<code>Height</code>・<code>Width</code>・<code>FacingMode</code>・<code>AlwaysOnTop</code>・<code>Emission</code>・<code>Font</code>）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="create">文字を置く</h2>
+    <ol class="steps">
+      <li>空の GameObject を作り、Rendering &gt; <b>ワールド文字</b> を付ける</li>
+      <li><code>text</code> に文字を書き、<code>font</code> にフォントを入れる（日本語なら <code>meiryob.ttc</code>）</li>
+      <li><code>text_height</code> で 1 文字の高さ (m) を決める（既定 0.3）。折り返す枠は <code>layout_width</code>×<code>layout_height</code>（既定 4×1.2）</li>
+      <li>向きを <code>facing_mode</code> で選ぶ：<b>Transform固定</b>（看板）、<b>ビルボード</b>（いつもカメラを向く）、<b>Y軸ビルボード</b>（縦軸だけ回る。頭上の名前向き）</li>
+      <li>暗い所でも読みたいときは <code>outline_width</code> と <code>outline_color</code> で縁取り、<code>shadow_offset</code> と <code>shadow_color</code> で影を付ける</li>
+    </ol>
+
+    <h2 id="properties">プロパティ</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td><code>enabled</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td><code>text</code></td><td>Hello_日本語。ー</td><td></td><td>表示する文字</td></tr>
+      <tr><td><code>font</code></td><td>空</td><td></td><td>フォントのアセット</td></tr>
+      <tr><td><code>text_height</code></td><td>0.3</td><td>0.001〜1000</td><td>文字の高さ (m)</td></tr>
+      <tr><td><code>layout_width</code>・<code>layout_height</code></td><td>4・1.2</td><td>0.001〜10000</td><td>文字を並べる枠 (m)</td></tr>
+      <tr><td><code>color</code></td><td>白</td><td></td><td></td></tr>
+      <tr><td><code>outline_width</code>・<code>outline_color</code></td><td>0・黒</td><td>0〜8</td><td>縁取り</td></tr>
+      <tr><td><code>shadow_offset</code>・<code>shadow_color</code></td><td>(0,0)・透明</td><td></td><td>影のずれと色。色のアルファを上げると出る</td></tr>
+      <tr><td><code>character_spacing</code>・<code>line_spacing</code></td><td>0・1</td><td>—・0.1〜10</td><td>字間と行間</td></tr>
+      <tr><td><code>horizontal_align</code>・<code>vertical_align</code></td><td>中央・中央</td><td></td><td>左／中央／右、上／中央／下</td></tr>
+      <tr><td><code>word_wrap</code></td><td>オン</td><td></td><td>枠の幅で折り返す</td></tr>
+      <tr><td><code>facing_mode</code></td><td>Transform固定</td><td></td><td>Transform固定／ビルボード／Y軸ビルボード</td></tr>
+      <tr><td><code>always_on_top</code></td><td>オフ</td><td></td><td>物の後ろでも手前に描く</td></tr>
+      <tr><td><code>double_sided</code></td><td>オン</td><td></td><td>裏から見ても描く</td></tr>
+      <tr><td><code>emission</code></td><td>0</td><td>0〜64</td><td>光らせる（Bloom に乗る）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="csharp">C# スクリプトから変える</h2>
+<pre><code>if (TryGetComponent&lt;WorldTextComponent&gt;(out var label))
+{
+    label.Text = $"残り {count}";
+    label.FacingMode = 2; // Y軸ビルボード
+}</code></pre>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="decals.html#display">電光掲示板</a>（壁に流れる文字）</li>
+      <li><a href="ui-text.html">UI の Text</a>（画面に出す文字）</li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

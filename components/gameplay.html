@@ -347,6 +347,10 @@
       <tr><td>Scene View デバッグ表示</td><td><code>debug_draw</code></td><td>オン・オフ</td><td>オン</td><td></td><td>索敵距離・視野などをシーンビューに描きます</td></tr>
       <tr><td>現在の状態</td><td><code>current_state</code></td><td>表示のみ</td><td></td><td></td><td>実行中の状態（Idle など）を表示します</td></tr>
       <tr><td>攻撃段階</td><td><code>attack_phase</code></td><td>表示のみ</td><td></td><td></td><td>攻撃中の段階（Windup / Active / Recovery）を表示します</td></tr>
+      <tr><td>縄張り中心ポイント（2026-10-13 追加、開発中）</td><td><code>territory_points</code></td><td>GameObject の一覧</td><td>空</td><td></td><td>縄張りの中心にする GameObject。0 件なら縄張りの処理は行いません</td></tr>
+      <tr><td>縄張り範囲（2026-10-22 更新、開発中）</td><td><code>territory_range_radius</code></td><td>小数</td><td></td><td>0〜100</td><td>縄張りの半径。<b>すべての中心ポイントに同じ半径を使います</b>（10/13 時点の「ポイントごとの一覧で、登録の不具合で設定できない」状態から、1 つの数値に変わりました）</td></tr>
+      <tr><td>縄張りから出て、戻ろうとするまでの時間（2026-10-22 更新、開発中）</td><td><code>max_time_outside_territory</code></td><td>小数</td><td>5</td><td>0〜100</td><td>縄張りの外まで追いかけたとき、戻り始めるまでの秒数。10/13 時点の「追跡終了時間」（<code>max_time_until_chasing_ends</code>）から内部名が変わったので、古いシーンの値は読み込まれません</td></tr>
+      <tr><td>周りを探す際の最大角度（2026-10-22 追加、開発中）</td><td><code>degree_value</code></td><td>小数</td><td>60</td><td>−1800〜1800</td><td>見失ったあと、周りを見回して探すときに振り向く最大の角度（度）</td></tr>
     </table>
     </div>
 

@@ -30,6 +30,59 @@
     </table>
     </div>
 
+    <section class="change-entry" id="2026-10-22-features">
+    <h2>2026-10-22 ツタ・川・体積雲・デカールと電光掲示板・ワールド文字・画面の重ね順・Presentation・VFX のひな形を追加</h2>
+    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（10/13 のコミット 68940682 以降の 877 コミット）</p>
+    <p>新しい部品の使い方と、使うのに必要な素材（画像・フォント・見本シーン・ひな形）を中心に書きました。今回は撮影をしていないので、すべて<b>コードを読んで書いた内容</b>です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>変わったこと</th><th>確認</th></tr>
+      <tr><td>新しいページ <a href="components/ivy.html">ツタ</a>。垂れ下がり・壁面・地面の生え方、なぞって道筋を決めるブラシ、葉 3 種類と葉にモデルを使う方法、膨張への追従</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>新しいページ <a href="components/river.html">川（River）</a>。地形の編集モード「川」で中心線を引く手順、川底を整える、流れで物とプレイヤーを押す、しぶき</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>新しいページ <a href="components/clouds.html">手続き空と体積雲</a>。空の「手続き空を使う」、入道雲、Cloud Volume、Cloud Scatter と、天気ごとの見本シーン <code>resources/Scenes/ProceduralSky/</code></td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>新しいページ <a href="components/decals.html">デカール・面テクスチャ・電光掲示板</a>。投影デカール、面テクスチャ領域（UV Surface Paint で面を選ぶ）、流れる文字・Flipbook・LED の表示</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>新しいページ <a href="components/world-text.html">ワールド文字</a>。フォントは <code>resources/fonts/</code> の <code>meiryob.ttc</code> など</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>新しいページ <a href="components/layered-compositor.html">Layered Scene Compositor</a>。<code>.replaylayerstack</code> で UI と 3D の重ね順を決める手順、Canvas の新しい項目、見本 <code>resources/Samples/LayeredCompositor/</code></td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>新しいページ <a href="windows/presentation-workspace.html">Presentation Workspace</a>。メニュー・起動ロゴ・ロード画面・ワイプのテンプレート、Prefab／起動ロゴ／ロード画面としての保存、C++ の呼び出し。旧方式の Cinematic Menu Flow</td><td><span class="status wait">ビルド後に確認</span> C# からの呼び出しは<span class="status todo">未実装</span></td></tr>
+      <tr><td><a href="components/particle-emitter.html#new-1022">Particle Emitter</a>：発生形状（円盤・リング・メッシュ表面）、VFX タイムラインと Burst、Flipbook、寿命カーブとグラデーション、キラキラ、リボン、3D メッシュ粒子、VFX マテリアル、粒子ライト、衝突と衝突デカール、連鎖、LOD</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="components/particle-emitter.html#assets">VFX の素材</a>：VFX制作ルームの「クイック作成」のひな形約 90 種（レーザー・銃口・毒霧・火炎放射・彗星・回復・氷晶など）、<code>.replayvfx</code> の保存・配置・配布フォルダー。メニュー名は「パーティクルエディタ」から「VFX制作ルーム」に変わりました</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="components/landscape.html#heightfield">地形のハイトフィールド</a>（<code>.rplheight</code>、最大 4033、浸食・段々・スタンプ・地表レイヤー・道・非破壊の編集レイヤー）と、Landscape Renderer の PBR 画像・市松模様・崖/苔/雪・外周壁・岩・読み込み設定。「タイリング」は「画像1枚の大きさ (m)」に変わりました</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="components/grass.html">草</a>が Landscape 以外のメッシュにも生やせるようになり、分類が Rendering へ。LOD と群生の項目</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="components/water-body.html#prop-shape">Water Body</a>：海の範囲の形（長方形・円）、Z 半径、縁のブレンド、遠景の海。使わない項目が隠れるように</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="components/lines.html#stroke">3D ライン・軌跡</a>の 4 色グラデーション・幅カーブ・ねじれ、<a href="components/camera.html#properties">Camera</a> の Presentation Camera Only、<a href="components/sky.html">空</a>の項目の出し分け</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="components/gameplay.html#enemy">Enemy Behaviour</a>：「縄張り範囲」が 1 つの数値になり、10/13 に書いた登録の不具合は解消。「追跡終了時間」は「縄張りから出て、戻ろうとするまでの時間」（<code>max_time_outside_territory</code>）に変わり、「周りを探す際の最大角度」が増えました</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+    </table>
+    </div>
+    <p><b>確認範囲：</b>どれも実機で動かしていません。インスペクターの表示名・既定値・範囲は登録コードと各コンポーネントの宣言から、手順はエディターのコードから書きました。GPU 粒子やシェーダー周りの最適化・検証用のコミット（全体の大半）は、使い方が変わらないので載せていません。</p>
+    <h3>直したページ</h3>
+    <p><a href="components/ivy.html">ツタ</a>（新規）、<a href="components/river.html">川</a>（新規）、<a href="components/clouds.html">手続き空と体積雲</a>（新規）、<a href="components/decals.html">デカール・電光掲示板</a>（新規）、<a href="components/world-text.html">ワールド文字</a>（新規）、<a href="components/layered-compositor.html">Layered Scene Compositor</a>（新規）、<a href="windows/presentation-workspace.html">Presentation Workspace</a>（新規）、<a href="components/particle-emitter.html">Particle Emitter</a>、<a href="windows/particle-effect-editor.html">Particle Editor</a>、<a href="components/landscape.html">地形</a>、<a href="components/grass.html">草</a>、<a href="components/water-body.html">Water Body</a>、<a href="components/sky.html">空</a>、<a href="components/lines.html">3D ライン</a>、<a href="components/camera.html">Camera</a>、<a href="components/gameplay.html">ゲームプレイ</a>、目次・コンポーネント一覧・リファレンス表</p>
+    </section>
+    <section class="change-entry" id="2026-10-13-features">
+    <h2>2026-10-13 PBF 流体・FFT 海洋・草・フックの握り・ボーン回転など、未記載だった機能の説明を追加</h2>
+    <p class="meta">対象：ブランチ sinotake_test / コミット 880398d5</p>
+    <p>これまでにエンジンへ入っていたのに、ドキュメントに書かれていなかった機能をまとめて追加しました。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>変わったこと</th><th>確認</th></tr>
+      <tr><td>新しいページ <a href="components/pbf-fluid.html">PBF 流体</a>。粒子で水を動かす部品のモード、デモシーン、項目、重さの目安</td><td><span class="status ok">確認済み</span> Release でデモシーンを実行して撮影</td></tr>
+      <tr><td><a href="components/water-body.html#fft">Water Body の FFT 海洋</a>（波の項目と既定値）、GPU 浅水波、流体密度</td><td><span class="status ok">確認済み</span> Release で実行して撮影</td></tr>
+      <tr><td>新しいページ <a href="components/grass.html">草（Grass Procedural・Grass Brush）</a>。草を生やす手順、塗って増やす・消す手順、風と衝撃波、項目</td><td><span class="status ok">確認済み</span> Release でデモシーンを実行して撮影</td></tr>
+      <tr><td><a href="components/inflation.html#grip">フックの爪で風船を握る</a>（IK で指を閉じ、握った所がへこむ）と、スクリプトの <code>PressAt</code>・<code>RaycastSurface</code></td><td><span class="status ok">確認済み</span> Release で実行して撮影</td></tr>
+      <tr><td><a href="windows/motion-workspace.html#bone-rotate">ボーン回転を Maya 風に</a>：リングの接線方向へのドラッグ、球の内側のトラックボール回転、<b>J</b> でスナップ反転、<b>+</b>／<b>−</b> でギズモの大きさ</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="components/particle-emitter.html#waterfall">Particle Emitter の滝</a>の項目</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="components/audio-source.html#cri">CRI Audio Source・CRI Audio Listener</a>（開発中。CRI のライブラリが無いと音を鳴らさない版になる）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="components/gameplay.html#enemy">Enemy Behaviour の縄張り</a>の項目。「縄張り範囲」が同じ内部名 <code>territory_points</code> で重複して登録されている不具合も記載</td><td><span class="status todo">未着手</span> 重複登録の修正</td></tr>
+      <tr><td><a href="components/physics.html">Rigidbody の初速</a>（<code>initial_linear_velocity</code>）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="components/equipment.html#anchor-survive">刺したアンカーが残る条件</a></td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="editor/game-scene-settings.html">軽量CSM (2段・1024px)</a> と環境変数 <code>REPLAY_SHADOW_MODE</code></td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="csharp/build.html">C# のビルド</a>：Source Generator の自動ビルドと、プロジェクト参照の相対パス化</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="data/scene-file.html#guid-merge">マージ後に物が描かれない問題</a>：アセットの GUID をパスから決めるようにした理由と、壊れた AssetDatabase の読み方</td><td><span class="status ok">確認済み</span> フックが描かれることを確認</td></tr>
+    </table>
+    </div>
+    <p><b>確認範囲：</b>撮影したものは実機で動作を見ています。それ以外はコードを読んで書いた内容です。ハイトフィールドのランドスケープと、作り直し中の空（体積雲・星・月）は作業中のため、まだ載せていません。</p>
+    <h3>直したページ</h3>
+    <p><a href="components/pbf-fluid.html">PBF 流体</a>（新規）、<a href="components/grass.html">草</a>（新規）、<a href="components/water-body.html">Water Body</a>、<a href="components/inflation.html">膨張</a>、<a href="components/particle-emitter.html">Particle Emitter</a>、<a href="components/audio-source.html">Audio Source</a>、<a href="components/gameplay.html">ゲームプレイ</a>、<a href="components/physics.html">物理</a>、<a href="components/equipment.html">装備</a>、<a href="windows/motion-workspace.html">モーション</a>、<a href="editor/game-scene-settings.html">描画設定</a>、<a href="csharp/build.html">C# のビルド</a>、<a href="data/scene-file.html">シーンファイル</a>、目次・コンポーネント一覧・リファレンス表</p>
+    </section>
     <section class="change-entry" id="2026-10-10-particle-material">
     <h2>2026-10-10 Particle Renderer と Shader Composer の材質連携、水幕と水面の調整</h2>
     <p class="meta">対象：ブランチ sinotake_test / コミット cae7aae0</p>
