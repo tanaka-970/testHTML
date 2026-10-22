@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>モデルにアニメーションを追加する - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / ウィンドウ / モデルにアニメーションを追加する</div>
+    <h1>モデルにアニメーションを追加する</h1>
+    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（コードから書いた内容。実機での確認はまだ）</p>
+
+    <p>キャラクターなどのモデルに、待機・歩く・攻撃などのアニメーションを付けて、ゲームで再生するまでの手順です。エンジンの中で骨にキーを打ってクリップを作る方法（<b>アニメーション Workspace</b>）と、もともと骨のないモデルに Blender で骨を入れる方法（<b>リグ作成ツール</b>）をまとめています。</p>
+
+    <h2 id="routes">どの方法を使うか</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>モデルの状態</th><th>やること</th><th>見る所</th></tr>
+      <tr><td>骨もアニメーションも入った GLB</td><td>そのまま置き、Animator の状態にアニメーションを割り当てる</td><td><a href="#animator">Animator で再生する</a></td></tr>
+      <tr><td>骨はあるが、欲しい動きが無い</td><td>アニメーション Workspace でクリップを作る</td><td><a href="#clip">クリップを作る</a></td></tr>
+      <tr><td>GLB の動きを少し直したい</td><td>GLB のアニメーションを取り込んで直し、書き戻す</td><td><a href="#import">GLB から取り込む・書き戻す</a></td></tr>
+      <tr><td>骨が無いモデル（一体物の glb など）</td><td>Blender のリグ作成ツールで骨を入れてから上へ</td><td><a href="#rig">骨の無いモデルに骨を入れる</a></td></tr>
+    </table>
+    </div>
+
+    <h2 id="assets">使うファイル（素材）</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ファイル</th><th>中身</th></tr>
+      <tr><td><code>.glb</code></td><td>骨（スキン）付きのモデル。アニメーションも中に入れられる。Skinned Mesh Renderer で表示する</td></tr>
+      <tr><td><code>.replayrig</code></td><td>RigClip（骨のキーの集まり＝1 本のアニメーション）、または Motion リグで保存した骨のポーズ。どの骨構成のモデル用かを覚えていて、骨構成の違うモデルには読み込めない</td></tr>
+      <tr><td><code>resources/model/Alpfa/</code></td><td>リグ作成ツールの見本。<code>Alpfa.glb</code>（骨なし）、<code>rig_joints.json</code>（関節の候補）、<code>rig_spec.txt</code>（決めた関節の位置）、<code>Alpfa_Rigged.glb</code>（骨入りの完成品）</td></tr>
+      <tr><td><code>resources/anime_seisakuyou.replayscene</code></td><td>アニメーション作成用のシーン</td></tr>
+    </table>
+    </div>
+
+    <h2 id="workspace">アニメーション Workspace を開く</h2>
+    <ol class="steps">
+      <li>シーンに、骨付きのモデル（Skinned Mesh Renderer の付いた GameObject）を置く。プロジェクトパネルから骨付きの GLB を置くと Skinned Mesh Renderer が付き、アニメーション入りなら Animator も付きます（<a href="../components/mesh-renderers.html#create">置き方</a>）</li>
+      <li>メニューバーの <b>Window</b> の下の方にある <b>アニメーション Workspaceへ</b> を選ぶ（検索欄で「アニメーション」と打っても出ます）</li>
+      <li>上のバーに「モデル アニメーション」と出ます。終わるときは <b>通常のシーンへ戻る</b></li>
+    </ol>
+    <div class="table-wrap">
+    <table>
+      <tr><th>パネル</th><th>内容</th></tr>
+      <tr><td>モデル / 骨</td><td>上の欄で編集するモデルを選ぶ（シーンの Skinned Mesh だけが出ます）。下は骨の木。クリックで選び、Ctrl+クリックで複数選ぶ。「骨を検索...」で絞り込み</td></tr>
+      <tr><td>骨のトランスフォーム</td><td>選んだ骨の移動・回転（度）・拡縮の数値</td></tr>
+      <tr><td>Motion リグ</td><td>クリップの作成・保存・GLB の取り込みと書き込み、再生、骨ごとのキーのタイムライン</td></tr>
+      <tr><td>Animator（Workspace パネル）</td><td>状態・遷移の編集。モデルの表示とカメラの設定もここ</td></tr>
+    </table>
+    </div>
+    <p>カメラ：Alt+左ドラッグで周回、中ドラッグでパン（「Maya式 Alt ドラッグ操作」オンなら Alt+中）、Alt+右ドラッグでドリー、ホイールでズーム、<b>F</b> で選んだモデルへフォーカス。</p>
+    <p>背景は既定で単色と固定の平行光です。「<b>シーンの空とライトを使う</b>」をオンにすると、シーンの空・ライト・環境光で表示します（2026-10-20 追加。ゲームと同じ明るさで確認したいとき）。</p>
+
+    <h2 id="clip">クリップを作る</h2>
+    <ol class="steps">
+      <li>「モデル / 骨」でモデルを選ぶ</li>
+      <li>Motion リグの「クリップ / 保存・GLB 取り込み」で <b>新規クリップ</b> を押す。名前 NewClip、長さ 1 秒、30 FPS、ループありのクリップができます</li>
+      <li>「クリップ設定 / GLB 書き込み」で <b>名前</b>（例：Idle、Attack）、<b>長さ（秒）</b>、<b>FPS</b>、<b>ループ</b> を決める。長さを縮めると、はみ出たキーは消えます</li>
+      <li>「時間」スライダーか <b>前フレーム</b>・<b>次フレーム</b>（← →キー）で、キーを打つ時刻へ移る。表示の「F 12 / 30」は今のフレームと全体のフレーム数です</li>
+      <li>シーンビューで骨をクリックして選び、ギズモで回す（Shift+E 回転、Shift+W 移動、Shift+R 拡縮。<a href="motion-workspace.html#bone-rotate">骨を回す操作</a>）。数値は「骨のトランスフォーム」でも入れられます</li>
+      <li><b>全ボーンにキー</b>（<b>S</b> キー）で、今の時刻に全部の骨のポーズをキーにする。<b>自動キー</b> をオンにすると、骨を動かしたときに選んだ骨へ自動でキーが入ります</li>
+      <li>時刻を変えて、ポーズを作り、キーを打つ、をくり返す。<b>再生</b>（Space）で確かめる</li>
+      <li><b>保存</b> で <code>.replayrig</code> に保存する（初回は保存先を聞かれます。<b>別名保存</b> で別のファイルに）</li>
+    </ol>
+    <h3 id="clip-edit">キーの直し方</h3>
+    <ul>
+      <li>タイムラインの骨の行でキーをクリックして選び、<b>キーを打つ / 更新</b>、<b>選択キー削除</b>、<b>キーをコピー</b>・<b>キーを貼り付け</b></li>
+      <li>キーの補間は <b>ステップ</b>（次のキーまで止まる）／<b>リニア</b>／<b>スムーズ</b></li>
+      <li>同じポーズを別の時刻に使うときは、<b>選択ポーズをコピー</b> → 時刻を移す → <b>選択ポーズを貼り付け</b> → S</li>
+      <li><b>戻す</b>・<b>やり直す</b> はクリップの編集を 64 回まで戻せます</li>
+      <li>保存していない変更があるままモデルを切り替えようとすると、確認が出ます</li>
+    </ul>
+
+    <h2 id="animator">Animator で再生する</h2>
+    <p>作ったクリップ、または GLB に入っているアニメーションを、Animator の状態に割り当てます。</p>
+    <ol class="steps">
+      <li>Workspace パネルの Animator の欄で、Animator が無ければ <b>選択 GameObject に Animator を追加</b></li>
+      <li><b>状態を追加</b> で状態を作り、「状態名」を付ける（Idle、Walk など）。「開始状態」で最初の状態を選ぶ</li>
+      <li>状態に動きを割り当てる：
+        <ul>
+          <li>GLB の中のアニメーション：「<b>GLB アニメーション</b>」の一覧から選ぶ（または「GLB クリップ番号」に 0 から数えた番号）</li>
+          <li>作ったクリップ：「<b>RigClip パス</b>」の <b>参照...</b> で <code>.replayrig</code> を選ぶ。GLB に書き込まなくても、そのまま再生できます</li>
+        </ul>
+        どちらか片方だけが使われます（片方を入れるともう片方は空になります）
+      </li>
+      <li>「状態をループ」「再生速度」を決め、<b>遷移を追加</b> で切り替えの条件を作る（条件の種類は <a href="../components/animator.html#conditions">Animator</a>）</li>
+      <li>ゲームを実行して確かめる。C# からは <code>AnimatorComponent.Play("Attack", 0.1f)</code> や <code>SetFloat</code> で切り替えます</li>
+    </ol>
+    <p>状態グラフの中で ◆ が付いているのが開始状態です。Animator の項目の詳しい説明は <a href="../components/animator.html">Animator</a> を見てください。</p>
+
+    <h2 id="import">GLB から取り込む・書き戻す</h2>
+    <h3 id="import-glb">GLB のアニメーションを開いて直す</h3>
+    <ol class="steps">
+      <li>Motion リグの <b>GLB を開く...</b> で GLB を選ぶ（編集中のモデルと同じ骨構成のもの）</li>
+      <li>「GLB アニメーション」の一覧から選び、<b>選択アニメーションを開く</b>。骨の移動・回転・拡縮のキーがクリップとして読み込まれます</li>
+      <li>キーを直して、<code>.replayrig</code> として保存するか、下の方法で GLB へ書き戻す</li>
+    </ol>
+    <p>モーフ（表情など）の重みは、プレビューには出ますが編集はできません。書き戻すときは元のモーフのアニメーションをそのまま残します。</p>
+
+    <h3 id="write-glb">GLB へ書き込む</h3>
+    <ol class="steps">
+      <li>「クリップ設定 / GLB 書き込み」の <b>GLB へ書き込み...</b> を押す</li>
+      <li>元の GLB（まだ選んでいなければ聞かれます）と、保存先の GLB を選ぶ。元のファイルとは別の名前で保存すると安全です</li>
+      <li>同じ名前のアニメーションがあるときは、「<b>GLB の同名アニメを上書き</b>」がオンなら置き換え、オフなら追加します</li>
+      <li>「検証済み GLB を保存しました」と出たら完了。モデルの読み込みがやり直され、Animator の「GLB アニメーション」一覧に出ます</li>
+    </ol>
+    <p>GLB に入れておくと、ほかのツール（Blender など）でも同じ動きを使えます。エンジンの中だけで使うなら <code>.replayrig</code> のままで構いません。</p>
+
+    <h2 id="rig">骨の無いモデルに骨を入れる（リグ作成ツール）</h2>
+    <p>手・足・耳などが別パーツになった、骨の無いモデルに骨を入れて、骨付きの GLB を作るツールが <code>Tools/BlenderRig/</code> にあります。Blender（Steam 版 5.2：<code>C:\Program Files (x86)\Steam\steamapps\common\Blender\blender.exe</code>）をコマンドで動かして使います。</p>
+    <ol class="steps">
+      <li><b>関節の候補を書く</b>：<code>rig_joints.json</code> に、関節の名前・親・おおよその位置（m）・説明を書く。左右のあるものは片側（+X）だけ書けば反対側が自動で作られます。見本は <code>resources/model/Alpfa/rig_joints.json</code></li>
+      <li><b>関節を置くページを作る</b>：
+<pre><code>blender -b --factory-startup --python Tools/BlenderRig/make_rig_page.py -- --input model.glb --joints rig_joints.json --output rig_page.html</code></pre>
+        モデルの正面と横から見た画像が入った HTML ページができます</li>
+      <li><b>ページで関節の位置を合わせる</b>：ブラウザで開き、関節の丸を正面と横の画像の上でドラッグする（左右は鏡写しで一緒に動きます）。終わったら <b>仕様をコピー</b> で、<code>rig_spec.txt</code> の形式の文字をコピーし、ファイルに保存する</li>
+      <li><b>骨入りの GLB を作る</b>：
+<pre><code>blender -b --factory-startup --python Tools/BlenderRig/build_rig.py -- --spec rig_spec.txt --input model.glb --output model_Rigged.glb</code></pre>
+        子を持たない関節（○○Tip）は、親の骨の先端の位置として使われます。パーツは一番近い骨に丸ごと付きます。<code>--squash 骨名</code> を付けると、その骨の下に伸び縮み用の骨を足します。<code>--blend out.blend</code> で Blender のファイルも保存できます</li>
+      <li>できた GLB をプロジェクトに入れ、シーンに置いて <a href="#clip">クリップを作る</a> へ</li>
+    </ol>
+    <p>パーツが多すぎる・すき間があるモデルは、先に <code>fuse_mesh.py</code> で 1 つのメッシュにまとめられます（<code>--tris</code> で三角形を減らす、<code>--gap</code> で近いパーツをくっつける）。UV とテクスチャは残ります。</p>
+    <div class="note"><strong>rig_spec.txt の形</strong>1 行目が <code>RIG v1 モデル名</code>、続いて「名前 親 x y z」を 1 行ずつ（Blender 座標、m。X=キャラの左、Y=後ろ、Z=上）。左右は <code>.L</code>・<code>.R</code> を付けます。</div>
+
+    <h2 id="limits">うまくいかないとき</h2>
+    <ul>
+      <li>「骨構成情報がないか骨の構成が違うため、このモデルには読み込めません」：別のモデル用の <code>.replayrig</code> です。同じ骨構成のモデルを選んでください</li>
+      <li>「GLB の骨構成が現在のモデルと違います」：取り込もうとした GLB の骨の名前・階層が違います</li>
+      <li>「同じ階層パスの骨が複数あります」：同じ名前の骨が同じ親の下に並んでいるモデルは、間違って編集しないよう編集できません。Blender で骨の名前を直してください</li>
+      <li>「モデルと骨を読み込み中です」が消えない：非表示のモデルは読み込まれません。通常のシーンで表示をオンにしてください</li>
+      <li>骨が 256 本を超えるモデル・モーフが 2 つ以上あるモデルの制限は <a href="../components/mesh-renderers.html#gltf-limits">glTF モデルの制限</a> を見てください</li>
+    </ul>
+
+    <h2>関連項目</h2>
+    <ul>
+      <li><a href="../components/animator.html">Animator</a>（状態・遷移・C#）</li>
+      <li><a href="../components/mesh-renderers.html">Skinned Mesh Renderer</a></li>
+      <li><a href="motion-workspace.html">Motion Workspace</a>（骨以外のプロパティを動かす Motion と、骨を回す操作）</li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

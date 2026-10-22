@@ -22,6 +22,8 @@
     <p>骨の入ったモデルのアニメーションを再生するコンポーネントです。「待機」「走る」のような<b>状態（State）</b>ごとに再生するアニメーションを決め、条件がそろったら別の状態へ<b>遷移（Transition）</b>させます。姿勢は同じ GameObject の <a href="mesh-renderers.html#animator">Skinned Mesh Renderer</a> に表示されます。</p>
     <p>UI やオブジェクトの位置・色などを時間で動かすときは、このコンポーネントではなく Motion Player を使います。</p>
 
+    <div class="note"><strong>2026-10-22 追記</strong>状態には、GLB の中のアニメーション（クリップ番号）の代わりに、エンジンで作った RigClip（<code>.replayrig</code>、<code>states[番号].rig_clip_path</code>）を割り当てることもできます。作り方は <a href="../windows/model-animation.html">モデルにアニメーションを追加する</a>。</div>
+
     <h2 id="when">こんなときに使う</h2>
     <ul>
       <li>骨の入ったキャラクターに、待機・歩く・走るなどのアニメーションを付けたいとき</li>
