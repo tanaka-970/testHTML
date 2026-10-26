@@ -69,7 +69,7 @@
     <h2 id="usage">使い方</h2>
     <h3>ゲームを始めたら BGM を鳴らす</h3>
     <ol class="steps">
-      <li>WAV ファイルを <code>resources</code> フォルダの中に置きます。</li>
+      <li>WAV または MP3 ファイルを <code>resources</code> フォルダの中に置きます。</li>
       <li>空の GameObject を作り、<b>コンポーネントを追加 &gt; Audio &gt; Audio Source</b> を付けます。</li>
       <li><b>Clip Path</b> にファイルの場所（例：<code>resources/Sounds/bgm.wav</code>）を入れます。</li>
       <li><b>Loop</b> と <b>Play On Start</b> をオンにします。</li>
@@ -89,12 +89,12 @@
     <ul>
       <li>ファイルが開けない、または WAV として読めないときは、音は鳴らず、デバッグ出力に「[Audio] WAV open failed: …」や「[Audio] Unsupported WAV header: …」と 1 回だけ表示されます。</li>
       <li>MP3 は対応しています。OGG や未対応の形式は、読み込み可否を個別に確認してください。</li>
-      <li>Clip Path はアセットの参照ではなく、ただのファイルの場所です。ファイルの名前や場所を変えたときは、Clip Path も書き直してください。</li>
+      <li>Clip Path はファイルの場所です。音源アセットを選んだ場合はその参照を優先します。Clip Path を直接指定した場合、ファイルの名前や場所を変えたときは書き直してください。</li>
       <li>コンポーネントを無効にしたり、ゲームを停止したりすると、鳴っている音は止まります。</li>
     </ul>
 
     <h2 id="cri">CRI Audio Source・CRI Audio Listener（開発中、2026-10-13 追加）</h2>
-    <p>CRI ADX のサウンドを鳴らす部品です。WAV を直接鳴らす Audio Source とは別の部品で、<b>すでに読み込み済みのキューシート</b>の中から、キュー名を指定して再生します。聞く位置は CRI Audio Listener（Transform の位置と回転を使う）です。</p>
+    <p>CRI ADX のサウンドを鳴らす部品です。ACB キューシートとキュー名を指定して再生します。通常の Audio Source も音源アセットや ACB を指定できます。聞く位置は CRI Audio Listener（Transform の位置と回転を使う）です。</p>
     <div class="warning"><strong>制限</strong>チームで開発中の部品です。CRI ADX LE のライブラリ（<code>ThirdParty\CRI\libs\x64\cri_ware_pcx64_le_import.lib</code> と <code>cri_ware_pcx64_le.dll</code>）が無い環境では、音を鳴らさない版でビルドされます（ビルド時に警告が出ます）。CRI ADX LE SDK の <code>pc\libs\x64</code> から 2 つのファイルをこのフォルダへ置くと有効になります。キューシートの読み込み方法は、まだ整備中です。</div>
     <div class="table-wrap">
     <table>
@@ -113,6 +113,34 @@
     <ul>
       <li><a href="audio-listener.html">Audio Listener</a></li>
     </ul>
+    <section id="music-guide">
+    <h2>音楽・音響の使い方</h2>
+    <h3 id="music-picker">曲を選んで試聴する</h3>
+    <ol>
+      <li>GameObject に <b>Audio Source</b> を追加し、Inspector の<b>音源の一覧</b>を開きます。一覧は最初から開いており、プロジェクトの音声アセットと <code>resources</code> 内の WAV・WAVE・MP3・ACB が表示されます。</li>
+      <li>曲をクリックして<b>選んだ曲を試聴</b>を押します。<b>試聴を止める</b>で停止します。<b>曲名で絞り込む（任意）</b>、<b>最近選んだ音だけ</b>、<b>一覧を更新</b>、<b>ファイルから探す</b>も使えます。最近の選択はこの起動中の直近12件です。</li>
+      <li><b>この曲に決定</b>で音源を割り当てます。WAV・MP3 は一覧のダブルクリックでも決定できます。ACB はキューを選んでから決定します。キューが読めない場合は ACF を選びます。</li>
+      <li>BGM なら<b>音の種類</b>を BGM、<b>Spatial</b> を 2D、<b>Loop</b> と<b>Play On Start</b>をオンにします。再生開始位置、フェードイン・フェードアウト秒、同じ種類の音を切り替える設定も必要に応じて指定します。</li>
+    </ol>
+    <p>音源一覧に表示されない場合は<b>ファイルから探す</b>を使います。一覧の探索には件数上限があり、上限に達すると Inspector に表示されます。CRI の試聴と再生には対応ライブラリと ACB／ACF が必要です。</p>
+    <h3 id="music-controls">音源ごとの調整</h3>
+    <div class="table-wrap"><table>
+      <tr><th>Inspector の項目</th><th>使い方</th></tr>
+      <tr><td>音の種類</td><td>BGM・SE・ボイス・環境音・UI から選択。Audio Mixer の種類別音量が適用されます。</td></tr>
+      <tr><td>左右のパン（2D）</td><td>−1 は左、0 は中央、1 は右。3D の左右は音源の位置から決まります。</td></tr>
+      <tr><td>高音の通り方／低音を削る量</td><td>音をこもらせたり、低音を抑えたりします。</td></tr>
+      <tr><td>反響の送り先／反響への追加送り量</td><td>ACF の DSP バスと送り量を指定します。反響の種類はバス側で設定します。</td></tr>
+      <tr><td>ドップラーの強さ（3D）</td><td>移動速度に応じて音程を変えます。0 で無効です。</td></tr>
+      <tr><td>ミュート／フェードイン秒／フェードアウト秒／再生開始位置（秒）</td><td>再生時の音量・入り方・止まり方・開始位置を指定します。</td></tr>
+      <tr><td>同じ種類の音を切り替える</td><td>再生開始時、同じ種類で鳴っている音をフェードアウトします。BGM の切り替えに使います。</td></tr>
+    </table></div>
+    <h3 id="music-mixer">全体と種類別の音量</h3>
+    <p>シーンに <b>Audio Mixer</b> を追加すると、全体・BGM・SE・ボイス・環境音・UI の音量と全体ミュートをまとめて設定できます。複数ある場合は優先度が高いものを使います。CRI の共通 ACF と DSP 設定名も指定できます。</p>
+    <h3 id="music-environment">場所ごとの響きと遮音</h3>
+    <p><b>Audio Environment Zone</b> は箱または球の範囲を置き、室内・洞窟・水中・カスタムの音響を設定します。聞く位置が入ると音量、高音、反響が境界幅と変化時間に応じて切り替わります。2D の BGM にも適用する設定があります。</p>
+    <p><b>Audio Acoustics</b> は 3D 音源と Audio Listener の間のコライダーを調べ、壁越しの音量と高音を調整します。水面下では水中音響へ自動切り替えできます。音源側の<b>壁越しの遮音対象（3D）</b>をオンにし、調べるレイヤーと最大距離を設定します。</p>
+    <p class="meta">対象：sinotake_test / cf1faf7f まで。コード確認のみ、実機未確認。</p>
+    </section>
     <section id="update-2026-10-27">
     <h2>2026-10-27 追記：音源選択と音響</h2>
     <p>Inspector の音源一覧は初期表示され、検索は任意です。音源の検索・試聴・最近使った項目からの選択に対応しました。Audio Source には音量・音程に加えて、パン、ローパス／ハイパス、反響センド、ドップラー、遮音などの設定が追加されています。</p>

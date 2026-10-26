@@ -92,7 +92,7 @@ window.DOCS_TOC = [
     ]},
     { title: "Audio", children: [
       { title: "Audio Listener", href: "components/audio-listener.html", summary: "音を聞く位置", keywords: "オーディオリスナー 耳 3D 優先度" },
-      { title: "Audio Source", href: "components/audio-source.html", summary: "WAV ファイルを鳴らす", keywords: "オーディオソース 音 サウンド BGM 効果音 WAV Clip Path Loop Volume Pitch 3D Min Max Distance PlaySound StopSound" }
+      { title: "音楽・音響（Audio Source / Mixer / Environment）", href: "components/audio-source.html#music-guide", summary: "曲の検索・試聴、BGM、ミキサー、環境音響、壁越しの遮音", keywords: "音楽 曲 BGM 音源 オーディオ サウンド WAV MP3 ACB CRI Audio Source Audio Mixer Audio Acoustics Audio Environment Zone 試聴 フェード 反響 遮音" }
     ]},
     { title: "Motion", children: [
       { title: "Motion Player と Composition Player", href: "components/motion-players.html", summary: "モーションとコンポジションの再生、きっかけ、終了処理", keywords: "モーション プレイヤー コンポジション 再生 きっかけ トリガー 押された カーソル State 遅延 ループ ピンポン 保持 Blend In 重み Time Scale ばらつき MotionFinished キー" },
