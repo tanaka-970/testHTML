@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
     <h1>Effect Stack と Effect Preset</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>ぼかし、発光、色調補正、ワイプなどの画面効果（エフェクト）を、上から順に重ねてかけるコンポーネントです。かける相手によって 3 種類あります。エフェクトの並びは Effect Preset というファイルに保存して、使い回すこともできます。</p>
     <div class="table-wrap">
@@ -125,6 +125,17 @@
     </table>
     </div>
     <p>UI Workspace で Effect Stack の付いた UI を選ぶと、<b>範囲制限</b> がオンのとき、画面上に適用範囲の枠とつまみが表示されます。</p>
+
+    <h3 id="ui-alpha-clip">透過部分を保護（Effect Stack（UI）、2026-10-24 追加）</h3>
+    <p>アイコンなど透明な部分のある画像に、影や発光以外のエフェクトをはみ出させずに掛けます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>透過部分を保護</td><td><code>alpha_clip_mode</code></td><td>Off</td><td></td><td>入力画像の透明な画素へ Effect を描かず、不透明な部分だけに効かせます。背景を取り込む設定とは併用できません。</td></tr>
+      <tr><td>透過判定の閾値</td><td><code>alpha_clip_threshold</code></td><td>0.02</td><td>0〜1</td><td>この不透明度以下の画素を透明として扱います。縁に薄いゴミ画素が残る画像は値を上げてください。</td></tr>
+      <tr><td>透過境界のぼかし</td><td><code>alpha_clip_softness</code></td><td>0.05</td><td>0〜1</td><td>閾値から Effect が全開になるまでの不透明度の幅です。0 で境界をくっきり切ります。</td></tr>
+    </table>
+    </div>
 
     <h2 id="region">適用範囲（3 種類共通）</h2>
     <p>エフェクトを画面の一部だけにかけるための設定です。「Effect Stack / 適用範囲」の見出しの中にあります。位置と大きさは、効果をかける相手の画面上の四角を 0〜1 とした値で指定します。</p>

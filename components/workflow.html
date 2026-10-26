@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>イベント進行・UIフロー・シーン構成 - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / 進行・画面</div>
+    <h1>イベント進行・UIフロー・シーン構成</h1>
+
+    <p class="meta">対象：ブランチ sinotake_test / コミット aa27b6b3（コードから書いた内容。実機での確認はまだ）（2026-10-07 に入った機能を追記）</p>
+
+    <p>コードを書かずに、ゲームの進行（エリアに入ったら扉を開けて会話を始める、など）と、メニュー画面の切り替え、部屋ごとのシーンの読み込みを作る仕組みです。どれもノードをつないだ図をファイルに保存し、シーンに置いた部品が実行します。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>プレイヤーがエリアに入ったら、扉を開け、少し待って、会話パネルを出したい（イベント進行）</li>
+      <li>タイトル・ゲーム・設定・ポーズの画面を、ボタンで行き来させたい（UIフロー）</li>
+      <li>広いマップを部屋ごとのシーンに分け、近づいた部屋だけ読み込みたい（シーン構成）</li>
+      <li>よく使う GameObject のまとまりを、名前を付けてすぐ選び直したい（選択セット）</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>作るもの</th><th>エディタ</th><th>ファイル</th><th>シーンに置く部品</th></tr>
+      <tr><td>イベント進行</td><td>Window &gt; イベント・進行エディタ</td><td><code>.replayevents</code></td><td>Event / UI Flow（＋ ワークフロートリガー）</td></tr>
+      <tr><td>UIフロー</td><td>Window &gt; UIフローエディタ</td><td><code>.replayuiflow</code></td><td>Event / UI Flow</td></tr>
+      <tr><td>シーン構成</td><td>Window &gt; シーン構成エディタ</td><td><code>.replayworld</code></td><td>Scene Composition</td></tr>
+      <tr><td>選択セット</td><td>Window &gt; 選択セット</td><td>シーンに保存</td><td>選択セット</td></tr>
+    </table>
+    </div>
+    <p>部品は <b>コンポーネントを追加 &gt; 進行・画面</b>（選択セットは <b>エディター</b>）にあります。</p>
+
+    <h2 id="events">イベント進行</h2>
+    <ol class="steps">
+      <li><b>Window &gt; イベント・進行エディタ</b> を開き、<b>新規</b> を押します。ひな形「エリア・扉・会話」（エリアに入る → 扉を開く → 扉を待つ → 会話パネルを表示 → 会話を開始）が入ります。</li>
+      <li>ノードを選ぶと右側に項目が出ます。名前・待つ秒数・イベント名・変数名などを決め、<b>次へ接続</b> でつなぎます。</li>
+      <li><b>保存</b> でファイルにします（<b>保存して開く</b>・<b>別名保存</b> もあります）。</li>
+      <li><b>フローをシーンへ配置</b> を押すと、シーンに Event / UI Flow の付いた GameObject ができます。ノードの <b>対象スロット</b> と同じ番号に、動かす GameObject（扉・会話パネルなど）を割り当てます（<b>階層の選択を割り当て</b> でも割り当てられます）。</li>
+      <li>エリアの判定には、Trigger の Collider を付けた GameObject に <b>ワークフロートリガー</b> を付け、<b>シグナル名</b> をイベントのノードと同じ名前にします。</li>
+      <li><b>その場で試す</b>・<b>1ノード進める</b> で、実行しなくても流れを確かめられます。<b>実行履歴（最新256件）</b> に通ったノードが残ります。</li>
+    </ol>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ノード</th><th>働き</th></tr>
+      <tr><td>開始</td><td>流れの始まり</td></tr>
+      <tr><td>エリアに入る</td><td>ワークフロートリガーの範囲に入るのを待つ</td></tr>
+      <tr><td>ボタンを押す</td><td>UI のボタンが押されるのを待つ</td></tr>
+      <tr><td>イベントを受信</td><td>同じ名前のイベント（シグナル）が来るのを待つ</td></tr>
+      <tr><td>待つ</td><td>決めた秒数だけ待つ（0 以上）</td></tr>
+      <tr><td>条件分岐</td><td>変数の値で進む先を分ける（一致・不一致）</td></tr>
+      <tr><td>変数を設定</td><td>変数に値を入れる</td></tr>
+      <tr><td>表示を切替</td><td>対象の GameObject を有効・無効にする</td></tr>
+      <tr><td>プロパティを変更</td><td>対象のコンポーネントの項目を書き換える</td></tr>
+      <tr><td>モーションを再生</td><td>対象のモーションを再生する（扉を開くなど）</td></tr>
+      <tr><td>イベントを発行</td><td>名前付きのイベントを送る（スクリプトや別のフローが受け取る）</td></tr>
+      <tr><td>シーンへ移動</td><td>別のシーンを読み込む</td></tr>
+    </table>
+    </div>
+    <p>「一度だけ実行」がオンのノードは、2 回目以降は飛ばします。「設定チェック」に、イベント名が空・移動先シーンが未指定などの問題が件数つきで出ます。</p>
+
+    <h2 id="ui-flow">UIフロー</h2>
+    <ol class="steps">
+      <li><b>Window &gt; UIフローエディタ</b> で <b>新規</b> を押します。ひな形「タイトル・設定・ポーズ」（タイトル・ゲーム・設定・ポーズの 4 画面と戻る）が入ります。</li>
+      <li><b>画面</b> ノード 1 つが 1 枚の画面（Canvas などの GameObject）です。<b>最初の画面にする</b> で始まりの画面を決めます。</li>
+      <li>画面どうしをつなぎ、接続ごとに <b>ボタンのスロット</b>（その画面のどのボタンで移るか）を決めます。<b>前の画面へ</b> ノードで、来た画面へ戻ります。</li>
+      <li>ポーズ画面のように時間を止めたい画面は <b>この画面ではゲーム時間を止める</b> をオンにします。</li>
+      <li>シーンへ配置し、画面とボタンの GameObject を対象スロットに割り当てます。</li>
+    </ol>
+    <p>UIフローには「画面」と「前の画面へ」のノードだけが使えます。</p>
+
+    <h2 id="composition">シーン構成</h2>
+    <ol class="steps">
+      <li><b>Window &gt; シーン構成エディタ</b> で <b>部屋を追加</b> を押し、<b>部屋のシーン</b> に読み込むシーンを選びます。位置・回転（度）・拡大率で置き場所を決めます。</li>
+      <li>部屋ごとに <b>常時読み込み</b> か <b>範囲に入ると読み込み</b> を選びます。範囲は <b>範囲の半幅</b>（既定 10, 5, 10）で、出てから <b>解放までの余裕</b>（既定 5 m）を過ぎると外します。境目で読み込みと解放を繰り返さないための余裕です。</li>
+      <li>部屋どうしを <b>部屋の接続</b> でつなぐと、Scene Composition の「接続した隣の部屋を先読み」で隣も読み込めます。</li>
+      <li>保存してシーンへ配置し、<b>シーン構成の観測対象を設定</b> で、範囲の判定に使う物（プレイヤーなど）を決めます。</li>
+      <li><b>構成から編集用シーンを作成</b> で、全部の部屋を並べた編集用のシーンを作れます。</li>
+    </ol>
+
+    <h2 id="selection-set">選択セット</h2>
+    <p><b>Window &gt; 選択セット</b> のパネルで、いま選んでいる GameObject のまとまりに名前を付けて保存し、あとでまとめて選び直せます。セットはシーンの「選択セット」コンポーネントとして保存され、削除済みの対象はパネルから整理できます。</p>
+
+    <h2 id="props">項目</h2>
+    <h3>Event / UI Flow</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>フローアセット</td><td><code>asset</code></td><td></td><td></td><td></td></tr>
+      <tr><td>対象の割り当て</td><td><code>bindings</code></td><td></td><td></td><td>ノードの対象スロットと同じ番号へGameObjectを設定します。</td></tr>
+    </table>
+    </div>
+    <h3>ワークフロートリガー</h3>
+    <p>同じ GameObject の Trigger Collider に入ったとき、シグナルを出します。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>シグナル名</td><td><code>signal</code></td><td>&quot;AreaEntered&quot;</td><td></td><td>イベント進行エディターで同じ名前のEventノードを作成します。</td></tr>
+      <tr><td>対象レイヤー</td><td><code>target_mask</code></td><td>-1</td><td></td><td></td></tr>
+      <tr><td>一度だけ発火</td><td><code>one_shot</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>発火済み</td><td><code>fired</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+      <tr><td>状態</td><td><code>status</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+    </table>
+    </div>
+    <h3>Scene Composition</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>シーン構成アセット</td><td><code>asset</code></td><td></td><td></td><td></td></tr>
+      <tr><td>読み込み判定の対象</td><td><code>observer</code></td><td></td><td></td><td></td></tr>
+      <tr><td>自動読み込み</td><td><code>streaming</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>接続した隣の部屋を先読み</td><td><code>preload_connected</code></td><td>オフ</td><td></td><td></td></tr>
+    </table>
+    </div>
+    <h3>選択セット</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>セット名</td><td><code>name</code></td><td>&quot;Selection Set&quot;</td><td></td><td></td></tr>
+      <tr><td>対象GameObject</td><td><code>members</code></td><td></td><td></td><td>Object ID参照で保存されます。削除済みの対象はパネルから整理できます。</td></tr>
+    </table>
+    </div>
+
+    <h2 id="related">関連項目</h2>
+    <ul>
+      <li><a href="../windows/presentation-workspace.html">Presentation Workspace</a>（メニュー・ロード画面の演出）</li>
+      <li><a href="../windows/scene-flow.html">Scene Flow</a></li>
+      <li><a href="scene-loader.html">Scene Loader</a></li>
+      <li><a href="ui-controls.html">UI の操作部品</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

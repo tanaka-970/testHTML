@@ -31,6 +31,16 @@
       <tr><td>Rendering</td><td><a href="mesh-renderers.html">Primitive Mesh Renderer</a></td><td>Cube や Sphere などの基本形状を表示する</td><td>なし</td><td></td></tr>
       <tr><td>Rendering</td><td><a href="mesh-renderers.html">Skinned Mesh Renderer</a></td><td>骨で動くモデルを表示する</td><td>なし</td><td>新リポジトリで骨 256 本の上限を解除、ウェイト 4 本超・複数モーフに対応。ビルドのみ確認</td></tr>
       <tr><td>Rendering</td><td><a href="animator.html">Animator</a></td><td>アニメーションの状態と切り替えを管理する</td><td>なし</td><td></td></tr>
+      <tr><td>アニメーション</td><td><a href="ik-ragdoll.html#two-bone">2ボーンIK</a></td><td>腕・脚の先をターゲットへ届かせる</td><td>なし</td><td>複数付けられる</td></tr>
+      <tr><td>アニメーション</td><td><a href="ik-ragdoll.html#fabrik">多関節IK（FABRIK）</a></td><td>Root から End までの関節列を曲げて先端を届かせる</td><td>なし</td><td>複数付けられる</td></tr>
+      <tr><td>Physics</td><td><a href="ik-ragdoll.html#ragdoll-control">ラグドール制御</a></td><td>物理骨の一括切り替えとリセット</td><td>なし</td><td>人型ラグドールの自動生成で付く</td></tr>
+      <tr><td>Physics</td><td><a href="ik-ragdoll.html#ragdoll-link">Ragdoll Bone Link</a></td><td>Rigidbody の姿勢を骨へ写す</td><td>なし</td><td>人型ラグドールの自動生成で付く</td></tr>
+      <tr><td>Physics</td><td><a href="wind.html#wind-reactive">風圧で揺れる</a></td><td>風と破裂の圧力で GameObject を傾けて揺らす</td><td>なし</td><td>コミット 28995f39</td></tr>
+      <tr><td>進行・画面</td><td><a href="workflow.html#events">Event / UI Flow</a></td><td>イベント進行・UI フローを実行する</td><td>なし</td><td>2026-10-07 追加</td></tr>
+      <tr><td>進行・画面</td><td><a href="workflow.html#events">ワークフロートリガー</a></td><td>Trigger に入るとシグナルを出す</td><td>なし</td><td>2026-10-07 追加</td></tr>
+      <tr><td>進行・画面</td><td><a href="workflow.html#composition">Scene Composition</a></td><td>部屋ごとのシーンを自動で読み込み・解放する</td><td>なし</td><td>2026-10-07 追加</td></tr>
+      <tr><td>エディター</td><td><a href="workflow.html#selection-set">選択セット</a></td><td>GameObject のまとまりを保存して選び直す</td><td>なし</td><td>2026-10-07 追加</td></tr>
+      <tr><td>Effects</td><td><a href="../windows/gamefeel.html#component">GameFeel Profile</a></td><td>シーンごとに演出設定を差し替える</td><td>なし</td><td>コミット 28995f39</td></tr>
       <tr><td>Rendering</td><td><a href="post-process-volume.html">Post Process Volume</a></td><td>ブルームや色補正など、画面全体の仕上げの設定</td><td>あり（4 枚）</td><td></td></tr>
       <tr><td>Rendering</td><td><a href="water-body.html">Water Body</a></td><td>海・湖の水面（波、反射、屈折、泡、水中の表現、FFT 海洋）</td><td>あり（9 枚）</td><td></td></tr>
       <tr><td>Physics</td><td><a href="pbf-fluid.html">PBF 流体</a></td><td>水に粒子の流体を足す（しぶき、放水、ハイブリッド、イベント式）</td><td>あり（4 枚）</td><td></td></tr>
@@ -62,6 +72,9 @@
       <tr><td>Camera</td><td><a href="camera.html">Camera</a></td><td>ゲーム中の視点</td><td>あり（1 枚）</td><td></td></tr>
       <tr><td>Camera</td><td><a href="camera-target.html">Camera Target</a></td><td>カメラに追いかけられる目印</td><td>なし</td><td></td></tr>
       <tr><td>Camera</td><td><a href="follow-target.html">Follow Target</a></td><td>カメラを Camera Target に追いかけさせる</td><td>なし</td><td></td></tr>
+      <tr><td>Camera</td><td><a href="camera-lens.html#running">Running Effects</a></td><td>走る速さで視野角・揺れ・ブラー・スピードラインを掛ける</td><td>なし</td><td>2026-10-23 追加。カメラに付けるかシーンに置く</td></tr>
+      <tr><td>Camera</td><td><a href="camera-lens.html#dof">Depth Of Field</a></td><td>被写界深度</td><td>なし</td><td>2026-10-23 追加。優先度の一番高い 1 つが効く</td></tr>
+      <tr><td>Camera</td><td><a href="camera-lens.html#flare">Lens Flare</a></td><td>レンズフレア</td><td>なし</td><td>2026-10-23 追加。優先度の一番高い 1 つが効く</td></tr>
       <tr><td>Camera</td><td><a href="orbit-camera.html">Orbit Camera</a></td><td>Camera Target の周りを回る三人称カメラ。壁よけ付き</td><td>なし</td><td>新規。マウス・キー・ホイールで操作。ゲームパッドのスティックでは回らない。C# の型なし</td></tr>
       <tr><td>Audio</td><td><a href="audio-listener.html">Audio Listener</a></td><td>音を聞く位置（耳）</td><td>なし</td><td></td></tr>
       <tr><td>Audio</td><td><a href="audio-source.html">Audio Source</a></td><td>音を鳴らす</td><td>なし</td><td></td></tr>
@@ -89,8 +102,11 @@
       <tr><td>Inflation</td><td><a href="inflation.html#connection">空気接続</a></td><td>供給元から膨張対象へ空気を送る</td><td>なし</td><td>新規。「接続中」の既定がオフ。C# は AirConnection</td></tr>
       <tr><td>Inflation</td><td><a href="inflation.html#surface">局所膨張</a></td><td>地面・壁の、空気を入れた点のまわりだけを盛り上げる</td><td>なし</td><td>新規（10/06）。乗れる・上の物を持ち上げる・入れすぎると破裂。C# は SurfaceInflation</td></tr>
       <tr><td>Inflation</td><td><a href="inflation.html#region">膨張区画</a></td><td>膨張対象の中の別々の部屋</td><td>なし</td><td>新規。C# は InflationRegion</td></tr>
-      <tr><td>Destruction</td><td><a href="destruction-reference.html#sliceable">Sliceable</a></td><td>実行中にメッシュを平面で切り、2 つの破片へ分ける</td><td>なし</td><td>Mesh・Skinned・Primitive のどれでも可。C# は ScriptBehaviour から Slice / CanSlice。試し方は<a href="destruction.html#try-slice">破壊</a></td></tr>
-      <tr><td>Destruction</td><td><a href="destruction-reference.html#destructible">Destructible</a></td><td>事前に割った破片（Destruction Asset）を、Damage や衝突で分離する</td><td>なし</td><td>アセットは Destruction Editor のボロノイ分割で作る。C# は ScriptBehaviour から ApplyRadialDamage / CanDamage</td></tr>
+      <tr><td>Destruction</td><td><a href="destruction-reference.html#destruction">破壊</a></td><td>壊される側の入口。機能の付け外しと共通の設定</td><td>なし</td><td>2026-10-24 追加（コミット 28995f39）。C# の型なし</td></tr>
+      <tr><td>Destruction</td><td><a href="destruction-reference.html#sculpt">欠損（Sculpt）</a></td><td>形に欠け・穴・えぐれを焼き込む</td><td>なし</td><td>破壊の機能。開いたメッシュ・重なりのあるモデルも削れる</td></tr>
+      <tr><td>Destruction</td><td><a href="destruction-reference.html#sliceable">実行時切断（Slice）</a></td><td>実行中にメッシュを平面で切り、2 つの破片へ分ける</td><td>なし</td><td>破壊の機能（旧 Sliceable）。C# は ScriptBehaviour から Slice / CanSlice。試し方は<a href="destruction.html#slice">破壊</a></td></tr>
+      <tr><td>Destruction</td><td><a href="destruction-reference.html#destructible">事前破砕（Blast）</a></td><td>事前に割った破片（Destruction Asset）を、Damage や衝突で分離する</td><td>なし</td><td>破壊の機能（旧 Destructible）。アセットは Destruction Editor のかんたん設定・生成で作る。C# は ScriptBehaviour から ApplyRadialDamage / CanDamage</td></tr>
+      <tr><td>Destruction</td><td><a href="destruction-reference.html#field">破壊フィールド</a></td><td>歪み・力・爆発・固定・消去を働かせる</td><td>なし</td><td>2026-10-24 追加（コミット 28995f39）。C# の型なし</td></tr>
       <tr><td>Destruction</td><td><a href="destruction-reference.html#blade">斬撃</a></td><td>刃の軌跡で Sliceable を切り、Destructible に Damage、風船を割る</td><td>なし</td><td>実行開始で判定がオフに戻るため、C# の BeginSwing() が必要</td></tr>
       <tr><td>Destruction</td><td><a href="destruction-reference.html#balloon">風船</a></td><td>浮いて揺れ、斬撃・衝突・爆風・圧力で割れて連鎖する</td><td>なし</td><td>動的な Rigidbody と Collider が必要。C# は Balloon、OnBalloonPopped</td></tr>
       <tr><td>Destruction</td><td><a href="destruction-reference.html#dealer">破壊する側</a></td><td>触れた Destructible に Damage、風船を割る。爆発して周りを吹き飛ばす</td><td>なし</td><td>Sliceable には効かない。C# は DestructionDealer（Explode）</td></tr>

@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / エディター専用</div>
     <h1>Folder と Scene Note</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>作業を整理するための、エディター専用のコンポーネントです。どちらもシーンファイルには保存されますが、<b>ゲームの実行中の世界には作られません</b>。ゲームの動きには影響しません。</p>
 
@@ -84,6 +84,19 @@
       <li>メモが「カテゴリ | GameObject の名前 | メモ」の形で一覧になります。左のチェックボックスで <b>完了</b> を切り替えられます。</li>
       <li>一覧の行をクリックすると、その GameObject が選択され、シーンビューのカメラがその位置へ寄ります。</li>
     </ul>
+
+    <h3 id="scene-note-more">Scene Note のそのほかの項目</h3>
+    <p>（2026-10-24 時点で表に無かった項目。コードから書いた内容） メニューの <b>便利 &gt; シーンメモの表示を一括変更</b> で、ゲーム中に表示するかをまとめて切り替えられます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>ゲーム中も表示</td><td><code>show_in_runtime</code></td><td>オフ</td><td></td><td>オンにすると、実行中も投影文字として表示します。アイコンはエディタ専用です。</td></tr>
+      <tr><td>デバッグアイコンを表示</td><td><code>show_icon</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>フォント</td><td><code>font</code></td><td></td><td></td><td>Project Browser へ取り込んだ TTF / OTF / TTC を指定します。未指定時は日本語対応フォントへフォールバックします。</td></tr>
+      <tr><td>投影の奥行き</td><td><code>projection_depth</code></td><td>1</td><td>0.01〜10</td><td>デカールが重なった面へ届く奥行きです。手前の面にも貼られる場合は短くします。</td></tr>
+      <tr><td>投影面の向き制限</td><td><code>normal_alignment</code></td><td>0</td><td>0〜1</td><td>0 は投影範囲内の全方向の面に表示。値を上げると斜めの面を除外し、1 は平行な面だけに表示します。</td></tr>
+    </table>
+    </div>
 
     <h2 id="howto">使い方の例</h2>
     <h3>直すところにメモを置く</h3>

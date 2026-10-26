@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Inflation</div>
     <h1>膨張（空気・圧力・破裂）</h1>
-    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8 ＋ まだコミットしていない変更（<a href="../changes.html#2026-10-06">10/06 の更新</a>）</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット 28995f39（<a href="../changes.html#2026-10-06">10/06 の更新</a>）（2026-10-24 に sinotake_test / aa27b6b3 に合わせて追記。追記分はコードから書いた内容）</p>
 
     <p>物に空気を送り込んで膨らませ、内圧で弾み方や浮き方を変え、漏れ・ダメージ・圧力の上がりすぎで破裂させる 4 つのコンポーネントと、設定をまとめる <b>膨張プロファイル</b> Asset です。破壊系の <a href="destruction-reference.html#balloon">風船</a> とは別の仕組みです。</p>
 
@@ -137,6 +137,55 @@
     </div>
     <p>読取のみの表示：現在体積、現在圧力、膨張倍率、平均伸張、最大伸張、蓄積した弱点、複合破損スコア、危険度、気体温度、現在の反発、現在の張り、全区画の空気量、ケージ頂点数、XPBDケージ準備完了、衝突形状の状態、現在の漏れ量、現在状態（通常・膨張中・伸張・危険・漏れ・破裂）、移動速度倍率、状態説明。</p>
 
+    <h3 id="target-more">膨張対象のそのほかの項目</h3>
+    <p>（2026-10-24 時点で表に無かった項目。コードから書いた内容） 「（実行中）」の付いたボタンは、実行中にインスペクターから押して試すためのものです。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>低圧の反発</td><td><code>bounce_low</code></td><td>0</td><td>0〜1</td><td></td></tr>
+      <tr><td>中圧の反発</td><td><code>bounce_peak</code></td><td>0.55</td><td>0〜1</td><td></td></tr>
+      <tr><td>押す位置（ワールド）</td><td><code>press_position</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+      <tr><td>押し込む向きと深さ（ワールド）</td><td><code>press_inward</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+      <tr><td>押す指先の半径</td><td><code>press_radius</code></td><td>0.1</td><td>0.01〜50</td><td>実行中の値を表示（読み取り専用）</td></tr>
+      <tr><td>指で押す（番号、実行中）</td><td><code>press_slot</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+      <tr><td>表面を測るレイの始点（ワールド）</td><td><code>ray_origin</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+      <tr><td>表面を測るレイの向きと長さ（ワールド）</td><td><code>ray_direction</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+      <tr><td>表面までの距離（外れは -1）</td><td><code>ray_hit_distance</code></td><td>-1</td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+      <tr><td>当たった面の法線</td><td><code>ray_hit_normal</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+      <tr><td>表面を測る（実行中）</td><td><code>ray_cast</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+      <tr><td>伸長の柔らかさ</td><td><code>stretch_compliance</code></td><td>0.0001</td><td>0〜1.0e5</td><td></td></tr>
+      <tr><td>面積の柔らかさ</td><td><code>area_compliance</code></td><td>0.001</td><td>0〜1.0e5</td><td></td></tr>
+      <tr><td>衝突形状の最小変位</td><td><code>collision_proxy_minimum_displacement</code></td><td>0.05</td><td>0〜10</td><td></td></tr>
+      <tr><td>形状膨張の型</td><td><code>shape_pattern</code></td><td>中心軸＋胴の球化</td><td></td><td></td></tr>
+      <tr><td>最大ふくらみ（胴の太さ比）</td><td><code>shape_max_offset</code></td><td>1</td><td>0〜20</td><td></td></tr>
+      <tr><td>手足への配分（0=同じ厚み,1=太さ比例）</td><td><code>shape_limb_ratio</code></td><td>0.5</td><td>0〜3</td><td></td></tr>
+      <tr><td>細い所の上限（自分の太さの倍率）</td><td><code>shape_thin_limit</code></td><td>2.5</td><td>0.05〜50</td><td></td></tr>
+      <tr><td>胴の球化</td><td><code>shape_sphere_strength</code></td><td>0.7</td><td>0〜1</td><td></td></tr>
+      <tr><td>球化の範囲</td><td><code>shape_sphere_range</code></td><td>1</td><td>0.1〜5</td><td></td></tr>
+      <tr><td>球化の中心の高さ（負で自動）</td><td><code>shape_sphere_center_height</code></td><td>-1</td><td>-1〜1</td><td></td></tr>
+      <tr><td>芯を測る細かさ</td><td><code>shape_voxel_resolution</code></td><td>64</td><td>16〜160</td><td></td></tr>
+      <tr><td>ぷるぷる（ばね）</td><td><code>shape_spring</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>ばねの強さ</td><td><code>shape_spring_stiffness</code></td><td>110</td><td>1〜2000</td><td></td></tr>
+      <tr><td>ばねの減衰</td><td><code>shape_spring_damping</code></td><td>7</td><td>0〜200</td><td></td></tr>
+      <tr><td>伸び縮みの強さ</td><td><code>shape_squash</code></td><td>0.18</td><td>0〜2</td><td></td></tr>
+      <tr><td>柔らかく変形する</td><td><code>soft_enabled</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>柔らかさの戻る強さ</td><td><code>soft_stiffness</code></td><td>60</td><td>1〜2000</td><td></td></tr>
+      <tr><td>揺れの減衰</td><td><code>soft_damping</code></td><td>6</td><td>0〜200</td><td></td></tr>
+      <tr><td>揺れの伝わりやすさ</td><td><code>soft_spread</code></td><td>0.5</td><td>0〜4</td><td></td></tr>
+      <tr><td>へこみの上限（胴の太さ比）</td><td><code>soft_max_dent</code></td><td>0.8</td><td>0〜5</td><td></td></tr>
+      <tr><td>動きで揺れる強さ</td><td><code>soft_inertia</code></td><td>1</td><td>0〜20</td><td></td></tr>
+      <tr><td>当たった力でへこむ強さ</td><td><code>soft_impact_scale</code></td><td>0.5</td><td>0〜100</td><td></td></tr>
+      <tr><td>へこむ範囲（胴の太さ比）</td><td><code>soft_impact_radius</code></td><td>0.8</td><td>0.01〜20</td><td></td></tr>
+      <tr><td>ダメージ1あたりの力積</td><td><code>soft_damage_impulse</code></td><td>1</td><td>0〜10000</td><td></td></tr>
+      <tr><td>床・壁・押す物で潰れる</td><td><code>soft_contact</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>潰れる範囲（胴の太さ比）</td><td><code>soft_contact_radius</code></td><td>2</td><td>0.05〜50</td><td></td></tr>
+      <tr><td>自重で潰れる量（胴の太さ比）</td><td><code>soft_weight_sag</code></td><td>0.15</td><td>0〜5</td><td></td></tr>
+      <tr><td>衝撃位置（ワールド）</td><td><code>impact_position</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+      <tr><td>衝撃の力積（ワールド）</td><td><code>impact_impulse</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+      <tr><td>衝撃を与える（実行中）</td><td><code>request_impact</code></td><td>オフ</td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+    </table>
+    </div>
+
     <h2 id="source">空気供給元</h2>
     <div class="table-wrap">
     <table>
@@ -214,6 +263,16 @@
     </div>
     <p>C# では MonoBehaviour から <code>GetComponent&lt;SurfaceInflation&gt;()</code> で取り出し、<code>fullAir</code>、<code>spread</code>、<code>maximumHeight</code>、<code>ruptureEnabled</code>、<code>deflateRate</code>、読取のみの <code>bumpCount</code>・<code>highestBump</code>・<code>status</code> を使えます。</p>
     <div class="note"><strong>膨張対象と一緒に付けない</strong>同じ GameObject に <a href="#target">膨張対象</a> があると、空気はそちらへ送られ、局所膨張は使われません。地面には局所膨張だけを付けます。</div>
+
+    <h3 id="surface-collision">局所膨張の衝突形状（2026-10-23 変更）</h3>
+    <p>盛り上がりの見た目は元のモデルのメッシュをそのまま変形して描くようになりました。下の 2 つは、乗るための粗い衝突形状だけに使います（以前は「見た目の輪の数」「見た目の分割数」で、範囲も 4〜64・8〜128 でした）。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>衝突形状の輪の数</td><td><code>ring_count</code></td><td>8</td><td>4〜8</td><td>描画には元モデルのメッシュを使用する。この設定は衝突用の粗い形状だけに適用する。</td></tr>
+      <tr><td>衝突形状の分割数</td><td><code>segment_count</code></td><td>16</td><td>8〜16</td><td></td></tr>
+    </table>
+    </div>
 
     <h2 id="grip">フックの爪で握る・押しつぶす（デモ、2026-10-13 更新）</h2>
     <p>Inflate のデモ（<code>resources/Game/Inflate/Inflate_NativeDemo</code>）では、銃から撃ったフックの爪（<code>resources/WeaponModel/Hook.glb</code>、上に 3 本・下に 1 本）が、刺さった物をつかみます。爪の 4 本の指は FABRIK の IK で曲がり、関節を外へ反らせて指先だけを食い込ませます。風船なら、指先の所がへこんで陰ができ、膨らむほど深く食い込みます。破裂した瞬間には、指を一気に握り込みます。</p>

@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Gameplay</div>
     <h1>Gameplay 部品（テンプレート用）</h1>
-    <p class="meta">対象：RePlayEngine ソース 08fb8f40（2026-09-24 に実装を確認）</p>
+    <p class="meta">対象：RePlayEngine ソース 08fb8f40（2026-09-24 に実装を確認）（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>アクション・プラットフォーマー（横スクロールや 3D の足場ゲーム）のテンプレート用に作られた部品です。キャラクターの移動、体力、チェックポイント、ゴール、敵などが入っています。組み合わせるだけで「走って、跳んで、落ちたらやり直し、ゴールしたらクリア」の基本形が作れます。</p>
 
@@ -221,7 +221,7 @@
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>説明</th></tr>
       <tr><td>ゴールID</td><td><code>goal_id</code></td><td>整数</td><td>0</td><td>このゴールを見分ける番号。ゴールが複数あるとき、どれに着いたかをスクリプトで見分けます。</td></tr>
       <tr><td>反応する対象</td><td><code>target_mask</code></td><td>レイヤーの選択</td><td>すべて</td><td>反応させる相手のレイヤー</td></tr>
-      <tr><td>一度だけ</td><td><code>one_shot</code></td><td>オン・オフ</td><td>オン</td><td>オンだと、一度だけ反応します</td></tr>
+      <tr><td>一度だけ</td><td><code>one_shot</code></td><td>オン・オフ</td><td>オフ</td><td>オンだと、一度だけ反応します</td></tr>
       <tr><td>完了イベント</td><td><code>completion_event</code></td><td>文字列</td><td>GoalReached</td><td>ゴールしたときに発行するシーン切り替えのイベント名。空欄にすると発行しません</td></tr>
     </table>
     </div>
@@ -328,9 +328,11 @@
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>索敵対象</td><td><code>target</code></td><td>GameObject の参照</td><td>（空）</td><td></td><td>追いかける相手。<b>空なら、Player Controller を持つ有効な GameObject を自動で探します</b></td></tr>
-      <tr><td>巡回ウェイポイント</td><td><code>patrol_waypoints</code></td><td>GameObject の一覧</td><td>0 件</td><td></td><td>巡回する地点。0 件なら待機します。無効な参照は読み飛ばします</td></tr>
+      <tr><td>巡回ウェイポイント</td><td><code>TERRI_patrol_waypoints</code></td><td>GameObject の一覧</td><td>0 件</td><td></td><td>巡回する地点。0 件なら待機します。無効な参照は読み飛ばします</td></tr>
       <tr><td>索敵距離</td><td><code>detection_range</code></td><td>小数</td><td>12</td><td>0.05〜10000</td><td>この距離より近づくと対象に気づいて追いかけます。広げるほど遠くから気づきます。</td></tr>
       <tr><td>視野角（度）</td><td><code>field_of_view_degrees</code></td><td>小数</td><td>120</td><td>0〜360</td><td>前方どれだけの角度を見えるとするか。360 で背後も見えます</td></tr>
+      <tr><td>追跡傾向</td><td><code>tracking_trends</code></td><td>選択</td><td>楽観的</td><td></td><td>視界の外に出られたときの動き。楽観的＝すぐ追跡をやめる、努力家＝やめるがしばらく探す、粘り強い＝見えなくてもしばらく追い続ける</td></tr>
+      <tr><td>発見時にリアクションを入れるか（2026-10-21 追加）</td><td><code>will_react</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オフは見つけた瞬間に追跡を始めます。オンは見つけるたびにジャンプして反応してから追跡に入ります</td></tr>
       <tr><td>攻撃距離</td><td><code>attack_range</code></td><td>小数</td><td>1.5</td><td>0.05〜10000</td><td>この距離まで近づくと攻撃を始めます。広げるほど離れた所から攻撃します。</td></tr>
       <tr><td>見失い猶予（秒）</td><td><code>lose_sight_delay</code></td><td>小数</td><td>2</td><td>0〜120</td><td>対象が見えなくなってから、あきらめるまでの時間</td></tr>
       <tr><td>目の高さ</td><td><code>eye_height</code></td><td>小数</td><td>1.2</td><td>−100〜100</td><td>視線を出す高さ（足元から）</td></tr>
@@ -347,12 +349,16 @@
       <tr><td>Scene View デバッグ表示</td><td><code>debug_draw</code></td><td>オン・オフ</td><td>オン</td><td></td><td>索敵距離・視野などをシーンビューに描きます</td></tr>
       <tr><td>現在の状態</td><td><code>current_state</code></td><td>表示のみ</td><td></td><td></td><td>実行中の状態（Idle など）を表示します</td></tr>
       <tr><td>攻撃段階</td><td><code>attack_phase</code></td><td>表示のみ</td><td></td><td></td><td>攻撃中の段階（Windup / Active / Recovery）を表示します</td></tr>
-      <tr><td>縄張り中心ポイント（2026-10-13 追加、開発中）</td><td><code>territory_points</code></td><td>GameObject の一覧</td><td>空</td><td></td><td>縄張りの中心にする GameObject。0 件なら縄張りの処理は行いません</td></tr>
-      <tr><td>縄張り範囲（2026-10-22 更新、開発中）</td><td><code>territory_range_radius</code></td><td>小数</td><td></td><td>0〜100</td><td>縄張りの半径。<b>すべての中心ポイントに同じ半径を使います</b>（10/13 時点の「ポイントごとの一覧で、登録の不具合で設定できない」状態から、1 つの数値に変わりました）</td></tr>
-      <tr><td>縄張りから出て、戻ろうとするまでの時間（2026-10-22 更新、開発中）</td><td><code>max_time_outside_territory</code></td><td>小数</td><td>5</td><td>0〜100</td><td>縄張りの外まで追いかけたとき、戻り始めるまでの秒数。10/13 時点の「追跡終了時間」（<code>max_time_until_chasing_ends</code>）から内部名が変わったので、古いシーンの値は読み込まれません</td></tr>
-      <tr><td>周りを探す際の最大角度（2026-10-22 追加、開発中）</td><td><code>degree_value</code></td><td>小数</td><td>60</td><td>−1800〜1800</td><td>見失ったあと、周りを見回して探すときに振り向く最大の角度（度）</td></tr>
+      <tr><td>縄張り中心ポイント（開発中）</td><td><code>TERRI_territory_points</code></td><td>GameObject の一覧</td><td>空</td><td></td><td>縄張りの中心にする GameObject。0 件なら縄張りの処理は行いません</td></tr>
+      <tr><td>縄張り範囲（開発中）</td><td><code>TERRI_territory_range_radius</code></td><td>小数</td><td>20</td><td>0〜100</td><td>縄張りの半径。すべての中心ポイントに同じ半径を使います</td></tr>
+      <tr><td>縄張りから出て、戻ろうとするまでの時間（開発中）</td><td><code>TERRI_max_time_outside_territory</code></td><td>小数</td><td>5</td><td>0〜100</td><td>縄張りの外まで追いかけたとき、戻り始めるまでの秒数</td></tr>
+      <tr><td>縄張り意識（開発中）</td><td><code>TERRI_territoriality</code></td><td>選択</td><td>縄張り型</td><td></td><td>縄張りの外に出たときの動き。縄張り型＝すぐ追跡をやめる、自然型＝しばらくしてからやめる、非縄張り型＝やめない</td></tr>
+      <tr><td>周りを探す際の最大角度（開発中）</td><td><code>degree_value</code></td><td>小数</td><td>60</td><td>-1800〜1800</td><td>見失ったあと、周りを見回して探すときに振り向く最大の角度（度）</td></tr>
+      <tr><td>現在の縄張りに戻ろうとするまでの時間</td><td><code>timer_until_chasing_ends</code></td><td>表示のみ</td><td></td><td></td><td>実行中に、縄張りへ戻り始めるまでの残り時間を表示します</td></tr>
     </table>
     </div>
+
+    <div class="warning"><strong>2026-10-22 から内部名が変わった項目</strong>巡回ウェイポイント・縄張り中心ポイント・縄張り範囲・縄張りから出て戻ろうとするまでの時間・縄張り意識は、インスペクターでまとめて並べるために内部名の先頭に <code>TERRI_</code> が付きました（コミット 919a8b89）。古い名前からの読み替えが無いので、<b>それより前に保存したシーンでは、これらの値が読み込まれず空や既定値に戻ります</b>。開き直したら設定し直してください。</div>
 
     <h3>使い方の例：プレイヤーを追いかける敵</h3>
     <ol class="steps">

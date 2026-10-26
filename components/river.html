@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Landscape</div>
     <h1>川（River）</h1>
-    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（コードから書いた内容。実機での確認はまだ）</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（コードから書いた内容。実機での確認はまだ）（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>地形の上に引いた中心線に沿って、地形の形から川の水面を作るコンポーネントです。坂では流れが速くなり、段差では滝になります。流れで物やプレイヤーを押し流したり、障害物や滝つぼにしぶきを出したりできます。</p>
 
@@ -97,6 +97,15 @@
       <li><a href="water-body.html">Water Body</a>（海・湖）</li>
       <li><a href="physics.html">物理</a>（流される Rigidbody）</li>
     </ul>
+
+    <h3 id="more-props">そのほかの項目</h3>
+    <p>（2026-10-24 時点で表に無かった項目。コードから書いた内容）</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>浅水波の解像度</td><td><code>shallow_simulation_resolution</code></td><td>64</td><td>16〜256</td><td>近くだけ計算する浅水波の格子の細かさ。上げると波紋が細かくなりますが重くなります</td></tr>
+    </table>
+    </div>
   </main>
 </div>
 <footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>

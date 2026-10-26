@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / 草</div>
     <h1>草（Grass Procedural・Grass Brush）</h1>
-    <p class="meta">対象：ブランチ sinotake_test / コミット 880398d5</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット 880398d5（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>地面（<a href="landscape.html">ランドスケープ</a>）や、普通のモデル・基本形状の表面に、草を自動で生やす部品と、生える場所をブラシで塗って決める部品です。草は風に揺れ、風船の破裂の衝撃波でもなびきます。</p>
     <div class="note"><strong>2026-10-22 の変更（コミット d7164091、コードから書いた内容）</strong>草は Landscape 専用ではなくなりました。同じ GameObject の <b>Mesh Renderer・Primitive Mesh Renderer・Landscape</b> のどれにでも生やせます。コンポーネントを追加での分類は <b>Rendering</b> に移りました。メッシュに塗るときは、マスクの範囲はモデルの UV（0〜1）になります（UV が重なっている形では、重なった面が塗りを共有します）。遠くの草を間引く LOD と、草むらのまだら（群生）も増えました（<a href="#prop-new">下の表</a>）。</div>
@@ -60,6 +60,16 @@
       <li><b>保存</b> でマスクのファイルへ書き出す。<b>Esc</b> で草のブラシを終わる。Ctrl・Alt を押しながらのドラッグはカメラ操作です</li>
     </ol>
     <p>マスクの解像度は 256・512・1024 から選べます（1024 は Undo のメモリが大きくなります）。同じ名前のファイルがあるときは、上書きを防ぐために作成しません。<b>作り直す</b> は中身を作り直し、<b>再読込</b> はファイルから読み直します。<b>塗った長さをリセット</b> は、ブラシで塗った長さの記録をすべて消します。</p>
+
+    <h3 id="brush-z">Grass Brush の範囲（Z）</h3>
+    <p>（2026-10-24 時点で表に無かった項目。コードから書いた内容） マスクが覆う範囲（Object のローカル X-Z）のうち Z 側の値です。マスクを作ると、地面の境界から X と一緒に自動で入ります。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>範囲の最小 Z</td><td><code>mask_min_z</code></td><td>0</td><td></td><td></td></tr>
+      <tr><td>範囲の大きさ Z</td><td><code>mask_size_z</code></td><td>0</td><td></td><td></td></tr>
+    </table>
+    </div>
 
     <h2 id="wind">風と衝撃波</h2>
     <ul>

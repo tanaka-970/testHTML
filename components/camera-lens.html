@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>カメラの演出（Running Effects・Depth Of Field・Lens Flare） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Camera</div>
+    <h1>カメラの演出（Running Effects・Depth Of Field・Lens Flare）</h1>
+
+    <p class="meta">対象：ブランチ sinotake_test / コミット aa27b6b3（コードから書いた内容。実機での確認はまだ）</p>
+
+    <p>カメラの写り方を変える 3 つの部品です。<b>Running Effects</b> は走る速さに合わせて視野角を広げ、揺らし、ブラーやスピードラインを掛けます。<b>Depth Of Field</b> はピントの外をぼかし、<b>Lens Flare</b> は太陽や明るい所からゴースト・光条を出します。どれもポスト処理なので、モデルや素材の準備は要りません。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>ダッシュしたときに、画面が広がって流れるスピード感を出したい（Running Effects）</li>
+      <li>手前のキャラクターにピントを合わせ、背景をぼかして映画のように見せたい（Depth Of Field）</li>
+      <li>太陽を見上げたときに、レンズのゴーストや光条を出したい（Lens Flare）</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>部品</th><th>コンポーネントを追加での場所</th><th>付ける場所</th><th>複数あるとき</th></tr>
+      <tr><td>Running Effects</td><td>Camera &gt; Running Effects</td><td>カメラの GameObject に付けるとそのカメラに効く。カメラ以外に付けると、いま使っているカメラに効く</td><td>それぞれのカメラに 1 つ</td></tr>
+      <tr><td>Depth Of Field</td><td>Camera &gt; Depth Of Field</td><td>シーンのどこでもよい（空の GameObject で可）</td><td>有効なもののうち <b>優先度</b> が一番高いものだけを使う</td></tr>
+      <tr><td>Lens Flare</td><td>Camera &gt; Lens Flare</td><td>シーンのどこでもよい</td><td>有効なもののうち <b>優先度</b> が一番高いものだけを使う</td></tr>
+    </table>
+    </div>
+    <p><b>必要な素材：なし。</b>Depth Of Field と Lens Flare は「エディタのカメラでも表示」がオンなら、編集中のシーンビューでも見えます。</p>
+
+    <h2 id="running">Running Effects（走行演出）</h2>
+    <p>速さは対象の<b>位置の変化</b>から測るので、Character Motor・Rigidbody・モーションのどれで動かしていても使えます。速さが「効き始める速さ」を超えると強さが 0 から上がり始め、「最大になる速さ」で 1 になります。強さは「強くなる時間」「弱くなる時間」をかけて滑らかに変わります。</p>
+    <p>各効果には「効き始める強さ」と「反応の曲線」があります。たとえば効き始める強さが 0.5 なら、走りの強さが半分を超えてから効きます。反応の曲線は 1 で比例、大きいほど最後のほうで急に強くなります。</p>
+    <h3 id="running-howto">ダッシュでスピード感を出す</h3>
+    <ol class="steps">
+      <li>プレイヤーを追うカメラの GameObject を選び、<b>コンポーネントを追加 &gt; Camera &gt; Running Effects</b> を付けます。</li>
+      <li>「速さを測る物」は既定の <b>操作中の物体</b> のままにします（いま操作しているプレイヤーの速さを使います）。決まった物の速さを使うときは <b>指定した物体</b> にして、その物を割り当てます。</li>
+      <li>プレイヤーの歩きと走りの速さに合わせて、<b>効き始める速さ</b>（既定 4 m/秒）と <b>最大になる速さ</b>（既定 9 m/秒）を決めます。</li>
+      <li>停止中に見た目を確かめたいときは、<b>強さの上書き</b> を 1 にします。速さに関係なくその強さで画面効果が掛かります。確かめ終わったら -1 に戻します。</li>
+      <li><kbd>F5</kbd> で実行し、走って確かめます。</li>
+    </ol>
+    <div class="note"><strong>ワープは無視されます</strong>1 フレームで「ワープとみなす速さ」（既定 60 m/秒）を超えて動いたときは、瞬間移動とみなして強さを上げません。リスポーンで画面が一瞬ぶれるのを防ぐためです。</div>
+    <h3 id="running-props">項目</h3>
+    <h4>速さ</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>速さを測る物</td><td><code>speed_source</code></td><td>操作中の物体</td><td></td><td>選べるもの：操作中の物体／この物体／指定した物体</td></tr>
+      <tr><td>指定した物体</td><td><code>source_object</code></td><td></td><td></td><td></td></tr>
+      <tr><td>水平の速さだけを使う</td><td><code>horizontal_only</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>効き始める速さ</td><td><code>start_speed</code></td><td>4</td><td>0〜100</td><td></td></tr>
+      <tr><td>最大になる速さ</td><td><code>full_speed</code></td><td>9</td><td>0.01〜200</td><td></td></tr>
+      <tr><td>強くなる時間</td><td><code>rise_time</code></td><td>0.25</td><td>0〜5</td><td></td></tr>
+      <tr><td>弱くなる時間</td><td><code>fall_time</code></td><td>0.5</td><td>0〜5</td><td></td></tr>
+      <tr><td>ワープとみなす速さ</td><td><code>teleport_speed</code></td><td>60</td><td>1〜10000</td><td></td></tr>
+      <tr><td>強さの上書き（-1 で速さから）</td><td><code>intensity_override</code></td><td>-1</td><td>-1〜1</td><td>0 以上ならこの強さで固定する。停止中のエディタでも画面効果の確認に使える。</td></tr>
+    </table>
+    </div>
+    <h4>視野角</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>使う</td><td><code>fov_enabled</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>広げる角度</td><td><code>fov_add_degrees</code></td><td>10</td><td>-60〜60</td><td></td></tr>
+      <tr><td>効き始める強さ</td><td><code>fov_start</code></td><td>0</td><td>0〜1</td><td></td></tr>
+      <tr><td>反応の曲線</td><td><code>fov_curve</code></td><td>1</td><td>0.05〜8</td><td>1 で比例、大きいほど最後に強く効く。</td></tr>
+    </table>
+    </div>
+    <h4>ヘッドボブ</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>使う</td><td><code>head_bob_enabled</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>上下の揺れ</td><td><code>head_bob_vertical</code></td><td>0.035</td><td>0〜0.5</td><td></td></tr>
+      <tr><td>左右の揺れ</td><td><code>head_bob_horizontal</code></td><td>0.02</td><td>0〜0.5</td><td></td></tr>
+      <tr><td>傾き</td><td><code>head_bob_roll_degrees</code></td><td>0.5</td><td>0〜10</td><td></td></tr>
+      <tr><td>1 歩の距離</td><td><code>head_bob_stride</code></td><td>1.4</td><td>0.05〜10</td><td></td></tr>
+      <tr><td>歩きの揺れの比率</td><td><code>head_bob_walk_scale</code></td><td>0.35</td><td>0〜1</td><td></td></tr>
+    </table>
+    </div>
+    <h4>揺れ</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>使う</td><td><code>shake_enabled</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>揺れの角度</td><td><code>shake_degrees</code></td><td>0.15</td><td>0〜10</td><td></td></tr>
+      <tr><td>揺れの速さ</td><td><code>shake_frequency</code></td><td>14</td><td>0〜60</td><td></td></tr>
+      <tr><td>効き始める強さ</td><td><code>shake_start</code></td><td>0.6</td><td>0〜1</td><td></td></tr>
+    </table>
+    </div>
+    <h4>モーションブラー</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>使う</td><td><code>motion_blur_enabled</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>常に掛ける強さ</td><td><code>motion_blur_base</code></td><td>0</td><td>0〜4</td><td></td></tr>
+      <tr><td>走りで足す強さ</td><td><code>motion_blur_strength</code></td><td>0.6</td><td>0〜4</td><td></td></tr>
+      <tr><td>効き始める強さ</td><td><code>motion_blur_start</code></td><td>0.2</td><td>0〜1</td><td></td></tr>
+      <tr><td>反応の曲線</td><td><code>motion_blur_curve</code></td><td>1</td><td>0.05〜8</td><td>1 で比例、大きいほど最後に強く効く。</td></tr>
+      <tr><td>サンプル数</td><td><code>motion_blur_samples</code></td><td>10</td><td>2〜32</td><td></td></tr>
+      <tr><td>最大の長さ</td><td><code>motion_blur_max_pixels</code></td><td>48</td><td>1〜256</td><td></td></tr>
+    </table>
+    </div>
+    <h4>放射ブラー</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>使う</td><td><code>radial_blur_enabled</code></td><td>オフ</td><td></td><td></td></tr>
+      <tr><td>強さ</td><td><code>radial_blur_strength</code></td><td>0.04</td><td>0〜1</td><td></td></tr>
+      <tr><td>効き始める強さ</td><td><code>radial_blur_start</code></td><td>0.5</td><td>0〜1</td><td></td></tr>
+      <tr><td>反応の曲線</td><td><code>radial_blur_curve</code></td><td>1.5</td><td>0.05〜8</td><td>1 で比例、大きいほど最後に強く効く。</td></tr>
+    </table>
+    </div>
+    <h4>色収差</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>使う</td><td><code>chromatic_enabled</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>常に掛ける量</td><td><code>chromatic_base</code></td><td>0</td><td>0〜0.2</td><td></td></tr>
+      <tr><td>走りで足す量</td><td><code>chromatic_strength</code></td><td>0.012</td><td>0〜0.2</td><td></td></tr>
+      <tr><td>効き始める強さ</td><td><code>chromatic_start</code></td><td>0.3</td><td>0〜1</td><td></td></tr>
+      <tr><td>反応の曲線</td><td><code>chromatic_curve</code></td><td>1</td><td>0.05〜8</td><td>1 で比例、大きいほど最後に強く効く。</td></tr>
+    </table>
+    </div>
+    <h4>周辺減光</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>使う</td><td><code>vignette_enabled</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>強さ</td><td><code>vignette_strength</code></td><td>0.3</td><td>0〜1</td><td></td></tr>
+      <tr><td>効き始める強さ</td><td><code>vignette_start</code></td><td>0.3</td><td>0〜1</td><td></td></tr>
+      <tr><td>反応の曲線</td><td><code>vignette_curve</code></td><td>1</td><td>0.05〜8</td><td>1 で比例、大きいほど最後に強く効く。</td></tr>
+      <tr><td>色</td><td><code>vignette_color</code></td><td>0, 0, 0, 1</td><td></td><td></td></tr>
+    </table>
+    </div>
+    <h4>スピードライン</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>使う</td><td><code>speed_lines_enabled</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>強さ</td><td><code>speed_lines_intensity</code></td><td>0.5</td><td>0〜1</td><td></td></tr>
+      <tr><td>効き始める強さ</td><td><code>speed_lines_start</code></td><td>0.5</td><td>0〜1</td><td></td></tr>
+      <tr><td>反応の曲線</td><td><code>speed_lines_curve</code></td><td>1</td><td>0.05〜8</td><td>1 で比例、大きいほど最後に強く効く。</td></tr>
+      <tr><td>本数</td><td><code>speed_lines_count</code></td><td>90</td><td>4〜512</td><td></td></tr>
+      <tr><td>長さ</td><td><code>speed_lines_length</code></td><td>0.25</td><td>0.01〜2</td><td></td></tr>
+      <tr><td>太さ</td><td><code>speed_lines_width</code></td><td>0.25</td><td>0〜1</td><td></td></tr>
+      <tr><td>中央の空き</td><td><code>speed_lines_clear_radius</code></td><td>0.45</td><td>0〜1.5</td><td></td></tr>
+      <tr><td>流れる速さ</td><td><code>speed_lines_speed</code></td><td>1.5</td><td>0〜20</td><td></td></tr>
+      <tr><td>出る割合</td><td><code>speed_lines_coverage</code></td><td>0.45</td><td>0〜1</td><td></td></tr>
+      <tr><td>色</td><td><code>speed_lines_color</code></td><td>1, 1, 1, 0.8</td><td></td><td></td></tr>
+    </table>
+    </div>
+    <h4>風</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>使う</td><td><code>wind_enabled</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>強さ</td><td><code>wind_intensity</code></td><td>0.2</td><td>0〜1</td><td></td></tr>
+      <tr><td>効き始める強さ</td><td><code>wind_start</code></td><td>0.3</td><td>0〜1</td><td></td></tr>
+      <tr><td>反応の曲線</td><td><code>wind_curve</code></td><td>1</td><td>0.05〜8</td><td>1 で比例、大きいほど最後に強く効く。</td></tr>
+      <tr><td>筋の本数</td><td><code>wind_count</code></td><td>24</td><td>1〜512</td><td></td></tr>
+      <tr><td>流れる速さ</td><td><code>wind_speed</code></td><td>1.5</td><td>0〜20</td><td></td></tr>
+      <tr><td>筋の長さ</td><td><code>wind_length</code></td><td>0.2</td><td>0.01〜2</td><td></td></tr>
+      <tr><td>筋の太さ</td><td><code>wind_thickness</code></td><td>0.2</td><td>0〜1</td><td></td></tr>
+      <tr><td>出る割合</td><td><code>wind_coverage</code></td><td>0.25</td><td>0〜1</td><td></td></tr>
+      <tr><td>端だけに出す度合い</td><td><code>wind_edge_only</code></td><td>0.85</td><td>0〜1</td><td></td></tr>
+      <tr><td>画面のゆらぎ</td><td><code>wind_distortion</code></td><td>0.0015</td><td>0〜0.05</td><td></td></tr>
+      <tr><td>動きに合わせて向きを変える</td><td><code>wind_follow_motion</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>流れる向き</td><td><code>wind_direction_degrees</code></td><td>180</td><td>-180〜360</td><td>0 で右、90 で上、180 で左へ流れる。</td></tr>
+      <tr><td>色</td><td><code>wind_color</code></td><td>1, 1, 1, 0.35</td><td></td><td></td></tr>
+    </table>
+    </div>
+
+    <h2 id="dof">Depth Of Field（被写界深度）</h2>
+    <p>カメラからピントの位置までの距離を決め、その前後「はっきり見える奥行き」の範囲をくっきり残して、外側をぼかします。ピントの外から最大のボケになるまでの距離は、手前と奥で別々に決められます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>ピントの合わせ方</th><th>決まり方</th></tr>
+      <tr><td>決めた距離</td><td>「ピントの距離」（m）に合わせる</td></tr>
+      <tr><td>画面の点で自動（既定）</td><td>「自動ピントの画面位置」（0〜1。0.5, 0.5 が画面の中央）に映っている物の距離へ合わせる</td></tr>
+      <tr><td>物体を追う</td><td>「ピントを合わせる物体」までの奥行きに合わせる。物体がカメラの後ろにあるときは「ピントの距離」を使う</td></tr>
+    </table>
+    </div>
+    <h3 id="dof-howto">キャラクターにピントを合わせて背景をぼかす</h3>
+    <ol class="steps">
+      <li>空の GameObject を作り、<b>コンポーネントを追加 &gt; Camera &gt; Depth Of Field</b> を付けます。</li>
+      <li>「ピントの合わせ方」を <b>物体を追う</b> にし、「ピントを合わせる物体」にキャラクターを割り当てます。</li>
+      <li>背景のぼけ具合は「奥のボケまでの距離」（短いほど急にぼける）と「最大のボケ」で決めます。手前をぼかしたくないときは「手前もぼかす」をオフにします。</li>
+    </ol>
+    <p>「最大のボケ」は、画面の高さが 1080 画素のときの半径（画素）です。「明るい点のボケの強調」を上げると、背景のライトが丸い玉ボケとして目立ちます。重いときは「品質（サンプル数）」を下げます。</p>
+    <h3 id="dof-props">項目</h3>
+    <h4>基本</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>優先度</td><td><code>priority</code></td><td>0</td><td>-100〜100</td><td></td></tr>
+      <tr><td>強さ</td><td><code>strength</code></td><td>1</td><td>0〜4</td><td></td></tr>
+      <tr><td>エディタのカメラでも表示</td><td><code>show_in_editor_camera</code></td><td>オン</td><td></td><td></td></tr>
+    </table>
+    </div>
+    <h4>ピント</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>ピントの合わせ方</td><td><code>focus_mode</code></td><td>画面の点で自動</td><td></td><td>選べるもの：決めた距離／画面の点で自動／物体を追う</td></tr>
+      <tr><td>ピントの距離</td><td><code>focus_distance</code></td><td>10</td><td>0.01〜10000</td><td></td></tr>
+      <tr><td>自動ピントの画面位置</td><td><code>focus_point</code></td><td>0.5, 0.5</td><td>0〜1</td><td></td></tr>
+      <tr><td>ピントを合わせる物体</td><td><code>focus_target</code></td><td></td><td></td><td></td></tr>
+      <tr><td>はっきり見える奥行き</td><td><code>focus_range</code></td><td>2</td><td>0〜10000</td><td></td></tr>
+    </table>
+    </div>
+    <h4>ボケ</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>手前もぼかす</td><td><code>near_blur</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>手前のボケまでの距離</td><td><code>near_transition</code></td><td>1</td><td>0.01〜10000</td><td></td></tr>
+      <tr><td>奥のボケまでの距離</td><td><code>far_transition</code></td><td>15</td><td>0.01〜10000</td><td></td></tr>
+      <tr><td>最大のボケ</td><td><code>max_blur_radius</code></td><td>10</td><td>0〜64</td><td></td></tr>
+      <tr><td>品質（サンプル数）</td><td><code>quality</code></td><td>24</td><td>8〜64</td><td></td></tr>
+      <tr><td>明るい点のボケの強調</td><td><code>bokeh_highlight</code></td><td>0.5</td><td>0〜8</td><td></td></tr>
+    </table>
+    </div>
+
+    <h2 id="flare">Lens Flare（レンズフレア）</h2>
+    <p>2 種類の光を出します。<b>明るい部分のゴースト</b>は、画面の明るい所（ブルーム）を画面の反対側へ写したもので、どの光にも出ます。<b>光源</b>の分類は、光源そのものから出る輝き・横の光条・光芒・ゴースト列で、「光源」で選んだものにだけ出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>光源</th><th>出る光</th></tr>
+      <tr><td>明るい部分だけ</td><td>明るい部分のゴーストだけ。光源の輝きは出ない</td></tr>
+      <tr><td>太陽（平行光）（既定）</td><td>シーンの Directional Light の向きにある太陽から出す</td></tr>
+      <tr><td>指定した物体</td><td>「光源にする物体」の位置から出す（ライトや光る看板など）</td></tr>
+      <tr><td>この物体</td><td>Lens Flare を付けた GameObject の位置から出す</td></tr>
+    </table>
+    </div>
+    <p>「しきい値」より暗い部分はゴーストになりません。ゴーストが多すぎるときはしきい値を上げます。</p>
+    <h3 id="flare-props">項目</h3>
+    <h4>基本</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>優先度</td><td><code>priority</code></td><td>0</td><td>-100〜100</td><td></td></tr>
+      <tr><td>強さ</td><td><code>intensity</code></td><td>1</td><td>0〜16</td><td></td></tr>
+      <tr><td>エディタのカメラでも表示</td><td><code>show_in_editor_camera</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>光源</td><td><code>source</code></td><td>太陽（平行光）</td><td></td><td>選べるもの：明るい部分だけ／太陽（平行光）／指定した物体／この物体</td></tr>
+      <tr><td>光源にする物体</td><td><code>source_object</code></td><td></td><td></td><td></td></tr>
+      <tr><td>色</td><td><code>tint</code></td><td>1, 0.95, 0.85, 1</td><td></td><td></td></tr>
+    </table>
+    </div>
+    <h4>明るい部分のゴースト</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>ゴーストの強さ</td><td><code>ghost_intensity</code></td><td>0.4</td><td>0〜16</td><td></td></tr>
+      <tr><td>ゴーストの数</td><td><code>ghost_count</code></td><td>4</td><td>0〜8</td><td></td></tr>
+      <tr><td>ゴーストの間隔</td><td><code>ghost_spacing</code></td><td>0.35</td><td>-2〜2</td><td></td></tr>
+      <tr><td>ハローの強さ</td><td><code>halo_intensity</code></td><td>0.25</td><td>0〜16</td><td></td></tr>
+      <tr><td>ハローの半径</td><td><code>halo_radius</code></td><td>0.45</td><td>0〜1</td><td></td></tr>
+      <tr><td>色ずれ</td><td><code>chromatic_shift</code></td><td>0.006</td><td>0〜0.1</td><td></td></tr>
+      <tr><td>しきい値</td><td><code>threshold</code></td><td>1.5</td><td>0〜64</td><td></td></tr>
+    </table>
+    </div>
+    <h4>光源</h4>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>輝きの強さ</td><td><code>glare_intensity</code></td><td>0.6</td><td>0〜64</td><td></td></tr>
+      <tr><td>輝きの大きさ</td><td><code>glare_size</code></td><td>0.04</td><td>0.001〜1</td><td></td></tr>
+      <tr><td>横の光条の強さ</td><td><code>streak_intensity</code></td><td>0.4</td><td>0〜64</td><td></td></tr>
+      <tr><td>横の光条の長さ</td><td><code>streak_length</code></td><td>0.35</td><td>0.001〜4</td><td></td></tr>
+      <tr><td>光芒の強さ</td><td><code>starburst_intensity</code></td><td>0.25</td><td>0〜64</td><td></td></tr>
+      <tr><td>光芒の本数</td><td><code>starburst_rays</code></td><td>6</td><td>2〜32</td><td></td></tr>
+      <tr><td>ゴースト列の強さ</td><td><code>source_ghost_intensity</code></td><td>1</td><td>0〜16</td><td></td></tr>
+    </table>
+    </div>
+
+    <h2 id="related">関連項目</h2>
+    <ul>
+      <li><a href="camera.html">Camera</a></li>
+      <li><a href="post-process-volume.html">Post Process Volume</a>（ブルーム・色調など、ほかのポスト処理）</li>
+      <li><a href="sky.html">空</a>（太陽の向き）</li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

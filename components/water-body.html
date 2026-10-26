@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Water Body</div>
     <h1>Water Body（水域）</h1>
-    <p class="meta">対象：ブランチ sinotake_test / コミット 880398d5（FFT 海洋・GPU 浅水波・流体密度を追加）</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット 880398d5（FFT 海洋・GPU 浅水波・流体密度を追加）（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>海（Ocean）や湖（Lake）の水面を作る部品です。波の動き、光の反射、水を通した屈折、泡、水中に入ったときの画面の色までをこの 1 つで持ちます。水面の高さや流れを物理の側から調べる用途にも使われ、<a href="physics.html#buoyancy">Buoyancy</a> を付けた物体はこの水面に浮きます。</p>
 
@@ -173,6 +173,31 @@
       <tr><td>Underwater Density</td><td><code>underwater_density</code></td><td>小数</td><td>0.08</td><td>0〜5</td><td>水中の霧の濃さ。大きいと遠くが見えなくなります</td></tr>
       <tr><td>Underwater Distortion</td><td><code>underwater_distortion</code></td><td>小数</td><td>0.012</td><td>0〜1</td><td>水中の画面のゆらぎの強さ</td></tr>
       <tr><td>Underwater TAA Reactive</td><td><code>underwater_reactive</code></td><td>小数</td><td>0.35</td><td>0〜1</td><td>水中で残像（TAA）を抑える強さ。ぶれや残像が気になるときに上げます</td></tr>
+    </table>
+    </div>
+
+    <h3 id="waves">波の成分（Wave 1〜8）と白波</h3>
+    <p>（2026-10-24 時点で表に無かった項目。コードから書いた内容） 海の波は 8 つの波の重ね合わせです。Wave 1 がいちばん長くて高い波、番号が大きいほど短く小さい波です。「Amplitude」は高さ（m）、「Wavelength」は波の長さ（m）です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>FFT海洋 白波の消える速さ</td><td><code>ocean_foam_decay</code></td><td>0.9</td><td>0〜10</td><td></td></tr>
+      <tr><td>Wave 1 Amplitude</td><td><code>wave0_amplitude</code></td><td>0.32</td><td>0〜20</td><td></td></tr>
+      <tr><td>Wave 1 Wavelength</td><td><code>wave0_wavelength</code></td><td>12</td><td>0.1〜500</td><td></td></tr>
+      <tr><td>Wave 2 Amplitude</td><td><code>wave1_amplitude</code></td><td>0.18</td><td>0〜20</td><td></td></tr>
+      <tr><td>Wave 2 Wavelength</td><td><code>wave1_wavelength</code></td><td>6.5</td><td>0.1〜500</td><td></td></tr>
+      <tr><td>Wave 3 Amplitude</td><td><code>wave2_amplitude</code></td><td>0.1</td><td>0〜20</td><td></td></tr>
+      <tr><td>Wave 3 Wavelength</td><td><code>wave2_wavelength</code></td><td>3.2</td><td>0.1〜500</td><td></td></tr>
+      <tr><td>Wave 4 Amplitude</td><td><code>wave3_amplitude</code></td><td>0.06</td><td>0〜20</td><td></td></tr>
+      <tr><td>Wave 4 Wavelength</td><td><code>wave3_wavelength</code></td><td>1.7</td><td>0.1〜500</td><td></td></tr>
+      <tr><td>Wave 5 Amplitude</td><td><code>wave4_amplitude</code></td><td>0.035</td><td>0〜20</td><td></td></tr>
+      <tr><td>Wave 5 Wavelength</td><td><code>wave4_wavelength</code></td><td>0.95</td><td>0.1〜500</td><td></td></tr>
+      <tr><td>Wave 6 Amplitude</td><td><code>wave5_amplitude</code></td><td>0.025</td><td>0〜20</td><td></td></tr>
+      <tr><td>Wave 6 Wavelength</td><td><code>wave5_wavelength</code></td><td>0.62</td><td>0.1〜500</td><td></td></tr>
+      <tr><td>Wave 7 Amplitude</td><td><code>wave6_amplitude</code></td><td>0.018</td><td>0〜20</td><td></td></tr>
+      <tr><td>Wave 7 Wavelength</td><td><code>wave6_wavelength</code></td><td>0.41</td><td>0.1〜500</td><td></td></tr>
+      <tr><td>Wave 8 Amplitude</td><td><code>wave7_amplitude</code></td><td>0.012</td><td>0〜20</td><td></td></tr>
+      <tr><td>Wave 8 Wavelength</td><td><code>wave7_wavelength</code></td><td>0.28</td><td>0.1〜500</td><td></td></tr>
     </table>
     </div>
 

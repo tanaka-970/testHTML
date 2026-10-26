@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>IK とラグドール（2ボーンIK・多関節IK・ラグドール制御） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / アニメーション</div>
+    <h1>IK とラグドール（2ボーンIK・多関節IK・ラグドール制御）</h1>
+
+    <p class="meta">対象：ブランチ sinotake_test / コミット aa27b6b3（コードから書いた内容。実機での確認はまだ）</p>
+
+    <p>アニメーションのポーズの上から、手や足をターゲットへ届かせる <b>IK</b>（2 ボーン IK・多関節 IK）と、骨を物理で動かす <b>ラグドール</b> の使い方です。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>足を段差に合わせる、手を壁やドアノブに添える（2ボーンIK）</li>
+      <li>しっぽ・触手・クレーンのアームを、先端がターゲットへ向かうように曲げる（多関節IK）</li>
+      <li>倒れたキャラクターを物理で崩れ落ちさせる（ラグドール）</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>部品</th><th>コンポーネントを追加での場所</th><th>付ける場所</th></tr>
+      <tr><td>2ボーンIK</td><td>アニメーション &gt; 2ボーンIK</td><td>Animator のあるキャラクター。腕・脚ごとに 1 つずつ（複数付けられる）</td></tr>
+      <tr><td>多関節IK（FABRIK）</td><td>アニメーション &gt; 多関節IK（FABRIK）</td><td>同上。Root から End までの関節を自動でたどる</td></tr>
+      <tr><td>ラグドール制御</td><td>Physics &gt; ラグドール制御</td><td>自動生成で作られる。物理骨をまとめて切り替える</td></tr>
+      <tr><td>Ragdoll Bone Link</td><td>Physics &gt; Ragdoll Bone Link</td><td>物理骨 1 本ごと。Rigidbody（動的）と Capsule Collider と一緒に使う</td></tr>
+    </table>
+    </div>
+
+    <h2 id="two-bone">2ボーンIK</h2>
+    <ol class="steps">
+      <li>キャラクターの GameObject に <b>コンポーネントを追加 &gt; アニメーション &gt; 2ボーンIK</b> を付けます。</li>
+      <li><b>Rootボーン</b>（肩・太もも）、<b>Middleボーン</b>（肘・膝）、<b>Endボーン</b>（手首・足首）を選びます。</li>
+      <li>手や足を届かせたい位置に空の GameObject を置き、<b>IKターゲット</b> に割り当てます。肘や膝を曲げたい向きにもう 1 つ置き、<b>曲げ方向（Pole）</b> に割り当てます。</li>
+      <li><b>影響度</b> を 0〜1 で決めます。0 でアニメーションのまま、1 で完全にターゲットへ届きます。</li>
+      <li>手の向きもターゲットに合わせたいときは <b>End の向きもターゲットに合わせる</b> をオンにし、ずれる分を <b>向きの補正（度）</b> で直します（2026-10-24 追加）。</li>
+    </ol>
+    <p>「状態」には、骨が見つからないなどの理由が出ます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>Rootボーン</td><td><code>root_bone</code></td><td></td><td></td><td></td></tr>
+      <tr><td>Middleボーン</td><td><code>middle_bone</code></td><td></td><td></td><td></td></tr>
+      <tr><td>Endボーン</td><td><code>end_bone</code></td><td></td><td></td><td></td></tr>
+      <tr><td>IKターゲット</td><td><code>target</code></td><td></td><td></td><td></td></tr>
+      <tr><td>曲げ方向（Pole）</td><td><code>pole</code></td><td></td><td></td><td></td></tr>
+      <tr><td>影響度</td><td><code>weight</code></td><td>1</td><td>0〜1</td><td></td></tr>
+      <tr><td>End の向きもターゲットに合わせる</td><td><code>match_target_rotation</code></td><td>オフ</td><td></td><td></td></tr>
+      <tr><td>向きの補正（度）</td><td><code>rotation_offset</code></td><td>0, 0, 0</td><td>-180〜180</td><td></td></tr>
+      <tr><td>状態</td><td><code>status</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="fabrik">多関節IK（FABRIK）</h2>
+    <p><b>Rootボーン</b> と <b>Endボーン</b> を選ぶと、その間の関節を全部たどって、先端がターゲットへ届くように曲げます。関節が多いほど計算の回数が増えるので、届き方が粗いときは <b>最大反復回数</b> を上げ、<b>許容誤差</b> を下げます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>Rootボーン</td><td><code>root_bone</code></td><td></td><td></td><td></td></tr>
+      <tr><td>Endボーン</td><td><code>end_bone</code></td><td></td><td></td><td></td></tr>
+      <tr><td>IKターゲット</td><td><code>target</code></td><td></td><td></td><td></td></tr>
+      <tr><td>曲げ方向（Pole）</td><td><code>pole</code></td><td></td><td></td><td></td></tr>
+      <tr><td>影響度</td><td><code>weight</code></td><td>1</td><td>0〜1</td><td></td></tr>
+      <tr><td>許容誤差</td><td><code>tolerance</code></td><td>0.001</td><td>0.00001〜1</td><td></td></tr>
+      <tr><td>最大反復回数</td><td><code>max_iterations</code></td><td>16</td><td>1〜256</td><td></td></tr>
+      <tr><td>状態</td><td><code>status</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="ragdoll">ラグドール</h2>
+    <h3 id="ragdoll-generate">人型ラグドールを自動生成する</h3>
+    <ol class="steps">
+      <li>キャラクターの Skinned Mesh Renderer がある GameObject を選びます。</li>
+      <li>インスペクターの下のほうにある <b>人型ラグドールを自動生成</b> を押します。</li>
+      <li>名前の付いた人型の骨から、物理骨（Rigidbody ＋ Capsule Collider ＋ Ragdoll Bone Link）と関節（Physics Joint）が作られ、階層の「ラグドール / 〇〇」グループにまとまります。全体を切り替える <b>ラグドール制御</b> も付きます。</li>
+      <li>関節の位置とカプセルの半径はモデルごとに違うので、生成後にシーンビューで確かめて直します。</li>
+    </ol>
+    <p>骨の名前が人型の決まりに合わないモデルでも、骨の階層から長い部分・分かれ目・末端を拾って作ります（「一般スケルトンからラグドールを生成しました」と出ます）。すでにラグドールがあるモデルでは、重ねて作りません。</p>
+    <h3 id="ragdoll-control">ラグドール制御</h3>
+    <p><b>ラグドール物理</b> をオフにすると物理骨を固定し、「姿勢切替時間 (秒)」をかけてアニメーションの姿勢へ戻します。オンにすると物理で崩れます。実行中に切り替えられます。<b>ラグドールをリセット</b> を押すと、全部の骨の位置と速度、切れた関節を最初に戻します。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>ラグドール物理</td><td><code>physics_enabled</code></td><td>オン</td><td></td><td>実行中に切り替え可能。停止中は物理ボーンを固定し、アニメーション姿勢へ徐々に戻します。</td></tr>
+      <tr><td>姿勢切替時間 (秒)</td><td><code>blend_duration</code></td><td>0.18</td><td>0〜2</td><td></td></tr>
+      <tr><td>ラグドールをリセット</td><td><code>request_reset</code></td><td></td><td></td><td>全リンクの初期位置・速度と破断した関節を復元します。</td></tr>
+      <tr><td>状態</td><td><code>status</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+    </table>
+    </div>
+    <h3 id="ragdoll-link">Ragdoll Bone Link</h3>
+    <p>動的な Rigidbody の姿勢を、Skinned Mesh の骨 1 本へ写します。「物理姿勢の反映率」が 1 なら物理のとおり、0 ならアニメーションのままです。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>Skinned Mesh GameObject</td><td><code>skinned_object</code></td><td></td><td></td><td></td></tr>
+      <tr><td>ボーン名</td><td><code>bone_name</code></td><td></td><td></td><td></td></tr>
+      <tr><td>ボーン位置オフセット</td><td><code>bone_local_position</code></td><td>0, 0, 0</td><td></td><td></td></tr>
+      <tr><td>ボーン回転オフセット</td><td><code>bone_local_rotation</code></td><td>0, 0, 0</td><td></td><td></td></tr>
+      <tr><td>物理姿勢の反映率</td><td><code>blend_weight</code></td><td>1</td><td>0〜1</td><td></td></tr>
+      <tr><td>状態</td><td><code>status</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+    </table>
+    </div>
+
+    <h2 id="related">関連項目</h2>
+    <ul>
+      <li><a href="animator.html">Animator</a></li>
+      <li><a href="physics.html">物理（Rigidbody と Collider）</a></li>
+      <li><a href="physics-joint.html">Physics Joint</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

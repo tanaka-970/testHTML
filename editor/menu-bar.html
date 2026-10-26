@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
     <h1>メニューバー</h1>
-    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（Window に Effekseer を追加）</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（Window に Effekseer を追加）（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>エディターのいちばん上にある文字のメニューです。左から <b>File</b>、<b>Edit</b>、<b>作成</b>、<b>カメラ</b>、<b>UI</b>、<b>Window</b>、<b>実行</b>、<b>Help</b> の 8 つが並びます。このページでは、それぞれのメニューに何が入っているかと、押すと何が起きるかを説明します。</p>
 
@@ -91,6 +91,27 @@
     <p>何を取り消すかは、今どこを編集しているかで自動的に決まります。ふだんはシーンの編集が対象ですが、スプライトアトラスの編集画面を操作しているときはアトラスの編集、Motion Workspace ではモーションの編集が対象になります。</p>
     <div class="warning"><strong>実行中はシーンの Undo ができません</strong>ゲームを実行している間は Undo と Redo が半透明になり、押せません。マウスを乗せると「実行中は元に戻せません。Shift+F5 で停止してください。」と表示されます。<kbd>Shift</kbd>+<kbd>F5</kbd> で実行を止めてから操作してください。</div>
 
+    <h2 id="utility">便利</h2>
+    <p>選んでいる物をまとめて整える、見たい角度へカメラを回す、といった作業を短くするメニューです（2026-10-07 追加。コードから書いた内容で、写真はまだありません）。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>押せる条件</th><th>説明</th></tr>
+      <tr><td>主選択と子孫だけ表示 ／ 単体表示を解除して視点を戻す</td><td>GameObject を選択しているとき</td><td>選んだ物とその子だけをシーンビューに出して作業し、解除すると元の表示と視点に戻します。</td></tr>
+      <tr><td>視点ブックマーク &gt; 視点 1〜8</td><td>エディタのカメラを使っているとき</td><td><b>現在の視点を登録（上書き）</b> で今のカメラの位置と向きを覚え、<b>この視点へ戻る</b> で戻ります。シーンごとに保存され、再起動しても残ります。<b>登録を消去</b> で消します。</td></tr>
+      <tr><td>主選択のモデル情報</td><td>GameObject を選択しているとき</td><td>モデルの参照・ファイル・ワールド位置と倍率・LOD 設定・素材スロット・頂点と三角形の数（元のモデルと今の形）を表示します。<b>モデルの参照IDをコピー</b> もあります。</td></tr>
+      <tr><td>選択モデルを見る</td><td>GameObject を選択しているとき</td><td><b>全体を画面に収める</b>（<kbd>F</kbd>）、正面（+Z側）・背面（-Z側）・右側（+X側）・左側（-X側）・上から・下から・斜めからの 7 方向へ視点を切り替えます。シーンビューでは <kbd>Z</kbd>・<kbd>C</kbd> で選んだ物の周りを回り、<kbd>Shift</kbd> を押しながらだとゆっくり回ります。</td></tr>
+      <tr><td>同じモデル／形状をすべて選択 ／ 子孫も追加選択</td><td>GameObject を選択しているとき</td><td>同じモデルや同じ形の物をシーンからまとめて選ぶ、選んだ物の子孫も選びに加える。</td></tr>
+      <tr><td>ワールドグリッドへ吸着</td><td>編集できるとき</td><td>選んだ物の位置をワールドのグリッドへ合わせます。</td></tr>
+      <tr><td>問題のあるオブジェクトを選択 &gt; エラーのある物だけ ／ 警告も含める</td><td>シーンがあるとき</td><td>検証でエラー（または警告）が出ている GameObject をまとめて選びます。</td></tr>
+      <tr><td>整列（主選択のワールド座標へ）&gt; X方向・Y方向・Z方向・すべて</td><td>2 つ以上選んでいるとき</td><td>最後に選んだ物（主選択）の位置に、ほかの物の位置をそろえます。</td></tr>
+      <tr><td>均等配置（両端を固定）&gt; X方向・Y方向・Z方向</td><td>3 つ以上選んでいるとき</td><td>両端の物はそのままで、間の物を等しい間隔に並べます。</td></tr>
+      <tr><td>主選択のローカルTransformをコピー ／ ローカルTransformを貼り付け（すべて・位置だけ・回転だけ・スケールだけ）</td><td>選択しているとき</td><td>主選択の位置・回転・拡大率を、選んだほかの物へ写します。</td></tr>
+      <tr><td>ローカルTransformをリセット（位置をゼロ・回転をゼロ・スケールを1）</td><td>編集できるとき</td><td>選んだ物の位置・回転・拡大率を初期値に戻します。</td></tr>
+      <tr><td>モデルのLODを一括変更 &gt; LODを無視（元のメッシュを使う）／自動LODを使う</td><td>編集できるとき</td><td>選んだモデルの <a href="../components/mesh-renderers.html#ignore-lod">LODを無視</a> をまとめて切り替えます。</td></tr>
+      <tr><td>シーンメモの表示を一括変更 &gt; 編集中：表示・非表示／ゲーム中：表示・非表示</td><td>編集できるとき</td><td>選んだシーンメモ（Scene Note）の表示をまとめて切り替えます。</td></tr>
+    </table>
+    </div>
+
     <h2 id="create">作成</h2>
     <figure>
       <img src="../images/editor/menu-create.png" alt="作成メニューを開いたところ。空の GameObject からプロジェクトを開くまでの 6 項目がある">
@@ -152,9 +173,11 @@
       <tr><td>Hierarchy</td><td>左の階層パネル（シーン内の GameObject の一覧）</td></tr>
       <tr><td>Inspector</td><td>右のインスペクターパネル（選択中のものの中身）</td></tr>
       <tr><td>Project / Assets</td><td>下段のプロジェクトパネル（アセットの一覧）</td></tr>
+      <tr><td>演出設定...</td><td>画面の揺れ・フラッシュなどのゲーム演出を、番号ごとにまとめて有効・無効・強さを決めるウィンドウ（<a href="../windows/gamefeel.html">演出設定</a>）。コミット 28995f39</td></tr>
       <tr><td>Effekseer エフェクト作成 / プレビュー</td><td>Effekseer のエフェクトを作る・試し再生するウィンドウ（<a href="../components/effekseer.html#window">説明</a>）。2026-10-03 追加</td></tr>
+      <tr><td>VFX制作ルーム</td><td>パーティクルのエフェクトを作るウィンドウ（<a href="../windows/particle-effect-editor.html">VFX制作ルーム</a>）</td></tr>
       <tr><td>イージングカーブ</td><td>イージングカーブを編集するパネル</td></tr>
-      <tr><td>Destruction Editor</td><td>メッシュの切断を試す・確かめる、ボロノイ分割などで破砕用のアセットを作る、実行中に切断・爆発を試す、破壊の状態を調べるパネル（<a href="../components/destruction.html#editor">破壊</a>）</td></tr>
+      <tr><td>Destruction Editor</td><td>かんたん設定・生成・階層・接続・衝突・診断のタブで、破砕用のアセットを作る、衝突形状を整える、切断・爆発を試すパネル（<a href="../components/destruction.html#editor">破壊</a>）</td></tr>
       <tr><td>Console</td><td>下段のコンソール（ログ）</td></tr>
       <tr><td>Workspace</td><td>下段のワークスペースパネル</td></tr>
       <tr><td>Validation / Diagnostics</td><td>下段の検証と診断のパネル。シーンの問題点が WARN などで一覧されます</td></tr>
@@ -164,13 +187,14 @@
     </div>
 
     <h3>Workspace の切り替え</h3>
-    <p>エディターには作業ごとの画面構成（Workspace）が 8 つあります。今いる Workspace には ✓ が付きます。各 Workspace の中身は <a href="workspaces.html">Workspace</a> のページを見てください。</p>
+    <p>エディターには作業ごとの画面構成（Workspace）が 9 つあります。今いる Workspace には ✓ が付きます。各 Workspace の中身は <a href="workspaces.html">Workspace</a> のページを見てください。</p>
     <div class="table-wrap">
     <table>
       <tr><th>項目</th><th>説明</th></tr>
       <tr><td>Scene Workspaceへ</td><td>シーンを組み立てる通常の画面に戻ります。</td></tr>
       <tr><td>UI Workspaceへ</td><td>ゲーム内 UI を作る画面に切り替えます。</td></tr>
       <tr><td>Motion Workspaceへ</td><td>モーション（アニメーション）を作る画面に切り替えます。</td></tr>
+      <tr><td>Presentation Workspaceへ</td><td>メニュー・起動ロゴ・ロード画面などの演出を作る画面に切り替えます（<a href="../windows/presentation-workspace.html">Presentation Workspace</a>）。</td></tr>
       <tr><td>モデリング Workspaceへ</td><td>頂点カラーのペイントなど、モデルに手を加える画面に切り替えます（<a href="vertex-paint.html">頂点カラーペイント</a>）。</td></tr>
       <tr><td>配置 Workspaceへ</td><td>プロジェクトパネルのモデルや Prefab をシーンビューに置く作業向けの画面に切り替えます。</td></tr>
       <tr><td>アニメーション Workspaceへ</td><td>アニメーション用の画面（準備中の枠）に切り替えます。クリップの割り当てと再生は、対象の Animator で行います。</td></tr>
@@ -180,8 +204,8 @@
     </div>
     <p>Workspace によって、このまとまりの下に項目が増えます。</p>
     <ul>
-      <li><b>UI Workspace</b> にいるとき：<b>UI 階層</b>、<b>UI インスペクター</b></li>
-      <li><b>Motion Workspace</b> にいるとき：<b>Motion レイヤー</b>、<b>Motion プレビュー</b>、<b>Motion インスペクター</b>、<b>タイムライン</b>、<b>グラフエディター</b></li>
+      <li><b>UI Workspace</b> にいるとき：<b>UI 階層</b>、<b>UI インスペクター</b>、<b>Canvas プレビュー</b></li>
+      <li><b>Motion Workspace</b> にいるとき：<b>Motion レイヤー</b>、<b>Motion プレビュー</b>、<b>Motion インスペクター</b>、<b>タイムライン</b>、<b>グラフエディター</b>、<b>Motion リグ</b></li>
     </ul>
 
     <h3>シーンの補助ウィンドウ</h3>
@@ -190,6 +214,8 @@
       <tr><th>項目</th><th>説明</th></tr>
       <tr><td>シーンメモ</td><td>シーンに書き残すメモのウィンドウ</td></tr>
       <tr><td>Scene Flow</td><td>シーンからシーンへの移り変わりを組み立てるウィンドウ</td></tr>
+      <tr><td>選択セット</td><td>GameObject のまとまりに名前を付けて保存し、まとめて選び直すパネル（<a href="../components/workflow.html#selection-set">選択セット</a>）</td></tr>
+      <tr><td>イベント・進行エディタ ／ シーン構成エディタ ／ UIフローエディタ</td><td>ゲームの進行・部屋ごとのシーン読み込み・メニュー画面の切り替えを、ノードをつないで作るエディタ（<a href="../components/workflow.html">イベント進行・UIフロー・シーン構成</a>）</td></tr>
       <tr><td>カメラ操作プリセット</td><td>カメラメニューの「プリセット管理...」と同じウィンドウ</td></tr>
       <tr><td>Collision Diagnostics</td><td>当たり判定の状態を調べるウィンドウ</td></tr>
       <tr><td>ImGui Metrics</td><td>エディターの画面部品（ImGui）の内部状態を表示する、開発者向けのウィンドウ</td></tr>

@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Physics</div>
     <h1>XPBD布物理</h1>
-    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>旗・カーテン・マントのような<b>開いた面のメッシュ</b>を、重力・<a href="wind.html">風場</a>・シーンの Collider に合わせて揺らすコンポーネントです。実行中だけ計算し、停止すると元の形に戻ります。</p>
 
@@ -58,6 +58,17 @@
       <tr><td>衝突半径</td><td><code>collision_radius</code></td><td>小数</td><td>0.0125</td><td>0〜5</td><td>布の点の太さ。Collider へのめり込みを減らします</td></tr>
       <tr><td>衝突レイヤー</td><td><code>collision_mask</code></td><td>レイヤー</td><td>すべて</td><td></td><td>当たる相手のレイヤー。外したレイヤーの Collider はすり抜けます。</td></tr>
       <tr><td>計算点数・拘束数・準備完了・状態</td><td><code>runtime_particles</code>、<code>runtime_constraints</code>、<code>ready</code>、<code>status</code></td><td>読取のみ（実行中）</td><td></td><td></td><td>うまく揺れないときは「状態」の文を見ます</td></tr>
+    </table>
+    </div>
+
+    <h3 id="friction">時間刻みの分割と摩擦</h3>
+    <p>（2026-10-24 時点で表に無かった項目。コードから書いた内容）</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>時間刻みの分割数</td><td><code>solver_substeps</code></td><td>1</td><td>1〜8</td><td>固定更新を細かく分けて拘束と接触を解きます。2〜4で精度を上げられますが、計算量も増えます。</td></tr>
+      <tr><td>静止摩擦</td><td><code>static_friction</code></td><td>0.5</td><td>0〜2</td><td>止まっている物を動き出させないための摩擦</td></tr>
+      <tr><td>滑り摩擦</td><td><code>dynamic_friction</code></td><td>0.3</td><td>0〜2</td><td>滑っている間の摩擦。計算時は静止摩擦以下に制限します。</td></tr>
     </table>
     </div>
 

@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Physics</div>
     <h1>XPBD有限要素Softbody</h1>
-    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>ゼリーやゴムのように、ぶつかるとへこんで戻る柔らかい物を作ります。メッシュの中を四面体（有限要素）に分け、辺の長さと体積を保つ XPBD で変形させて、シーンの Collider とぶつけます。当たった動的な Rigidbody も押し返します。</p>
 
@@ -62,6 +62,17 @@
       <tr><td>衝撃の範囲</td><td><code>impulse_radius</code></td><td>小数</td><td>0.5</td><td>0.001〜100</td><td>衝撃を配る半径。小さいとその場所だけ深くへこみ、大きいと広い範囲がまとめて押されます。</td></tr>
       <tr><td>衝撃を実行</td><td><code>request_impulse</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると次の FixedUpdate で 1 回だけ衝撃を加え、自動でオフに戻ります（保存されません）</td></tr>
       <tr><td>計算質量・並進運動量・計算点数・有限要素数・準備完了・状態</td><td><code>total_mass</code>、<code>linear_momentum</code>、<code>runtime_particles</code>、<code>runtime_tetrahedra</code>、<code>ready</code>、<code>status</code></td><td>読取のみ</td><td></td><td></td><td>動かないときは「状態」を見てください</td></tr>
+    </table>
+    </div>
+
+    <h3 id="friction">時間刻みの分割と摩擦</h3>
+    <p>（2026-10-24 時点で表に無かった項目。コードから書いた内容）</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>時間刻みの分割数</td><td><code>solver_substeps</code></td><td>1</td><td>1〜8</td><td>固定更新を細かく分けて拘束と接触を解きます。2〜4で精度を上げられますが、計算量も増えます。</td></tr>
+      <tr><td>静止摩擦</td><td><code>static_friction</code></td><td>0.5</td><td>0〜2</td><td>止まっている物を動き出させないための摩擦</td></tr>
+      <tr><td>滑り摩擦</td><td><code>dynamic_friction</code></td><td>0.3</td><td>0〜2</td><td>滑っている間の摩擦。計算時は静止摩擦以下に制限します。</td></tr>
     </table>
     </div>
 

@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / PBF 流体</div>
     <h1>PBF 流体</h1>
-    <p class="meta">対象：ブランチ sinotake_test / コミット 880398d5</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット 880398d5（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>水に粒子の流体を足して、物が飛び込んだときのしぶき・水の盛り上がり・流れ込みを、その場で計算して見せる部品です。<a href="water-body.html">Water Body（水域）</a>と同じ GameObject に付けて使います。</p>
 
@@ -172,6 +172,26 @@
 
     <h3 id="prop-status">実行中の表示（読み取り専用）</h3>
     <p>実行中のインスペクターに、<b>実行時の粒子数</b>・<b>平均密度</b>・<b>直近の計算刻み数</b>・<b>状態</b>が出ます。GPU で計算できずに CPU へ戻ったときは、その理由が「状態」に出ます。</p>
+
+    <h2 id="more-props">そのほかの項目</h2>
+    <p>（2026-10-24 時点で表に無かった項目。コードから書いた内容） SSFR は、粒子を画面上で 1 枚の水面に見せる描き方です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>SSFR画質（0:軽量 1:標準 2:高）</td><td><code>event_ssfr_quality</code></td><td>0</td><td>0〜2</td><td></td></tr>
+      <tr><td>SSFR融合の滑らかさ</td><td><code>event_ssfr_filter_radius</code></td><td>2</td><td>1〜3</td><td></td></tr>
+      <tr><td>SSFR描画粒子上限</td><td><code>event_ssfr_max_particles</code></td><td>2048</td><td>32〜4096</td><td></td></tr>
+      <tr><td>SSFR屈折の強さ</td><td><code>event_ssfr_refraction</code></td><td>0.012</td><td>0〜0.1</td><td></td></tr>
+      <tr><td>SSFR縁の反射</td><td><code>event_ssfr_fresnel</code></td><td>0.85</td><td>0〜3</td><td></td></tr>
+      <tr><td>SSFR反射ハイライト</td><td><code>event_ssfr_highlight</code></td><td>0.22</td><td>0〜3</td><td></td></tr>
+      <tr><td>SSFR粒子の液体密度</td><td><code>event_ssfr_thickness</code></td><td>1</td><td>0.05〜8</td><td></td></tr>
+      <tr><td>流体の半幅 Z</td><td><code>half_extent_z</code></td><td>3</td><td>0.1〜1000</td><td></td></tr>
+      <tr><td>局所領域の半幅</td><td><code>localized_region_half_extent</code></td><td>12</td><td>1〜100</td><td></td></tr>
+      <tr><td>局所領域の深さ</td><td><code>localized_region_depth</code></td><td>2</td><td>0.1〜100</td><td></td></tr>
+      <tr><td>発生位置（ローカル）</td><td><code>emitter_position</code></td><td>0, 0.25, 0</td><td></td><td></td></tr>
+      <tr><td>排出中心（ローカル）</td><td><code>drain_position</code></td><td>0, -0.8, 0</td><td></td><td></td></tr>
+    </table>
+    </div>
 
     <h2 id="speed">速さの調整</h2>
     <ul>

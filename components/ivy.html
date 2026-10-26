@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
     <h1>ツタ（Ivy Generator）</h1>
-    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（コードから書いた内容。実機での確認はまだ）</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（コードから書いた内容。実機での確認はまだ）（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>モデル・基本形状・地形の表面にツタを生やすコンポーネントです。屋上の縁から垂らす、壁を這わせる、地面を這わせる、の 3 通りの生え方があり、茎と葉は 1 つのメッシュにまとめて描きます。膨張などで形が変わっても追従します。コンポーネントを追加の一覧では「<b>ツタ</b>」という名前です。</p>
 
@@ -99,6 +99,56 @@
       <li>そのモデルをシーンに置き、Mesh Renderer で表示できる状態にする（非表示の場所に置いても構いません）</li>
       <li>「葉A: 葉にするモデル」にその GameObject を入れる。形が読めるまでの間は、組み込みの形で描きます</li>
     </ol>
+
+    <h3 id="leaf-props">葉A・葉B・葉C の項目</h3>
+    <p>（2026-10-24 時点で表に無かった項目。コードから書いた内容） 3 種類の葉は同じ項目を持ち、「出現の重み」の割合で混ざります。「葉にするモデル」を入れると、形の代わりにそのモデル（+X が長さ 1 m）を葉として並べます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>葉の細かさ（輪郭の点の数、少ないほど軽い）</td><td><code>leaf_detail</code></td><td>16</td><td>6〜64</td><td></td></tr>
+      <tr><td>葉の大きさのばらつき</td><td><code>leaf_size_variation</code></td><td>0.35</td><td>0〜1</td><td></td></tr>
+      <tr><td>手で置く種（x,y,z; ...）</td><td><code>manual_seeds</code></td><td></td><td></td><td></td></tr>
+      <tr><td>線の点の間隔(m)</td><td><code>brush_path_spacing</code></td><td>0.08</td><td>0.01〜2</td><td></td></tr>
+      <tr><td>葉A: 使う</td><td><code>leaf_a_enabled</code></td><td>オン</td><td></td><td></td></tr>
+      <tr><td>葉A: 出現の重み</td><td><code>leaf_a_weight</code></td><td>1</td><td></td><td></td></tr>
+      <tr><td>葉A: 形</td><td><code>leaf_a_shape</code></td><td>ツタ</td><td></td><td></td></tr>
+      <tr><td>葉A: 長さ(m)</td><td><code>leaf_a_length</code></td><td>0.12</td><td></td><td></td></tr>
+      <tr><td>葉A: 幅(m)</td><td><code>leaf_a_width</code></td><td>0.11</td><td></td><td></td></tr>
+      <tr><td>葉A: 切れ込みの数</td><td><code>leaf_a_lobes</code></td><td>5</td><td>0〜12</td><td></td></tr>
+      <tr><td>葉A: 切れ込みの深さ</td><td><code>leaf_a_lobe_depth</code></td><td>0.35</td><td>0〜0.95</td><td></td></tr>
+      <tr><td>葉A: ギザギザ</td><td><code>leaf_a_serration</code></td><td>0</td><td>0〜0.95</td><td></td></tr>
+      <tr><td>葉A: 先のとがり</td><td><code>leaf_a_tip</code></td><td>0.6</td><td></td><td></td></tr>
+      <tr><td>葉A: 中央の折れ</td><td><code>leaf_a_fold</code></td><td>0.25</td><td></td><td></td></tr>
+      <tr><td>葉A: 色のばらつき</td><td><code>leaf_a_color_variation</code></td><td>{ 0.08, 0.1, 0.05, 0.0f }</td><td></td><td></td></tr>
+      <tr><td>葉A: 葉にするモデル（+Xが長さ1m）</td><td><code>leaf_a_template_object</code></td><td></td><td></td><td></td></tr>
+      <tr><td>葉B: 使う</td><td><code>leaf_b_enabled</code></td><td>オフ</td><td></td><td></td></tr>
+      <tr><td>葉B: 出現の重み</td><td><code>leaf_b_weight</code></td><td>0.5</td><td></td><td></td></tr>
+      <tr><td>葉B: 形</td><td><code>leaf_b_shape</code></td><td>丸</td><td></td><td></td></tr>
+      <tr><td>葉B: 長さ(m)</td><td><code>leaf_b_length</code></td><td>0.12</td><td></td><td></td></tr>
+      <tr><td>葉B: 幅(m)</td><td><code>leaf_b_width</code></td><td>0.11</td><td></td><td></td></tr>
+      <tr><td>葉B: 切れ込みの数</td><td><code>leaf_b_lobes</code></td><td>3</td><td>0〜12</td><td></td></tr>
+      <tr><td>葉B: 切れ込みの深さ</td><td><code>leaf_b_lobe_depth</code></td><td>0.25</td><td>0〜0.95</td><td></td></tr>
+      <tr><td>葉B: ギザギザ</td><td><code>leaf_b_serration</code></td><td>0</td><td>0〜0.95</td><td></td></tr>
+      <tr><td>葉B: 先のとがり</td><td><code>leaf_b_tip</code></td><td>0.6</td><td></td><td></td></tr>
+      <tr><td>葉B: 中央の折れ</td><td><code>leaf_b_fold</code></td><td>0.25</td><td></td><td></td></tr>
+      <tr><td>葉B: 色</td><td><code>leaf_b_color</code></td><td>{ 0.30, 0.45, 0.12, 1.0f }</td><td></td><td></td></tr>
+      <tr><td>葉B: 色のばらつき</td><td><code>leaf_b_color_variation</code></td><td>{ 0.08, 0.1, 0.05, 0.0f }</td><td></td><td></td></tr>
+      <tr><td>葉B: 葉にするモデル（+Xが長さ1m）</td><td><code>leaf_b_template_object</code></td><td></td><td></td><td></td></tr>
+      <tr><td>葉C: 使う</td><td><code>leaf_c_enabled</code></td><td>オフ</td><td></td><td></td></tr>
+      <tr><td>葉C: 出現の重み</td><td><code>leaf_c_weight</code></td><td>0.1</td><td></td><td></td></tr>
+      <tr><td>葉C: 形</td><td><code>leaf_c_shape</code></td><td>花</td><td></td><td></td></tr>
+      <tr><td>葉C: 長さ(m)</td><td><code>leaf_c_length</code></td><td>0.07</td><td></td><td></td></tr>
+      <tr><td>葉C: 幅(m)</td><td><code>leaf_c_width</code></td><td>0.07</td><td></td><td></td></tr>
+      <tr><td>葉C: 切れ込みの数</td><td><code>leaf_c_lobes</code></td><td>5</td><td>0〜12</td><td></td></tr>
+      <tr><td>葉C: 切れ込みの深さ</td><td><code>leaf_c_lobe_depth</code></td><td>0.25</td><td>0〜0.95</td><td></td></tr>
+      <tr><td>葉C: ギザギザ</td><td><code>leaf_c_serration</code></td><td>0</td><td>0〜0.95</td><td></td></tr>
+      <tr><td>葉C: 先のとがり</td><td><code>leaf_c_tip</code></td><td>0.6</td><td></td><td></td></tr>
+      <tr><td>葉C: 中央の折れ</td><td><code>leaf_c_fold</code></td><td>0.25</td><td></td><td></td></tr>
+      <tr><td>葉C: 色</td><td><code>leaf_c_color</code></td><td>{ 0.95, 0.85, 0.95, 1.0f }</td><td></td><td></td></tr>
+      <tr><td>葉C: 色のばらつき</td><td><code>leaf_c_color_variation</code></td><td>{ 0.08, 0.1, 0.05, 0.0f }</td><td></td><td></td></tr>
+      <tr><td>葉C: 葉にするモデル（+Xが長さ1m）</td><td><code>leaf_c_template_object</code></td><td></td><td></td><td></td></tr>
+    </table>
+    </div>
 
     <h2 id="deform">膨張・アニメーションへの追従</h2>
     <ul>

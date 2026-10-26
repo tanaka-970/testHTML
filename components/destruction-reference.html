@@ -17,19 +17,22 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / 破壊系リファレンス</div>
     <h1>破壊系リファレンス</h1>
-    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（断面マテリアル・膜片・破壊比較を追加）</p>
-    <p>破壊・切断・斬撃・風船にかかわるコンポーネント 6 種類、破壊材質アセット、Destruction Editor、C# API、上限値を表にまとめたページです。使い方の流れや試し方は <a href="destruction.html">破壊（切断・破砕・斬撃・風船）</a> を見てください。</p>
-    <p>インスペクターの <b>コンポーネントを追加 &gt; Destruction</b> に、下の 6 つが並びます。表示名は追加メニューとインスペクターに出る名前、内部名はシーンファイルや C# の <code>Accessor</code> で使う名前です。</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット 28995f39（破壊の入口・破壊フィールド・欠損・既定値の更新）</p>
+    <p>破壊・欠損・切断・斬撃・風船にかかわるコンポーネント、破壊材質アセット、Destruction Editor、C# API、上限値を表にまとめたページです。使い方の流れや試し方は <a href="destruction.html">破壊（切断・破砕・斬撃・風船）</a> を見てください。</p>
+    <p>インスペクターの <b>コンポーネントを追加 &gt; Destruction</b> に、破壊・破壊フィールド・斬撃・風船・破壊する側・破片の寿命が並びます。欠損・事前破砕・実行時切断は <b>破壊</b> の中の機能として付けるので、追加メニューには出ません。表示名は追加メニューとインスペクターに出る名前、内部名はシーンファイルや C# の <code>Accessor</code> で使う名前です。</p>
 
     <h2 id="components">部品の一覧</h2>
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>型名</th><th>役割</th><th>一緒に必要なもの</th><th>C# から</th></tr>
-      <tr><td><a href="#sliceable">Sliceable</a></td><td><code>SliceableComponent</code></td><td>実行中にメッシュを平面で 2 つに切り、破片を物理で動かす</td><td>Mesh・Skinned・Primitive の Renderer の<b>どれか 1 つ</b></td><td>ScriptBehaviour（<a href="#cs-script">SliceableComponent</a>）</td></tr>
-      <tr><td><a href="#destructible">Destructible</a></td><td><code>DestructibleComponent</code></td><td>事前に割っておいた破片（Destruction Asset）を、Damage でつながりを切って飛ばす</td><td>Mesh・Skinned・Primitive のどれかの Renderer と Destruction Asset。物をぶつけて壊すなら Collider も</td><td>ScriptBehaviour（<a href="#cs-script">DestructibleComponent</a>）</td></tr>
+      <tr><td><a href="#destruction">破壊</a></td><td><code>DestructionComponent</code></td><td>壊される側の入口。欠損・事前破砕・実行時切断の機能を束ね、共通の設定（材質・断面・破片・演出）を配る。壊れた状態で始める・下を固定する</td><td>Mesh・Skinned・Primitive の Renderer</td><td>まだ型はありません。中の機能の型を使います</td></tr>
+      <tr><td><a href="#sculpt">欠損（Sculpt）</a></td><td><code>DamageSculptComponent</code></td><td>削り具の形で欠け・穴・えぐれを焼き込む。ゲーム中は保存した形を読むだけ</td><td>破壊の機能として付く</td><td>なし</td></tr>
+      <tr><td><a href="#sliceable">実行時切断（Slice）</a></td><td><code>SliceableComponent</code></td><td>実行中にメッシュを平面で 2 つに切り、破片を物理で動かす</td><td>Mesh・Skinned・Primitive の Renderer の<b>どれか 1 つ</b></td><td>ScriptBehaviour（<a href="#cs-script">SliceableComponent</a>）</td></tr>
+      <tr><td><a href="#destructible">事前破砕（Blast）</a></td><td><code>DestructibleComponent</code></td><td>事前に割っておいた破片（Destruction Asset）を、Damage でつながりを切って飛ばす</td><td>Mesh・Skinned・Primitive のどれかの Renderer と Destruction Asset。物をぶつけて壊すなら Collider も</td><td>ScriptBehaviour（<a href="#cs-script">DestructibleComponent</a>）</td></tr>
       <tr><td><a href="#blade">斬撃</a></td><td><code>BladeSlicerComponent</code></td><td>刃の根元と先端が動いた跡で、Sliceable を切り、Destructible に Damage を与え、風船を割る</td><td>刃を動かすもの（アニメーション、スクリプト、Rotator など）。判定の開始は <code>BeginSwing()</code></td><td>MonoBehaviour（<a href="#cs-mono">BladeSlicer</a>）／ScriptBehaviour</td></tr>
       <tr><td><a href="#balloon">風船</a></td><td><code>BalloonComponent</code></td><td>浮いて揺れる。斬撃・衝突・爆風・圧力で割れ、ゴム片を散らし、近くの風船に連鎖する</td><td>動的（Dynamic）の Rigidbody と Collider</td><td>MonoBehaviour（<a href="#cs-mono">Balloon</a>）／ScriptBehaviour</td></tr>
       <tr><td><a href="#dealer">破壊する側</a></td><td><code>DestructionDealerComponent</code></td><td>触れた Destructible に Damage を与え、風船を割る。爆発して周りを壊し、Rigidbody を吹き飛ばす</td><td>自分を動かすもの（Rigidbody など）</td><td>MonoBehaviour（<a href="#cs-mono">DestructionDealer</a>）／ScriptBehaviour</td></tr>
+      <tr><td><a href="#field">破壊フィールド</a></td><td><code>DestructionFieldComponent</code></td><td>置いた位置から、歪み（ダメージ）・力・爆発・固定・消去を働かせる</td><td>なし（空の GameObject で可）</td><td>まだ型はありません</td></tr>
       <tr><td><a href="#debris">破片の寿命</a></td><td><code>DebrisLifetimeComponent</code></td><td>破片を、時間・止まってからの時間・シーン内の数の上限で片付ける</td><td>なし。Sliceable / Destructible の破片には自動で付きます</td><td>なし</td></tr>
     </table>
     </div>
@@ -38,26 +41,117 @@
     <p>行が「壊す側」、列が「壊される側」です。「—」は効きません。</p>
     <div class="table-wrap">
     <table>
-      <tr><th>壊す側</th><th>Sliceable</th><th>Destructible</th><th>風船</th><th>動的な Rigidbody</th></tr>
+      <tr><th>壊す側</th><th>実行時切断</th><th>事前破砕</th><th>風船</th><th>動的な Rigidbody</th></tr>
       <tr><td>斬撃（刃が通る）</td><td>切る。切断エネルギー ＝ 先端の速さ × 切断エネルギー倍率</td><td>Damage ＝ 先端の速さ × 斬撃Damage倍率（「DestructibleへDamage」がオンのとき）</td><td>割る（ほかより優先）</td><td>—</td></tr>
       <tr><td>破壊する側：接触</td><td>—</td><td>接触Damage</td><td>割る</td><td>—</td></tr>
       <tr><td>破壊する側：爆発</td><td>—</td><td>爆発Damage（内側半径より外は距離で減る）</td><td>割る（「爆風で割れる」がオンのとき）</td><td>外向きに押す（爆発Impulse）</td></tr>
       <tr><td>破壊材質の破裂爆発</td><td>—</td><td>破裂爆発Damage</td><td>割る（「爆風で割れる」がオンのとき）</td><td>外向きに押す（破裂爆発Impulse）</td></tr>
       <tr><td>風船の破裂</td><td>—</td><td>—</td><td>連鎖圧力を足す（破裂半径の中）</td><td>外向きに押す（破裂の押し出し）</td></tr>
       <tr><td>物がぶつかる</td><td>—</td><td>「衝突で壊れる」がオンで、衝撃が衝撃しきい値を超えたとき Damage</td><td>衝撃しきい値が 0 より大きく、衝撃がそれ以上のとき割る</td><td>（物理のとおり）</td></tr>
-      <tr><td>Destruction Editor の試験ボタン（実行中）</td><td>Play中に実切断</td><td>Play中にBlast Damageを試す</td><td>—</td><td>—</td></tr>
+      <tr><td>破壊フィールド：歪み・爆発</td><td>—</td><td>ダメージ（内側半径より外は距離で減る）</td><td>割る（「風船も割る」がオンのとき）</td><td>爆発なら外向きに押す</td></tr>
+      <tr><td>破壊フィールド：力</td><td>—</td><td>—</td><td>—</td><td>外向きに押す</td></tr>
+      <tr><td>破壊の「壊れた状態で始める」</td><td>—</td><td>開始時に物体全体へダメージ</td><td>—</td><td>—</td></tr>
+      <tr><td>Destruction Editor の試験ボタン</td><td>実切断を試す（実行中）</td><td>Blast Damageを試す（実行中、または物理 ON のプレビュー中）</td><td>—</td><td>—</td></tr>
     </table>
     </div>
     <p>「衝撃」は、ぶつかった 2 つの物の近づく速さ × 換算質量（<code>1 ÷ (1/質量A + 1/質量B)</code>。動的でない物は質量を無限大として扱う）です。2 つのうち少なくとも 1 つが動的な Rigidbody でないと、衝撃は 0 になります。</p>
 
-    <h2 id="sliceable">Sliceable</h2>
+    <h2 id="destruction">破壊</h2>
+    <p>壊される側に付ける入口です。上側の項目は機能へ配る共通の設定で、欠損・事前破砕・実行時切断の欄には出なくなります（同じ名前の項目は、毎フレームこちらの値で上書きされます）。下側の「機能」の欄で、欠損・事前破砕・実行時切断を付け外しし、カット（エディタ）を使います。</p>
+    <h3>共通</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>破壊材質</td><td><code>material_asset</code></td><td></td><td></td><td>割り当てると、密度・切断抵抗・断面・音・VFX・組み込み演出・破裂は破壊材質の値を使います</td></tr>
+      <tr><td>密度</td><td><code>density</code></td><td>500</td><td>0.01〜100000</td><td>破片の質量 ＝ 体積 × 密度</td></tr>
+      <tr><td>断面マテリアル（空なら外側と同じ）</td><td><code>interior_material</code></td><td></td><td></td><td>切り口・割れ口・欠けの断面のマテリアル。空なら、切り口に接する外側と同じ材質で描きます</td></tr>
+    </table>
+    </div>
+    <h3>破片</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>破片の寿命（秒）</td><td><code>debris_lifetime</code></td><td>6</td><td>0〜3600</td><td>破片が生まれてから消えるまでの秒数。0 で時間では消しません</td></tr>
+      <tr><td>静止後の削除時間（秒）</td><td><code>debris_sleep_despawn</code></td><td>1.5</td><td>0〜3600</td><td>破片が止まってからこの秒数で消します。0 で使いません</td></tr>
+      <tr><td>破片のフェード時間（秒）</td><td><code>debris_fade</code></td><td>0.35</td><td>0〜60</td><td>消えるときに小さく縮んでいく時間</td></tr>
+      <tr><td>シーン内の最大破片数</td><td><code>max_scene_debris</code></td><td>48</td><td>0〜4096</td><td>シーンの破片がこの数を超えると、古い破片から消します</td></tr>
+      <tr><td>下から固定する高さの割合</td><td><code>anchor_bottom_ratio</code></td><td>0</td><td>0〜1</td><td>事前破砕で、モデルの下からこの高さの割合に中心がある破片は、壊れても静的な当たり判定でその場に残ります。0 で固定しません</td></tr>
+    </table>
+    </div>
+    <h3>演出</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>破壊演出を自動再生</td><td><code>auto_play_feedback</code></td><td>オン</td><td></td><td>壊れた・切れたときに、音・VFX・組み込み演出を自動で出します</td></tr>
+      <tr><td>演出音量</td><td><code>feedback_volume</code></td><td>1</td><td>0〜4</td><td>音の音量。0 で鳴らず、1 で素材の音量どおり</td></tr>
+      <tr><td>演出最大距離</td><td><code>feedback_max_distance</code></td><td>30</td><td>0.1〜100000</td><td>音が聞こえる最大距離</td></tr>
+      <tr><td>VFX寿命（秒）</td><td><code>effect_lifetime</code></td><td>3</td><td>0〜3600</td><td>置いた VFX Prefab を消すまでの秒数</td></tr>
+      <tr><td>イベントごとの破片VFX上限</td><td><code>max_debris_vfx_per_event</code></td><td>2</td><td>0〜4096</td><td>1 回で置く破片 VFX の数。大きい破片から順に置きます</td></tr>
+    </table>
+    </div>
+    <h3>開始時</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>壊れた状態で始める</td><td><code>start_broken</code></td><td>オフ</td><td></td><td>シーンの開始時に、物体全体を包む範囲へ 1 回ダメージを与えます。事前破砕が要ります</td></tr>
+      <tr><td>開始時のダメージ</td><td><code>start_broken_damage</code></td><td>1000</td><td>0〜1000000</td><td>開始時に与えるダメージ</td></tr>
+      <tr><td>開始時ダメージの広さ</td><td><code>start_broken_spread</code></td><td>1</td><td>0.01〜10</td><td>ダメージの届く広さ。1 で物体全体を包む球、小さいと中心だけが崩れます</td></tr>
+    </table>
+    </div>
+    <p>以前の Destructible・Sliceable・Damage Sculpt だけが付いたシーンは、エディタで開いたときに破壊が自動で付き、部品の値を引き継ぎます。</p>
+
+    <h2 id="field">破壊フィールド</h2>
+    <p>空の GameObject に付けて、その位置から働かせます。1 つの GameObject に何個でも付けられます。スクリプトから手動で働かせるときは C++ の <code>Fire()</code> を呼びます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>種類</td><td><code>field_type</code></td><td>爆発（両方）</td><td></td><td>働きの種類（歪み（ダメージ）／力（押し出し）／爆発（両方）／固定（Anchor）／消去（破片を片付ける））</td></tr>
+      <tr><td>発動</td><td><code>activation</code></td><td>開始時に1回</td><td></td><td>いつ働くか。固定（Anchor）は常に効くので出ません（開始時に1回／一定間隔で繰り返す／手動（Fire））</td></tr>
+      <tr><td>形</td><td><code>shape</code></td><td>球</td><td></td><td>範囲の形。箱は GameObject の回転と拡縮に合わせます。ダメージと押し出しは、箱でも箱を包む球の範囲に届きます（球／箱）</td></tr>
+      <tr><td>半径</td><td><code>radius</code></td><td>3</td><td>0〜100000</td><td>球の半径（m）</td></tr>
+      <tr><td>箱の大きさ（半分）</td><td><code>half_extents</code></td><td>1, 1, 1</td><td></td><td>箱の大きさの半分（GameObject のローカル）</td></tr>
+      <tr><td>全力で効く内側の半径</td><td><code>inner_radius</code></td><td>0</td><td>0〜100000</td><td>この内側では全力で効き、外側は距離で弱まります</td></tr>
+      <tr><td>ダメージ</td><td><code>damage</code></td><td>300</td><td>0〜1000000</td><td>歪み・爆発のダメージ</td></tr>
+      <tr><td>押し出しの強さ</td><td><code>impulse</code></td><td>8</td><td>0〜1000000</td><td>力・爆発で動く物体を外へ押す強さ</td></tr>
+      <tr><td>繰り返す間隔（秒）</td><td><code>interval</code></td><td>1</td><td>0〜3600</td><td>一定間隔で繰り返すときの間隔</td></tr>
+      <tr><td>開始までの遅れ（秒）</td><td><code>start_delay</code></td><td>0</td><td>0〜3600</td><td>シーン開始からこの秒数たってから働きます</td></tr>
+      <tr><td>風船も割る</td><td><code>affect_balloons</code></td><td>オン</td><td></td><td>範囲の中の風船を割ります</td></tr>
+    </table>
+    </div>
+
+    <h2 id="sculpt">欠損（Sculpt）</h2>
+    <p>破壊の欄の <b>欠損を付ける</b> で付きます。形は <code>resources/DamageBakes/</code> にベイクされ、ゲーム中は読むだけです。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>片面の板に付ける厚み</td><td><code>shell_thickness</code></td><td>0.1</td><td>0〜100</td><td>片面の板（地形・壁の板）に穴を開けるとき、裏側へ付ける厚み。厚みが付くと穴の縁に壁が出ます</td></tr>
+      <tr><td>浮いた欠片を消す体積比</td><td><code>minimum_island_ratio</code></td><td>0.002</td><td>0〜0.5</td><td>削った結果、全体に対してこの体積比より小さい浮いた欠片を消します。閉じたモデルのときだけ働きます</td></tr>
+    </table>
+    </div>
+    <p>断面マテリアルは破壊の「断面マテリアル」で決めます。削り具は欠損の欄で足し、1 つの物に 64 個まで置けます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>削り具の項目</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>有効</td><td></td><td>オフの削り具は形に効きません</td></tr>
+      <tr><td>形</td><td></td><td>Jagged（岩のような欠け）・Box（箱）・Sphere（球）・Plane（平面で切る。法線側を落とす）</td></tr>
+      <tr><td>中心・大きさ（半分）・回転（度）</td><td>大きさ 0.001〜1000</td><td>メッシュのローカル座標。Scene View ギズモでも動かせます</td></tr>
+      <tr><td>凸凹</td><td>0〜1</td><td>Jagged は輪郭の乱れ、Box と Sphere は面の傾き。Plane にはありません</td></tr>
+      <tr><td>欠片の数</td><td>4〜32</td><td>Jagged の小片の数。多いほど細かく欠けますが、時間とポリゴンが増えます</td></tr>
+      <tr><td>乱数・別の形</td><td></td><td>同じ大きさで違う欠け方にします</td></tr>
+    </table>
+    </div>
+    <p>プリセット：<b>角欠け</b>（一番上の角）、<b>貫通穴</b>（いちばん薄い向きに貫く穴）、<b>えぐれ</b>（表面のくぼみ）、<b>崩れ</b>（上の端が崩れる）。</p>
+    <p>綺麗に閉じていて部品の重なりがない 30 万三角形以下のモデルは、立体として厳密に削ります。それ以外（開いたメッシュ・重なりのあるモデル・大きいモデル、または厳密な削り方が失敗したとき）は、面ごとに切り抜いて断面から壁を張る削り方に切り替わり、状態の行にその旨が出ます。</p>
+
+    <h2 id="sliceable">実行時切断（Slice）</h2>
+    <p>型名は <code>SliceableComponent</code> です。破壊が付いているときは、表の共通の項目（破壊材質・密度・断面・破片・演出）は破壊の値を使います。</p>
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
       <tr><td>切断可能</td><td><code>can_slice</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オフにすると切断要求を受け付けません</td></tr>
       <tr><td>破壊材質</td><td><code>material_asset</code></td><td>アセット（破壊材質）</td><td>なし</td><td></td><td>割り当てると、密度・切断抵抗・切断面マテリアル・音・VFX・組み込み演出・破裂は<a href="#material">破壊材質</a>の値を使います</td></tr>
       <tr><td>最小破片体積</td><td><code>minimum_fragment_volume</code></td><td>小数</td><td>0.0005</td><td>0.000001〜1000000</td><td>できた破片がこれより小さく、かつ「破片の物理化しきい値」より大きいとき、その切断は取り消されます</td></tr>
-      <tr><td>最大破片数</td><td><code>maximum_fragment_count</code></td><td>整数</td><td>32</td><td>1〜4096</td><td>元の 1 個を含めた破片の総数の上限。切ってできた破片も同じ枠を分け合います</td></tr>
+      <tr><td>最大破片数</td><td><code>maximum_fragment_count</code></td><td>整数</td><td>16</td><td>1〜4096</td><td>元の 1 個を含めた破片の総数の上限。切ってできた破片も同じ枠を分け合います</td></tr>
       <tr><td>切断面マテリアル</td><td><code>interior_material</code></td><td>マテリアルのパス</td><td>なし</td><td></td><td>切り口に使うマテリアル。破壊材質の「切断面 Material」があればそちらが優先です</td></tr>
       <tr><td>断面Material Slot（-1で自動）</td><td><code>interior_material_slot</code></td><td>整数</td><td>-1</td><td>-1〜31</td><td>切り口の面を、モデルのどのマテリアル番号として描くか。-1 なら自動で決めます（2026-10-03 追加）</td></tr>
       <tr><td>密度</td><td><code>density</code></td><td>小数</td><td>500</td><td>0.01〜100000</td><td>破片の質量 ＝ 体積 × 密度</td></tr>
@@ -65,20 +159,21 @@
       <tr><td>破片の物理化しきい値</td><td><code>debris_threshold</code></td><td>小数</td><td>0.0001</td><td>0〜100000</td><td>これ以下の体積の破片には Collider と Rigidbody を付けません（細かい破片で物理が重くなるのを防ぐ）</td></tr>
       <tr><td>切断Cooldown</td><td><code>slice_cooldown</code></td><td>小数（秒）</td><td>0.15</td><td>0〜60</td><td>同じ破片を続けて切れるようになるまでの時間</td></tr>
       <tr><td>破片の分離Impulse</td><td><code>separation_impulse</code></td><td>小数</td><td>0.5</td><td>0〜10000</td><td>切り口の向きに、2 つの破片を離す初速</td></tr>
-      <tr><td>破片の寿命（秒）</td><td><code>debris_lifetime</code></td><td>小数</td><td>15</td><td>0〜3600</td><td>破片が生まれてから消えるまでの秒数。0 で時間では消しません</td></tr>
-      <tr><td>静止後の削除時間（秒）</td><td><code>debris_sleep_despawn</code></td><td>小数</td><td>6</td><td>0〜3600</td><td>破片が止まって（Rigidbody が眠って）からこの秒数で消します。0 で使いません</td></tr>
-      <tr><td>破片のフェード時間（秒）</td><td><code>debris_fade</code></td><td>小数</td><td>0.75</td><td>0〜60</td><td>消えるときに小さく縮んでいく時間。0 ですぐ消えます</td></tr>
-      <tr><td>シーン内の最大破片数</td><td><code>max_scene_debris</code></td><td>整数</td><td>128</td><td>0〜4096</td><td>シーンの破片がこの数を超えると、古い破片から消します</td></tr>
+      <tr><td>破片の寿命（秒）</td><td><code>debris_lifetime</code></td><td>小数</td><td>6</td><td>0〜3600</td><td>破片が生まれてから消えるまでの秒数。0 で時間では消しません</td></tr>
+      <tr><td>静止後の削除時間（秒）</td><td><code>debris_sleep_despawn</code></td><td>小数</td><td>1.5</td><td>0〜3600</td><td>破片が止まって（Rigidbody が眠って）からこの秒数で消します。0 で使いません</td></tr>
+      <tr><td>破片のフェード時間（秒）</td><td><code>debris_fade</code></td><td>小数</td><td>0.35</td><td>0〜60</td><td>消えるときに小さく縮んでいく時間。0 ですぐ消えます</td></tr>
+      <tr><td>シーン内の最大破片数</td><td><code>max_scene_debris</code></td><td>整数</td><td>48</td><td>0〜4096</td><td>シーンの破片がこの数を超えると、古い破片から消します</td></tr>
       <tr><td>切断元も破片として削除</td><td><code>despawn_original</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、切った元の GameObject にも破片の寿命が付き、時間で消えます</td></tr>
       <tr><td>切断演出を自動再生</td><td><code>auto_play_feedback</code></td><td>オン・オフ</td><td>オン</td><td></td><td>切れたときに、切断音・VFX・組み込み演出を自動で出します</td></tr>
       <tr><td>演出音量</td><td><code>feedback_volume</code></td><td>小数</td><td>1</td><td>0〜4</td><td>切断音の音量。0 で鳴らず、1 で素材の音量どおりになります。</td></tr>
       <tr><td>演出最大距離</td><td><code>feedback_max_distance</code></td><td>小数</td><td>30</td><td>0.1〜100000</td><td>切断音が聞こえる最大距離（3D サウンドの最大距離）</td></tr>
       <tr><td>VFX寿命（秒）</td><td><code>effect_lifetime</code></td><td>小数</td><td>3</td><td>0〜3600</td><td>置いた VFX Prefab を消すまでの秒数</td></tr>
-      <tr><td>イベントごとの破片VFX上限</td><td><code>max_debris_vfx_per_event</code></td><td>整数</td><td>4</td><td>0〜4096</td><td>1 回の切断で置く破片 VFX の数。大きい破片から順に置きます</td></tr>
+      <tr><td>イベントごとの破片VFX上限</td><td><code>max_debris_vfx_per_event</code></td><td>整数</td><td>2</td><td>0〜4096</td><td>1 回の切断で置く破片 VFX の数。大きい破片から順に置きます</td></tr>
     </table>
     </div>
 
-    <h2 id="destructible">Destructible</h2>
+    <h2 id="destructible">事前破砕（Blast）</h2>
+    <p>型名は <code>DestructibleComponent</code> です。破壊が付いているときは、表の共通の項目は破壊の値を使います。</p>
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
@@ -95,16 +190,17 @@
       <tr><td>密度</td><td><code>density</code></td><td>小数</td><td>500</td><td>0.01〜100000</td><td>破片の質量 ＝ 体積 × 密度。破壊材質があればその密度を使います</td></tr>
       <tr><td>爆発Damage倍率</td><td><code>radial_damage_multiplier</code></td><td>小数</td><td>1</td><td>0〜1000</td><td>受けた Damage に掛けます。破壊材質があると、さらに「Blast Damage倍率 ÷ 破壊靭性」を掛けます</td></tr>
       <tr><td>動的破片の最小体積</td><td><code>minimum_dynamic_piece_volume</code></td><td>小数</td><td>0.001</td><td>0〜1000000</td><td>これより小さい破片のかたまりは、物理で動かしません</td></tr>
-      <tr><td>動的Actor上限</td><td><code>maximum_dynamic_actor_count</code></td><td>整数</td><td>64</td><td>0〜4096</td><td>1 回の破壊で物理で動かすかたまりの数の上限。超えた分は動かない形で残ります</td></tr>
-      <tr><td>破片の寿命（秒）</td><td><code>debris_lifetime</code></td><td>小数</td><td>20</td><td>0〜3600</td><td>Sliceable と同じ（既定値だけ違います）</td></tr>
-      <tr><td>静止後の削除時間（秒）</td><td><code>debris_sleep_despawn</code></td><td>小数</td><td>6</td><td>0〜3600</td><td>Sliceable と同じ</td></tr>
-      <tr><td>破片のフェード時間（秒）</td><td><code>debris_fade</code></td><td>小数</td><td>0.75</td><td>0〜60</td><td>Sliceable と同じ</td></tr>
-      <tr><td>シーン内の最大破片数</td><td><code>max_scene_debris</code></td><td>整数</td><td>128</td><td>0〜4096</td><td>Sliceable と同じ</td></tr>
+      <tr><td>動的Actor上限</td><td><code>maximum_dynamic_actor_count</code></td><td>整数</td><td>12</td><td>0〜4096</td><td>1 回の破壊で物理で動かすかたまりの数の上限。超えた分は物理を使わずに飛んでフェードします</td></tr>
+      <tr><td>下から固定する高さの割合</td><td><code>anchor_bottom_ratio</code></td><td>小数</td><td>0</td><td>0〜1</td><td>下からこの高さの割合に中心がある破片を、壊れてもその場に残します（2026-10-24 追加）</td></tr>
+      <tr><td>破片の寿命（秒）</td><td><code>debris_lifetime</code></td><td>小数</td><td>6</td><td>0〜3600</td><td>Sliceable と同じ（既定値だけ違います）</td></tr>
+      <tr><td>静止後の削除時間（秒）</td><td><code>debris_sleep_despawn</code></td><td>小数</td><td>1.5</td><td>0〜3600</td><td>Sliceable と同じ</td></tr>
+      <tr><td>破片のフェード時間（秒）</td><td><code>debris_fade</code></td><td>小数</td><td>0.35</td><td>0〜60</td><td>Sliceable と同じ</td></tr>
+      <tr><td>シーン内の最大破片数</td><td><code>max_scene_debris</code></td><td>整数</td><td>48</td><td>0〜4096</td><td>Sliceable と同じ</td></tr>
       <tr><td>破壊演出を自動再生</td><td><code>auto_play_feedback</code></td><td>オン・オフ</td><td>オン</td><td></td><td>壊れたときに、破壊音・VFX・組み込み演出を自動で出します</td></tr>
       <tr><td>演出音量</td><td><code>feedback_volume</code></td><td>小数</td><td>1</td><td>0〜4</td><td>破壊音の音量。0 で鳴らず、1 で素材の音量どおりになります。</td></tr>
       <tr><td>演出最大距離</td><td><code>feedback_max_distance</code></td><td>小数</td><td>30</td><td>0.1〜100000</td><td>破壊音が聞こえる最大距離</td></tr>
       <tr><td>VFX寿命（秒）</td><td><code>effect_lifetime</code></td><td>小数</td><td>3</td><td>0〜3600</td><td>置いた VFX Prefab を消すまでの秒数</td></tr>
-      <tr><td>イベントごとの破片VFX上限</td><td><code>max_debris_vfx_per_event</code></td><td>整数</td><td>4</td><td>0〜4096</td><td>1 回の破壊で置く破片 VFX の数。大きい破片から順に置きます</td></tr>
+      <tr><td>イベントごとの破片VFX上限</td><td><code>max_debris_vfx_per_event</code></td><td>整数</td><td>2</td><td>0〜4096</td><td>1 回の破壊で置く破片 VFX の数。大きい破片から順に置きます</td></tr>
     </table>
     </div>
     <p>Damage は Bond（破片どうしのつながり）の耐久を削ります。耐久が 0 になった Bond が切れ、つながりが切れたかたまりごとに凸の Collider と Rigidbody が付いて落ちます。</p>
@@ -184,18 +280,18 @@
     <p>破壊する側は <b>Sliceable には効きません</b>。Sliceable を切るのは斬撃か、スクリプトの <code>Slice()</code>、Destruction Editor の「Play中に実切断」です。</p>
 
     <h2 id="debris">破片の寿命</h2>
-    <p>Sliceable と Destructible が作る破片には自動で付き、元の部品の「破片の寿命」などの値が入ります。自分で好きな GameObject に付けると、その GameObject を時間で片付けられます。</p>
+    <p>実行時切断と事前破砕が作る破片には自動で付き、元の部品の「破片の寿命」などの値が入ります。自分で好きな GameObject に付けると、その GameObject を時間で片付けられます。</p>
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
-      <tr><td>寿命（秒）</td><td><code>lifetime_seconds</code></td><td>小数</td><td>20</td><td>0〜3600</td><td>この秒数で消え始めます。0 で時間では消しません</td></tr>
-      <tr><td>静止後の削除時間（秒）</td><td><code>sleep_despawn_seconds</code></td><td>小数</td><td>6</td><td>0〜3600</td><td>Rigidbody が止まって（眠って）からこの秒数で消え始めます。0 で使いません</td></tr>
-      <tr><td>フェード時間（秒）</td><td><code>fade_seconds</code></td><td>小数</td><td>0.75</td><td>0〜60</td><td>消え始めてから、小さく縮んで消えるまでの時間。消え始めると Rigidbody と Collider は外れます</td></tr>
+      <tr><td>寿命（秒）</td><td><code>lifetime_seconds</code></td><td>小数</td><td>6</td><td>0〜3600</td><td>この秒数で消え始めます。0 で時間では消しません</td></tr>
+      <tr><td>静止後の削除時間（秒）</td><td><code>sleep_despawn_seconds</code></td><td>小数</td><td>1.5</td><td>0〜3600</td><td>Rigidbody が止まって（眠って）からこの秒数で消え始めます。0 で使いません</td></tr>
+      <tr><td>フェード時間（秒）</td><td><code>fade_seconds</code></td><td>小数</td><td>0.35</td><td>0〜60</td><td>消え始めてから、小さく縮んで消えるまでの時間。消え始めると Rigidbody と Collider は外れます</td></tr>
     </table>
     </div>
 
     <h2 id="material">破壊材質（.replaydestructionmaterial）</h2>
-    <p>Sliceable・Destructible・風船で共有する設定のファイルです。プロジェクトパネルで右クリックし、<b>Create &gt; Data &gt; 破壊材質</b> で作ります（名前を入れないと <code>NewDestructionMaterial</code>）。プロジェクトパネルで選ぶと、パネルの中に「破壊材質 Asset」の編集欄が出て、変えるとすぐファイルに保存されます。</p>
+    <p>破壊（実行時切断・事前破砕）と風船で共有する設定のファイルです。プロジェクトパネルで右クリックし、<b>Create &gt; Data &gt; 破壊材質</b> で作ります（名前を入れないと <code>NewDestructionMaterial</code>）。プロジェクトパネルで選ぶと、パネルの中に「破壊材質 Asset」の編集欄が出て、変えるとすぐファイルに保存されます。</p>
     <h3 id="material-basic">基本と参照</h3>
     <div class="table-wrap">
     <table>
@@ -254,45 +350,43 @@
     </div>
 
     <h2 id="asset">Destruction Asset（.replaydestruction）</h2>
-    <p>Destructible が使う、事前に割った破片（Chunk）と、破片どうしのつながり（Bond：面積と耐久）を入れたファイルです。今の形式はバージョン 2 で、レベル 1 の破片の中に、さらに細かいレベル 2 の破片を持てます。作り方は 2 通りです。</p>
+    <p>事前破砕が使う、事前に割った破片（Chunk）と、破片どうしのつながり（Bond：面積と耐久）を入れたファイルです。今の形式はバージョン 2 で、レベル 1 の破片の中に、さらに細かいレベル 2 の破片を持てます。作り方は 2 通りです。</p>
     <div class="table-wrap">
     <table>
       <tr><th>作り方</th><th>できるもの</th></tr>
-      <tr><td>Destruction Editor の <b>ボロノイ分割</b> → <b>プレビュー結果を破壊 Asset に保存</b></td><td>細胞のような形に 2〜256 個（レベル 2 を使えばさらに細かく）割ったアセット。ふつうはこちら</td></tr>
+      <tr><td>Destruction Editor の <b>かんたん設定</b> → <b>このモデルを壊せるようにする</b></td><td>割れ方と破片数（4〜32）を選んで作り、<code>resources/Destruction/</code> に保存して対象へ割り当てるまで行う。ふつうはこちら</td></tr>
+      <tr><td>Destruction Editor の <b>生成</b> タブの破壊パターン → <b>プレビュー結果を破壊 Asset に保存</b></td><td>7 種類の割れ方で 2〜128 個（2段目を使えばさらに細かく）割ったアセット</td></tr>
       <tr><td>Destruction Editor の <b>Cut Previewから2 Chunk Blast Assetを作成</b></td><td>1 枚の平面で 2 つに割った、Chunk 2 個・Bond 1 本のアセット</td></tr>
     </table>
     </div>
-    <p>どちらも、Project パネルで今開いているフォルダーに保存され、AssetDatabase に登録されます。名前は「切断メッシュ診断」の <b>Blast Asset名</b> 欄の値（既定 <code>NewDestructionAsset</code>）で、同じ名前があれば番号が付きます。</p>
+    <p>どちらも、Project パネルで今開いているフォルダーに保存され、AssetDatabase に登録されます。名前は生成タブの <b>破壊 Asset の名前</b>（診断タブの <b>Blast Asset名</b> と同じ値、既定 <code>NewDestructionAsset</code>）で、同じ名前があれば番号が付きます。かんたん設定は <code>resources/Destruction/</code> に「GameObject 名_Destruction」で保存します。</p>
 
     <h2 id="editor">Destruction Editor パネル</h2>
-    <p><b>Window &gt; Destruction Editor</b> で開きます。階層パネルで選んでいる GameObject が対象です。</p>
+    <p><b>Window &gt; Destruction Editor</b> で開きます。階層パネルで選んでいる GameObject が対象です。2026-10-24 から作業ごとのタブに分かれました。</p>
     <div class="table-wrap">
     <table>
-      <tr><th>折りたたみ</th><th>項目</th><th>既定値</th><th>説明</th></tr>
-      <tr><td rowspan="8">切断メッシュ診断</td><td>Renderer / CPU Mesh / 頂点・Triangle</td><td></td><td>切れる形のデータが読めているか。緑の「候補があります」なら切れます</td></tr>
-      <tr><td>Local Plane 法線</td><td>0, 1, 0</td><td>切る平面の向き（対象のローカル座標）</td></tr>
-      <tr><td>Local Plane 距離</td><td>メッシュの中心</td><td>平面の位置</td></tr>
-      <tr><td>試験Energy</td><td>1000</td><td>「Play中に実切断」の切断エネルギー</td></tr>
-      <tr><td>平面をMesh中央へ</td><td></td><td>平面をメッシュの中心へ戻します</td></tr>
-      <tr><td>非同期 Cut Preview / Convex Cook</td><td></td><td>切らずに、切った結果（破片 A / B の三角形数、凸包の頂点数、時間）を計算します</td></tr>
-      <tr><td>Play中に実切断</td><td></td><td>実行中だけ押せます。その平面で本当に切ります</td></tr>
-      <tr><td>Blast Asset名 ／ Cut Previewから2 Chunk Blast Assetを作成</td><td>NewDestructionAsset</td><td>Cut Preview の結果から 2 Chunk のアセットを作ります</td></tr>
-      <tr><td>Convex / 重心診断</td><td></td><td></td><td>Convex Collider の状態、Cut Preview 後の重心・体積・質量</td></tr>
-      <tr><td rowspan="9">ボロノイ分割</td><td>レベル1の破片数</td><td>8</td><td>2〜256。はじめに割る数</td></tr>
-      <tr><td>レベル2の破片数（0で無効）</td><td>0</td><td>0 または 2〜16。レベル 1 の破片それぞれを、さらに割る数</td></tr>
-      <tr><td>乱数シード</td><td>1</td><td>同じ値なら同じ割れ方になります</td></tr>
-      <tr><td>衝撃点（ローカル）</td><td>0, 0, 0</td><td>細かく割れる中心</td></tr>
-      <tr><td>衝撃点周辺の細かさ</td><td>0</td><td>0〜1。大きいほど衝撃点の近くを細かく割ります</td></tr>
-      <tr><td>断面マテリアル Slot</td><td>-1</td><td>割れ口に使うマテリアルスロットの番号。-1 で新しいスロット（元のスロットの次の番号）</td></tr>
-      <tr><td>Bond の強さ（面積あたり）</td><td>1</td><td>0.01〜10000。Bond の耐久 ＝ くっついている面積 × この値。大きいほど壊れにくい</td></tr>
-      <tr><td>ボロノイ分割をプレビュー ／ 分割をキャンセル</td><td></td><td>別スレッドで割ります。結果に破片数・Bond 数・体積誤差（%）が出て、シーンビューに水色の線で展開図が出ます</td></tr>
-      <tr><td>プレビュー結果を破壊 Asset に保存</td><td></td><td>プレビューの結果をバージョン 2 の Destruction Asset として保存します</td></tr>
-      <tr><td rowspan="3">Blast Fracture / Bond / Stress</td><td>Chunk / Bond / Actor Group / Stress</td><td></td><td>Destructible と Destruction Asset がそろっているとき、数と Bond の一覧を出します</td></tr>
+      <tr><th>タブ</th><th>項目</th><th>既定値</th><th>説明</th></tr>
+      <tr><td rowspan="4">かんたん設定</td><td>割れ方 ／ 破片数</td><td>標準 ／ 8</td><td>標準・木・繊維・ガラス・陶器・金属。破片数は 4〜32</td></tr>
+      <tr><td>このモデルを壊せるようにする</td><td></td><td>破片を作って保存し、事前破砕・Convex Collider・静的な Rigidbody を付け、割れ方に合った密度と衝撃しきい値を入れます</td></tr>
+      <tr><td>破片の軽量化（軽量・標準・長く残す）</td><td></td><td>動的Actor上限 12・32・64、シーン内の最大破片数 48・128・256、寿命 6・15・40 秒などをまとめて設定</td></tr>
+      <tr><td>硬い殻の破裂：一度だけ破裂する材質を作成して割り当て</td><td></td><td>破裂する破壊材質を作り、破壊材質に割り当てます</td></tr>
+      <tr><td rowspan="5">生成</td><td>割れ方</td><td>細胞状</td><td>細胞状・衝撃放射・層割れ・木・繊維に沿う裂け・ガラス・放射ひび・陶器・不規則片・鉄板・帯状破断</td></tr>
+      <tr><td>分割の細かさ ／ 破片数</td><td>8</td><td>軽量 8・標準 16・細かい 32 のボタンか、2〜128</td></tr>
+      <tr><td>詳細設定</td><td></td><td>2段目の破片数（0〜16）、乱数シード、衝撃点（ローカル）と衝撃点をモデル中央へ、衝撃点周辺の細かさ、割れの方向、繊維に沿う裂けの長さ、断面マテリアル Slot、Bond の強さ（面積あたり）</td></tr>
+      <tr><td>破壊パターンをプレビュー ／ 破壊 Asset の名前 ／ プレビュー結果を破壊 Asset に保存</td><td>NewDestructionAsset</td><td>別スレッドで割り、シーンビューに展開図を出します。開いた所の補修も試します</td></tr>
+      <tr><td>断面のテクスチャ：断面マテリアル</td><td>未設定</td><td>破壊・実行時切断・事前破砕の断面マテリアルと、Renderer の断面スロットをまとめて設定します</td></tr>
+      <tr><td rowspan="3">階層・接続</td><td>Chunk / Bond / Actor Group / Stress</td><td></td><td>事前破砕と Destruction Asset がそろっているとき、数と Bond の図・一覧を出します</td></tr>
       <tr><td>Blast試験半径 ／ Blast試験Damage</td><td>2 ／ 10</td><td>試しの爆発の大きさと強さ</td></tr>
-      <tr><td>Play中にBlast Damageを試す</td><td></td><td>実行中だけ押せます。対象の位置で爆発させます</td></tr>
+      <tr><td>Blast Damageを試す</td><td></td><td>実行中、または編集中の物理 ON プレビュー中に押せます。対象の位置で爆発させます</td></tr>
+      <tr><td>衝突</td><td>地形・建物用に設定（三角形）／動く物体用に設定（凸形状）／動く物体の凹みを残す（複合凸）</td><td>凹みを残す細かさ 4</td><td>Mesh Collider・Convex Collider・複数の Convex Collider に付け替えます</td></tr>
+      <tr><td rowspan="6">診断</td><td>Renderer / CPU Mesh / 頂点・Triangle</td><td></td><td>切れる形のデータが読めているか</td></tr>
+      <tr><td>水平（Y）・縦（X）・縦（Z） ／ Local Plane 法線・距離 ／ 平面をMesh中央へ</td><td>0, 1, 0 ／ メッシュの中心</td><td>切る平面（対象のローカル座標）。シーンビューに橙色で出ます</td></tr>
+      <tr><td>試験Energy</td><td>1000</td><td>「実切断を試す」の切断エネルギー</td></tr>
+      <tr><td>非同期 Cut Preview / Convex Cook</td><td></td><td>切らずに、切った結果（破片の三角形数、凸包の頂点数、時間）を計算します</td></tr>
+      <tr><td>実切断を試す ／ Blast Asset名 ／ Cut Previewから2 Chunk Blast Assetを作成</td><td>NewDestructionAsset</td><td>実行中にその平面で本当に切ります。Cut Preview から 2 Chunk のアセットも作れます</td></tr>
+      <tr><td>Convex / 重心診断</td><td></td><td>Convex Collider の状態、Cut Preview 後の重心・体積・質量</td></tr>
     </table>
     </div>
-    <div class="note"><strong>ボロノイ分割のボタンが押せないとき</strong>ボロノイ分割は、対象の形のデータを Sliceable から読みます。モデルの Mesh Renderer に <b>Sliceable を一時的に付けて</b>からプレビューし、保存したら Sliceable を外して Destructible を付けます。割れるのは<b>閉じたメッシュ</b>（穴のない形）だけです。</div>
 
     <h2 id="csharp">C# API</h2>
     <h3 id="cs-mono">MonoBehaviour から（GetComponent&lt;型&gt;()）</h3>
@@ -312,7 +406,7 @@
       <tr><td>イベント</td><td><code>void OnBalloonPopped(BalloonPoppedInfo balloon)</code></td><td>シーンのどの風船が割れても呼ばれます。<code>balloon.Balloon</code>（割れた風船）、<code>WorldPosition</code>、<code>Pressure</code>、<code>ScrapCount</code></td></tr>
     </table>
     </div>
-    <p>Sliceable と Destructible には MonoBehaviour 用の型がありません。次の ScriptBehaviour から使います。</p>
+    <p>実行時切断（SliceableComponent）と事前破砕（DestructibleComponent）には MonoBehaviour 用の型がありません。破壊と破壊フィールドには、まだ C# の型がありません。次の ScriptBehaviour から使います。</p>
     <h3 id="cs-script">ScriptBehaviour から（TryGetComponent&lt;型&gt;(out var c)）</h3>
     <div class="table-wrap">
     <table>
@@ -355,7 +449,9 @@
       <tr><td>爆発・破裂爆発の回数</td><td>1 シーンにつき 1 秒あたり 16 回まで。待ちは 4096 件まで</td></tr>
       <tr><td>風船の連鎖の待ち</td><td>4096 件まで</td></tr>
       <tr><td>風船のゴム片</td><td>1 個の風船につき 64 個まで</td></tr>
-      <tr><td>ボロノイ分割の破片数</td><td>レベル 1：2〜256、レベル 2：0 または 2〜16</td></tr>
+      <tr><td>破壊パターンの破片数</td><td>1段目：2〜128、2段目：0〜16。かんたん設定は 4〜32</td></tr>
+      <tr><td>欠損の削り具</td><td>1 つの物に 64 個まで</td></tr>
+      <tr><td>欠損に入れられる三角形の数</td><td>平面だけなら 4,000,000、それ以外は 4,000,000（立体として厳密に削るのは 300,000 まで）</td></tr>
       <tr><td>2 Chunk Blast Asset の大きさ</td><td>元のメッシュと 2 つの破片の合計が 64 MiB 以下</td></tr>
       <tr><td>アセット名</td><td>120 バイト以内</td></tr>
       <tr><td>Destruction Editor の表示</td><td>切断面は 2048 三角形まで、Bond グラフは 128 Chunk / 512 Bond まで</td></tr>
@@ -379,6 +475,8 @@
     <table>
       <tr><th>起動オプション</th><th>結果のファイル</th><th>調べること</th><th>2026-09-28 の Release ビルドの結果</th></tr>
       <tr><td><code>--validate-destruction</code></td><td><code>Destruction.txt</code></td><td>切断の計算、ボロノイ分割、アセットと破壊材質の保存・読み込み、Bond と Stress</td><td>NG（68 項目 OK、2 項目 NG：<code>OPEN_MESH_REJECTED</code>、<code>NON_MANIFOLD_INPUT_REJECTED</code>。穴のあるメッシュ・辺を 3 枚以上の面が共有するメッシュを、切断が断らずに受け付けている）</td></tr>
+      <tr><td><code>--validate-damage-sculpt</code></td><td><code>DamageSculpt.txt</code></td><td>欠損の削り方（閉じた形・重なった殻・平面）、ベイクの保存と読み込み</td><td>未確認（2026-10-24 に重なった殻を削れることの確認へ変更）</td></tr>
+      <tr><td><code>--validate-mesh-cut</code></td><td><code>MeshCut.txt</code></td><td>カット（エディタ）で切った片の形と断面</td><td>未確認</td></tr>
       <tr><td><code>--validate-destruction-runtime</code></td><td><code>DestructionRuntime.txt</code></td><td>シーンでの切断・破壊・落下、破片の寿命、斬撃、破壊する側、破裂、風船、演出</td><td>OK（79 項目すべて OK）</td></tr>
     </table>
     </div>
@@ -386,7 +484,7 @@
 
     <h2 id="related">関連項目</h2>
     <ul>
-      <li><a href="destruction.html">破壊（切断・破砕・斬撃・風船）</a>：使い方と試し方</li>
+      <li><a href="destruction.html">破壊（欠損・破砕・切断・カット・風船）</a>：使い方と試し方</li>
       <li><a href="physics.html">物理（Rigidbody と Collider）</a></li>
       <li><a href="mesh-renderers.html">メッシュの描画</a></li>
       <li><a href="../csharp/script-behaviour.html">ScriptBehaviour</a></li>

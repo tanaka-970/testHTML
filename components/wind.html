@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Physics</div>
     <h1>風場</h1>
-    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>シーンに風を吹かせるコンポーネントです。1 つ置くと、布・Softbody・ワイヤー・ホース・ヘア・Rigidbody が同じ風を受けます。シーン全体に吹かせることも、置いた場所のまわりだけに吹かせることもできます。</p>
 
@@ -63,6 +63,18 @@
       <tr><td><a href="physics.html#rigidbody">Rigidbody</a></td><td>風の影響（<code>wind_response</code>）</td><td><b>0（受けない）</b>。1 秒あたりに風の速さへ近づく割合で、風速と自分の速さの差に比例して押されます。PhysX のときだけ</td></tr>
     </table>
     </div>
+
+    <h2 id="wind-reactive">風圧で揺れる</h2>
+    <p><b>コンポーネントを追加 &gt; Physics &gt; 風圧で揺れる</b> を付けると、その位置の風（Wind の風の場と、破裂の圧力）を受けて GameObject が傾いて揺れます。布の看板・ロープの先・吊りランプなど、物理を使わずに揺らしたい物に使います。置いたときの回転を基準に、風下へ X と Z の軸で傾きます（コミット 28995f39）。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>揺れの倍率</td><td><code>sway_scale</code></td><td>1</td><td>0〜10</td><td>風の強さに掛ける倍率。0 で揺れません</td></tr>
+      <tr><td>最大角度</td><td><code>max_angle_degrees</code></td><td>12</td><td>0〜80</td><td>傾く角度の上限（度）</td></tr>
+      <tr><td>追従速度</td><td><code>response_speed</code></td><td>8</td><td>0〜100</td><td>風の変化に追いつく速さ。大きいほどすぐ傾き、小さいとゆっくり揺れます</td></tr>
+    </table>
+    </div>
+    <p>揺れの強さは <a href="../windows/gamefeel.html">演出設定</a> の風の演出が有効なときだけ掛かります。</p>
 
     <h2 id="csharp">スクリプトから使う（C#）</h2>
     <p>MonoBehaviour では <code>GetComponent&lt;WindField&gt;()</code> で取り出せます。メンバーは <code>direction</code>、<code>speed</code>、<code>influenceRadius</code>、<code>falloff</code>、<code>gustStrength</code>、<code>gustFrequency</code>、<code>gustPhase</code>、<code>enabledInPlay</code> です。</p>

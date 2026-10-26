@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / 起動オプションと設定</div>
     <h1>プロジェクト設定</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>ゲームを起動したときに最初に開くシーン、起動ロゴ、ロード画面、使う Scene Flow や入力の設定など、シーンではなくプロジェクト全体で 1 つだけ決める設定です。内容は <code>resources/Project.replayproject</code> に保存され、チームで共有します。</p>
 
@@ -108,6 +108,12 @@
       <tr><td>最大 Probe 数</td><td>512</td><td>8〜2048</td><td>プロジェクトの上限。超えると、Probe の間隔を自動で広げて、メモリを抑えます</td></tr>
     </table>
     </div>
+
+    <h3 id="light-falloff">ライトの物理減衰（逆二乗）</h3>
+    <p>オンにすると、Point・Spot・Rect Light の明るさを距離の 2 乗で弱め、範囲の端で 0 にします。オフ（既定）は従来の減り方です（2026-10-23 追加。<a href="../components/lights.html#falloff">ライト</a>）。</p>
+
+    <h3 id="gamefeel">既定の演出設定プロファイルとアクセシビリティ</h3>
+    <p>コミット 28995f39です。<b>既定の演出設定プロファイル</b> で、ゲーム全体で使う <code>.replaygamefeel</code> を選びます。「組み込み既定値」のときは <code>resources/GameFeel/GameFeel_Default.replaygamefeel</code> を使います。<b>アクセシビリティ</b> の <b>画面の揺れ</b>・<b>画面のフラッシュ</b>・<b>画面の歪み・色ずれ</b> は、それぞれの演出の強さ（0% で無効）で、プロファイルへ保存され、再生中にも反映されます（<a href="../windows/gamefeel.html">演出設定</a>）。</p>
 
     <h3 id="default-character">Default Controlled Character Prefab</h3>
     <p>新しいシーンを「Default」で作ったときに 1 体だけ置き、操作対象にする Prefab です。選択欄には <code>.replayprefab</code> だけが並びます。</p>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>追加された API の一覧（2026-10） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / C# スクリプト / API</div>
+    <h1>追加された API の一覧（2026-10）</h1>
+    <p class="meta">対象：ブランチ sinotake_test / コミット aa27b6b3（2026-10-03 のコミット 60775ec から増えた公開 API を、コードの宣言から抜き出した一覧）</p>
+
+    <p>C# スクリプトで使える型のうち、2026-10-03 以降に増えて、ほかのページにまだ説明の無いメンバーの一覧です。多くは <b>Unity と同じ名前・同じ使い方</b>（<code>Mathf.SmoothDamp</code>、<code>Bounds.Encapsulate</code>、<code>PlayerPrefs.SetInt</code>、<code>Debug.DrawLine</code> など）なので、Unity の使い方がそのまま当てはまります。宣言はコードから自動で抜き出したもので、1 行に収まらない引数は途中で切れています。</p>
+
+    <h2>数学・幾何</h2>
+    <h3 id="mathf">Mathf</h3>
+    <pre><code>public static bool Approximately(float a, float b)
+public static float Atan(float value)
+public static int CeilToInt(float value)
+public static int ClosestPowerOfTwo(int value)
+public static float DeltaAngle(float current, float target)
+public static float Exp(float value)
+public static int FloorToInt(float value)
+public static float InverseLerp(float a, float b, float value)
+public static bool IsPowerOfTwo(int value)
+public static float LerpAngle(float a, float b, float t)
+public static float Log10(float value)
+public static float MoveTowardsAngle(float current, float target, float maxDelta)
+public static int NextPowerOfTwo(int value)
+public static float PerlinNoise(float x, float y)
+public static int RoundToInt(float value)
+public static float SmoothDamp(float current, float target, ref float currentVelocity,
+public static float SmoothDampAngle(float current, float target, ref float currentVelocity,
+public static float SmoothStep(float from, float to, float t)</code></pre>
+    <h3 id="vector2">Vector2</h3>
+    <pre><code>public static Vector2 Perpendicular(Vector2 inDirection)
+public static Vector2 SmoothDamp(Vector2 current, Vector2 target, ref Vector2 currentVelocity,
+public static Vector2 negativeInfinity
+public static Vector2 one
+public static Vector2 positiveInfinity
+public float sqrMagnitude</code></pre>
+    <h3 id="vector3">Vector3</h3>
+    <pre><code>public static void OrthoNormalize(ref Vector3 normal, ref Vector3 tangent)
+public static Vector3 RotateTowards(Vector3 current, Vector3 target,
+public static Vector3 SlerpUnclamped(Vector3 a, Vector3 b, float t)
+public static Vector3 SmoothDamp(Vector3 current, Vector3 target, ref Vector3 currentVelocity,
+public static Vector3 negativeInfinity
+public static Vector3 one
+public static Vector3 positiveInfinity
+public float sqrMagnitude</code></pre>
+    <h3 id="vector4">Vector4</h3>
+    <pre><code>public static Vector4 negativeInfinity
+public static Vector4 one
+public static Vector4 positiveInfinity
+public float sqrMagnitude</code></pre>
+    <h3 id="vector2int">Vector2Int</h3>
+    <pre><code>public static Vector2Int CeilToInt(Vector2 value)
+public static Vector2Int FloorToInt(Vector2 value)
+public static Vector2Int RoundToInt(Vector2 value)
+public static Vector2Int one
+public int sqrMagnitude</code></pre>
+    <h3 id="vector3int">Vector3Int</h3>
+    <pre><code>public static Vector3Int CeilToInt(Vector3 value)
+public static Vector3Int FloorToInt(Vector3 value)
+public static Vector3Int RoundToInt(Vector3 value)
+public static Vector3Int one
+public int sqrMagnitude</code></pre>
+    <h3 id="quaternion">Quaternion</h3>
+    <pre><code>public static Quaternion RotateTowards(Quaternion from, Quaternion to, float maxDegreesDelta)
+public void SetFromToRotation(Vector3 fromDirection, Vector3 toDirection)
+public static Quaternion SlerpUnclamped(Quaternion a, Quaternion b, float t)
+public void ToAngleAxis(out float angle, out Vector3 axis)</code></pre>
+    <h3 id="matrix4x4">Matrix4x4</h3>
+    <pre><code>public readonly Vector4 GetColumn(int index)
+public readonly Vector3 GetPosition()
+public readonly Vector4 GetRow(int index)
+public readonly Vector3 MultiplyPoint(Vector3 point)
+public readonly Vector3 MultiplyPoint3x4(Vector3 point)
+public readonly Vector3 MultiplyVector(Vector3 vector)
+public void SetColumn(int index, Vector4 column)
+public void SetIdentity()
+public void SetRow(int index, Vector4 row)
+public void SetTRS(Vector3 position, Quaternion rotation, Vector3 scale)
+public static Matrix4x4 TRS(Vector3 position, Quaternion rotation, Vector3 scale)
+public readonly Plane TransformPlane(Plane plane)
+public readonly bool ValidTRS()
+public readonly bool isIdentity</code></pre>
+    <h3 id="bounds">Bounds</h3>
+    <pre><code>public readonly Vector3 ClosestPoint(Vector3 point)
+public readonly bool Contains(Vector3 point)
+public void Encapsulate(Vector3 point)
+public void Expand(float amount)
+public readonly bool IntersectRay(Ray ray)
+public readonly bool Intersects(Bounds other)
+public void SetMinMax(Vector3 minimum, Vector3 maximum)
+public readonly float SqrDistance(Vector3 point)</code></pre>
+    <h3 id="boundsint">BoundsInt</h3>
+    <pre><code>public void ClampToBounds(BoundsInt bounds)
+public readonly bool Contains(Vector3Int point)
+public void SetMinMax(Vector3Int minimum, Vector3Int maximum)
+public readonly Bounds ToBounds()
+public int xMax
+public int xMin
+public int yMax
+public int yMin
+public int zMax
+public int zMin</code></pre>
+    <h3 id="rect">Rect</h3>
+    <pre><code>public readonly bool Contains(Vector2 point)
+public static Rect MinMaxRect(float xmin, float ymin, float xmax, float ymax)
+public static Vector2 NormalizedToPoint(Rect rectangle, Vector2 normalizedRectCoordinates)
+public static void OrderMinMax(ref Vector2 minimum, ref Vector2 maximum)
+public readonly bool Overlaps(Rect other)
+public static Vector2 PointToNormalized(Rect rectangle, Vector2 point)
+public void SetMinMax(Vector2 minimum, Vector2 maximum)
+public readonly bool allPositionsWithin</code></pre>
+    <h3 id="rectint">RectInt</h3>
+    <pre><code>public void ClampToBounds(RectInt bounds)
+public readonly bool Contains(Vector2Int position)
+public readonly bool Overlaps(RectInt other)
+public void SetMinMax(Vector2Int minimum, Vector2Int maximum)</code></pre>
+    <h3 id="plane">Plane</h3>
+    <pre><code>public readonly Vector3 ClosestPointOnPlane(Vector3 point)
+public void Flip()
+public readonly float GetDistanceToPoint(Vector3 point)
+public readonly bool GetSide(Vector3 point)
+public readonly bool SameSide(Vector3 pointA, Vector3 pointB)
+public void Set3Points(Vector3 pointA, Vector3 pointB, Vector3 pointC)
+public void SetNormalAndPosition(Vector3 inNormal, Vector3 inPoint)
+public Plane flipped</code></pre>
+    <h3 id="color">Color</h3>
+    <pre><code>public static Color HSVToRGB(float H, float S, float V, bool hdr = false)
+public static void RGBToHSV(Color rgbColor, out float H, out float S, out float V)
+public Color gamma
+public float grayscale
+public Color linear
+public float maxColorComponent</code></pre>
+    <h3 id="random">Random</h3>
+    <pre><code>public static Color ColorHSV()
+public static void InitState(int seed)</code></pre>
+    <h2>時間・ログ・保存</h2>
+    <h3 id="time">Time</h3>
+    <pre><code>public static float fixedTime
+public static bool inFixedTimeStep
+public static float realtimeSinceStartup
+public static double realtimeSinceStartupAsDouble
+public static double timeAsDouble
+public static float unscaledTime</code></pre>
+    <h3 id="debug">Debug</h3>
+    <pre><code>public static void DrawLine(Vector3 start, Vector3 end)
+public static void DrawRay(Vector3 start, Vector3 direction)
+public static void LogAssertion(object? message)
+public static void LogAssertionFormat(string format, params object?[] args)
+public static void LogErrorFormat(string format, params object?[] args)
+public static void LogFormat(string format, params object?[] args)
+public static void LogWarningFormat(string format, params object?[] args)</code></pre>
+    <h3 id="playerprefs">PlayerPrefs</h3>
+    <pre><code>public static void DeleteAll()
+public static void DeleteKey(string key)
+public static int GetInt(string key, int defaultValue = 0)
+public static string GetString(string key, string defaultValue = &quot;&quot;)
+public static void SetInt(string key, int value)
+public static void SetString(string key, string value)</code></pre>
+    <h3 id="customyieldinstruction">CustomYieldInstruction</h3>
+    <pre><code>public bool KeepWaiting(float deltaTime)</code></pre>
+    <h3 id="waitforseconds">WaitForSeconds</h3>
+    <pre><code>public bool KeepWaiting(float deltaTime)</code></pre>
+    <h3 id="waitforfixedupdate">WaitForFixedUpdate</h3>
+    <pre><code>public bool KeepWaiting(float deltaTime)</code></pre>
+    <h2>オブジェクト・Transform・入力</h2>
+    <h3 id="object">Object</h3>
+    <pre><code>public static void DontDestroyOnLoad(Object? target)
+public static Object? FindAnyObjectByType(Type type)
+public static Object? FindFirstObjectByType(Type type)
+public static Object? FindObjectOfType(Type type, bool includeInactive = false)
+public static Object[] FindObjectsByType(Type type, FindObjectsSortMode sortMode)
+public static Object[] FindObjectsOfType(Type type, bool includeInactive = false)
+public int GetInstanceID()</code></pre>
+    <h3 id="transform">Transform</h3>
+    <pre><code>public void DetachChildren()
+public Vector3 InverseTransformPoint(Vector3 point)
+public Vector3 InverseTransformVector(Vector3 vector)
+public bool IsChildOf(Transform? parentTransform)
+public Vector3 TransformPoint(Vector3 point)
+public Vector3 TransformVector(Vector3 vector)
+public Matrix4x4 worldToLocalMatrix</code></pre>
+    <h3 id="input">Input</h3>
+    <pre><code>public static float GetAxisRaw(string axisName)</code></pre>
+    <h3 id="objectreference">ObjectReference</h3>
+    <pre><code>public GameObject? Resolve()</code></pre>
+    <h3 id="componentreference">ComponentReference</h3>
+    <pre><code>public RuntimeResult&lt;ComponentHandle&gt; Resolve()</code></pre>
+    <h3 id="layermask">LayerMask</h3>
+    <pre><code>public static int GetMask(params string[] layerNames)
+public static string LayerToName(int layer)
+public static int NameToLayer(string? layerName)</code></pre>
+    <h3 id="sceneloadoperation">SceneLoadOperation</h3>
+    <pre><code>public bool KeepWaiting(float deltaTime)</code></pre>
+    <h2>物理</h2>
+    <h3 id="rigidbody">Rigidbody</h3>
+    <pre><code>public void AddForceAtPosition(Vector3 force, Vector3 worldPosition,
+public Vector3 GetPointVelocity(Vector3 worldPoint)
+public Vector3 GetRelativePointVelocity(Vector3 relativePoint)
+public bool isStatic</code></pre>
+    <h3 id="collider">Collider</h3>
+    <pre><code>public bool TryGetBounds(out Bounds value)
+public Rigidbody? attachedRigidbody</code></pre>
+    <h3 id="physicsjointcomponent">PhysicsJointComponent</h3>
+    <pre><code>public bool Broken
+public float CurrentForce
+public float CurrentTorque</code></pre>
+    <h3 id="jointbreakinfo">JointBreakInfo</h3>
+    <pre><code>public ObjectHandle Connected</code></pre>
+    <h3 id="clothphysics">ClothPhysics</h3>
+    <pre><code>public int runtimeConstraints
+public int runtimeParticles</code></pre>
+    <h2>音</h2>
+    <h3 id="audio">Audio</h3>
+    <pre><code>public static bool Available</code></pre>
+    <h2>コンポーネント（部品の型）</h2>
+    <h3 id="airconnectioncomponent">AirConnectionComponent</h3>
+    <pre><code>public bool Connected</code></pre>
+    <h3 id="clothphysicscomponent">ClothPhysicsComponent</h3>
+    <pre><code>public bool Ready
+public int RuntimeConstraints
+public int RuntimeParticles</code></pre>
+    <h3 id="inflationcomponent">InflationComponent</h3>
+    <pre><code>public void ApplyImpact(Vector3 worldPosition, Vector3 worldImpulse)
+public int CageSubdivisions
+public bool RequestLeak
+public void RequestRuptureNow()
+public int RuptureContent
+public float RuptureFlashIntensity
+public bool RuptureReleaseChildren
+public int RuptureScrapCount
+public float RuptureScrapLifetime
+public float RuptureScrapStiffness
+public float RuptureShellThickness
+public float ShapeLimbRatio
+public float ShapeMaxOffset
+public int ShapePattern
+public float ShapeSphereCenterHeight
+public float ShapeSphereRange
+public float ShapeSphereStrength
+public bool ShapeSpring
+public float ShapeSpringDamping
+public float ShapeSpringStiffness
+public float ShapeSquash
+public float ShapeThinLimit
+public int ShapeVoxelResolution
+public bool SoftContact
+public float SoftContactRadius
+public float SoftDamageImpulse
+public float SoftDamping
+public bool SoftEnabled
+public float SoftImpactRadius
+public float SoftImpactScale
+public float SoftInertia
+public float SoftMaxDent
+public float SoftSpread
+public float SoftStiffness
+public float SoftWeightSag</code></pre>
+    <h3 id="inflationregion">InflationRegion</h3>
+    <pre><code>public void RequestLeak(float severity = 0.25f)</code></pre>
+    <h3 id="inflationregioncomponent">InflationRegionComponent</h3>
+    <pre><code>public bool RequestLeak</code></pre>
+    <h3 id="inflationrupturedinfo">InflationRupturedInfo</h3>
+    <pre><code>public ObjectHandle Inflatable</code></pre>
+    <h3 id="linerenderer">LineRenderer</h3>
+    <pre><code>public void SetPosition(int index, Vector3 position)</code></pre>
+    <h3 id="meshrenderer">MeshRenderer</h3>
+    <pre><code>public string GetBlendShapeName(int index)
+public float GetBlendShapeWeight(string name)
+public RuntimeStatus SetBlendShapeWeight(string name, float weight)
+public int blendShapeCount</code></pre>
+    <h3 id="meshrenderercomponent">MeshRendererComponent</h3>
+    <pre><code>public int BlendShapeCount
+public string GetBlendShapeName(int index)
+public float GetBlendShapeWeight(string name)
+public RuntimeStatus SetBlendShapeWeight(string name, float weight)</code></pre>
+    <h3 id="modeltextureregioncomponent">ModelTextureRegionComponent</h3>
+    <pre><code>public RuntimeStatus Rebind()
+public RuntimeStatus SetPlane(Vector3 origin,Vector3 rotation,Vector2 size)</code></pre>
+    <h3 id="skinnedmeshrenderer">SkinnedMeshRenderer</h3>
+    <pre><code>public string GetBlendShapeName(int index)
+public float GetBlendShapeWeight(string name)
+public RuntimeStatus SetBlendShapeWeight(string name, float weight)
+public int blendShapeCount</code></pre>
+    <h3 id="skinnedmeshrenderercomponent">SkinnedMeshRendererComponent</h3>
+    <pre><code>public int BlendShapeCount
+public string GetBlendShapeName(int index)
+public float GetBlendShapeWeight(string name)
+public RuntimeStatus SetBlendShapeWeight(string name, float weight)</code></pre>
+    <h3 id="surfacedisplaycomponent">SurfaceDisplayComponent</h3>
+    <pre><code>public RuntimeStatus SetFlipbook(int columns,int rows,float fps)
+public RuntimeStatus SetUvScroll(Vector2 value)</code></pre>
+
+    <h2 id="related">関連項目</h2>
+    <ul>
+      <li><a href="api-math.html">数学の型</a></li>
+      <li><a href="api-objects.html">GameObject と Transform</a></li>
+      <li><a href="api-physics-scene.html">物理とシーン</a></li>
+      <li><a href="api-components.html">コンポーネントの型</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

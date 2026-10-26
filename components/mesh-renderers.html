@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
     <h1>メッシュの描画（Mesh / Primitive / Skinned Mesh Renderer）</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>形を画面に表示するコンポーネントは 3 種類あります。どれも GameObject の Transform の位置・回転・拡大率で表示されます。プロパティの多くが共通なので、このページでまとめて説明します。</p>
     <div class="table-wrap">
@@ -158,6 +158,15 @@
     </table>
     </div>
     <p>マテリアルのシェーダーに独自の値があるときは、その値もシェーダーが決めた見出し（無ければ「Shader Properties」）の下に並びます。これはモーションで動かすための項目で、シーンには保存されません。</p>
+
+    <h3 id="ignore-lod">LODを無視</h3>
+    <p>（2026-10-24 時点で表に無かった項目。コードから書いた内容） メニューの <b>便利 &gt; モデルのLODを一括変更</b> で、選んだモデルをまとめて切り替えられます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>LODを無視</td><td><code>ignore_lod</code></td><td>オフ</td><td></td><td>このモデルは距離に関係なく元のメッシュ（LOD0）で描画します。描画負荷は増えます。</td></tr>
+    </table>
+    </div>
 
     <h2 id="material">マテリアルと色の決まり方</h2>
     <div class="table-wrap">

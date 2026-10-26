@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
     <h1>Animator</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>骨の入ったモデルのアニメーションを再生するコンポーネントです。「待機」「走る」のような<b>状態（State）</b>ごとに再生するアニメーションを決め、条件がそろったら別の状態へ<b>遷移（Transition）</b>させます。姿勢は同じ GameObject の <a href="mesh-renderers.html#animator">Skinned Mesh Renderer</a> に表示されます。</p>
     <p>UI やオブジェクトの位置・色などを時間で動かすときは、このコンポーネントではなく Motion Player を使います。</p>
@@ -85,6 +85,14 @@
       <tr><td>条件</td><td><code>transitions[番号].condition</code></td><td>選択</td><td>常に</td><td></td><td>遷移する条件（下の表）。満たした瞬間に「遷移先」へ切り替わります。</td></tr>
       <tr><td>しきい値</td><td><code>transitions[番号].threshold</code></td><td>小数</td><td>0</td><td></td><td>速度や Float と比べる値</td></tr>
       <tr><td>ブレンド時間</td><td><code>transitions[番号].blend_time</code></td><td>小数</td><td>0.15</td><td>0〜5</td><td>前の状態のアニメーションから、何秒かけて混ぜながら切り替えるか。0 ならすぐ切り替わります</td></tr>
+    </table>
+    </div>
+
+    <h3 id="parameter-count">Parameter 数</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>Parameter 数</td><td><code>parameter_count</code></td><td></td><td>0〜64</td><td>Bool / Float / Trigger の定義数。</td></tr>
     </table>
     </div>
 

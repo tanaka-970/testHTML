@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / UI</div>
     <h1>Button・入力部品・Mask</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>押す、選ぶ、並べる、スクロールする、値を動かす、文字を入力する、切り抜く、といった UI の操作部品です。どれも <a href="ui-layout.html">Canvas</a> の子孫に置きます。</p>
 
@@ -87,6 +87,19 @@
       <li>C#（ScriptBehaviour）の <code>OnButtonClicked</code>、<code>OnAnyButtonClicked</code>、<code>OnButtonStateChanged</code>（<a href="../csharp/script-behaviour.html#events">受け取れるイベント</a>）</li>
       <li>同じ GameObject の <a href="#language-switch">Language Switch</a>、<a href="#property-toggle">Button Property Toggle</a></li>
     </ul>
+
+    <h3 id="button-elastic">弾性フィードバック（2026-10-24 追加）</h3>
+    <p>メニュー向けに、選ぶと少し膨らみ、押すと縮み、離すと弾む動きを付けます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>弾性フィードバック</td><td><code>elastic_feedback_enabled</code></td><td>オフ</td><td></td><td>ホバー時に膨らみ、押下時に縮むメニュー向けの弾性演出を有効にします。</td></tr>
+      <tr><td>ホバー倍率</td><td><code>elastic_hover_scale</code></td><td>1.04</td><td>0.5〜1.5</td><td>選択中にボタンへ掛ける拡大率です。</td></tr>
+      <tr><td>押下倍率</td><td><code>elastic_pressed_scale</code></td><td>0.94</td><td>0.5〜1.5</td><td>押下中にボタンへ掛ける倍率です。</td></tr>
+      <tr><td>解放時の弾み</td><td><code>elastic_release_overshoot</code></td><td>0.06</td><td>0〜0.25</td><td>押下を離した瞬間に加える弾み量です。</td></tr>
+      <tr><td>弾性応答</td><td><code>elastic_response</code></td><td>0.28</td><td>0.01〜1</td><td>弾性倍率が目標へ近づく速さです。</td></tr>
+    </table>
+    </div>
 
     <h2 id="selectable">Selectable</h2>
     <p>キーボードやゲームパッドでフォーカスを移すための部品です。コンポーネントを追加での場所は <b>UI &gt; Selectable</b> です。</p>

@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
     <h1>手続き空と体積雲（Cloud Volume・Cloud Scatter）</h1>
-    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（コードから書いた内容。実機での確認はまだ）</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（コードから書いた内容。実機での確認はまだ）（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>空の画像を使わずに、大気の散乱と立体の雲で空を描く方法です。<a href="sky.html">空</a>コンポーネントの「手続き空を使う」で空全体を描き、<b>Cloud Volume</b> で 1 つの雲を、<b>Cloud Scatter</b> で雲の群れを好きな場所に置きます。</p>
 
@@ -61,7 +61,7 @@
       <li>雲を出すときは「雲を表示」をオンにする。「手続き空」の分類の雲の項目が出てきます</li>
       <li>「雲量」で空を覆う割合、「雲の種類」で層雲（0 寄り）〜積雲・積乱雲（1 寄り）、「降水・荒天」で雨雲の暗さを決める</li>
       <li>「天候を循環」をオンにすると、晴れ→曇り→雨雲を「天候変化速度」で行き来します</li>
-      <li>「時刻で太陽を動かす」をオンにすると、時間帯で太陽の向きと Directional Light の強さが連動します</li>
+      <li>「時刻で太陽を動かす」をオンにすると、シーンに Directional Light が無いときは、時刻から太陽と影を作ります。Directional Light を置いているときは、その向き・色・強さを空の太陽にも使います（2026-10-24 から。以前は時刻で Directional Light の強さも動かしていました）</li>
     </ol>
     <p>手続き空の項目は、オフの機能に関係するものが隠れます（例：雲を表示がオフなら雲の項目は出ません）。</p>
 
@@ -78,7 +78,7 @@
       <tr><td>雲底高度・雲頂高度</td><td><code>procedural_cloud_base_height</code>・<code>..._top_height</code></td><td>1500・4000</td><td>100〜12000・500〜16000</td><td>雲の層の高さ (m)</td></tr>
       <tr><td>雲の密度</td><td><code>procedural_cloud_density</code></td><td>1</td><td>0〜3</td><td></td></tr>
       <tr><td>大気密度・大気の前方散乱</td><td><code>procedural_atmosphere_density</code>・<code>procedural_mie_anisotropy</code></td><td>1・0.76</td><td>0.1〜4・0〜0.95</td><td>空の青さ・太陽の周りのにじみ</td></tr>
-      <tr><td>時刻で太陽を動かす</td><td><code>procedural_drive_sun_from_time</code></td><td>オフ</td><td></td><td></td></tr>
+      <tr><td>時刻で太陽を動かす</td><td><code>procedural_drive_sun_from_time</code></td><td>オフ</td><td></td><td>Directional Light が無ければ時刻から太陽と影を作る。置いてあればその向き・色・強さを使う</td></tr>
       <tr><td>星を表示・月を表示</td><td><code>procedural_stars_enabled</code>・<code>procedural_moon_enabled</code></td><td>オン</td><td></td><td></td></tr>
     </table>
     </div>
@@ -133,6 +133,25 @@
       <li><a href="landscape.html">地形</a>（雲の影を落とす地面）</li>
       <li><a href="lights.html">ライト</a>（太陽の Directional Light）</li>
     </ul>
+
+    <h2 id="more-props">そのほかの項目</h2>
+    <p>（2026-10-24 時点で表に無かった項目。コードから書いた内容）</p>
+    <h3>Cloud Volume</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>風速（m/s）</td><td><code>wind_speed</code></td><td>1.5</td><td>0〜100</td><td>雲が風で流れる速さ</td></tr>
+      <tr><td>地表からの高さ（m）</td><td><code>ground_offset</code></td><td>0</td><td>-1000〜10000</td><td>高さの基準を地形基準にしたとき、地表から雲を浮かせる高さ</td></tr>
+    </table>
+    </div>
+    <h3>Cloud Scatter</h3>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>ばらつき</td><td><code>jitter</code></td><td>0.8</td><td>0〜1</td><td>雲の置き場所をランダムにずらす度合い。0 で規則正しく並び、1 で範囲の内側へ最大 4 割ずれます</td></tr>
+      <tr><td>地表からの高さ（m）</td><td><code>terrain_clearance</code></td><td>80</td><td>0〜10000</td><td>高さの基準を地形基準にしたとき、地表から雲の群れを浮かせる高さ</td></tr>
+    </table>
+    </div>
   </main>
 </div>
 <footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>

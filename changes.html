@@ -23,13 +23,49 @@
     <div class="table-wrap">
     <table>
       <tr><th>欄</th><th>書いてあること</th></tr>
-      <tr><td>対象</td><td>ブランチとコミット。まだコミットしていない変更を含むときはそう書きます</td></tr>
+      <tr><td>対象</td><td>ブランチとコミット。コミット 28995f39を含むときはそう書きます</td></tr>
       <tr><td>変わったこと</td><td>ゲームでの見た目・挙動の変化、増えたインスペクターの項目、スクリプトの API</td></tr>
       <tr><td>確認</td><td><span class="status ok">確認済み</span> 実機で動きを見た　<span class="status wait">ビルド後に確認</span> コードは入っているが、まだ実機で見ていない　<span class="status todo">未着手</span> まだ手を付けていない</td></tr>
       <tr><td>直したページ</td><td>この更新に合わせて書き直したドキュメントのページ</td></tr>
     </table>
     </div>
 
+    <section class="change-entry" id="2026-10-24-features">
+    <h2>2026-10-24 破壊の統合・欠損・カット・破壊フィールド・カメラの演出・IK とラグドール・イベント進行など、未記載と古い説明をまとめて更新</h2>
+    <p class="meta">対象：ブランチ sinotake_test / コミット aa27b6b3（10/22 のコミット d7164091 以降の 97 コミット）＋ コミット 28995f39（破壊の統合、演出設定 GameFeel、風圧で揺れる）</p>
+    <p>今回は、前回以降の変更に加えて、<b>以前から入っていたのに書かれていなかった機能</b>（10/04〜10/07 のタグ・実行中の編集・便利メニュー・イベント進行など）と、<b>既定値やボタン名が変わって古くなっていた説明</b>を、登録コードと突き合わせて直しました。撮影はしていないので、すべて<b>コードを読んで書いた内容</b>です。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>変わったこと</th><th>確認</th></tr>
+      <tr><td><a href="components/destruction.html">破壊</a>を全面的に書き直し。壊される側は <b>破壊</b> コンポーネント 1 つになり、中に 欠損（Sculpt）・事前破砕（Blast、旧 Destructible）・実行時切断（Slice、旧 Sliceable）・カット（エディタ）の 4 機能が並ぶ。共通の設定（材質・断面・破片・演出）は破壊で 1 回だけ決める。前のシーンは開くと自動で移行</td><td><span class="status wait">ビルド後に確認</span>（コミット 28995f39）</td></tr>
+      <tr><td>欠損（Damage Sculpt、10/23 追加）：削り具（Jagged・Box・Sphere・Plane）とプリセット、ギズモ。閉じていない・部品が重なるモデルも削れるようになり、断面は外側と同じ材質で塗る</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>カット（エディタ）：シーンビューで線を引いて物体を別々の GameObject に切り分ける。開いた切り口も塞ぐ</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>新しい部品 <a href="components/destruction-reference.html#field">破壊フィールド</a>（歪み・力・爆発・固定・消去）、破壊の「壊れた状態で始める」「下から固定する高さの割合」</td><td><span class="status wait">ビルド後に確認</span>（コミット 28995f39）</td></tr>
+      <tr><td>Destruction Editor がタブ（かんたん設定・生成・階層・接続・衝突・診断）に。ボタン名「Play中に実切断」→「実切断を試す」、「Play中にBlast Damageを試す」→「Blast Damageを試す」。破壊パターンは開いたメッシュの補修も試す</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>破壊系の既定値の修正：最大破片数 32→16、動的Actor上限 64→12、破片の寿命 15/20→6 秒、静止後 6→1.5 秒、フェード 0.75→0.35 秒、シーン内の最大破片数 128→48、破片VFX上限 4→2</td><td><span class="status wait">コードで確認</span></td></tr>
+      <tr><td>新しいページ <a href="components/camera-lens.html">カメラの演出</a>：Running Effects（走る速さで視野角・ヘッドボブ・揺れ・ブラー・色収差・周辺減光・スピードライン・風）、Depth Of Field、Lens Flare（10/23 追加）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>新しいページ <a href="components/ik-ragdoll.html">IK とラグドール</a>：2ボーンIK（End の向き合わせ・向きの補正は 10/24 追加）、多関節IK（FABRIK）、人型ラグドールの自動生成とラグドール制御（10/08 から入っていたが未記載）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>新しいページ <a href="components/workflow.html">イベント進行・UIフロー・シーン構成</a>：Window の 3 つのエディタ、ワークフロートリガー、Scene Composition、選択セット（10/07 から入っていたが未記載）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>新しいページ <a href="windows/gamefeel.html">演出設定（GameFeel）</a>：520 項目の演出の有効・強さ、章、アクセシビリティ、GameFeel Profile。Project Settings の既定プロファイル</td><td><span class="status wait">ビルド後に確認</span>（コミット 28995f39）</td></tr>
+      <tr><td>新しいページ <a href="csharp/api-unity-compat.html">追加された API の一覧</a>：10/03 以降に増えた Unity 互換の API 約 230 個（Mathf・Bounds・Rect・Matrix4x4・Color・PlayerPrefs・Debug.DrawLine・LayerMask・Object.Find… など）の宣言</td><td><span class="status wait">コードで確認</span></td></tr>
+      <tr><td><a href="editor/play-mode.html">実行中の編集</a>：10/06 から、実行中・一時停止中もシーンビューとインスペクターで実行中のシーンを編集でき、Undo もできる（停止すると捨てられる）。「読み取り専用」「Undo できない」の古い説明を直した（<a href="editor/inspector.html#play">インスペクター</a>・<a href="editor/hierarchy.html">階層</a>も）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="editor/toolbar.html#physics-preview">物理 ON（編集中の物理プレビュー）</a>・物理リセット・1ステップ・物理操作（10/06 から入っていたが未記載）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="editor/menu-bar.html#utility">便利メニュー</a>（単体表示、視点ブックマーク 8 個、モデル情報、選択モデルを 7 方向から見る、整列、均等配置、Transform のコピー・貼り付け・リセット、問題のある物を選ぶ、LOD とシーンメモの一括変更）と、シーンビューの <kbd>Z</kbd> / <kbd>C</kbd> の周回（10/07 から入っていたが未記載）。Window メニューの不足分（演出設定・VFX制作ルーム・Presentation Workspace・選択セット・3 つのエディタ）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td>タグ：インスペクターの名前の下のタグ欄、複数選択でのタグの一括設定、C# の <a href="csharp/api-objects.html#gameobject">tag・CompareTag・FindWithTag・FindGameObjectsWithTag</a>（10/04〜10/07 から入っていたが未記載）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="components/effect-kinds.html#kind-colorreplace">エフェクトの種類「色の置き換え」</a>（10/15 から入っていたが未記載）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="windows/profiler.html#bottleneck">Profiler の「一番重い処理 / 負荷診断」と 5 秒ごとの負荷ログ</a>（<code>Saved/Logs/performance_bottlenecks.log</code>）</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="windows/motion-workspace.html#timeline-frames">Motion Workspace</a>：FPS とフレームへの吸着、モーションパス（軌跡を画面で描く・スケッチ・点のドラッグ・F9）、参照・配列などのキー</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="editor/vertex-paint.html#rect-paint">頂点カラーペイント</a>：矩形で囲んで塗る、隠れた所・裏側も塗る、色で塗ると「頂点カラーを色として使う」が自動でオン</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="components/gameplay.html#enemy">Enemy Behaviour</a>：発見時のリアクション（ジャンプ）、追跡傾向、縄張り意識を表に追加。<b>縄張りまわりの内部名に TERRI_ が付き、以前に保存したシーンの巡回ウェイポイントなどは読み込まれない</b>。Goal の「一度だけ」の既定はオフ</td><td><span class="status wait">ビルド後に確認</span></td></tr>
+      <tr><td><a href="components/lights.html">ライト</a>：Point・Spot の「影を落とす」が既定でオンに、Project Settings の <a href="settings/project-settings.html#light-falloff">ライトの物理減衰（逆二乗）</a>、Rect Light の残りの項目。<a href="components/clouds.html">空の「時刻で太陽を動かす」</a>は配置した Directional Light を優先</td><td><span class="status wait">コードで確認</span></td></tr>
+      <tr><td>表に無かった項目の追加：Particle Emitter（寿命カーブのキー・衝突デカール・リボン幅など）、ツタの葉A〜C、膨張対象、局所膨張の衝突形状（「見た目の輪の数」から変更）、Water Body の Wave 1〜8、PBF 流体、Physics Joint の姿勢モーター、Landscape Renderer、布・Softbody の摩擦、ワイヤー、雲、川、草のブラシ、Animator、LODを無視、Scene Note、Button の弾性フィードバック、Effect Stack（UI）の透過部分を保護、<a href="components/wind.html#wind-reactive">風圧で揺れる</a></td><td><span class="status wait">コードで確認</span></td></tr>
+      <tr><td><a href="settings/command-line.html">起動オプション</a>：説明の無かった 41 個（検証 --validate-damage-sculpt・--validate-mesh-cut・--validate-ik など、--export-standalone、--capture-editor-panel、計測の自動操作）</td><td><span class="status wait">コードで確認</span></td></tr>
+    </table>
+    </div>
+    <p><b>確認範囲：</b>どれも実機で動かしていません。「コードで確認」は、登録コード・ヘッダの既定値・エディターのコードと突き合わせた項目です。表示名と既定値は登録コードから自動で抜き出して表にしました。最適化・検証用のコミット（全体の半分ほど）は、使い方が変わらないので載せていません。</p>
+    <h3>直したページ</h3>
+    <p><a href="components/camera-lens.html">カメラの演出</a>（新規）、<a href="components/ik-ragdoll.html">IK とラグドール</a>（新規）、<a href="components/workflow.html">イベント進行・UIフロー・シーン構成</a>（新規）、<a href="windows/gamefeel.html">演出設定</a>（新規）、<a href="csharp/api-unity-compat.html">追加された API の一覧</a>（新規）、<a href="components/destruction.html">破壊</a>（書き直し）、<a href="components/destruction-reference.html">破壊系リファレンス</a>、<a href="editor/menu-bar.html">メニューバー</a>、<a href="editor/toolbar.html">ツールバー</a>、<a href="editor/play-mode.html">ゲームを実行する</a>、<a href="editor/inspector.html">インスペクター</a>、<a href="editor/hierarchy.html">階層パネル</a>、<a href="editor/scene-view.html">シーンビュー</a>、<a href="editor/vertex-paint.html">頂点カラーペイント</a>、<a href="windows/motion-workspace.html">Motion Workspace</a>、<a href="windows/profiler.html">Profiler</a>、<a href="components/gameplay.html">ゲームプレイ</a>、<a href="components/lights.html">ライト</a>、<a href="components/clouds.html">手続き空と体積雲</a>、<a href="components/effect-kinds.html">エフェクトの種類</a>、<a href="components/effect-stacks.html">エフェクトスタック</a>、<a href="components/particle-emitter.html">Particle Emitter</a>、<a href="components/ivy.html">ツタ</a>、<a href="components/inflation.html">膨張</a>、<a href="components/water-body.html">Water Body</a>、<a href="components/pbf-fluid.html">PBF 流体</a>、<a href="components/physics-joint.html">Physics Joint</a>、<a href="components/landscape.html">地形</a>、<a href="components/cloth.html">布</a>、<a href="components/soft-body.html">Softbody</a>、<a href="components/strand-physics.html">ワイヤー・ヘア</a>、<a href="components/river.html">川</a>、<a href="components/grass.html">草</a>、<a href="components/animator.html">Animator</a>、<a href="components/mesh-renderers.html">メッシュの描画</a>、<a href="components/editor-helpers.html">Folder と Scene Note</a>、<a href="components/ui-controls.html">Button・入力部品</a>、<a href="components/wind.html">風</a>、<a href="csharp/api-objects.html">GameObject と Transform</a>、<a href="settings/project-settings.html">Project Settings</a>、<a href="settings/command-line.html">起動オプション</a>、目次・コンポーネント一覧・リファレンス表</p>
+    </section>
     <section class="change-entry" id="2026-10-22-features">
     <h2>2026-10-22 ツタ・川・体積雲・デカールと電光掲示板・ワールド文字・画面の重ね順・Presentation・VFX のひな形を追加</h2>
     <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（10/13 のコミット 68940682 以降の 877 コミット）</p>
@@ -100,7 +136,7 @@
     </section>
     <section class="change-entry" id="2026-10-06-surface">
     <h2>2026-10-06 地面を局所的に膨らませる・敵を膨らませて動けなくする・運ぶ／足場／穴あけ</h2>
-    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8 ＋ まだコミットしていない変更</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット 28995f39</p>
     <p>チーム制作企画の「地面を膨らませて高くする・坂を作る」「膨らまされた敵は宙に浮いて動けなくなる（足場になる）」「膨らませた物を運ぶ」に向けた追加です。</p>
     <div class="table-wrap">
     <table>
@@ -169,7 +205,7 @@
 
     <section class="change-entry" id="2026-10-06">
     <h2>2026-10-06 膨張の風船を企画どおりに：均一に膨らむ・浮く・跳ねる・割れる</h2>
-    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8 ＋ まだコミットしていない変更（破裂の演出・ホースの巻き取り・ヒットストップ）</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット 28995f39（破裂の演出・ホースの巻き取り・ヒットストップ）</p>
     <p>チーム制作企画（空気を入れて膨らませ、大きさ・浮力・弾み方を変え、入れすぎると破裂する）に合わせて、<a href="components/inflation.html">膨張</a>と、デモシーン <code>resources/Game/Inflate/Inflate_NativeDemo.replayscene</code> を直しました。</p>
 
     <h3>膨らみ方</h3>

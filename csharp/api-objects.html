@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / C# スクリプト / API</div>
     <h1>GameObject・Component・Transform</h1>
-    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（Translate の既定の軸が変わった点、Transform の追加分）</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（Translate の既定の軸が変わった点、Transform の追加分）（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>シーンの GameObject を探す、作る、消す、コンポーネントを取り出す、位置や回転を変える、といった基本の操作です。すべて <code>using ReplayEngine;</code> で使えます。</p>
 
@@ -67,6 +67,10 @@ void Update()
       <tr><th>名前</th><th>説明</th></tr>
       <tr><td><code>GameObject.Find(名前)</code></td><td>名前が一致する GameObject を 1 つ返します。非アクティブのもの（親が非アクティブなものを含む）は見つかりません</td></tr>
       <tr><td><code>GameObject.Create(名前)</code></td><td>空の GameObject を作ります</td></tr>
+      <tr><td><code>tag</code></td><td>タグの読み書き。空のときは <code>"Untagged"</code>（2026-10-04 追加）。Component からも <code>tag</code> で読めます</td></tr>
+      <tr><td><code>CompareTag(タグ)</code></td><td>タグが一致するか（大文字・小文字を区別）。Component からも呼べます</td></tr>
+      <tr><td><code>GameObject.FindWithTag(タグ)</code>、<code>GameObject.FindGameObjectWithTag(タグ)</code></td><td>そのタグの、アクティブな GameObject を 1 つ返します。無ければ null</td></tr>
+      <tr><td><code>GameObject.FindGameObjectsWithTag(タグ)</code></td><td>そのタグの、アクティブな GameObject を全部、配列で返します</td></tr>
       <tr><td><code>transform</code></td><td>Transform</td></tr>
       <tr><td><code>activeSelf</code></td><td>自分がアクティブか</td></tr>
       <tr><td><code>activeInHierarchy</code></td><td>自分と親がすべてアクティブか</td></tr>

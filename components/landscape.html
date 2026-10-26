@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Landscape</div>
     <h1>地形（Landscape）</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813（2026-10-22 に sinotake_test / d7164091 のハイトフィールドと Renderer の新項目を追記）</p>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813（2026-10-22 に sinotake_test / d7164091 のハイトフィールドと Renderer の新項目を追記）（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>シーンビューでブラシを使って盛り上げたり削ったりできる地面を作るコンポーネントです。3 つのコンポーネントを組み合わせて使います。</p>
     <div class="table-wrap">
@@ -210,6 +210,18 @@
     <h3 id="chunks">ロード範囲と区画</h3>
     <p>地形は、頂点がおよそ 2048 個ずつになるように、縦横の区画（最大 32 × 32）に分けて表示されます。<b>ロード範囲</b> は区画ごとに判定し、区画の端がカメラから範囲より遠いと、その区画を表示しません。一度表示した区画は、範囲より少し遠くなるまで表示を続けます。</p>
     <div class="note"><strong>小さな地形は 1 区画です</strong>Landscape Ground で作った 33 × 33 の地面は頂点が 1089 個なので、全体で 1 区画です。この大きさでは、<b>ロード範囲</b> を設定すると、地面全体が一度に表示されたり消えたりします。</div>
+
+    <h3 id="renderer-more">Landscape Renderer のそのほかの項目</h3>
+    <p>（2026-10-24 時点で表に無かった項目。コードから書いた内容）</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>ORM マップ (R=AO / G=粗さ / B=金属)</td><td><code>orm_texture</code></td><td></td><td></td><td>1 枚の画像の R に AO、G に粗さ、B に金属度を入れた画像</td></tr>
+      <tr><td>テクスチャ オフセット U</td><td><code>texture_offset_u</code></td><td>0</td><td>-10〜10</td><td>地面の画像を横へずらす量</td></tr>
+      <tr><td>テクスチャ オフセット V</td><td><code>texture_offset_v</code></td><td>0</td><td>-10〜10</td><td>地面の画像を縦へずらす量</td></tr>
+      <tr><td>マクロ変化の周波数</td><td><code>macro_variation_scale</code></td><td>0.013</td><td>0.0001〜1</td><td>広い範囲で色や明るさをゆっくり変える模様の細かさ。小さいほど大きなまだらになります</td></tr>
+    </table>
+    </div>
 
     <h2 id="collider">Landscape Collider</h2>
     <p><a href="physics.html#collider-common">Collider の共通項目</a>（中心オフセット、レイヤー、衝突する相手、トリガー、形状を表示）に加えて、次の項目があります。</p>

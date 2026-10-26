@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Physics</div>
     <h1>ワイヤー・ヘア・ホース物理</h1>
-    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>ひも状のものを揺らす 5 つのコンポーネントです。<b>ワイヤー物理</b> と <b>XPBDホース物理</b> は 3D ラインの点列（またはメッシュ）をロープやホースとして動かし、<b>ヘア物理</b> はスキンモデルの髪ボーン（または骨の無いメッシュ全体）を揺らします。どれも <a href="wind.html">風場</a> の風を受け、<a href="water-body.html">Water Body</a> の水の中では抵抗と浮力を受けます。<b>髪・ワイヤー用の衝突形状</b> は髪とワイヤーだけを押し返す球・カプセル、<b>ホースリール</b> はホースの繰り出しと巻き取りです。どれも実行中だけ計算し、停止すると実行前の形へ戻ります。</p>
 
@@ -72,6 +72,17 @@
       <tr><td>剛体を引く</td><td><code>pull_bodies</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>両端の固定先が動的な Rigidbody のとき、全長を超えて離れた分だけ引き戻します（ロープで物を吊る・つなぐ）</td></tr>
       <tr><td>張力の上限（N）</td><td><code>maximum_pull_force</code></td><td>小数</td><td>2000</td><td>0〜1000000</td><td>「剛体を引く」で出す力の上限</td></tr>
       <tr><td>現在の張力・状態</td><td><code>current_tension</code>、<code>status</code></td><td>読取のみ</td><td></td><td></td><td>状態には、設定が正しくないときの理由が出ます</td></tr>
+    </table>
+    </div>
+
+    <h3 id="wire-more">ワイヤー物理のそのほかの項目</h3>
+    <p>（2026-10-24 時点で表に無かった項目。コードから書いた内容）</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>現在の張力（N）</td><td><code>current_tension</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+      <tr><td>始点の固定先からの位置</td><td><code>start_offset</code></td><td></td><td></td><td>始点を、固定先の GameObject の原点からずらす位置（ローカル）</td></tr>
+      <tr><td>終点の固定先からの位置</td><td><code>end_offset</code></td><td></td><td></td><td>終点を、固定先の GameObject の原点からずらす位置（ローカル）</td></tr>
     </table>
     </div>
 

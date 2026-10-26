@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<title>演出設定（GameFeel） - RePlayEngine ドキュメント</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-root="../">
+<header class="site-header">
+  <a class="site-name" href="../index.html">RePlayEngine ドキュメント</a>
+  <form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form>
+</header>
+<div class="layout">
+  <nav class="side-nav" aria-label="目次"></nav>
+  <main>
+    <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターのウィンドウ</div>
+    <h1>演出設定（GameFeel）</h1>
+
+    <p class="meta">対象：ブランチ sinotake_test / コミット 28995f39。コードから書いた内容で、実機での確認はまだです。</p>
+
+    <p>マズルフラッシュ・スピードライン・残像・画面の揺れといった「手触り」の演出を、<b>番号の付いた 520 項目</b>として 1 つのファイル（演出設定プロファイル）にまとめ、項目ごとに有効・無効・強さ・遅れ・長さを決める仕組みです。章（Ⅰ〜ⅩⅤ）ごとにまとめて強さを変えたり、プレイヤーの設定で揺れやフラッシュを弱めたりできます。</p>
+
+    <h2 id="when">こんなときに使う</h2>
+    <ul>
+      <li>ゲーム全体の演出の強さを、1 か所でまとめて調整したい</li>
+      <li>ステージ（シーン）ごとに、一部の演出だけ強くしたり切ったりしたい</li>
+      <li>画面の揺れ・フラッシュ・歪みが苦手な人向けに、弱める設定を用意したい</li>
+    </ul>
+
+    <h2 id="info">基本情報</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>もの</th><th>場所</th><th>役割</th></tr>
+      <tr><td>演出設定ウィンドウ</td><td>Window &gt; 演出設定...</td><td>プロファイルの項目を探して編集・保存する</td></tr>
+      <tr><td>演出設定プロファイル</td><td><code>.replaygamefeel</code>（既定は <code>resources/GameFeel/GameFeel_Default.replaygamefeel</code>）</td><td>全体の強さ、アクセシビリティ、章ごとの有効・強さ、520 項目の値</td></tr>
+      <tr><td>Project Settings の「既定の演出設定プロファイル」</td><td>Project Settings</td><td>ゲーム全体で使うプロファイル。未設定なら組み込みの既定値</td></tr>
+      <tr><td>GameFeel Profile コンポーネント</td><td>コンポーネントを追加 &gt; Effects &gt; GameFeel Profile</td><td>シーンに置くと、そのシーンだけ別のプロファイルや番号別の上書きを使う</td></tr>
+    </table>
+    </div>
+
+    <h2 id="window">演出設定ウィンドウ</h2>
+    <ol class="steps">
+      <li><b>Window &gt; 演出設定...</b> を開くと、Project Settings で選んだプロファイルが読み込まれます。</li>
+      <li>上の <b>全体の強さ</b> で、すべての演出をまとめて強く・弱くします。</li>
+      <li>章ごとに <b>章の強さ</b> と、<b>章をすべて有効化</b>・<b>章をすべて無効化</b> があります。</li>
+      <li><b>番号・名前で検索</b> で項目を絞り込み、<b>実装済みだけ表示</b> でゲームに組み込み済みの演出だけを出します。</li>
+      <li>項目ごとに <b>有効</b>・<b>強さ</b>・<b>遅れ</b>・<b>長さ</b> を変えます。<b>発生タイミング・用途</b> と <b>実装メモ</b> に、いつ・どこで使う演出かが書かれています。色・カーブ・優先度も見られます。</li>
+      <li>実行中なら <b>試し再生</b> でその演出を出せます（Play 中に効く項目だけ）。</li>
+      <li><b>保存</b>・<b>名前を付けて保存</b>・<b>再読み込み</b>・<b>既定値に戻す</b>、<b>元に戻す</b>・<b>やり直し</b> は上のメニューにあります。</li>
+    </ol>
+
+    <h2 id="accessibility">アクセシビリティ</h2>
+    <p>プロファイルには、プレイヤー向けの 3 つの倍率があります。Project Settings の <b>アクセシビリティ</b> でも変えられ、0% で無効、変更は再生中にも反映されます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>項目</th><th>効くもの</th></tr>
+      <tr><td>画面の揺れ</td><td>カメラの揺れの演出</td></tr>
+      <tr><td>画面のフラッシュ</td><td>画面が光る演出</td></tr>
+      <tr><td>画面の歪み・色ずれ</td><td>画面のゆがみ・色ずれの演出</td></tr>
+    </table>
+    </div>
+
+    <h2 id="component">GameFeel Profile コンポーネント</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>説明</th></tr>
+      <tr><td>演出設定アセットパス</td><td><code>profile_asset_path</code></td><td>このシーンで使うプロファイル。空なら Project Settings の既定を使います</td></tr>
+      <tr><td>番号別上書きデータ</td><td><code>serialized_overrides</code></td><td>番号ごとの上書き（有効・強さなど）。ウィンドウから作られる値で、手では書きません</td></tr>
+    </table>
+    </div>
+    <p><a href="../components/wind.html#wind-reactive">風圧で揺れる</a> など、一部の部品の動きもこの設定の有効・強さに従います。</p>
+
+    <h2 id="related">関連項目</h2>
+    <ul>
+      <li><a href="../settings/project-settings.html">Project Settings</a></li>
+      <li><a href="particle-effect-editor.html">VFX制作ルーム</a></li>
+      <li><a href="../components/camera-lens.html">カメラの演出</a></li>
+    </ul>
+  </main>
+</div>
+<footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
+<script src="../assets/toc.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

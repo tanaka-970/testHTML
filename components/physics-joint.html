@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Physics</div>
     <h1>Physics Joint</h1>
-    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8（接続先アンカーの自動設定・破断・C# の型を追加）</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8（接続先アンカーの自動設定・破断・C# の型を追加）（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>2 つの Rigidbody を、固定・ヒンジ（回転）・スライダー（平行移動）・スプリング（ばね）のどれかでつなぎます。接続先を空にすると、ワールドの 1 点につなぎます。</p>
 
@@ -62,6 +62,23 @@
 
     <div class="note"><strong>ワールドにつなぐとき</strong>接続先を空にしたとき、<b>接続先アンカー</b> はワールド座標です。0, 0, 0 のままで <b>接続先アンカーを自動設定</b> がオン（既定）なら、置いた位置でつながります。自動設定をオフにして 0, 0, 0 のままにすると、物体がワールドの原点へ引き寄せられるので注意してください。</div>
     <p>Physics Joint を選ぶと、シーンビューにアンカー・軸・接続先と、ヒンジの可動範囲が表示されます（自動設定で決まった位置も含めて表示します）。</p>
+
+    <h3 id="motor">球面関節の可動範囲と姿勢モーター</h3>
+    <p>（2026-10-24 時点で表に無かった項目。コードから書いた内容） 姿勢モーターを有効にすると、関節を目標の角度へ力で寄せます。アニメーションに合わせて動くラグドールなどに使います。実行中はスクリプトの <code>SetMotorTargetRotation</code> でも目標を変えられます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>球面関節の可動半角</td><td><code>cone_limit_angle</code></td><td>45</td><td>1〜89</td><td>球面関節のスイングを円錐内へ制限します。首・肩・股関節などの姿勢が崩れにくくなります。</td></tr>
+      <tr><td>姿勢モーターを有効化</td><td><code>angular_drive_enabled</code></td><td>オフ</td><td></td><td>球面関節を目標角度へ物理的に追従させます。アニメーション駆動ラグドール向け。</td></tr>
+      <tr><td>関節フレーム内の目標角度</td><td><code>motor_target_euler</code></td><td>0, 0, 0</td><td></td><td>球面関節のローカル座標で指定します。ランタイムからは SetMotorTargetRotation でクォータニオンを渡せます。</td></tr>
+      <tr><td>モーター剛性</td><td><code>motor_stiffness</code></td><td>80</td><td>0〜10000000</td><td></td></tr>
+      <tr><td>モーター減衰</td><td><code>motor_damping</code></td><td>12</td><td>0〜10000000</td><td></td></tr>
+      <tr><td>モーター最大トルク</td><td><code>motor_max_force</code></td><td>1000</td><td>0〜1000000000</td><td></td></tr>
+      <tr><td>破断済み</td><td><code>broken</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+      <tr><td>今の力</td><td><code>current_force</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+      <tr><td>今のトルク</td><td><code>current_torque</code></td><td></td><td></td><td>実行中の値を表示（読み取り専用）</td></tr>
+    </table>
+    </div>
 
     <h2 id="csharp">スクリプトから使う（C#）</h2>
     <p>MonoBehaviour では <code>GetComponent&lt;PhysicsJoint&gt;()</code> で取り出せます。メンバーは <code>jointKind</code>（Unity 風の <code>kind</code> も同じ値）、<code>connectedBody</code>（<code>Rigidbody</code>）、<code>anchorA</code>、<code>anchorB</code>、<code>axisA</code>、<code>axisB</code>、<code>useLimits</code>、<code>lowerLimit</code>、<code>upperLimit</code>、<code>minimumDistance</code>、<code>maximumDistance</code>、<code>springFrequencyHz</code>、<code>springDampingRatio</code>、<code>breakForce</code>、<code>breakTorque</code>、読取のみの <code>broken</code>・<code>currentForceMagnitude</code>・<code>currentTorqueMagnitude</code>・<code>status</code> です。値を変えるとつながりを作り直します。</p>

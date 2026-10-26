@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Lighting</div>
     <h1>ライト（Directional / Point / Spot / Rect Light）</h1>
-    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8（Rect Light を追加）</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット cdc0fd8（Rect Light を追加）（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>シーンを照らす光のコンポーネントです。4 種類あり、照らし方が違います。ライトが 1 つも無いシーンでは、物がほとんど暗く見えます。</p>
     <div class="table-wrap">
@@ -63,7 +63,7 @@
       <tr><td>色</td><td><code>color</code></td><td>色</td><td>淡い橙（1, 0.9, 0.75）</td><td></td><td>光の色。照らされた物がこの色を帯びます。白なら物の色のまま照らします。</td></tr>
       <tr><td>強さ</td><td><code>intensity</code></td><td>小数</td><td>2</td><td>0〜100</td><td>明るさ。0 で消え、値に比例して明るくなります（2 倍にすると照らされた所が 2 倍明るくなります）。</td></tr>
       <tr><td>範囲</td><td><code>range</code></td><td>小数</td><td>10</td><td>0.01〜10000</td><td>光が届く距離。端へ向かうほど暗くなり、外側は照らされません。広げると遠くまで照らし、明るさがゆるやかに減ります。</td></tr>
-      <tr><td>影を落とす</td><td><code>cast_shadows</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>影を作るかどうか。全方向の影を描くため処理が重く、既定はオフです</td></tr>
+      <tr><td>影を落とす</td><td><code>cast_shadows</code></td><td>オン・オフ</td><td>オン</td><td></td><td>影を作るかどうか。全方向の影を描くため重いので、多く置くときはオフにします（2026-10-23 から既定がオン）</td></tr>
       <tr><td>影の濃さ</td><td><code>shadow_strength</code></td><td>小数</td><td>1</td><td>0〜1</td><td>影の暗さ。1 で光が完全にさえぎられた暗い影、0.5 で半分の濃さ、0 で影が見えなくなります。</td></tr>
       <tr><td>深度バイアス (m)</td><td><code>shadow_depth_bias</code></td><td>小数</td><td>0.02</td><td>0〜0.5</td><td>影のちらつきを抑えるずらし量。影の計算では 0.05 より大きい値は 0.05 として扱うので、0.05 を超えても効き方は変わりません</td></tr>
       <tr><td>法線バイアス</td><td><code>shadow_normal_bias</code></td><td>小数</td><td>1.5</td><td>0〜6</td><td>面の向きに沿って影をずらす量</td></tr>
@@ -82,7 +82,7 @@
       <tr><td>範囲</td><td><code>range</code></td><td>小数</td><td>12</td><td>0.01〜10000</td><td>光が届く距離。端へ向かうほど暗くなり、外側は照らされません。広げると遠くまで照らし、明るさがゆるやかに減ります。</td></tr>
       <tr><td>内側角度</td><td><code>inner_angle_degrees</code></td><td>小数</td><td>25</td><td>0.1〜179</td><td>しっかり明るく照らす円錐の角度</td></tr>
       <tr><td>外側角度</td><td><code>outer_angle_degrees</code></td><td>小数</td><td>40</td><td>0.1〜179</td><td>光が届く円錐の角度。内側から外側にかけて少しずつ暗くなります</td></tr>
-      <tr><td>影を落とす</td><td><code>cast_shadows</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>オンにすると、照らされた物の後ろに影ができます。影の枠（最大 4 枚）が足りないときは、影なしで光ります。</td></tr>
+      <tr><td>影を落とす</td><td><code>cast_shadows</code></td><td>オン・オフ</td><td>オン</td><td></td><td>オンにすると、照らされた物の後ろに影ができます。影の枠（最大 4 枚）が足りないときは、影なしで光ります（2026-10-23 から既定がオン）。</td></tr>
       <tr><td>影の濃さ</td><td><code>shadow_strength</code></td><td>小数</td><td>1</td><td>0〜1</td><td>影の暗さ。1 で光が完全にさえぎられた暗い影、0.5 で半分の濃さ、0 で影が見えなくなります。</td></tr>
       <tr><td>深度バイアス (m)</td><td><code>shadow_depth_bias</code></td><td>小数</td><td>0.02</td><td>0〜0.5</td><td>影のちらつきを抑えるずらし量。影の計算では 0.05 より大きい値は 0.05 として扱うので、0.05 を超えても効き方は変わりません</td></tr>
       <tr><td>法線バイアス</td><td><code>shadow_normal_bias</code></td><td>小数</td><td>1.5</td><td>0〜6</td><td>面の向きに沿って影をずらす量</td></tr>
@@ -111,6 +111,21 @@
     <p>Rect Light の光は、<a href="environment-volumes.html#probe-gi">局所光の間接反射（プローブ GI）</a> にも入ります。</p>
 
     <div class="note"><strong>ライトの数の上限</strong>ゲームの描画に使われるのは、Point Light が 8 個、Spot Light が 4 個までです。シーンの中で先に見つかったものから使われ、あふれたライトは光りません（Validation に「GPUへ送れるPoint/Spot Light数を超えています。」と出ます）。影を落とすライトはさらに枠が決まっていて、枠が足りないライトは影なしで光ります。</div>
+
+    <h3 id="rect-more">Rect Light のそのほかの項目</h3>
+    <p>（2026-10-24 時点で表に無かった項目。コードから書いた内容）</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>ボリュームフォグの強さ</td><td><code>volumetric_intensity</code></td><td>0</td><td>0〜100</td><td>ボリュームフォグの中に光の筋を出す強さ。0 で出しません</td></tr>
+      <tr><td>影の深度バイアス</td><td><code>shadow_depth_bias</code></td><td>0.02</td><td>0〜0.5</td><td>影のちらつき（縞）を抑えるために奥へずらす量</td></tr>
+      <tr><td>影の法線バイアス</td><td><code>shadow_normal_bias</code></td><td>1.5</td><td>0〜6</td><td>面の向きに沿って影をずらす量</td></tr>
+      <tr><td>影の近クリップ</td><td><code>shadow_near_plane</code></td><td>0.1</td><td>0.01〜10</td><td>ライトからこれより近い物は影を作りません</td></tr>
+    </table>
+    </div>
+
+    <h2 id="falloff">距離による減り方（物理減衰）</h2>
+    <p><b>Project Settings</b> の <b>ライトの物理減衰（逆二乗）</b> をオンにすると、Point・Spot・Rect Light の明るさが、現実と同じく距離の 2 乗で弱まり、範囲の端で 0 になるように整えられます。オフ（既定）は従来の減り方（範囲に対する割合の 2 乗）です。オンにすると近くが明るく遠くが暗くなるので、強さと範囲を見直します（2026-10-23 追加、コミット e6914e3c）。</p>
 
     <h2 id="look">見た目の違い</h2>
     <p>同じシーン（赤い立方体・白い球・青いカプセル）で、設定だけを変えて並べました。</p>

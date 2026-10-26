@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / 起動オプションと設定</div>
     <h1>起動オプション</h1>
-    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（検証スイートと見本シーン作成を追加）</p>
+    <p class="meta">対象：ブランチ sinotake_ReplayMaster_fixed / コミット 60775ec（検証スイートと見本シーン作成を追加）（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>エンジンの実行ファイル（<code>3dgp.exe</code>）は、起動するときに付ける文字（起動オプション）で動きが変わります。何も付けずに起動するとエディターが開きます。このページでは、使える起動オプションを目的ごとに説明します。</p>
 
@@ -88,6 +88,8 @@ Get-Content stderr.txt -Encoding UTF8</code></pre></div>
     </table>
     </div>
 
+    <p>計測中の操作を自動で入れるオプションもあります（2026-10-24 時点）：<code>--profile-toggle-fullscreen-at フレーム</code>（そのフレームで全画面を切り替える。何回でも書ける）、<code>--profile-reload-current-after フレーム数</code>（そのフレーム数のあとで今のシーンを読み直す）、<code>--profile-toggle-fullscreen-during-transition</code>（シーンの切り替え中に全画面を切り替える）、<code>--profile-capture-transition-loading</code>（切り替え中のロード画面も撮る）。</p>
+
     <h3 id="screen-space">--screen-space で上書きできる設定</h3>
     <p><code>--screen-space ssao.enabled=0</code> のように書きます。範囲外の数値は範囲の端に直され、標準エラー出力に「… に clamp しました。」と表示されます。オン・オフの設定は 0 か 1 だけです。一覧に無いキーを書くとエラー（終了コード 75）になります。この起動オプションは、計測以外の起動（撮影やエディター）でも効きます。</p>
     <div class="table-wrap">
@@ -152,9 +154,29 @@ Get-Content stderr.txt -Encoding UTF8</code></pre></div>
       <tr><td>破壊</td><td>--validate-destruction、--validate-destruction-runtime（結果は <code>Saved\Validation\Destruction.txt</code>、<code>DestructionRuntime.txt</code>。<a href="../components/destruction-reference.html#validate">説明</a>）</td></tr>
       <tr><td>DirectX 12 描画</td><td>--validate-dx12、--validate-dx12-ui、--validate-dx12-effect、--validate-dx12-resize、--validate-dx12-reload、--validate-dx12-device、--validate-dx12-gpu、--validate-dx12-skinned、--validate-dx12-animation、--validate-dx12-gbuffer、--validate-dx12-deferred、--validate-dx12-directional-light、--validate-dx12-point-light、--validate-dx12-spot-light、--validate-dx12-csm、--validate-dx12-point-shadow、--validate-dx12-spot-shadow</td></tr>
       <tr><td>描画の機能別</td><td>--validate-gpu-driven、--validate-render-graph、--validate-hiz、--validate-temporal、--validate-tiled-lighting、--validate-tiled-lighting-stress、--validate-volumetric、--validate-water、--validate-probe-gi、--validate-reflection-probe、--validate-rt-reflections、--validate-bloom、--validate-auto-exposure、--validate-character-rendering、--validate-effekseer-gpu</td></tr>
+      <tr><td>破壊（2026-10-24 追加）</td><td>--validate-damage-sculpt（欠損。結果は <code>DamageSculpt.txt</code>）、--validate-mesh-cut（カット。結果は <code>MeshCut.txt</code>）、--bake-damage-sculpt-fixtures（検証用の欠損ベイクを作り直す）</td></tr>
+      <tr><td>地形・草・川・ツタ・雲</td><td>--validate-landscape-heightfield、--validate-landscape-streaming、--validate-landscape-watertight、--validate-landscape-play-snapshot、--validate-river、--validate-ivy、--validate-placeable-clouds、--validate-sky-lighting</td></tr>
+      <tr><td>アニメーション・物理</td><td>--validate-ik、--validate-motion-path、--validate-anchor-parent-destroy、--validate-constraint-coloring、--validate-fluid-gpu</td></tr>
+      <tr><td>描画・素材</td><td>--validate-decals、--validate-world-text、--validate-surface-display、--validate-texture-regions、--validate-toon-params、--validate-gltf-alpha、--validate-gltf-lod-lazy（--measure-gltf-lod で時間も測る）、--validate-mesh-simplifier、--validate-dxc-all、--validate-dx12-gpu-particle-vfx、--validate-dx12-layered-ui</td></tr>
+      <tr><td>UI・進行</td><td>--validate-layered-compositor（--register-layered-compositor-sample-assets で見本の素材を Asset Database に登録）、--validate-workflow-editors、--validate-area-cutscene、--validate-gamefeel（コミット 28995f39）</td></tr>
+      <tr><td>ジョブ・ECS</td><td>--validate-job-graph、--validate-ecs-system-graph</td></tr>
       <tr><td>その他</td><td>--validate-crash-diagnostics</td></tr>
     </table>
     </div>
+
+    <h3 id="export-cli">ゲームを書き出す（コマンドから）</h3>
+    <p><a href="../windows/export-game.html">ゲームを書き出す</a> と同じことを、エディターを開かずに行います。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>起動オプション</th><th>意味</th></tr>
+      <tr><td>--export-standalone 書き出し先のフォルダー</td><td>このフォルダーへゲームを書き出して終了します</td></tr>
+      <tr><td>--export-name ゲーム名</td><td>書き出すゲームの名前</td></tr>
+      <tr><td>--export-scene シーンのパス</td><td>起動したときに最初に開くシーン</td></tr>
+    </table>
+    </div>
+
+    <h3 id="capture-panel">エディターのパネルを撮影する</h3>
+    <p><code>--capture-editor-panel パネル名 --frames フレーム数 --out ファイル名</code> で、指定したパネルを開いて撮影します。2026-10-24 時点で撮れるのは <b>演出設定</b>（<code>GameFeel</code> でも可）だけです（コミット 28995f39）。</p>
 
     <h3 id="showcase">見本シーンを作る（--create-…）</h3>
     <p>新しい機能を試すための見本シーンを作って終了します。エディターは開きません。できたシーンをエディターで開いて実行します。</p>

@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / エディターの基本</div>
     <h1>階層パネル</h1>
-    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
+    <p class="meta">対象：ブランチ sinotake / コミット 9eb9813（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>画面左の <b>階層</b> パネルには、シーンに入っている GameObject が親子関係のツリーで並びます。GameObject を作る、選ぶ、名前を変える、並べ替える、親子にする、といった操作をここで行います。</p>
 
@@ -56,7 +56,7 @@
       <tr><td>表示</td><td>ツリーの各行に出す種類別アイコンの出し方を選びます。<b>常に並べる</b>、<b>カーソルを乗せた行だけ</b>、<b>出さない</b> の 3 つから選べます。</td></tr>
     </table>
     </div>
-    <div class="warning"><strong>実行中は編集できません</strong>ゲームを実行している間は、+ 作成・複製・削除・プレハブを置く の 4 つのボタンが消え、代わりに「実行中は階層を編集できません」と表示されます。表示 ボタンは実行中も使えます。</div>
+    <div class="warning"><strong>実行中の編集は停止すると消えます</strong>2026-10-06 から、ゲームを実行している間も、実行中のシーン（Runtime Scene）の GameObject を作る・複製する・消すことができます。停止すると、実行中にした変更はすべて捨てられ、編集中のシーンには残りません。</div>
 
     <h2 id="create">GameObject を作る</h2>
     <ol class="steps">

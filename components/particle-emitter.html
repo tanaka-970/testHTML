@@ -17,7 +17,7 @@
   <main>
     <div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
     <h1>Particle Emitter</h1>
-    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（2026-10-22：タイムライン・Flipbook・リボン・3D 粒子・ライト・衝突デカール・LOD・ひな形を追記。追記分はコードから書いた内容）</p>
+    <p class="meta">対象：ブランチ sinotake_test / コミット d7164091（2026-10-22：タイムライン・Flipbook・リボン・3D 粒子・ライト・衝突デカール・LOD・ひな形を追記。追記分はコードから書いた内容）（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
     <p>小さな粒（パーティクル）をたくさん出すコンポーネントです。火花、煙、光の粒などに使います。粒は常にカメラの方を向いた四角で、画像を貼れます。</p>
 
@@ -159,6 +159,90 @@
       <li>「CPU粒子の視錐台カリング」：画面外の CPU 粒子は描画の準備をしません（動きは続きます）</li>
     </ul>
 
+    <h2 id="more-props">そのほかの項目</h2>
+    <p>（2026-10-24 時点で表に無かった項目。コードから書いた内容） 寿命カーブの「キー位置」「キー値」は、カーブエディタで点を打つと自動で入る値です。手で入れるときは、位置（0〜1 の寿命の割合）と値を同じ数だけ並べます。</p>
+    <div class="table-wrap">
+    <table>
+      <tr><th>表示名</th><th>内部名</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
+      <tr><td>ローカル位置</td><td><code>local_offset</code></td><td>0, 0, 0</td><td></td><td></td></tr>
+      <tr><td>ローカル回転（度）</td><td><code>local_rotation</code></td><td>0, 0, 0</td><td></td><td></td></tr>
+      <tr><td>発生半径</td><td><code>spawn_radius</code></td><td>0.25</td><td>0〜100</td><td></td></tr>
+      <tr><td>発生箱の半径</td><td><code>spawn_box_extents</code></td><td>0.25, 0.25, 0.25</td><td></td><td></td></tr>
+      <tr><td>速度ばらつき</td><td><code>speed_variation</code></td><td>0.25</td><td>0〜1</td><td></td></tr>
+      <tr><td>寿命ばらつき</td><td><code>lifetime_variation</code></td><td>0.25</td><td>0〜1</td><td></td></tr>
+      <tr><td>乱流強度</td><td><code>turbulence</code></td><td>0</td><td>0〜100</td><td></td></tr>
+      <tr><td>乱流スケール</td><td><code>turbulence_frequency</code></td><td>1</td><td>0.01〜100</td><td></td></tr>
+      <tr><td>渦力</td><td><code>vortex_strength</code></td><td>0</td><td>-100〜100</td><td></td></tr>
+      <tr><td>サイズキー位置</td><td><code>size_over_life_key_times</code></td><td></td><td></td><td>サイズ曲線の寿命位置を0～1で指定します。値配列と同じ数にします。</td></tr>
+      <tr><td>サイズキー値</td><td><code>size_over_life_key_values</code></td><td></td><td></td><td>サイズ曲線の値を0～1で指定します。位置配列と同じ数にします。</td></tr>
+      <tr><td>不透明度キー位置</td><td><code>alpha_over_life_key_times</code></td><td></td><td></td><td>不透明度曲線の寿命位置を0～1で指定します。値配列と同じ数にします。</td></tr>
+      <tr><td>不透明度キー値</td><td><code>alpha_over_life_key_values</code></td><td></td><td></td><td>不透明度曲線の値を0～1で指定します。位置配列と同じ数にします。</td></tr>
+      <tr><td>発光キー位置</td><td><code>emission_over_life_key_times</code></td><td></td><td></td><td>発光曲線の寿命位置を0～1で指定します。値配列と同じ数にします。</td></tr>
+      <tr><td>発光キー値</td><td><code>emission_over_life_key_values</code></td><td></td><td></td><td>発光曲線の値を0～1で指定します。位置配列と同じ数にします。</td></tr>
+      <tr><td>サイズの補間</td><td><code>size_over_life_interpolation</code></td><td>全体設定</td><td></td><td>全体設定を使うか、サイズ曲線だけの補間方式を選びます。</td></tr>
+      <tr><td>不透明度の補間</td><td><code>alpha_over_life_interpolation</code></td><td>全体設定</td><td></td><td>全体設定を使うか、不透明度曲線だけの補間方式を選びます。</td></tr>
+      <tr><td>発光の補間</td><td><code>emission_over_life_interpolation</code></td><td>全体設定</td><td></td><td>全体設定を使うか、発光曲線だけの補間方式を選びます。</td></tr>
+      <tr><td>寿命回転キー位置</td><td><code>rotation_over_life_key_times</code></td><td></td><td></td><td></td></tr>
+      <tr><td>寿命回転キー値</td><td><code>rotation_over_life_key_values</code></td><td></td><td></td><td></td></tr>
+      <tr><td>発光強度</td><td><code>emission</code></td><td>1</td><td>0〜16</td><td>HDR の加算光量です。Bloom が有効なときは強い値が光芒になります。</td></tr>
+      <tr><td>ライト強度曲線</td><td><code>vfx_emitter_light_intensity_over_cycle</code></td><td>1, 1, 1, 1</td><td></td><td>Emitterライト強度へ掛ける周期曲線です。</td></tr>
+      <tr><td>ライト範囲曲線</td><td><code>vfx_emitter_light_range_over_cycle</code></td><td>1, 1, 1, 1</td><td></td><td>Emitterライト範囲へ掛ける周期曲線です。</td></tr>
+      <tr><td>ライト強度キー位置</td><td><code>vfx_emitter_light_intensity_key_times</code></td><td></td><td></td><td>周期位置を0～1で指定します。強度キー値と同じ数にします。</td></tr>
+      <tr><td>ライト強度キー値</td><td><code>vfx_emitter_light_intensity_key_values</code></td><td></td><td></td><td>周期中の強度倍率を0～1で指定します。位置配列と同じ数にします。</td></tr>
+      <tr><td>ライト範囲キー位置</td><td><code>vfx_emitter_light_range_key_times</code></td><td></td><td></td><td>周期位置を0～1で指定します。範囲キー値と同じ数にします。</td></tr>
+      <tr><td>ライト範囲キー値</td><td><code>vfx_emitter_light_range_key_values</code></td><td></td><td></td><td>周期中の範囲倍率を0～1で指定します。位置配列と同じ数にします。</td></tr>
+      <tr><td>粒子ライト色</td><td><code>vfx_particle_light_color</code></td><td>1, 1, 1, 1</td><td></td><td></td></tr>
+      <tr><td>寿命によるTAA反応量</td><td><code>vfx_taa_reactivity_over_life</code></td><td>1, 1, 1, 1</td><td></td><td>粒子の寿命に沿ってReactive Maskの反応量を調整します。</td></tr>
+      <tr><td>TAA反応量キー位置</td><td><code>vfx_taa_reactivity_key_times</code></td><td></td><td></td><td>寿命位置を0～1で指定します。キー値と同じ数にします。</td></tr>
+      <tr><td>TAA反応量キー値</td><td><code>vfx_taa_reactivity_key_values</code></td><td></td><td></td><td>寿命中のReactive Mask反応量を0～1で指定します。位置配列と同じ数にします。</td></tr>
+      <tr><td>ライト強度キー位置</td><td><code>vfx_particle_light_intensity_key_times</code></td><td></td><td></td><td>寿命位置を0～1で指定します。強度キー値と同じ数にします。</td></tr>
+      <tr><td>ライト強度キー値</td><td><code>vfx_particle_light_intensity_key_values</code></td><td></td><td></td><td>寿命中のライト強度倍率を0～1で指定します。位置配列と同じ数にします。</td></tr>
+      <tr><td>ライト範囲キー位置</td><td><code>vfx_particle_light_range_key_times</code></td><td></td><td></td><td>寿命位置を0～1で指定します。範囲キー値と同じ数にします。</td></tr>
+      <tr><td>ライト範囲キー値</td><td><code>vfx_particle_light_range_key_values</code></td><td></td><td></td><td>寿命中のライト範囲倍率を0～1で指定します。位置配列と同じ数にします。</td></tr>
+      <tr><td>衝突デカール法線画像</td><td><code>impact_decal_normal_texture</code></td><td></td><td></td><td></td></tr>
+      <tr><td>衝突デカール色</td><td><code>impact_decal_color</code></td><td>1, 1, 1, 1</td><td></td><td></td></tr>
+      <tr><td>衝突デカール発光</td><td><code>impact_decal_emission</code></td><td>0</td><td>0〜64</td><td></td></tr>
+      <tr><td>衝突デカール法線強度</td><td><code>impact_decal_normal_strength</code></td><td>1</td><td>0〜1</td><td></td></tr>
+      <tr><td>衝突デカール粗さ</td><td><code>impact_decal_roughness</code></td><td>0.7</td><td>0〜1</td><td></td></tr>
+      <tr><td>衝突デカール面の向き制限</td><td><code>impact_decal_normal_alignment</code></td><td>0.25</td><td>0〜1</td><td></td></tr>
+      <tr><td>衝突デカール幅</td><td><code>impact_decal_size</code></td><td>0.35</td><td>0.01〜100</td><td></td></tr>
+      <tr><td>衝突デカール奥行き</td><td><code>impact_decal_depth</code></td><td>0.12</td><td>0.01〜10</td><td></td></tr>
+      <tr><td>衝突デカール寿命</td><td><code>impact_decal_lifetime</code></td><td>8</td><td>0.01〜3600</td><td></td></tr>
+      <tr><td>衝突デカール消失時間</td><td><code>impact_decal_fade_duration</code></td><td>1.5</td><td>0〜3600</td><td></td></tr>
+      <tr><td>衝突デカール上限</td><td><code>impact_decal_budget</code></td><td>32</td><td>1〜256</td><td></td></tr>
+      <tr><td>Soft Particle (深度フェード)</td><td><code>vfx_soft_particle</code></td><td>オフ</td><td></td><td>GPU Sprite専用。地形との硬い交差線を軽減。</td></tr>
+      <tr><td>UV移動速度XY (UV/秒)</td><td><code>vfx_uv_scroll</code></td><td>0, 0</td><td></td><td></td></tr>
+      <tr><td>マスクぼかし</td><td><code>vfx_mask_softness</code></td><td>0.12</td><td>0.001〜0.5</td><td></td></tr>
+      <tr><td>マスクを反転</td><td><code>vfx_mask_invert</code></td><td>オフ</td><td></td><td></td></tr>
+      <tr><td>外部マスクを反転</td><td><code>vfx_mask_texture_invert</code></td><td>オフ</td><td></td><td></td></tr>
+      <tr><td>画像マスクの強さ</td><td><code>vfx_mask_texture_strength</code></td><td>1</td><td>0〜1</td><td></td></tr>
+      <tr><td>画像マスクUV倍率</td><td><code>vfx_mask_uv_tiling</code></td><td>1, 1</td><td></td><td></td></tr>
+      <tr><td>画像マスクUV速度</td><td><code>vfx_mask_uv_scroll</code></td><td>0, 0</td><td></td><td></td></tr>
+      <tr><td>Dissolve境界ぼかし</td><td><code>vfx_dissolve_softness</code></td><td>0.03</td><td>0.001〜0.25</td><td></td></tr>
+      <tr><td>Skinned Meshの姿勢に追従</td><td><code>mesh_particle_follow_skinned_pose</code></td><td>オン</td><td></td><td>Skinned Meshの現在姿勢をCPUメッシュへ焼き込み、粒子形状へ反映します。</td></tr>
+      <tr><td>リボン始点幅 (m)</td><td><code>ribbon_width_start</code></td><td>0.22</td><td></td><td></td></tr>
+      <tr><td>リボン終点幅 (m)</td><td><code>ribbon_width_end</code></td><td>0.02</td><td></td><td></td></tr>
+      <tr><td>リボン始点ねじれ (度)</td><td><code>ribbon_twist_start_degrees</code></td><td>0</td><td>-720〜720</td><td></td></tr>
+      <tr><td>リボン終点ねじれ (度)</td><td><code>ribbon_twist_end_degrees</code></td><td>0</td><td>-720〜720</td><td></td></tr>
+      <tr><td>Ribbon幅キー位置</td><td><code>ribbon_width_key_times</code></td><td></td><td></td><td></td></tr>
+      <tr><td>Ribbon幅キー値</td><td><code>ribbon_width_key_values</code></td><td></td><td></td><td></td></tr>
+      <tr><td>Ribbon幅の補間</td><td><code>ribbon_width_interpolation</code></td><td>滑らか</td><td></td><td></td></tr>
+      <tr><td>着水強度</td><td><code>water_splash_strength</code></td><td>0.4</td><td>0〜3</td><td>着水時に水面へ波紋と泡のイベントを送る強さです。</td></tr>
+      <tr><td>指定時刻に送信</td><td><code>sub_emitter_time_channel</code></td><td></td><td></td><td></td></tr>
+      <tr><td>粒子発生時に送信</td><td><code>sub_emitter_spawn_channel</code></td><td></td><td></td><td></td></tr>
+      <tr><td>イベント時刻 (秒)</td><td><code>sub_emitter_time_seconds</code></td><td>0.5</td><td>0.001〜60</td><td></td></tr>
+      <tr><td>滝の深い色</td><td><code>water_deep_color</code></td><td>0.035, 0.11, 0.15, 1</td><td></td><td></td></tr>
+      <tr><td>滝の泡の色</td><td><code>water_foam_color</code></td><td>0.91, 0.98, 0.97, 1</td><td></td><td></td></tr>
+      <tr><td>流れ筋の幅</td><td><code>waterfall_stream_width</code></td><td>0.58</td><td>0.2〜1.6</td><td></td></tr>
+      <tr><td>流れ筋の厚み</td><td><code>waterfall_stream_depth</code></td><td>0.3</td><td>0.05〜2</td><td></td></tr>
+      <tr><td>LOD開始距離 (m)</td><td><code>distance_lod_near</code></td><td>20</td><td>0〜10000</td><td></td></tr>
+      <tr><td>LOD終了距離 (m)</td><td><code>distance_lod_far</code></td><td>80</td><td>0〜10000</td><td></td></tr>
+      <tr><td>画面サイズLOD開始半径 (px)</td><td><code>projected_size_lod_near_pixels</code></td><td>32</td><td>0〜8192</td><td></td></tr>
+      <tr><td>画面サイズLOD終了半径 (px)</td><td><code>projected_size_lod_far_pixels</code></td><td>4</td><td>0〜8192</td><td></td></tr>
+      <tr><td>小サイズ時の発生率</td><td><code>projected_size_lod_far_fraction</code></td><td>0.2</td><td>0〜1</td><td></td></tr>
+    </table>
+    </div>
+
     <h2 id="assets">VFX の素材：ひな形と VFX アセット</h2>
     <p>エフェクトを一から作らなくても、<b>Window &gt; VFX制作ルーム</b> の「<b>クイック作成（オブジェクト選択不要）</b>」でひな形を選ぶと、GameObject と Emitter（必要なら複数）が作られます。検索欄で名前を絞り込め、☆でお気に入りにできます（「★だけ」で絞り込み）。</p>
     <div class="table-wrap">
@@ -179,6 +263,7 @@
       <li>「保存済みVFXを選ぶ」で選び、<b>選んだVFXをSceneに配置</b> で別のシーンにも置けます（毎回別のインスタンスになります）</li>
       <li><b>依存素材込みで配布フォルダーを作成</b>：画像やマテリアルも含めて <code>Saved/VfxPackages/</code> に書き出します。別の PC では <b>VFX配布フォルダーを取り込む</b> で resources へ配置し、Asset Database に登録します</li>
       <li>Project の <b>Create &gt; Data</b> に「VFX Material」（<code>.replayvfxmaterial</code>）と「VFXノード部品」（<code>.replayvfxgraph</code>。計算グラフの再利用部品）が増えました</li>
+      <li>計算グラフの欄の <b>C++コードをコピー</b> を押すと、今のグラフと同じ計算をする C++ の初期化コードがクリップボードに入ります。ゲーム側のコードに同じ計算を組み込むときに使います（2026-10-20 追加）</li>
     </ul>
 
     <h2 id="how">粒の動き方</h2>
