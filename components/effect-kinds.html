@@ -19,7 +19,7 @@
     <h1>エフェクトの種類</h1>
     <p class="meta">対象：ブランチ sinotake / コミット 9eb9813（2026-10-24 に sinotake_test / 28995f39に合わせて追記・修正。追記分はコードから書いた内容）</p>
 
-    <p><a href="effect-stacks.html">Effect Stack</a>（Screen Effect Stack、Model Effect Stack、UI の Effect Stack）と Effect Preset で使えるエフェクト 86 種類の一覧です。各エフェクトの <b>種類</b> を選ぶと、その種類で使う項目だけがインスペクターに表示されます。</p>
+    <p><a href="effect-stacks.html">Effect Stack</a>（Screen Effect Stack、Model Effect Stack、UI の Effect Stack）と Effect Preset で使えるエフェクトの一覧です。各エフェクトの <b>種類</b> を選ぶと、その種類で使う項目だけがインスペクターに表示されます。</p>
     <p>どの種類にも、共通の項目として <b>有効</b>、<b>範囲へ適用</b>、<b>種類</b>、<b>カスタムシェーダー</b> があります（<a href="effect-stacks.html#effect-items">Effect Stack の共通項目</a>）。</p>
     <p>表の「内部名」の <code>番号</code> は、上から何番目のエフェクトかを 0 から数えた数です。Motion や Property Link で値を動かすときに使います。</p>
     <p>ここにある範囲はインスペクターで入力できる範囲です。説明は、インスペクターでマウスを乗せたときに出る説明と同じです。</p>
@@ -1165,6 +1165,11 @@
     <ul>
       <li><a href="effect-stacks.html">Effect Stack と Effect Preset</a></li>
     </ul>
+    <section id="update-2026-10-27">
+    <h2>2026-10-27 追記：色とフィルム表現</h2>
+    <p>UI の Effect Stack に、Bleach Bypass、Film Grain、Halation、Lift Gamma Gain、Local Contrast、Selective Color、Shadow Highlights、Soft Diffusion、Split Toning、Vibrance の 10 種類が追加されました。色の切り分け、階調、粒子感、光のにじみを組み合わせられます。従来の番号一覧は今回の追加より前の順序を示すため、最新の種類はエディターの選択欄で確認してください。</p>
+    <p class="meta">対象：sinotake_test / cf1faf7f まで。コード確認のみ、実機未確認。</p>
+    </section>
   </main>
 </div>
 <footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>

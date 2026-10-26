@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow, noarchive, noimageindex"><title>空の自然現象・蛍・自然の粒 - RePlayEngine ドキュメント</title><link rel="stylesheet" href="../assets/style.css"></head>
+<body data-root="../">
+<header class="site-header"><a class="site-name" href="../index.html">RePlayEngine ドキュメント</a><form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form></header>
+<div class="layout"><nav class="side-nav" aria-label="目次"></nav><main>
+<div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+<h1>空の自然現象・蛍・自然の粒</h1>
+<p class="meta">対象：sinotake_test / cf1faf7f まで。コードを読んだ内容で、実機未確認。</p>
+<p>空の光や流れ星、空間を飛ぶ蛍・砂塵・花びらなどを配置する 3 つのコンポーネントです。既存の <a href="sky.html">空</a>や<a href="clouds.html">雲</a>と組み合わせて使います。</p>
+<div class="table-wrap"><table><tr><th>部品</th><th>主な用途</th></tr><tr><td>空の自然現象</td><td>オーロラ、流星、大気光、夜光雲、日暈・月暈、幻日、光柱</td></tr><tr><td>蛍の群れ</td><td>空間内を飛ぶ蛍と線状の残光</td></tr><tr><td>砂塵・自然の粒</td><td>砂塵、埃、花粉、花びら、落ち葉、火の粉、氷晶、水中の泡</td></tr></table></div>
+<h2 id="sky-phenomena">空の自然現象</h2>
+<p>Rendering &gt; <b>空の自然現象</b>を追加します。「流れ星を表示」をオンにし、平均出現間隔・流れる時間・軌跡の長さと太さ・放射点の方位と高度を調整します。「夜の現象を時刻に合わせる」がオンなら、オーロラ・流れ星・大気光は昼に消えます。流星は固定位置の点滅ではなく、シードから出現時刻と軌道を決めます。</p>
+<p>オーロラには帯の幅・速度・上下の発光高度・色、夜光雲には雲層の高度・厚さ・流れ、氷晶の光には日暈・月暈・幻日・光柱の強さを指定します。雲より奥の空の現象として合成されます。</p>
+<h2 id="fireflies">蛍の群れ</h2>
+<p>Rendering &gt; <b>蛍の群れ</b>を追加します。Transform を中心に範囲の半径、蛍の数、発光色、点滅間隔を設定します。線の残光には本体とは別の色・長さなどを指定できます。群れは範囲内を飛び、表示距離を超えると徐々に薄くなります。</p>
+<h2 id="nature-particles">砂塵・自然の粒</h2>
+<p>Rendering &gt; <b>砂塵・自然の粒</b>を追加し、8 種類から選びます。範囲・数・シード・カメラ追従・色と大きさ・平均風速・上昇／下降速度・揺らぎ・突風・表示距離を調整します。種類ごとに落下や回転、明滅などの動きが異なり、模様は画像なしで生成されます。種類を切り替えると、その種類に合う色・大きさ・動きの初期値へ戻ります。</p>
+<div class="note"><strong>確認の目安</strong>夜限定の設定、表示距離、数や明るさの値が 0 になっていないかを先に確認してください。積雪は別の<a href="landscape.html#update-2026-10-27">積雪・足跡</a>コンポーネントです。</div>
+</main></div><footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer><script src="../assets/toc.js"></script><script src="../assets/site.js"></script></body></html>

@@ -152,6 +152,12 @@
       <tr><td>地表からの高さ（m）</td><td><code>terrain_clearance</code></td><td>80</td><td>0〜10000</td><td>高さの基準を地形基準にしたとき、地表から雲の群れを浮かせる高さ</td></tr>
     </table>
     </div>
+    <section id="update-2026-10-27">
+    <h2>2026-10-27 追記：大気と雲の描画</h2>
+    <p>物理大気の LUT と昼夜の環境光・雲の照明を接続し、太陽・月の直射光と影の設定を共通化しました。入道雲の形、雲の流れ、体積雲の輪郭・散乱・深度を考慮した合成を更新しています。空と雲の模様には 3D ノイズ素材を使い、素材が無い場合の代替生成も用意しました。</p>
+    <p>オーロラや流星、蛍、砂塵などは <a href="natural-phenomena.html">自然現象</a>を参照してください。</p>
+    <p class="meta">対象：sinotake_test / cf1faf7f まで。コード確認のみ、実機未確認。</p>
+    </section>
   </main>
 </div>
 <footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>

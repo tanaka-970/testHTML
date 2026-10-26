@@ -33,7 +33,7 @@
     <table>
       <tr><th>部品</th><th>コンポーネントを追加での場所</th><th>貼り方</th><th>必要な素材</th></tr>
       <tr><td>投影デカール</td><td>Rendering &gt; 投影デカール</td><td>箱の中にある不透明な面へ、上から投影する</td><td>画像（PNG など）。凹凸を付けるなら法線画像も</td></tr>
-      <tr><td>面テクスチャ領域</td><td>Rendering &gt; 面テクスチャ領域</td><td>同じ GameObject のモデルの、選んだ面だけに貼る</td><td>画像（PNG）。面を選ぶための UV Surface Paint</td></tr>
+      <tr><td>面テクスチャ領域</td><td>Rendering &gt; 面テクスチャ領域</td><td>同じ GameObject のモデルの、選んだ面だけに貼る</td><td>画像（PNG など）または文字。面クリック・UV Paint・頂点カラーで表示範囲を指定</td></tr>
       <tr><td>表示内容アニメーション / LED</td><td>Rendering &gt; 表示内容アニメーション / LED</td><td>上のどちらかと同じ GameObject に付けて、貼る中身を動かす</td><td>画像モードは上の部品の画像。文字モードはフォント（.ttf / .ttc）。無ければ組み込みのフォント</td></tr>
     </table>
     </div>
@@ -82,7 +82,7 @@
       <tr><th>内部名</th><th>既定値</th><th>説明</th></tr>
       <tr><td><code>enabled</code></td><td>オン</td><td></td></tr>
       <tr><td><code>texture</code></td><td>空</td><td>貼る画像</td></tr>
-      <tr><td><code>mask_source</code></td><td>UV Paint R</td><td>全体／UV Paint R／G／B／A。貼る範囲を決めるチャンネル</td></tr>
+      <tr><td><code>mask_source</code></td><td>選択した面</td><td>全体／UV Paint R〜A／頂点カラー R〜A／選択した面。貼る範囲を決める</td></tr>
       <tr><td><code>mask_invert</code></td><td>オフ</td><td>選んでいない面に貼る</td></tr>
       <tr><td><code>mapping_mode</code></td><td>モデルUV</td><td>モデルUV／平面投影</td></tr>
       <tr><td><code>uv_scale</code>・<code>uv_offset</code>・<code>uv_rotation</code></td><td>(1,1)・(0,0)・0</td><td>画像の拡大・移動・回転（度）</td></tr>
@@ -138,6 +138,15 @@
       <li><a href="effect-stacks.html">Effect Stack</a>（Material Slot）</li>
       <li><a href="particle-emitter.html#impact">粒子の衝突デカール</a></li>
     </ul>
+    <section id="update-2026-10-27">
+    <h2>2026-10-27 追記：テレビ・看板を複数レイヤーで作る</h2>
+    <p>同じモデルに <b>面テクスチャ領域</b> を複数追加できます。モデリング Workspace の「画像レイヤーを追加」は、直前のレイヤーの選択面・投影位置を引き継ぎます。各レイヤーで画像・透明度・移動・回転・大きさ・重ね順・表示オン／オフを別々に設定します。</p>
+    <ol class="steps"><li>モデルに面テクスチャ領域を付け、「モデルの面をクリックして画像を貼る」で表示面を選びます。複数面を選べます。</li><li>表示マスクを「選択した面」「UV 塗り R〜A」「頂点色 R〜A」から選びます。「選択面と塗りマスクを組み合わせる」で、選択面の内側だけ塗り値を掛けられます。</li><li>必要なら追加マスク画像を指定し、アルファ／輝度・反転・強さ・しきい値を調整します。画像自身の透明部分も表示範囲に反映されます。</li><li>さらに画像レイヤーを追加して文字・ロゴ・画面を重ねます。重ね順は大きい数字ほど手前です。</li></ol>
+    <p>各レイヤーの「表示内容」は <b>画像／文字／画像シーケンス／Presentation カメラ</b> です。文字は表示文字・フォント・文字色・画面解像度を設定します。連続画像は画像アセットの GUID を改行・カンマ・セミコロンで区切り、FPS・繰り返し・開始位置・一時停止を設定します。カメラは、<b>Camera Output to UI</b> を有効にした Presentation Director の所有 GameObject を映像元に指定します。面には前フレームの映像を表示します。</p>
+    <p>「画面の電源」を切り替えると収束する消灯・点灯演出、「表示内容」を変えると砂あらしの切替演出が入ります。電源切替時間・内容切替時間、常時の砂あらし・走査線、ホログラム効果と強さを個別に調整できます。「表示状態・デバッグ」で内容、電源、面の数、画像やカメラの未設定を確認できます。</p>
+    <h3>投影デカールを重ねる</h3><p>既存の <b>投影デカール</b> も同じ GameObject に複数付けられます。画像・投影サイズ・色・透明度・重ね順・ホログラム効果をデカールごとに指定します。こちらは投影箱と交わる不透明面へ描く方式です。</p>
+    <p class="meta">対象：sinotake_test / cf1faf7f まで。コード確認のみ、実機未確認。</p>
+    </section>
   </main>
 </div>
 <footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>

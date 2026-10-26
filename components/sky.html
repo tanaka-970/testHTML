@@ -77,10 +77,10 @@
     <h2 id="select">どの空が使われるか</h2>
     <ul>
       <li>使われるのは 1 つだけです。</li>
-      <li>対象になるのは、GameObject とコンポーネントが有効で、<b>空を表示</b> がオンで、<b>空マップ</b> か <b>時間帯キーフレーム</b> に読める画像が入っている空です。</li>
+      <li>対象になるのは、GameObject とコンポーネントが有効で、<b>空を表示</b> がオンの空です。従来の画像モードは空マップか時間帯キーフレームの画像が必要です。手続き空モードは画像なしで使えます。</li>
       <li>その中で <b>優先度</b> がいちばん大きいものが使われます。優先度が同じなら、シーンの中で先にあるものが使われます。</li>
     </ul>
-    <div class="warning"><strong>画像が無いと雲・星・月も出ません</strong>空マップと時間帯キーフレームの両方が空だと、その空は使われないため、雲・星・月だけを表示することもできません。</div>
+    <div class="warning"><strong>従来の画像モード</strong>手続き空をオフにした場合は、空マップまたは時間帯キーフレームの画像が必要です。手続き空をオンにすると、画像が無くても大気・雲・星・月を描けます。</div>
 
     <h2 id="keyframes">時間帯キーフレーム</h2>
     <p>時間帯キーフレームに画像を並べると、<b>時間帯</b> の値に合わせて画像が移り変わります。</p>
@@ -123,6 +123,10 @@
       <li><a href="post-process-volume.html">Post Process Volume</a></li>
       <li><a href="lights.html">ライト（Directional / Point / Spot）</a></li>
     </ul>
+    <section id="update-2026-10-27">
+    <h2>2026-10-27 追記：空の自然現象</h2><p>空にオーロラ・流星・大気光・夜光雲・暈などを加えるには、別の <a href="natural-phenomena.html">空の自然現象</a>コンポーネントを使います。空の天候と連動する雨雪雷も専用コンポーネントへ分離されました。</p>
+    <p class="meta">対象：sinotake_test / cf1faf7f まで。コード確認のみ、実機未確認。</p>
+    </section>
   </main>
 </div>
 <footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>

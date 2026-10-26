@@ -30,6 +30,24 @@
     </table>
     </div>
 
+    <section class="change-entry" id="2026-10-27-features">
+    <h2>2026-10-27 10/24 以降の面表示・地形・自然現象・音響などを追記</h2>
+    <p class="meta">対象：ブランチ sinotake_test / コミット 28995f39 の次から cf1faf7f まで。以下はコードと登録項目を読んで記載。実機での動作は未確認です。</p>
+    <div class="table-wrap"><table>
+      <tr><th>追加・変更</th><th>説明ページ</th><th>確認</th></tr>
+      <tr><td>テレビ・看板の面表示：複数の画像レイヤー、選択面と UV／頂点色の塗りマスクの合成、追加マスク、画像・文字・連続画像・Presentation カメラ映像、電源と内容切替の演出、砂あらし・走査線・ホログラム、状態表示</td><td><a href="components/decals.html#update-2026-10-27">デカールと面テクスチャ</a></td><td><span class="status wait">コードで確認・実機未確認</span></td></tr>
+      <tr><td>投影デカールを同じオブジェクトに複数追加可能にし、重ね順とホログラム効果を追加</td><td><a href="components/decals.html#update-2026-10-27">投影デカール</a></td><td><span class="status wait">コードで確認・実機未確認</span></td></tr>
+      <tr><td>地形の四辺を既存の位置・高さ・塗りを保って延長。Undo とバックアップを用意。地形の描画範囲・ストリーミング・カリングも修正</td><td><a href="components/landscape.html#update-2026-10-27">地形</a></td><td><span class="status wait">コードで確認・実機未確認</span></td></tr>
+      <tr><td>「積雪・足跡」コンポーネントと積雪状態表示・見た目確認。標高で決まる固定の雪との違いを明示</td><td><a href="components/landscape.html#update-2026-10-27">地形と積雪</a></td><td><span class="status wait">コードで確認・実機未確認</span></td></tr>
+      <tr><td>空の自然現象（オーロラ・流星・大気光・夜光雲・暈・光柱）、蛍の線状の残光、8 種類の自然粒子。空と雲の 3D ノイズ・散乱も変更</td><td><a href="components/natural-phenomena.html">自然現象</a>・<a href="components/clouds.html#update-2026-10-27">雲</a></td><td><span class="status wait">コードで確認・実機未確認</span></td></tr>
+      <tr><td>レンズフレアの光源・ゴースト・光条・遮蔽・画面端の減衰などを調整可能にし、表示判定と見え方を修正</td><td><a href="components/camera-lens.html#update-2026-10-27">カメラの演出</a></td><td><span class="status wait">コードで確認・実機未確認</span></td></tr>
+      <tr><td>破裂後の膜片を柔らかく変形させる設定、破片寿命と衝突まわりを更新</td><td><a href="components/inflation.html#update-2026-10-27">膨張</a></td><td><span class="status wait">コードで確認・実機未確認</span></td></tr>
+      <tr><td>アニメーション編集時にシーンの他オブジェクトを見せる設定、区間再生・選択補助・キーの一括編集。再生開始が取り消される場合の理由表示</td><td><a href="windows/model-animation.html#update-2026-10-27">アニメーション</a>・<a href="editor/play-mode.html#update-2026-10-27">実行</a></td><td><span class="status wait">コードで確認・実機未確認</span></td></tr>
+      <tr><td>音源の検索・試聴・最近の選択、音量ミキサー・パン・反響センド、環境音響と壁越し遮音、CRI 再生・配布データ参照の修正</td><td><a href="components/audio-source.html#update-2026-10-27">音</a>・<a href="windows/export-game.html#update-2026-10-27">書き出し</a></td><td><span class="status wait">コードで確認・実機未確認</span></td></tr>
+      <tr><td>色分け・フィルム表現など 10 種の UI エフェクト、マテリアル・反射・輪郭・描画品質、局所膨張の衝突生成と性能を更新</td><td><a href="components/effect-kinds.html#update-2026-10-27">エフェクト</a>・<a href="components/inflation.html#update-2026-10-27">膨張</a></td><td><span class="status wait">コードで確認・実機未確認</span></td></tr>
+    </table></div>
+    <p>統合コミットと、起動・シェーダーコンパイル・配布の修正もこの範囲に含まれます。各ページの追記は既存の説明を残し、今回変わった操作を「2026-10-27 追記」として区別しました。</p>
+    </section>
     <section class="change-entry" id="2026-10-24-features">
     <h2>2026-10-24 破壊の統合・欠損・カット・破壊フィールド・カメラの演出・IK とラグドール・イベント進行など、未記載と古い説明をまとめて更新</h2>
     <p class="meta">対象：ブランチ sinotake_test / コミット aa27b6b3（10/22 のコミット d7164091 以降の 97 コミット）＋ コミット 28995f39（破壊の統合、演出設定 GameFeel、風圧で揺れる）</p>

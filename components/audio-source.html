@@ -19,7 +19,7 @@
     <h1>Audio Source</h1>
     <p class="meta">対象：ブランチ sinotake / コミット 9eb9813</p>
 
-    <p>音を鳴らすコンポーネントです。WAV ファイルを指定して、BGM や効果音を再生します。1 つの GameObject にいくつでも付けられます。</p>
+    <p>音を鳴らすコンポーネントです。WAV・MP3 の音源や CRI キューを指定して、BGM や効果音を再生します。1 つの GameObject にいくつでも付けられます。</p>
 
     <h2 id="when">こんなときに使う</h2>
     <ul>
@@ -36,7 +36,7 @@
       <tr><td>1 つの GameObject に</td><td>いくつでも付けられます</td></tr>
       <tr><td>必須・推奨</td><td>なし</td></tr>
       <tr><td>鳴る場面</td><td>ゲームの実行中だけ。エディターで編集しているときは鳴りません</td></tr>
-      <tr><td>使える音声ファイル</td><td>無圧縮（PCM）の WAV ファイルだけ</td></tr>
+      <tr><td>使える音声ファイル</td><td>WAV・MP3。CRI キューは CRI のライブラリとキューシートが必要</td></tr>
     </table>
     </div>
 
@@ -44,7 +44,7 @@
     <div class="table-wrap">
     <table>
       <tr><th>表示名</th><th>内部名</th><th>種類</th><th>既定値</th><th>範囲</th><th>説明</th></tr>
-      <tr><td>Clip Path</td><td><code>clip_path</code></td><td>文字</td><td>（空）</td><td></td><td>鳴らす WAV ファイルの場所。プロジェクトのフォルダからの相対パスで書きます（例：<code>resources/Sounds/jump.wav</code>）</td></tr>
+      <tr><td>Clip Path</td><td><code>clip_path</code></td><td>文字</td><td>（空）</td><td></td><td>鳴らす WAV・MP3 ファイルの場所、または CRI キュー名。音源アセットを選んだ場合はそちらを優先します。ファイルはプロジェクトのフォルダからの相対パスで書きます（例：<code>resources/Sounds/jump.wav</code>）</td></tr>
       <tr><td>Loop</td><td><code>loop</code></td><td>オン・オフ</td><td>オフ</td><td></td><td>最後まで鳴ったら最初から繰り返すかどうか</td></tr>
       <tr><td>Volume</td><td><code>volume</code></td><td>小数</td><td>1</td><td>0〜4</td><td>音量の倍率。1 で素材の音量どおり、0 で無音、0.5 で半分の大きさになります。</td></tr>
       <tr><td>Pitch</td><td><code>pitch</code></td><td>小数</td><td>1</td><td>0.25〜4</td><td>再生の速さ（音の高さ）。2 で 2 倍の速さ・1 オクターブ高く、0.5 で半分の速さ・低くなります</td></tr>
@@ -88,7 +88,7 @@
     <h2 id="notes">注意</h2>
     <ul>
       <li>ファイルが開けない、または WAV として読めないときは、音は鳴らず、デバッグ出力に「[Audio] WAV open failed: …」や「[Audio] Unsupported WAV header: …」と 1 回だけ表示されます。</li>
-      <li>MP3 や OGG、圧縮された WAV は鳴りません。</li>
+      <li>MP3 は対応しています。OGG や未対応の形式は、読み込み可否を個別に確認してください。</li>
       <li>Clip Path はアセットの参照ではなく、ただのファイルの場所です。ファイルの名前や場所を変えたときは、Clip Path も書き直してください。</li>
       <li>コンポーネントを無効にしたり、ゲームを停止したりすると、鳴っている音は止まります。</li>
     </ul>
@@ -113,6 +113,12 @@
     <ul>
       <li><a href="audio-listener.html">Audio Listener</a></li>
     </ul>
+    <section id="update-2026-10-27">
+    <h2>2026-10-27 追記：音源選択と音響</h2>
+    <p>Inspector の音源一覧は初期表示され、検索は任意です。音源の検索・試聴・最近使った項目からの選択に対応しました。Audio Source には音量・音程に加えて、パン、ローパス／ハイパス、反響センド、ドップラー、遮音などの設定が追加されています。</p>
+    <p>音量ミキサーと Audio Environment で、場所ごとの反響・環境音や壁越しの遮音を設定できます。CRI 再生と配布時の音声データ参照も修正されています。CRI の利用には引き続き対応ライブラリと素材が必要です。</p>
+    <p class="meta">対象：sinotake_test / cf1faf7f まで。コード確認のみ、実機未確認。</p>
+    </section>
   </main>
 </div>
 <footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer>
