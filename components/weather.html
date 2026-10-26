@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow, noarchive, noimageindex"><title>雨・雪・雷 - RePlayEngine ドキュメント</title><link rel="stylesheet" href="../assets/style.css"></head>
+<body data-root="../"><header class="site-header"><a class="site-name" href="../index.html">RePlayEngine ドキュメント</a><form method="get"><input type="search" name="q" placeholder="検索" aria-label="検索"></form></header>
+<div class="layout"><nav class="side-nav" aria-label="目次"></nav><main>
+<div class="breadcrumb"><a href="../index.html">ホーム</a> / <a href="index.html">コンポーネント</a> / Rendering</div>
+<h1>雨・雪・雷</h1><p class="meta">対象：sinotake_test / cf1faf7f まで。コード確認のみ、実機未確認。</p>
+<p><b>Rendering &gt; 雨・雪・雷</b> コンポーネントが降水と雷を描きます。<a href="sky.html">空</a>の天候プリセットを選ぶだけでは雨粒・雪粒・稲妻は出ません。この部品は空がなくても使えます。複数置いた場合は優先度が高い一つを使います。</p>
+<h2 id="setup">雨・雪を降らせる</h2><ol>
+<li>GameObject に <b>雨・雪・雷</b>を追加します。</li>
+<li>空の天候プリセット（雨・雪・みぞれ・雷雨）に合わせるなら<b>空の天候に連動</b>をオンにします。空がない場合や空が「個別設定」の場合は、この部品の<b>降らせる種類</b>と<b>降水の強さ</b>が使われます。</li>
+<li><b>粒の量</b>、<b>描画範囲（m）</b>、<b>粒の大きさ</b>、<b>粒の明るさ</b>を調整します。みぞれでは<b>みぞれの雪の割合</b>も指定できます。</li>
+<li>風を空に合わせるなら<b>空の風に連動</b>をオンにします。空がなければ<b>風の向き（X・Z）</b>と<b>風速（m/s）</b>を設定します。</li>
+</ol>
+<p>粒数の上限も変更できます。見えないときは、部品が有効か、降水の強さと粒の量が 0 ではないか、カメラが描画範囲内にあるかを確認します。空に連動している場合は空の天候プリセットも確認してください。</p>
+<h2 id="surface">濡れと水面</h2><p><b>雨で物体を濡らす</b>は、プロジェクトの実行時の濡れ設定が有効な場合に働きます。雪だけなら雨の濡れは加えません。<b>最大の濡れ</b>、<b>雨の水面波紋</b>、<b>波紋の強さ</b>を調整できます。地面に雪を積もらせて足跡を残す機能は別の<a href="landscape.html#update-2026-10-27">積雪・足跡</a>です。</p>
+<h2 id="lightning">雷</h2><p><b>雷を有効化</b>するか、<b>空の雷雨に連動</b>をオンにして空を雷雨にします。雷の間隔・明るさ・距離・高さ・太さ・乱数シードを調整できます。<b>雷で周囲を照らす</b>、<b>雲があれば雲底から落とす</b>も切り替えられます。雲底を使わない場合は稲妻の高さを使います。</p>
+<h2>関連項目</h2><ul><li><a href="sky.html">空</a>の天候プリセット</li><li><a href="clouds.html">手続き空と雲</a></li><li><a href="landscape.html#update-2026-10-27">積雪・足跡</a></li></ul>
+</main></div><footer class="site-footer">RePlayEngine ドキュメント（チーム内資料）</footer><script src="../assets/toc.js"></script><script src="../assets/site.js"></script></body></html>

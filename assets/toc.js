@@ -45,6 +45,7 @@ window.DOCS_TOC = [
       { title: "Normal Adjust", href: "components/normal-adjust.html", summary: "陰影に使う法線を球の向きへ寄せる", keywords: "ノーマルアジャスト 法線 陰影 トゥーン 球 Blend Radius Falloff Bone スロット" },
       { title: "Effekseer Emitter", href: "components/effekseer.html", summary: "Effekseer のエフェクト（.efkefc）の再生と、作成・プレビューのウィンドウ", keywords: "Effekseer エフェクシア efkefc エフェクト 再生 Emitter 開始時に再生 再生速度 スケール SetupEffekseer プレビュー Effekseer FX GPU粒子" },
       { title: "空の自然現象・蛍・自然の粒", href: "components/natural-phenomena.html", summary: "流星、オーロラ、蛍の線状残光、砂塵や花びら", keywords: "自然現象 流れ星 流星 オーロラ 蛍 砂塵 花びら 落ち葉 火の粉 氷晶" },
+      { title: "雨・雪・雷", href: "components/weather.html", summary: "降水と雷を空の天候に連動、濡れと水面の波紋", keywords: "Weather 雨 雪 みぞれ 雷 雷雨 降水 天候 風 水面 波紋 濡れ" },
       { title: "手続き空と体積雲（Cloud Volume・Cloud Scatter）", href: "components/clouds.html", summary: "画像なしの空、入道雲、置ける雲と雲の群れ、見本シーン", keywords: "手続き空 プロシージャル 大気散乱 雲 体積雲 積乱雲 入道雲 かなとこ 雲海 霧 笠雲 天候 雨 夕焼け 夜 Cloud Volume Cloud Scatter ProceduralSky" },
       { title: "ツタ（Ivy Generator）", href: "components/ivy.html", summary: "モデルや地形にツタを生やす。垂れ下がり・壁・地面、なぞって道筋", keywords: "ツタ アイビー Ivy 蔦 植物 葉 茎 垂れ下がり 壁 廃墟 ブラシ なぞる 成長 膨張 追従" },
       { title: "デカール・面テクスチャ・電光掲示板", href: "components/decals.html", summary: "画像を面へ投影、選んだ面に貼る、流れる文字と LED", keywords: "デカール 投影デカール 落書き 血痕 銃痕 面テクスチャ領域 UV Surface Paint 看板 モニター 電光掲示板 LED 流れる文字 MSDF Flipbook スクロール" },
