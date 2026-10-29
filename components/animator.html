@@ -133,7 +133,7 @@
     <div class="table-wrap">
     <table>
       <tr><th>メンバー</th><th>働き</th></tr>
-      <tr><td><code>Play(stateName, blendTime = 0, startTime = 0)</code></td><td>指定した状態へすぐ移り、再生を始めます。<code>blendTime</code> 秒かけて混ぜ、<code>startTime</code> 秒の位置から再生します。今と同じ状態を指定したときは、再生位置だけを <code>startTime</code> に戻します。無い状態名なら失敗を返します</td></tr>
+      <tr><td><code>Play(stateName, blendTime = 0, startTime = 0)</code></td><td>状態名を優先し、無ければモデル内のアニメーション名を探して再生します。<code>blendTime</code> 秒かけて混ぜ、<code>startTime</code> 秒の位置から再生します。今と同じ状態を指定したときは、再生位置だけを <code>startTime</code> に戻します。状態名にもモデル内にも無い名前なら失敗を返します</td></tr>
       <tr><td><code>Play()</code> / <code>Resume()</code></td><td>止めていた再生を続けます</td></tr>
       <tr><td><code>Pause()</code></td><td>再生を止めます（姿勢はそのまま）</td></tr>
       <tr><td><code>Stop()</code></td><td>再生を止め、再生位置を 0 に戻します</td></tr>
@@ -145,6 +145,37 @@
     </table>
     </div>
     <p>C# スクリプトの書き方は「C# スクリプト」の章で説明します。</p>
+
+    <h2 id="named-playback">名前を指定してアニメーションを再生する</h2>
+    <p>2026-10-29 の作業中の変更です。変更を含むエンジンと C# ライブラリーへの再ビルドが必要です。変更ファイルのコンパイル確認を行い、実画面・ゲームでの動作は未確認です。</p>
+    <h3>コンポーネントの画面で選ぶ</h3>
+    <ol class="steps">
+      <li>Animator の <b>モデルのアニメーション</b> 一覧から GLB / glTF 内のアニメーション名を選びます。状態を登録する必要はありません。</li>
+      <li>選んだ名前は <b>再生アニメーション名</b> としてシーンに保存され、次にゲームを開始すると、その動きを使います。「再生」がオフなら停止した状態で準備されます。</li>
+      <li>ゲーム実行中は <b>選んだアニメーションを再生</b>、<b>一時停止</b>、<b>再開</b>、<b>停止</b> で操作できます。再生ボタンは先頭から再生し直します。</li>
+      <li>登録した状態を使う場合は、ゲーム実行中の <b>状態名から再生</b> で選びます。開始時から状態設定を使うには、モデルの一覧で <b>状態設定を使う</b> を選び、再生アニメーション名を空にします。</li>
+    </ol>
+    <p>この操作はインスペクターの Animator 内と、アニメーション Workspace のゲーム連携設定にあります。開始アニメーション名を指定したときの直接再生では、状態グラフの自動遷移は適用しません。状態の再生を指示すると状態グラフへ戻ります。</p>
+    <h3>C# から名前を指定する</h3>
+    <pre><code>// animator は取得済みの ReplayEngine.AnimatorComponent
+animator.Play("Attack");                 // 状態名を優先。無ければモデル内の名前
+animator.PlayState("Attack");            // 登録した状態名だけを対象にする
+animator.PlayAnimation("Attack");        // GLB / glTF 内の名前だけを対象にする
+animator.PlayAnimation("Run", 0.15f);    // 0.15 秒でブレンド
+animator.PlayAnimation("Run", 0, 0.5f);  // 0.5 秒の位置から開始
+animator.Pause();
+animator.Resume();
+animator.Stop();</code></pre>
+    <p>名前は大文字・小文字も含めて一致させます。モデル内に同名のアニメーションが複数あると直接指定は失敗します。存在しない名前や不正な引数でも失敗を返し、その時点の再生状態を保ちます。状態名とモデル内の名前が同じなら、PlayState / PlayAnimation で対象を明示できます。C++ は同じ名前のメソッドが bool を返し、C# は RuntimeStatus を返します。</p>
+    <h3 id="replayrig-purpose">.replayrig は何に使うか</h3>
+    <p><code>.replayrig</code> は、エンジンで編集した骨のキーやポーズを保存するファイルです。モデルの形やテクスチャは含みません。次の用途があります。</p>
+    <ul>
+      <li><b>編集を再開する：</b>アニメーション Workspace の「保存」で残し、後から「ファイル...」で読み込む。</li>
+      <li><b>モデル本体と別に動きを管理する：</b>Idle.replayrig、Attack.replayrig のように分けて保存する。</li>
+      <li><b>GLB に書き込まず再生する：</b>Animator の状態にある「RigClip パス」へ割り当て、その状態名を PlayState で再生する。</li>
+      <li><b>同じ骨構成で使い回す：</b>階層パス・骨構成が一致するモデルへ読み込む。異なる骨構成へ自動で動きを移す機能ではありません。</li>
+    </ul>
+    <p>GLB 内のアニメーションなら名前を直接指定できます。.replayrig はファイルを状態へ割り当て、その<b>状態名</b>で呼び出します。ファイル名だけを PlayAnimation に渡しても読み込まれません。Blender などほかのツールでも動きを使いたい場合は、アニメーション Workspace の「書き出し...」から GLB へ書き込みます。</p>
 
     <h2 id="legacy">旧方式（State 数が 0 のとき）</h2>
     <p><b>State 数</b> が 0 のときは、状態と遷移を使わず、次の決まった動きをします。以前に作ったシーンのための動きです。</p>

@@ -30,6 +30,20 @@
     </table>
     </div>
 
+    <section class="change-entry" id="2026-10-29-animation">
+    <h2>2026-10-29 アニメーション編集の整理・キーの複数選択・名前での再生</h2>
+    <p>追記：Animator にモデル内のアニメーション名を指定する再生、コンポーネント内の名前選択・再生操作を追加。C# の Play は状態名を優先し、無ければモデル内の名前を解決します。PlayState / PlayAnimation で対象を明示できます。<a href="components/animator.html#named-playback">詳細</a>。変更ファイルのコンパイル確認済み、実行検証は未実施です。</p>
+    <p class="meta">対象：sinotake_test / 42df31d1 を基点とする作業中の変更（未コミット）。</p>
+    <div class="table-wrap"><table>
+      <tr><th>変わったこと</th><th>説明</th><th>確認</th></tr>
+      <tr><td>新しいアニメーション・時間指定</td><td>新規作成ボタンと、名前・長さ・現在の秒数・保存を前面に表示。細かな操作はメニューへ整理。</td><td><span class="status wait">変更ファイルのコンパイル済み・実画面未確認</span></td></tr>
+      <tr><td>ポーズをリセット・コピー</td><td>全ボーンの編集ポーズを初期姿勢へ戻すボタンを追加。骨の Ctrl+クリックによる複数選択と、選択ポーズのコピー・貼り付けの説明を追記。</td><td><span class="status wait">コードで確認・実画面未確認</span></td></tr>
+      <tr><td>全体を一行にまとめたキー表示</td><td>同時刻の全ボーンのキーを一つの印に集約。ボーン別表示は必要なときに開く。</td><td><span class="status wait">変更ファイルのコンパイル済み・実画面未確認</span></td></tr>
+      <tr><td>異なる時刻のキーの複数選択</td><td>Ctrl+クリックで追加・解除、Shift+クリックで範囲選択。間隔を保った一括移動、Delete による一括削除。</td><td><span class="status wait">移動・削除の自動テストとコンパイル済み・実画面未確認</span></td></tr>
+    </table></div>
+    <p>更新したページ：<a href="windows/model-animation.html">モデルにアニメーションを追加する</a>、<a href="editor/shortcuts.html#animation-keys">ショートカット一覧</a>、<a href="editor/workspaces.html">Workspace</a>、トップページと検索用の目次。実際の表示・操作は未確認です。利用には変更を含む実行ファイルへの再ビルド・再起動が必要です。</p>
+    </section>
+
     <section class="change-entry" id="2026-10-27-features">
     <h2>2026-10-27 10/24 以降の面表示・地形・自然現象・音響などを追記</h2>
     <p class="meta">対象：ブランチ sinotake_test / コミット 28995f39 の次から cf1faf7f まで。以下はコードと登録項目を読んで記載。実機での動作は未確認です。</p>
